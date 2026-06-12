@@ -1,3 +1,6 @@
 .afk/
 Kigo.xcodeproj/
 .claude/worktrees/
+TestResults*
+*.xcresult
+xcodebuild.log
