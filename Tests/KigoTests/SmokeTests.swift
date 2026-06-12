@@ -3,21 +3,24 @@ import XCTest
 
 final class SmokeTests: XCTestCase {
 
-    /// Verifies the canonical bundle identifier constant matches the value declared in GOAL.md.
-    /// This is a real assertion about app metadata — not a tautology.
-    func testCanonicalBundleIdentifier() throws {
+    /// Asserts the *built* app's bundle identifier matches the canonical value from
+    /// GOAL.md / ADR 0002. `AppInfo.bundleIdentifier` reads `Bundle.main` at runtime,
+    /// so this fails if `project.yml`'s `PRODUCT_BUNDLE_IDENTIFIER` is misconfigured —
+    /// it is an assertion about the actual built artifact, not a self-comparison.
+    func testBuiltBundleIdentifierIsCanonical() throws {
         XCTAssertEqual(
             AppInfo.bundleIdentifier,
             "com.tomeitotameigo.kigo",
-            "Bundle identifier must match the canonical value from ADR 0002 / GOAL.md"
+            "The built app's bundle identifier must match the canonical value from GOAL.md"
         )
     }
 
-    /// Verifies that AppInfo exposes a non-empty display name.
-    func testAppDisplayNameIsNonEmpty() throws {
-        XCTAssertFalse(
-            AppInfo.displayName.isEmpty,
-            "AppInfo.displayName must be a non-empty string"
+    /// Asserts the built app exposes the expected display name from its Info.plist.
+    func testBuiltDisplayNameIsKigo() throws {
+        XCTAssertEqual(
+            AppInfo.displayName,
+            "Kigo",
+            "The built app's display name must come from the Info.plist as 'Kigo'"
         )
     }
 }
