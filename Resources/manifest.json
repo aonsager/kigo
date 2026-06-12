@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1.0",
+  "dailyMap": {
+    "06-12": {
+      "kanji": "菖蒲",
+      "reading": "しょうぶ",
+      "description": "Sweet flag — the blade-like iris leaves used in summer purification rites, placed in baths on Tango no Sekku.",
+      "imageId": "ayame-06-12"
+    }
+  },
+  "ko": [
+    {
+      "kanji": "腐草為螢",
+      "reading": "くされたるくさほたるとなる",
+      "gloss": "rotten grass becomes fireflies",
+      "sekkiId": "boshu",
+      "dateRange": {
+        "start": "06-11",
+        "end": "06-15"
+      }
+    }
+  ],
+  "sekki": [
+    {
+      "id": "boshu",
+      "kanji": "芒種",
+      "reading": "ぼうしゅ"
+    }
+  ]
+}
