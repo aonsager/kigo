@@ -79,6 +79,64 @@ final class ManifestValidationTests: XCTestCase {
         }
     }
 
+    // MARK: - Kō and Sekki counts (slice #10)
+
+    /// Acceptance criterion 1: exactly 72 Kō in the bundled manifest.
+    func testManifestContainsExactly72Ko() throws {
+        let manifest = try loadManifest()
+        XCTAssertEqual(
+            manifest.ko.count,
+            72,
+            "manifest.ko must contain exactly 72 Kō (got \(manifest.ko.count))"
+        )
+    }
+
+    /// Acceptance criterion 1: exactly 24 Sekki in the bundled manifest.
+    func testManifestContainsExactly24Sekki() throws {
+        let manifest = try loadManifest()
+        XCTAssertEqual(
+            manifest.sekki.count,
+            24,
+            "manifest.sekki must contain exactly 24 Sekki (got \(manifest.sekki.count))"
+        )
+    }
+
+    /// Acceptance criterion 2: every Kō has non-empty kanji, reading, and gloss.
+    func testEveryKoHasNonEmptyKanjiReadingAndGloss() throws {
+        let manifest = try loadManifest()
+        for (index, ko) in manifest.ko.enumerated() {
+            XCTAssertFalse(
+                ko.kanji.isEmpty,
+                "Kō at index \(index) has empty kanji"
+            )
+            XCTAssertFalse(
+                ko.reading.isEmpty,
+                "Kō at index \(index) has empty reading"
+            )
+            XCTAssertFalse(
+                ko.gloss.isEmpty,
+                "Kō at index \(index) has empty gloss"
+            )
+        }
+    }
+
+    /// Acceptance criterion 3: every Kō's sekkiId resolves to one of the 24 Sekki (referential integrity).
+    func testEveryKoSekkiIdResolvesToAKnownSekki() throws {
+        let manifest = try loadManifest()
+        let sekkiIds = Set(manifest.sekki.map(\.id))
+        XCTAssertEqual(
+            sekkiIds.count,
+            24,
+            "manifest.sekki must have exactly 24 distinct ids (got \(sekkiIds.count))"
+        )
+        for (index, ko) in manifest.ko.enumerated() {
+            XCTAssertTrue(
+                sekkiIds.contains(ko.sekkiId),
+                "Kō at index \(index) (\(ko.kanji)) has sekkiId '\(ko.sekkiId)' that does not match any Sekki id"
+            )
+        }
+    }
+
     /// Validates the exact set of 366 MM-DD keys (all calendar days + 02-29).
     func testDailyMapContainsAllExpectedKeys() throws {
         let manifest = try loadManifest()

@@ -2200,6 +2200,256 @@
   },
   "ko": [
     {
+      "kanji": "東風解凍",
+      "reading": "はるかぜこおりをとく",
+      "gloss": "east wind thaws the ice",
+      "sekkiId": "risshun",
+      "dateRange": {
+        "start": "02-04",
+        "end": "02-08"
+      }
+    },
+    {
+      "kanji": "黄鶯睍睆",
+      "reading": "うぐいすなく",
+      "gloss": "bush warblers sing in the mountains",
+      "sekkiId": "risshun",
+      "dateRange": {
+        "start": "02-09",
+        "end": "02-13"
+      }
+    },
+    {
+      "kanji": "魚上氷",
+      "reading": "うおこおりをいずる",
+      "gloss": "fish emerge from under the ice",
+      "sekkiId": "risshun",
+      "dateRange": {
+        "start": "02-14",
+        "end": "02-18"
+      }
+    },
+    {
+      "kanji": "土脉潤起",
+      "reading": "つちのしょううるおいおこる",
+      "gloss": "soil moisture stirs and rises",
+      "sekkiId": "usui",
+      "dateRange": {
+        "start": "02-19",
+        "end": "02-23"
+      }
+    },
+    {
+      "kanji": "霞始靆",
+      "reading": "かすみはじめてたなびく",
+      "gloss": "mist begins to drift",
+      "sekkiId": "usui",
+      "dateRange": {
+        "start": "02-24",
+        "end": "02-28"
+      }
+    },
+    {
+      "kanji": "草木萌動",
+      "reading": "そうもくめばえいずる",
+      "gloss": "plants and trees begin to bud",
+      "sekkiId": "usui",
+      "dateRange": {
+        "start": "03-01",
+        "end": "03-05"
+      }
+    },
+    {
+      "kanji": "蟄虫啓戸",
+      "reading": "すごもりのむしとをひらく",
+      "gloss": "hibernating insects open their doors",
+      "sekkiId": "keichitsu",
+      "dateRange": {
+        "start": "03-06",
+        "end": "03-10"
+      }
+    },
+    {
+      "kanji": "桃始笑",
+      "reading": "ももはじめてさく",
+      "gloss": "peach blossoms first bloom",
+      "sekkiId": "keichitsu",
+      "dateRange": {
+        "start": "03-11",
+        "end": "03-15"
+      }
+    },
+    {
+      "kanji": "菜虫化蝶",
+      "reading": "なむしちょうとなる",
+      "gloss": "caterpillars become butterflies",
+      "sekkiId": "keichitsu",
+      "dateRange": {
+        "start": "03-16",
+        "end": "03-20"
+      }
+    },
+    {
+      "kanji": "雀始巣",
+      "reading": "すずめはじめてすくう",
+      "gloss": "sparrows begin to nest",
+      "sekkiId": "shunbun",
+      "dateRange": {
+        "start": "03-21",
+        "end": "03-25"
+      }
+    },
+    {
+      "kanji": "桜始開",
+      "reading": "さくらはじめてひらく",
+      "gloss": "cherry blossoms first open",
+      "sekkiId": "shunbun",
+      "dateRange": {
+        "start": "03-26",
+        "end": "03-30"
+      }
+    },
+    {
+      "kanji": "雷乃発声",
+      "reading": "かみなりすなわちこえをはっす",
+      "gloss": "thunder first rumbles",
+      "sekkiId": "shunbun",
+      "dateRange": {
+        "start": "03-31",
+        "end": "04-04"
+      }
+    },
+    {
+      "kanji": "玄鳥至",
+      "reading": "つばめきたる",
+      "gloss": "swallows arrive",
+      "sekkiId": "seimei",
+      "dateRange": {
+        "start": "04-05",
+        "end": "04-09"
+      }
+    },
+    {
+      "kanji": "鴻雁北",
+      "reading": "こうがんきたへかえる",
+      "gloss": "wild geese fly north",
+      "sekkiId": "seimei",
+      "dateRange": {
+        "start": "04-10",
+        "end": "04-14"
+      }
+    },
+    {
+      "kanji": "虹始見",
+      "reading": "にじはじめてあらわる",
+      "gloss": "rainbows first appear",
+      "sekkiId": "seimei",
+      "dateRange": {
+        "start": "04-15",
+        "end": "04-19"
+      }
+    },
+    {
+      "kanji": "葭始生",
+      "reading": "あしはじめてしょうず",
+      "gloss": "reeds begin to sprout",
+      "sekkiId": "kokuu",
+      "dateRange": {
+        "start": "04-20",
+        "end": "04-24"
+      }
+    },
+    {
+      "kanji": "霜止出苗",
+      "reading": "しもやんでなえいずる",
+      "gloss": "frost stops and seedlings emerge",
+      "sekkiId": "kokuu",
+      "dateRange": {
+        "start": "04-25",
+        "end": "04-29"
+      }
+    },
+    {
+      "kanji": "牡丹華",
+      "reading": "ぼたんはなさく",
+      "gloss": "tree peonies bloom",
+      "sekkiId": "kokuu",
+      "dateRange": {
+        "start": "04-30",
+        "end": "05-04"
+      }
+    },
+    {
+      "kanji": "蛙始鳴",
+      "reading": "かわずはじめてなく",
+      "gloss": "frogs begin to call",
+      "sekkiId": "rikka",
+      "dateRange": {
+        "start": "05-05",
+        "end": "05-09"
+      }
+    },
+    {
+      "kanji": "蚯蚓出",
+      "reading": "みみずいずる",
+      "gloss": "earthworms emerge",
+      "sekkiId": "rikka",
+      "dateRange": {
+        "start": "05-10",
+        "end": "05-14"
+      }
+    },
+    {
+      "kanji": "竹笋生",
+      "reading": "たけのこしょうず",
+      "gloss": "bamboo shoots sprout",
+      "sekkiId": "rikka",
+      "dateRange": {
+        "start": "05-15",
+        "end": "05-20"
+      }
+    },
+    {
+      "kanji": "蚕起食桑",
+      "reading": "かいこおきてくわをはむ",
+      "gloss": "silkworms wake and eat mulberry",
+      "sekkiId": "shouman",
+      "dateRange": {
+        "start": "05-21",
+        "end": "05-25"
+      }
+    },
+    {
+      "kanji": "紅花栄",
+      "reading": "べにばなさかう",
+      "gloss": "safflowers bloom",
+      "sekkiId": "shouman",
+      "dateRange": {
+        "start": "05-26",
+        "end": "05-30"
+      }
+    },
+    {
+      "kanji": "麦秋至",
+      "reading": "むぎのときいたる",
+      "gloss": "wheat ripens",
+      "sekkiId": "shouman",
+      "dateRange": {
+        "start": "05-31",
+        "end": "06-04"
+      }
+    },
+    {
+      "kanji": "螳螂生",
+      "reading": "かまきりしょうず",
+      "gloss": "praying mantises hatch",
+      "sekkiId": "boshu",
+      "dateRange": {
+        "start": "06-06",
+        "end": "06-10"
+      }
+    },
+    {
       "kanji": "腐草為螢",
       "reading": "くされたるくさほたるとなる",
       "gloss": "rotten grass becomes fireflies",
@@ -2208,13 +2458,588 @@
         "start": "06-11",
         "end": "06-15"
       }
+    },
+    {
+      "kanji": "梅子黄",
+      "reading": "うめのみきばむ",
+      "gloss": "plums turn yellow",
+      "sekkiId": "boshu",
+      "dateRange": {
+        "start": "06-16",
+        "end": "06-20"
+      }
+    },
+    {
+      "kanji": "乃東枯",
+      "reading": "なつかれくさかるる",
+      "gloss": "self-heal withers",
+      "sekkiId": "geshi",
+      "dateRange": {
+        "start": "06-21",
+        "end": "06-26"
+      }
+    },
+    {
+      "kanji": "菖蒲華",
+      "reading": "あやめはなさく",
+      "gloss": "irises bloom",
+      "sekkiId": "geshi",
+      "dateRange": {
+        "start": "06-27",
+        "end": "07-01"
+      }
+    },
+    {
+      "kanji": "半夏生",
+      "reading": "はんげしょうず",
+      "gloss": "crow-dipper sprouts",
+      "sekkiId": "geshi",
+      "dateRange": {
+        "start": "07-02",
+        "end": "07-06"
+      }
+    },
+    {
+      "kanji": "温風至",
+      "reading": "あつかぜいたる",
+      "gloss": "warm winds arrive",
+      "sekkiId": "shousho",
+      "dateRange": {
+        "start": "07-07",
+        "end": "07-11"
+      }
+    },
+    {
+      "kanji": "蓮始開",
+      "reading": "はすはじめてひらく",
+      "gloss": "lotus flowers begin to open",
+      "sekkiId": "shousho",
+      "dateRange": {
+        "start": "07-12",
+        "end": "07-16"
+      }
+    },
+    {
+      "kanji": "鷹乃学習",
+      "reading": "たかすなわちわざをならう",
+      "gloss": "hawks learn to fly",
+      "sekkiId": "shousho",
+      "dateRange": {
+        "start": "07-17",
+        "end": "07-22"
+      }
+    },
+    {
+      "kanji": "桐始結花",
+      "reading": "きりはじめてはなをむすぶ",
+      "gloss": "paulownia trees begin to fruit",
+      "sekkiId": "taisho",
+      "dateRange": {
+        "start": "07-23",
+        "end": "07-27"
+      }
+    },
+    {
+      "kanji": "土潤溽暑",
+      "reading": "つちうるおうてむしあつし",
+      "gloss": "earth is damp and sweltering",
+      "sekkiId": "taisho",
+      "dateRange": {
+        "start": "07-28",
+        "end": "08-01"
+      }
+    },
+    {
+      "kanji": "大雨時行",
+      "reading": "たいうときどきふる",
+      "gloss": "heavy rains fall at times",
+      "sekkiId": "taisho",
+      "dateRange": {
+        "start": "08-02",
+        "end": "08-06"
+      }
+    },
+    {
+      "kanji": "涼風至",
+      "reading": "すずかぜいたる",
+      "gloss": "cool winds arrive",
+      "sekkiId": "risshu",
+      "dateRange": {
+        "start": "08-07",
+        "end": "08-11"
+      }
+    },
+    {
+      "kanji": "寒蝉鳴",
+      "reading": "ひぐらしなく",
+      "gloss": "evening cicadas begin to sing",
+      "sekkiId": "risshu",
+      "dateRange": {
+        "start": "08-12",
+        "end": "08-16"
+      }
+    },
+    {
+      "kanji": "蒙霧升降",
+      "reading": "ふかきりまとう",
+      "gloss": "thick mist rises and falls",
+      "sekkiId": "risshu",
+      "dateRange": {
+        "start": "08-17",
+        "end": "08-22"
+      }
+    },
+    {
+      "kanji": "綿柎開",
+      "reading": "わたのはなしべひらく",
+      "gloss": "cotton bolls open",
+      "sekkiId": "shosho",
+      "dateRange": {
+        "start": "08-23",
+        "end": "08-27"
+      }
+    },
+    {
+      "kanji": "天地始粛",
+      "reading": "てんちはじめてさむし",
+      "gloss": "heaven and earth begin to cool",
+      "sekkiId": "shosho",
+      "dateRange": {
+        "start": "08-28",
+        "end": "09-01"
+      }
+    },
+    {
+      "kanji": "禾乃登",
+      "reading": "こくものすなわちみのる",
+      "gloss": "grain ripens on the stalk",
+      "sekkiId": "shosho",
+      "dateRange": {
+        "start": "09-02",
+        "end": "09-07"
+      }
+    },
+    {
+      "kanji": "草露白",
+      "reading": "くさのつゆしろし",
+      "gloss": "white dew appears on grass",
+      "sekkiId": "hakuro",
+      "dateRange": {
+        "start": "09-08",
+        "end": "09-12"
+      }
+    },
+    {
+      "kanji": "鶺鴒鳴",
+      "reading": "せきれいなく",
+      "gloss": "wagtails begin to sing",
+      "sekkiId": "hakuro",
+      "dateRange": {
+        "start": "09-13",
+        "end": "09-17"
+      }
+    },
+    {
+      "kanji": "玄鳥去",
+      "reading": "つばめさる",
+      "gloss": "swallows depart",
+      "sekkiId": "hakuro",
+      "dateRange": {
+        "start": "09-18",
+        "end": "09-22"
+      }
+    },
+    {
+      "kanji": "雷乃収声",
+      "reading": "かみなりすなわちこえをおさむ",
+      "gloss": "thunder ceases",
+      "sekkiId": "shubun",
+      "dateRange": {
+        "start": "09-23",
+        "end": "09-27"
+      }
+    },
+    {
+      "kanji": "蟄虫坏戸",
+      "reading": "むしかくれてとをふさぐ",
+      "gloss": "insects seal their doors",
+      "sekkiId": "shubun",
+      "dateRange": {
+        "start": "09-28",
+        "end": "10-02"
+      }
+    },
+    {
+      "kanji": "水始涸",
+      "reading": "みずはじめてかるる",
+      "gloss": "waters begin to dry",
+      "sekkiId": "shubun",
+      "dateRange": {
+        "start": "10-03",
+        "end": "10-07"
+      }
+    },
+    {
+      "kanji": "鴻雁来",
+      "reading": "こうがんきたる",
+      "gloss": "wild geese arrive",
+      "sekkiId": "kanro",
+      "dateRange": {
+        "start": "10-08",
+        "end": "10-12"
+      }
+    },
+    {
+      "kanji": "菊花開",
+      "reading": "きくのはなひらく",
+      "gloss": "chrysanthemums bloom",
+      "sekkiId": "kanro",
+      "dateRange": {
+        "start": "10-13",
+        "end": "10-17"
+      }
+    },
+    {
+      "kanji": "蟋蟀在戸",
+      "reading": "きりぎりすとにあり",
+      "gloss": "crickets chirp at the door",
+      "sekkiId": "kanro",
+      "dateRange": {
+        "start": "10-18",
+        "end": "10-22"
+      }
+    },
+    {
+      "kanji": "霜始降",
+      "reading": "しもはじめてふる",
+      "gloss": "frost begins to fall",
+      "sekkiId": "soko",
+      "dateRange": {
+        "start": "10-23",
+        "end": "10-27"
+      }
+    },
+    {
+      "kanji": "霎時施",
+      "reading": "こさめときどきふる",
+      "gloss": "light rains fall intermittently",
+      "sekkiId": "soko",
+      "dateRange": {
+        "start": "10-28",
+        "end": "11-01"
+      }
+    },
+    {
+      "kanji": "楓蔦黄",
+      "reading": "もみじつたきばむ",
+      "gloss": "maples and ivies turn yellow",
+      "sekkiId": "soko",
+      "dateRange": {
+        "start": "11-02",
+        "end": "11-06"
+      }
+    },
+    {
+      "kanji": "山茶始開",
+      "reading": "つばきはじめてひらく",
+      "gloss": "camellias begin to bloom",
+      "sekkiId": "rittou",
+      "dateRange": {
+        "start": "11-07",
+        "end": "11-11"
+      }
+    },
+    {
+      "kanji": "地始凍",
+      "reading": "ちはじめてこおる",
+      "gloss": "ground begins to freeze",
+      "sekkiId": "rittou",
+      "dateRange": {
+        "start": "11-12",
+        "end": "11-16"
+      }
+    },
+    {
+      "kanji": "金盞香",
+      "reading": "きんせんかさく",
+      "gloss": "narcissus blooms and scents the air",
+      "sekkiId": "rittou",
+      "dateRange": {
+        "start": "11-17",
+        "end": "11-21"
+      }
+    },
+    {
+      "kanji": "虹蔵不見",
+      "reading": "にじかくれてみえず",
+      "gloss": "rainbows hide and are unseen",
+      "sekkiId": "shousetsu",
+      "dateRange": {
+        "start": "11-22",
+        "end": "11-26"
+      }
+    },
+    {
+      "kanji": "朔風払葉",
+      "reading": "きたかぜこのはをはらう",
+      "gloss": "north wind sweeps the leaves",
+      "sekkiId": "shousetsu",
+      "dateRange": {
+        "start": "11-27",
+        "end": "12-01"
+      }
+    },
+    {
+      "kanji": "橘始黄",
+      "reading": "たちばなはじめてきばむ",
+      "gloss": "tachibana citrus begins to yellow",
+      "sekkiId": "shousetsu",
+      "dateRange": {
+        "start": "12-02",
+        "end": "12-06"
+      }
+    },
+    {
+      "kanji": "閉塞成冬",
+      "reading": "そらさむくふゆとなる",
+      "gloss": "skies close and winter settles",
+      "sekkiId": "taisetsu",
+      "dateRange": {
+        "start": "12-07",
+        "end": "12-11"
+      }
+    },
+    {
+      "kanji": "熊蟄穴",
+      "reading": "くまあなにこもる",
+      "gloss": "bears retreat into their dens",
+      "sekkiId": "taisetsu",
+      "dateRange": {
+        "start": "12-12",
+        "end": "12-16"
+      }
+    },
+    {
+      "kanji": "鱖魚群",
+      "reading": "さけのうおむらがる",
+      "gloss": "salmon gather and swim upstream",
+      "sekkiId": "taisetsu",
+      "dateRange": {
+        "start": "12-17",
+        "end": "12-21"
+      }
+    },
+    {
+      "kanji": "乃東生",
+      "reading": "なつかれくさしょうず",
+      "gloss": "self-heal sprouts anew",
+      "sekkiId": "touji",
+      "dateRange": {
+        "start": "12-22",
+        "end": "12-26"
+      }
+    },
+    {
+      "kanji": "麋角解",
+      "reading": "おおしかのつのおつる",
+      "gloss": "elk shed their antlers",
+      "sekkiId": "touji",
+      "dateRange": {
+        "start": "12-27",
+        "end": "12-31"
+      }
+    },
+    {
+      "kanji": "雪下出麦",
+      "reading": "ゆきわたりてむぎいずる",
+      "gloss": "wheat sprouts beneath the snow",
+      "sekkiId": "touji",
+      "dateRange": {
+        "start": "01-01",
+        "end": "01-04"
+      }
+    },
+    {
+      "kanji": "芹乃栄",
+      "reading": "せりすなわちさかう",
+      "gloss": "Japanese parsley flourishes",
+      "sekkiId": "shoukan",
+      "dateRange": {
+        "start": "01-05",
+        "end": "01-09"
+      }
+    },
+    {
+      "kanji": "水泉動",
+      "reading": "しみずあたたかをふくむ",
+      "gloss": "springs begin to move under ice",
+      "sekkiId": "shoukan",
+      "dateRange": {
+        "start": "01-10",
+        "end": "01-14"
+      }
+    },
+    {
+      "kanji": "雉始雊",
+      "reading": "きじはじめてなく",
+      "gloss": "pheasants begin to call",
+      "sekkiId": "shoukan",
+      "dateRange": {
+        "start": "01-15",
+        "end": "01-19"
+      }
+    },
+    {
+      "kanji": "款冬華",
+      "reading": "ふきのはなさく",
+      "gloss": "butterbur flowers bloom",
+      "sekkiId": "daikan",
+      "dateRange": {
+        "start": "01-20",
+        "end": "01-24"
+      }
+    },
+    {
+      "kanji": "水沢腹堅",
+      "reading": "さわみずこおりつめる",
+      "gloss": "ice thickens on streams",
+      "sekkiId": "daikan",
+      "dateRange": {
+        "start": "01-25",
+        "end": "01-29"
+      }
+    },
+    {
+      "kanji": "鶏始乳",
+      "reading": "にわとりはじめてとやにつく",
+      "gloss": "hens begin to lay",
+      "sekkiId": "daikan",
+      "dateRange": {
+        "start": "01-30",
+        "end": "02-03"
+      }
     }
   ],
   "sekki": [
     {
+      "id": "risshun",
+      "kanji": "立春",
+      "reading": "りっしゅん"
+    },
+    {
+      "id": "usui",
+      "kanji": "雨水",
+      "reading": "うすい"
+    },
+    {
+      "id": "keichitsu",
+      "kanji": "啓蟄",
+      "reading": "けいちつ"
+    },
+    {
+      "id": "shunbun",
+      "kanji": "春分",
+      "reading": "しゅんぶん"
+    },
+    {
+      "id": "seimei",
+      "kanji": "清明",
+      "reading": "せいめい"
+    },
+    {
+      "id": "kokuu",
+      "kanji": "穀雨",
+      "reading": "こくう"
+    },
+    {
+      "id": "rikka",
+      "kanji": "立夏",
+      "reading": "りっか"
+    },
+    {
+      "id": "shouman",
+      "kanji": "小満",
+      "reading": "しょうまん"
+    },
+    {
       "id": "boshu",
       "kanji": "芒種",
       "reading": "ぼうしゅ"
+    },
+    {
+      "id": "geshi",
+      "kanji": "夏至",
+      "reading": "げし"
+    },
+    {
+      "id": "shousho",
+      "kanji": "小暑",
+      "reading": "しょうしょ"
+    },
+    {
+      "id": "taisho",
+      "kanji": "大暑",
+      "reading": "たいしょ"
+    },
+    {
+      "id": "risshu",
+      "kanji": "立秋",
+      "reading": "りっしゅう"
+    },
+    {
+      "id": "shosho",
+      "kanji": "処暑",
+      "reading": "しょしょ"
+    },
+    {
+      "id": "hakuro",
+      "kanji": "白露",
+      "reading": "はくろ"
+    },
+    {
+      "id": "shubun",
+      "kanji": "秋分",
+      "reading": "しゅうぶん"
+    },
+    {
+      "id": "kanro",
+      "kanji": "寒露",
+      "reading": "かんろ"
+    },
+    {
+      "id": "soko",
+      "kanji": "霜降",
+      "reading": "そうこう"
+    },
+    {
+      "id": "rittou",
+      "kanji": "立冬",
+      "reading": "りっとう"
+    },
+    {
+      "id": "shousetsu",
+      "kanji": "小雪",
+      "reading": "しょうせつ"
+    },
+    {
+      "id": "taisetsu",
+      "kanji": "大雪",
+      "reading": "たいせつ"
+    },
+    {
+      "id": "touji",
+      "kanji": "冬至",
+      "reading": "とうじ"
+    },
+    {
+      "id": "shoukan",
+      "kanji": "小寒",
+      "reading": "しょうかん"
+    },
+    {
+      "id": "daikan",
+      "kanji": "大寒",
+      "reading": "だいかん"
     }
   ]
 }
