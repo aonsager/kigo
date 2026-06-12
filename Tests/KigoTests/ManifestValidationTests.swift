@@ -137,6 +137,73 @@ final class ManifestValidationTests: XCTestCase {
         }
     }
 
+    // MARK: - Kō tiling (slice #11)
+
+    /// All 366 calendar days (MM-DD, including 02-29) fall within exactly one Kō range.
+    /// The year is modeled as the linear span 01-01..12-31 (leap year: 366 days).
+    /// 02-29 is explicitly required to fall inside exactly one Kō.
+    func testKoRangesTileEntireYear() throws {
+        let manifest = try loadManifest()
+
+        // Build the ordered list of all 366 MM-DD strings for a leap year.
+        let daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        var allDays: [String] = []
+        for month in 1...12 {
+            for day in 1...daysInMonth[month - 1] {
+                allDays.append(String(format: "%02d-%02d", month, day))
+            }
+        }
+        XCTAssertEqual(allDays.count, 366, "Test setup: should produce 366 days")
+
+        // Map each MM-DD to its 0-based index in the leap-year sequence.
+        let dayIndex: [String: Int] = Dictionary(
+            uniqueKeysWithValues: allDays.enumerated().map { ($1, $0) }
+        )
+
+        // Count how many Kō cover each day.
+        var coverage = [Int](repeating: 0, count: 366)
+        for (koIndex, ko) in manifest.ko.enumerated() {
+            let startKey = ko.dateRange.start
+            let endKey = ko.dateRange.end
+            guard let si = dayIndex[startKey], let ei = dayIndex[endKey] else {
+                XCTFail("Kō \(koIndex) (\(ko.kanji)) has dateRange \(startKey)–\(endKey) with an unrecognised MM-DD key")
+                continue
+            }
+            XCTAssertLessThanOrEqual(
+                si, ei,
+                "Kō \(koIndex) (\(ko.kanji)) has start \(startKey) after end \(endKey) — cross-year spans are not supported"
+            )
+            if si <= ei {
+                for i in si...ei { coverage[i] += 1 }
+            }
+        }
+
+        // Every day must be covered by exactly one Kō.
+        var uncovered: [String] = []
+        var overlapping: [String] = []
+        for (i, day) in allDays.enumerated() {
+            if coverage[i] == 0 { uncovered.append(day) }
+            if coverage[i] > 1 { overlapping.append(day) }
+        }
+
+        XCTAssertTrue(
+            uncovered.isEmpty,
+            "Days not covered by any Kō: \(uncovered.joined(separator: ", "))"
+        )
+        XCTAssertTrue(
+            overlapping.isEmpty,
+            "Days covered by more than one Kō: \(overlapping.joined(separator: ", "))"
+        )
+
+        // Explicitly assert 02-29 is covered (leap day must not be a gap).
+        let leapDayIndex = dayIndex["02-29"]!
+        XCTAssertEqual(
+            coverage[leapDayIndex],
+            1,
+            "02-29 (leap day) must fall within exactly one Kō (coverage count: \(coverage[leapDayIndex]))"
+        )
+    }
+
     /// Validates the exact set of 366 MM-DD keys (all calendar days + 02-29).
     func testDailyMapContainsAllExpectedKeys() throws {
         let manifest = try loadManifest()
