@@ -1,11 +1,2201 @@
 {
   "schemaVersion": "1.0",
   "dailyMap": {
+    "01-01": {
+      "kanji": "初日の出",
+      "reading": "はつひので",
+      "description": "The first sunrise of the New Year, greeted from hilltops and shorelines across Japan.",
+      "imageId": "kigo-01-01"
+    },
+    "01-02": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-02)",
+      "imageId": "kigo-01-02"
+    },
+    "01-03": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-03)",
+      "imageId": "kigo-01-03"
+    },
+    "01-04": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-04)",
+      "imageId": "kigo-01-04"
+    },
+    "01-05": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-05)",
+      "imageId": "kigo-01-05"
+    },
+    "01-06": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-06)",
+      "imageId": "kigo-01-06"
+    },
+    "01-07": {
+      "kanji": "七草",
+      "reading": "ななくさ",
+      "description": "Seven spring herbs — seri, nazuna, gogyo, hakobera, hotokenoza, suzuna, suzushiro — eaten in rice porridge for health.",
+      "imageId": "kigo-01-07"
+    },
+    "01-08": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-08)",
+      "imageId": "kigo-01-08"
+    },
+    "01-09": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-09)",
+      "imageId": "kigo-01-09"
+    },
+    "01-10": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-10)",
+      "imageId": "kigo-01-10"
+    },
+    "01-11": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-11)",
+      "imageId": "kigo-01-11"
+    },
+    "01-12": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-12)",
+      "imageId": "kigo-01-12"
+    },
+    "01-13": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-13)",
+      "imageId": "kigo-01-13"
+    },
+    "01-14": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-14)",
+      "imageId": "kigo-01-14"
+    },
+    "01-15": {
+      "kanji": "小正月",
+      "reading": "こしょうがつ",
+      "description": "Little New Year, marked by rice-cake decoration and the burning of New Year ornaments at dawn.",
+      "imageId": "kigo-01-15"
+    },
+    "01-16": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-16)",
+      "imageId": "kigo-01-16"
+    },
+    "01-17": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-17)",
+      "imageId": "kigo-01-17"
+    },
+    "01-18": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-18)",
+      "imageId": "kigo-01-18"
+    },
+    "01-19": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-19)",
+      "imageId": "kigo-01-19"
+    },
+    "01-20": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-20)",
+      "imageId": "kigo-01-20"
+    },
+    "01-21": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-21)",
+      "imageId": "kigo-01-21"
+    },
+    "01-22": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-22)",
+      "imageId": "kigo-01-22"
+    },
+    "01-23": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-23)",
+      "imageId": "kigo-01-23"
+    },
+    "01-24": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-24)",
+      "imageId": "kigo-01-24"
+    },
+    "01-25": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-25)",
+      "imageId": "kigo-01-25"
+    },
+    "01-26": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-26)",
+      "imageId": "kigo-01-26"
+    },
+    "01-27": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-27)",
+      "imageId": "kigo-01-27"
+    },
+    "01-28": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-28)",
+      "imageId": "kigo-01-28"
+    },
+    "01-29": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-29)",
+      "imageId": "kigo-01-29"
+    },
+    "01-30": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-30)",
+      "imageId": "kigo-01-30"
+    },
+    "01-31": {
+      "kanji": "冬の日",
+      "reading": "ふゆのひ",
+      "description": "A midwinter day in the first month — cold air and pale sun mark the depths of the season. (01-31)",
+      "imageId": "kigo-01-31"
+    },
+    "02-01": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-01)",
+      "imageId": "kigo-02-01"
+    },
+    "02-02": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-02)",
+      "imageId": "kigo-02-02"
+    },
+    "02-03": {
+      "kanji": "節分",
+      "reading": "せつぶん",
+      "description": "The eve of the first day of spring; roasted soybeans are scattered to drive out evil and invite good fortune.",
+      "imageId": "kigo-02-03"
+    },
+    "02-04": {
+      "kanji": "立春",
+      "reading": "りっしゅん",
+      "description": "First day of spring in the traditional calendar; plum blossoms begin to open in sheltered valleys.",
+      "imageId": "kigo-02-04"
+    },
+    "02-05": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-05)",
+      "imageId": "kigo-02-05"
+    },
+    "02-06": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-06)",
+      "imageId": "kigo-02-06"
+    },
+    "02-07": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-07)",
+      "imageId": "kigo-02-07"
+    },
+    "02-08": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-08)",
+      "imageId": "kigo-02-08"
+    },
+    "02-09": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-09)",
+      "imageId": "kigo-02-09"
+    },
+    "02-10": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-10)",
+      "imageId": "kigo-02-10"
+    },
+    "02-11": {
+      "kanji": "梅",
+      "reading": "うめ",
+      "description": "Plum blossom — the harbinger of spring, prized for its fragrance before the cherry unfurls.",
+      "imageId": "kigo-02-11"
+    },
+    "02-12": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-12)",
+      "imageId": "kigo-02-12"
+    },
+    "02-13": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-13)",
+      "imageId": "kigo-02-13"
+    },
+    "02-14": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-14)",
+      "imageId": "kigo-02-14"
+    },
+    "02-15": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-15)",
+      "imageId": "kigo-02-15"
+    },
+    "02-16": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-16)",
+      "imageId": "kigo-02-16"
+    },
+    "02-17": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-17)",
+      "imageId": "kigo-02-17"
+    },
+    "02-18": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-18)",
+      "imageId": "kigo-02-18"
+    },
+    "02-19": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-19)",
+      "imageId": "kigo-02-19"
+    },
+    "02-20": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-20)",
+      "imageId": "kigo-02-20"
+    },
+    "02-21": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-21)",
+      "imageId": "kigo-02-21"
+    },
+    "02-22": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-22)",
+      "imageId": "kigo-02-22"
+    },
+    "02-23": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-23)",
+      "imageId": "kigo-02-23"
+    },
+    "02-24": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-24)",
+      "imageId": "kigo-02-24"
+    },
+    "02-25": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-25)",
+      "imageId": "kigo-02-25"
+    },
+    "02-26": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-26)",
+      "imageId": "kigo-02-26"
+    },
+    "02-27": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-27)",
+      "imageId": "kigo-02-27"
+    },
+    "02-28": {
+      "kanji": "春の兆し",
+      "reading": "はるのきざし",
+      "description": "Early hints of spring stir in the second month, as buds swell on sheltered plum branches. (02-28)",
+      "imageId": "kigo-02-28"
+    },
+    "02-29": {
+      "kanji": "閏日",
+      "reading": "うるうび",
+      "description": "Leap day — the extra calendar day inserted every four years to reconcile the solar year with the Gregorian count.",
+      "imageId": "kigo-02-29"
+    },
+    "03-01": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-01)",
+      "imageId": "kigo-03-01"
+    },
+    "03-02": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-02)",
+      "imageId": "kigo-03-02"
+    },
+    "03-03": {
+      "kanji": "雛祭り",
+      "reading": "ひなまつり",
+      "description": "Doll Festival — tiered displays of imperial court dolls celebrate girls' happiness and good health.",
+      "imageId": "kigo-03-03"
+    },
+    "03-04": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-04)",
+      "imageId": "kigo-03-04"
+    },
+    "03-05": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-05)",
+      "imageId": "kigo-03-05"
+    },
+    "03-06": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-06)",
+      "imageId": "kigo-03-06"
+    },
+    "03-07": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-07)",
+      "imageId": "kigo-03-07"
+    },
+    "03-08": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-08)",
+      "imageId": "kigo-03-08"
+    },
+    "03-09": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-09)",
+      "imageId": "kigo-03-09"
+    },
+    "03-10": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-10)",
+      "imageId": "kigo-03-10"
+    },
+    "03-11": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-11)",
+      "imageId": "kigo-03-11"
+    },
+    "03-12": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-12)",
+      "imageId": "kigo-03-12"
+    },
+    "03-13": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-13)",
+      "imageId": "kigo-03-13"
+    },
+    "03-14": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-14)",
+      "imageId": "kigo-03-14"
+    },
+    "03-15": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-15)",
+      "imageId": "kigo-03-15"
+    },
+    "03-16": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-16)",
+      "imageId": "kigo-03-16"
+    },
+    "03-17": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-17)",
+      "imageId": "kigo-03-17"
+    },
+    "03-18": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-18)",
+      "imageId": "kigo-03-18"
+    },
+    "03-19": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-19)",
+      "imageId": "kigo-03-19"
+    },
+    "03-20": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-20)",
+      "imageId": "kigo-03-20"
+    },
+    "03-21": {
+      "kanji": "春分",
+      "reading": "しゅんぶん",
+      "description": "Spring equinox — day and night of equal length; ancestral graves are visited during Higan week.",
+      "imageId": "kigo-03-21"
+    },
+    "03-22": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-22)",
+      "imageId": "kigo-03-22"
+    },
+    "03-23": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-23)",
+      "imageId": "kigo-03-23"
+    },
+    "03-24": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-24)",
+      "imageId": "kigo-03-24"
+    },
+    "03-25": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-25)",
+      "imageId": "kigo-03-25"
+    },
+    "03-26": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-26)",
+      "imageId": "kigo-03-26"
+    },
+    "03-27": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-27)",
+      "imageId": "kigo-03-27"
+    },
+    "03-28": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-28)",
+      "imageId": "kigo-03-28"
+    },
+    "03-29": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-29)",
+      "imageId": "kigo-03-29"
+    },
+    "03-30": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-30)",
+      "imageId": "kigo-03-30"
+    },
+    "03-31": {
+      "kanji": "春の暖かさ",
+      "reading": "はるのあたたかさ",
+      "description": "Warmth returns in the third month; the earth softens and migratory birds arrive from the south. (03-31)",
+      "imageId": "kigo-03-31"
+    },
+    "04-01": {
+      "kanji": "花見",
+      "reading": "はなみ",
+      "description": "Cherry-blossom viewing — friends and families gather beneath blossoming trees for food, drink, and seasonal joy.",
+      "imageId": "kigo-04-01"
+    },
+    "04-02": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-02)",
+      "imageId": "kigo-04-02"
+    },
+    "04-03": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-03)",
+      "imageId": "kigo-04-03"
+    },
+    "04-04": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-04)",
+      "imageId": "kigo-04-04"
+    },
+    "04-05": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-05)",
+      "imageId": "kigo-04-05"
+    },
+    "04-06": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-06)",
+      "imageId": "kigo-04-06"
+    },
+    "04-07": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-07)",
+      "imageId": "kigo-04-07"
+    },
+    "04-08": {
+      "kanji": "花祭り",
+      "reading": "はなまつり",
+      "description": "Buddha's birthday; temples erect flower-draped shrines and sweet tea is poured over a small Buddha statue.",
+      "imageId": "kigo-04-08"
+    },
+    "04-09": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-09)",
+      "imageId": "kigo-04-09"
+    },
+    "04-10": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-10)",
+      "imageId": "kigo-04-10"
+    },
+    "04-11": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-11)",
+      "imageId": "kigo-04-11"
+    },
+    "04-12": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-12)",
+      "imageId": "kigo-04-12"
+    },
+    "04-13": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-13)",
+      "imageId": "kigo-04-13"
+    },
+    "04-14": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-14)",
+      "imageId": "kigo-04-14"
+    },
+    "04-15": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-15)",
+      "imageId": "kigo-04-15"
+    },
+    "04-16": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-16)",
+      "imageId": "kigo-04-16"
+    },
+    "04-17": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-17)",
+      "imageId": "kigo-04-17"
+    },
+    "04-18": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-18)",
+      "imageId": "kigo-04-18"
+    },
+    "04-19": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-19)",
+      "imageId": "kigo-04-19"
+    },
+    "04-20": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-20)",
+      "imageId": "kigo-04-20"
+    },
+    "04-21": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-21)",
+      "imageId": "kigo-04-21"
+    },
+    "04-22": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-22)",
+      "imageId": "kigo-04-22"
+    },
+    "04-23": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-23)",
+      "imageId": "kigo-04-23"
+    },
+    "04-24": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-24)",
+      "imageId": "kigo-04-24"
+    },
+    "04-25": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-25)",
+      "imageId": "kigo-04-25"
+    },
+    "04-26": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-26)",
+      "imageId": "kigo-04-26"
+    },
+    "04-27": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-27)",
+      "imageId": "kigo-04-27"
+    },
+    "04-28": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-28)",
+      "imageId": "kigo-04-28"
+    },
+    "04-29": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-29)",
+      "imageId": "kigo-04-29"
+    },
+    "04-30": {
+      "kanji": "春雨",
+      "reading": "はるさめ",
+      "description": "Spring rain falls softly in the fourth month, nurturing new growth on hillsides and in gardens. (04-30)",
+      "imageId": "kigo-04-30"
+    },
+    "05-01": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-01)",
+      "imageId": "kigo-05-01"
+    },
+    "05-02": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-02)",
+      "imageId": "kigo-05-02"
+    },
+    "05-03": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-03)",
+      "imageId": "kigo-05-03"
+    },
+    "05-04": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-04)",
+      "imageId": "kigo-05-04"
+    },
+    "05-05": {
+      "kanji": "端午の節句",
+      "reading": "たんごのせっく",
+      "description": "Children's Day; carp streamers fly from poles and families eat chimaki rice dumplings wrapped in bamboo.",
+      "imageId": "kigo-05-05"
+    },
+    "05-06": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-06)",
+      "imageId": "kigo-05-06"
+    },
+    "05-07": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-07)",
+      "imageId": "kigo-05-07"
+    },
+    "05-08": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-08)",
+      "imageId": "kigo-05-08"
+    },
+    "05-09": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-09)",
+      "imageId": "kigo-05-09"
+    },
+    "05-10": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-10)",
+      "imageId": "kigo-05-10"
+    },
+    "05-11": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-11)",
+      "imageId": "kigo-05-11"
+    },
+    "05-12": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-12)",
+      "imageId": "kigo-05-12"
+    },
+    "05-13": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-13)",
+      "imageId": "kigo-05-13"
+    },
+    "05-14": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-14)",
+      "imageId": "kigo-05-14"
+    },
+    "05-15": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-15)",
+      "imageId": "kigo-05-15"
+    },
+    "05-16": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-16)",
+      "imageId": "kigo-05-16"
+    },
+    "05-17": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-17)",
+      "imageId": "kigo-05-17"
+    },
+    "05-18": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-18)",
+      "imageId": "kigo-05-18"
+    },
+    "05-19": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-19)",
+      "imageId": "kigo-05-19"
+    },
+    "05-20": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-20)",
+      "imageId": "kigo-05-20"
+    },
+    "05-21": {
+      "kanji": "小満",
+      "reading": "しょうまん",
+      "description": "Grain Buds — the solar term when grains begin to fill and silkworms start to spin their cocoons.",
+      "imageId": "kigo-05-21"
+    },
+    "05-22": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-22)",
+      "imageId": "kigo-05-22"
+    },
+    "05-23": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-23)",
+      "imageId": "kigo-05-23"
+    },
+    "05-24": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-24)",
+      "imageId": "kigo-05-24"
+    },
+    "05-25": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-25)",
+      "imageId": "kigo-05-25"
+    },
+    "05-26": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-26)",
+      "imageId": "kigo-05-26"
+    },
+    "05-27": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-27)",
+      "imageId": "kigo-05-27"
+    },
+    "05-28": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-28)",
+      "imageId": "kigo-05-28"
+    },
+    "05-29": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-29)",
+      "imageId": "kigo-05-29"
+    },
+    "05-30": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-30)",
+      "imageId": "kigo-05-30"
+    },
+    "05-31": {
+      "kanji": "緑の風",
+      "reading": "みどりのかぜ",
+      "description": "Fresh green leaves fill the fifth month with a cool, fragrant breeze across rice paddies and parks. (05-31)",
+      "imageId": "kigo-05-31"
+    },
+    "06-01": {
+      "kanji": "衣替え",
+      "reading": "ころもがえ",
+      "description": "The seasonal change of clothing from winter to summer weight, observed on the first day of June.",
+      "imageId": "kigo-06-01"
+    },
+    "06-02": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-02)",
+      "imageId": "kigo-06-02"
+    },
+    "06-03": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-03)",
+      "imageId": "kigo-06-03"
+    },
+    "06-04": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-04)",
+      "imageId": "kigo-06-04"
+    },
+    "06-05": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-05)",
+      "imageId": "kigo-06-05"
+    },
+    "06-06": {
+      "kanji": "蛍",
+      "reading": "ほたる",
+      "description": "Fireflies — their cold green light drifting over rice paddies and riverbanks on humid summer evenings.",
+      "imageId": "kigo-06-06"
+    },
+    "06-07": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-07)",
+      "imageId": "kigo-06-07"
+    },
+    "06-08": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-08)",
+      "imageId": "kigo-06-08"
+    },
+    "06-09": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-09)",
+      "imageId": "kigo-06-09"
+    },
+    "06-10": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-10)",
+      "imageId": "kigo-06-10"
+    },
+    "06-11": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-11)",
+      "imageId": "kigo-06-11"
+    },
     "06-12": {
       "kanji": "菖蒲",
       "reading": "しょうぶ",
       "description": "Sweet flag — the blade-like iris leaves used in summer purification rites, placed in baths on Tango no Sekku.",
       "imageId": "ayame-06-12"
+    },
+    "06-13": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-13)",
+      "imageId": "kigo-06-13"
+    },
+    "06-14": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-14)",
+      "imageId": "kigo-06-14"
+    },
+    "06-15": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-15)",
+      "imageId": "kigo-06-15"
+    },
+    "06-16": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-16)",
+      "imageId": "kigo-06-16"
+    },
+    "06-17": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-17)",
+      "imageId": "kigo-06-17"
+    },
+    "06-18": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-18)",
+      "imageId": "kigo-06-18"
+    },
+    "06-19": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-19)",
+      "imageId": "kigo-06-19"
+    },
+    "06-20": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-20)",
+      "imageId": "kigo-06-20"
+    },
+    "06-21": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-21)",
+      "imageId": "kigo-06-21"
+    },
+    "06-22": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-22)",
+      "imageId": "kigo-06-22"
+    },
+    "06-23": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-23)",
+      "imageId": "kigo-06-23"
+    },
+    "06-24": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-24)",
+      "imageId": "kigo-06-24"
+    },
+    "06-25": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-25)",
+      "imageId": "kigo-06-25"
+    },
+    "06-26": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-26)",
+      "imageId": "kigo-06-26"
+    },
+    "06-27": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-27)",
+      "imageId": "kigo-06-27"
+    },
+    "06-28": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-28)",
+      "imageId": "kigo-06-28"
+    },
+    "06-29": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-29)",
+      "imageId": "kigo-06-29"
+    },
+    "06-30": {
+      "kanji": "梅雨",
+      "reading": "つゆ",
+      "description": "The rainy season settles over the sixth month, bringing steady grey skies and a lush, humid quiet. (06-30)",
+      "imageId": "kigo-06-30"
+    },
+    "07-01": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-01)",
+      "imageId": "kigo-07-01"
+    },
+    "07-02": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-02)",
+      "imageId": "kigo-07-02"
+    },
+    "07-03": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-03)",
+      "imageId": "kigo-07-03"
+    },
+    "07-04": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-04)",
+      "imageId": "kigo-07-04"
+    },
+    "07-05": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-05)",
+      "imageId": "kigo-07-05"
+    },
+    "07-06": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-06)",
+      "imageId": "kigo-07-06"
+    },
+    "07-07": {
+      "kanji": "七夕",
+      "reading": "たなばた",
+      "description": "Star Festival — wishes written on tanzaku paper strips and hung from bamboo under the summer night sky.",
+      "imageId": "kigo-07-07"
+    },
+    "07-08": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-08)",
+      "imageId": "kigo-07-08"
+    },
+    "07-09": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-09)",
+      "imageId": "kigo-07-09"
+    },
+    "07-10": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-10)",
+      "imageId": "kigo-07-10"
+    },
+    "07-11": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-11)",
+      "imageId": "kigo-07-11"
+    },
+    "07-12": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-12)",
+      "imageId": "kigo-07-12"
+    },
+    "07-13": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-13)",
+      "imageId": "kigo-07-13"
+    },
+    "07-14": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-14)",
+      "imageId": "kigo-07-14"
+    },
+    "07-15": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-15)",
+      "imageId": "kigo-07-15"
+    },
+    "07-16": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-16)",
+      "imageId": "kigo-07-16"
+    },
+    "07-17": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-17)",
+      "imageId": "kigo-07-17"
+    },
+    "07-18": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-18)",
+      "imageId": "kigo-07-18"
+    },
+    "07-19": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-19)",
+      "imageId": "kigo-07-19"
+    },
+    "07-20": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-20)",
+      "imageId": "kigo-07-20"
+    },
+    "07-21": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-21)",
+      "imageId": "kigo-07-21"
+    },
+    "07-22": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-22)",
+      "imageId": "kigo-07-22"
+    },
+    "07-23": {
+      "kanji": "大暑",
+      "reading": "たいしょ",
+      "description": "Great Heat — the peak of summer's intensity, when the sun blazes longest and cicadas cry without pause.",
+      "imageId": "kigo-07-23"
+    },
+    "07-24": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-24)",
+      "imageId": "kigo-07-24"
+    },
+    "07-25": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-25)",
+      "imageId": "kigo-07-25"
+    },
+    "07-26": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-26)",
+      "imageId": "kigo-07-26"
+    },
+    "07-27": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-27)",
+      "imageId": "kigo-07-27"
+    },
+    "07-28": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-28)",
+      "imageId": "kigo-07-28"
+    },
+    "07-29": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-29)",
+      "imageId": "kigo-07-29"
+    },
+    "07-30": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-30)",
+      "imageId": "kigo-07-30"
+    },
+    "07-31": {
+      "kanji": "夏の盛り",
+      "reading": "なつのさかり",
+      "description": "High summer blazes in the seventh month; cicadas cry from every tree in the midday heat. (07-31)",
+      "imageId": "kigo-07-31"
+    },
+    "08-01": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-01)",
+      "imageId": "kigo-08-01"
+    },
+    "08-02": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-02)",
+      "imageId": "kigo-08-02"
+    },
+    "08-03": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-03)",
+      "imageId": "kigo-08-03"
+    },
+    "08-04": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-04)",
+      "imageId": "kigo-08-04"
+    },
+    "08-05": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-05)",
+      "imageId": "kigo-08-05"
+    },
+    "08-06": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-06)",
+      "imageId": "kigo-08-06"
+    },
+    "08-07": {
+      "kanji": "立秋",
+      "reading": "りっしゅう",
+      "description": "First day of autumn in the traditional calendar; evenings begin to carry the faintest autumnal chill.",
+      "imageId": "kigo-08-07"
+    },
+    "08-08": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-08)",
+      "imageId": "kigo-08-08"
+    },
+    "08-09": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-09)",
+      "imageId": "kigo-08-09"
+    },
+    "08-10": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-10)",
+      "imageId": "kigo-08-10"
+    },
+    "08-11": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-11)",
+      "imageId": "kigo-08-11"
+    },
+    "08-12": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-12)",
+      "imageId": "kigo-08-12"
+    },
+    "08-13": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-13)",
+      "imageId": "kigo-08-13"
+    },
+    "08-14": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-14)",
+      "imageId": "kigo-08-14"
+    },
+    "08-15": {
+      "kanji": "盂蘭盆",
+      "reading": "うらぼん",
+      "description": "Obon — the mid-August festival when ancestral spirits are welcomed home with lanterns and bon odori dancing.",
+      "imageId": "kigo-08-15"
+    },
+    "08-16": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-16)",
+      "imageId": "kigo-08-16"
+    },
+    "08-17": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-17)",
+      "imageId": "kigo-08-17"
+    },
+    "08-18": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-18)",
+      "imageId": "kigo-08-18"
+    },
+    "08-19": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-19)",
+      "imageId": "kigo-08-19"
+    },
+    "08-20": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-20)",
+      "imageId": "kigo-08-20"
+    },
+    "08-21": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-21)",
+      "imageId": "kigo-08-21"
+    },
+    "08-22": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-22)",
+      "imageId": "kigo-08-22"
+    },
+    "08-23": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-23)",
+      "imageId": "kigo-08-23"
+    },
+    "08-24": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-24)",
+      "imageId": "kigo-08-24"
+    },
+    "08-25": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-25)",
+      "imageId": "kigo-08-25"
+    },
+    "08-26": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-26)",
+      "imageId": "kigo-08-26"
+    },
+    "08-27": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-27)",
+      "imageId": "kigo-08-27"
+    },
+    "08-28": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-28)",
+      "imageId": "kigo-08-28"
+    },
+    "08-29": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-29)",
+      "imageId": "kigo-08-29"
+    },
+    "08-30": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-30)",
+      "imageId": "kigo-08-30"
+    },
+    "08-31": {
+      "kanji": "晩夏",
+      "reading": "ばんか",
+      "description": "Late summer lingers in the eighth month; evenings cool slightly and the Milky Way sharpens overhead. (08-31)",
+      "imageId": "kigo-08-31"
+    },
+    "09-01": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-01)",
+      "imageId": "kigo-09-01"
+    },
+    "09-02": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-02)",
+      "imageId": "kigo-09-02"
+    },
+    "09-03": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-03)",
+      "imageId": "kigo-09-03"
+    },
+    "09-04": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-04)",
+      "imageId": "kigo-09-04"
+    },
+    "09-05": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-05)",
+      "imageId": "kigo-09-05"
+    },
+    "09-06": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-06)",
+      "imageId": "kigo-09-06"
+    },
+    "09-07": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-07)",
+      "imageId": "kigo-09-07"
+    },
+    "09-08": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-08)",
+      "imageId": "kigo-09-08"
+    },
+    "09-09": {
+      "kanji": "重陽",
+      "reading": "ちょうよう",
+      "description": "Chrysanthemum Festival — chrysanthemum wine is drunk to ward off evil and pray for longevity.",
+      "imageId": "kigo-09-09"
+    },
+    "09-10": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-10)",
+      "imageId": "kigo-09-10"
+    },
+    "09-11": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-11)",
+      "imageId": "kigo-09-11"
+    },
+    "09-12": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-12)",
+      "imageId": "kigo-09-12"
+    },
+    "09-13": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-13)",
+      "imageId": "kigo-09-13"
+    },
+    "09-14": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-14)",
+      "imageId": "kigo-09-14"
+    },
+    "09-15": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-15)",
+      "imageId": "kigo-09-15"
+    },
+    "09-16": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-16)",
+      "imageId": "kigo-09-16"
+    },
+    "09-17": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-17)",
+      "imageId": "kigo-09-17"
+    },
+    "09-18": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-18)",
+      "imageId": "kigo-09-18"
+    },
+    "09-19": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-19)",
+      "imageId": "kigo-09-19"
+    },
+    "09-20": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-20)",
+      "imageId": "kigo-09-20"
+    },
+    "09-21": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-21)",
+      "imageId": "kigo-09-21"
+    },
+    "09-22": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-22)",
+      "imageId": "kigo-09-22"
+    },
+    "09-23": {
+      "kanji": "秋分",
+      "reading": "しゅうぶん",
+      "description": "Autumn equinox — equal day and night; the higan week of visits to ancestral graves in autumn gold.",
+      "imageId": "kigo-09-23"
+    },
+    "09-24": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-24)",
+      "imageId": "kigo-09-24"
+    },
+    "09-25": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-25)",
+      "imageId": "kigo-09-25"
+    },
+    "09-26": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-26)",
+      "imageId": "kigo-09-26"
+    },
+    "09-27": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-27)",
+      "imageId": "kigo-09-27"
+    },
+    "09-28": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-28)",
+      "imageId": "kigo-09-28"
+    },
+    "09-29": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-29)",
+      "imageId": "kigo-09-29"
+    },
+    "09-30": {
+      "kanji": "秋風",
+      "reading": "あきかぜ",
+      "description": "Autumn winds arrive in the ninth month, carrying the scent of ripening rice and drying persimmons. (09-30)",
+      "imageId": "kigo-09-30"
+    },
+    "10-01": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-01)",
+      "imageId": "kigo-10-01"
+    },
+    "10-02": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-02)",
+      "imageId": "kigo-10-02"
+    },
+    "10-03": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-03)",
+      "imageId": "kigo-10-03"
+    },
+    "10-04": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-04)",
+      "imageId": "kigo-10-04"
+    },
+    "10-05": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-05)",
+      "imageId": "kigo-10-05"
+    },
+    "10-06": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-06)",
+      "imageId": "kigo-10-06"
+    },
+    "10-07": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-07)",
+      "imageId": "kigo-10-07"
+    },
+    "10-08": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-08)",
+      "imageId": "kigo-10-08"
+    },
+    "10-09": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-09)",
+      "imageId": "kigo-10-09"
+    },
+    "10-10": {
+      "kanji": "秋晴れ",
+      "reading": "あきばれ",
+      "description": "Autumn clarity — the crystalline blue skies and cool, dry air that typify October days in Japan.",
+      "imageId": "kigo-10-10"
+    },
+    "10-11": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-11)",
+      "imageId": "kigo-10-11"
+    },
+    "10-12": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-12)",
+      "imageId": "kigo-10-12"
+    },
+    "10-13": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-13)",
+      "imageId": "kigo-10-13"
+    },
+    "10-14": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-14)",
+      "imageId": "kigo-10-14"
+    },
+    "10-15": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-15)",
+      "imageId": "kigo-10-15"
+    },
+    "10-16": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-16)",
+      "imageId": "kigo-10-16"
+    },
+    "10-17": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-17)",
+      "imageId": "kigo-10-17"
+    },
+    "10-18": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-18)",
+      "imageId": "kigo-10-18"
+    },
+    "10-19": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-19)",
+      "imageId": "kigo-10-19"
+    },
+    "10-20": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-20)",
+      "imageId": "kigo-10-20"
+    },
+    "10-21": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-21)",
+      "imageId": "kigo-10-21"
+    },
+    "10-22": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-22)",
+      "imageId": "kigo-10-22"
+    },
+    "10-23": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-23)",
+      "imageId": "kigo-10-23"
+    },
+    "10-24": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-24)",
+      "imageId": "kigo-10-24"
+    },
+    "10-25": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-25)",
+      "imageId": "kigo-10-25"
+    },
+    "10-26": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-26)",
+      "imageId": "kigo-10-26"
+    },
+    "10-27": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-27)",
+      "imageId": "kigo-10-27"
+    },
+    "10-28": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-28)",
+      "imageId": "kigo-10-28"
+    },
+    "10-29": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-29)",
+      "imageId": "kigo-10-29"
+    },
+    "10-30": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-30)",
+      "imageId": "kigo-10-30"
+    },
+    "10-31": {
+      "kanji": "紅葉",
+      "reading": "こうよう",
+      "description": "Maple leaves blaze red and gold in the tenth month, drawing crowds to mountain paths and temple gardens. (10-31)",
+      "imageId": "kigo-10-31"
+    },
+    "11-01": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-01)",
+      "imageId": "kigo-11-01"
+    },
+    "11-02": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-02)",
+      "imageId": "kigo-11-02"
+    },
+    "11-03": {
+      "kanji": "文化の日",
+      "reading": "ぶんかのひ",
+      "description": "Culture Day — clear November skies frame ceremonies honoring arts, science, and national heritage.",
+      "imageId": "kigo-11-03"
+    },
+    "11-04": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-04)",
+      "imageId": "kigo-11-04"
+    },
+    "11-05": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-05)",
+      "imageId": "kigo-11-05"
+    },
+    "11-06": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-06)",
+      "imageId": "kigo-11-06"
+    },
+    "11-07": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-07)",
+      "imageId": "kigo-11-07"
+    },
+    "11-08": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-08)",
+      "imageId": "kigo-11-08"
+    },
+    "11-09": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-09)",
+      "imageId": "kigo-11-09"
+    },
+    "11-10": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-10)",
+      "imageId": "kigo-11-10"
+    },
+    "11-11": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-11)",
+      "imageId": "kigo-11-11"
+    },
+    "11-12": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-12)",
+      "imageId": "kigo-11-12"
+    },
+    "11-13": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-13)",
+      "imageId": "kigo-11-13"
+    },
+    "11-14": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-14)",
+      "imageId": "kigo-11-14"
+    },
+    "11-15": {
+      "kanji": "七五三",
+      "reading": "しちごさん",
+      "description": "Children aged seven, five, and three visit shrines in formal dress to give thanks for their growth.",
+      "imageId": "kigo-11-15"
+    },
+    "11-16": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-16)",
+      "imageId": "kigo-11-16"
+    },
+    "11-17": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-17)",
+      "imageId": "kigo-11-17"
+    },
+    "11-18": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-18)",
+      "imageId": "kigo-11-18"
+    },
+    "11-19": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-19)",
+      "imageId": "kigo-11-19"
+    },
+    "11-20": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-20)",
+      "imageId": "kigo-11-20"
+    },
+    "11-21": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-21)",
+      "imageId": "kigo-11-21"
+    },
+    "11-22": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-22)",
+      "imageId": "kigo-11-22"
+    },
+    "11-23": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-23)",
+      "imageId": "kigo-11-23"
+    },
+    "11-24": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-24)",
+      "imageId": "kigo-11-24"
+    },
+    "11-25": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-25)",
+      "imageId": "kigo-11-25"
+    },
+    "11-26": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-26)",
+      "imageId": "kigo-11-26"
+    },
+    "11-27": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-27)",
+      "imageId": "kigo-11-27"
+    },
+    "11-28": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-28)",
+      "imageId": "kigo-11-28"
+    },
+    "11-29": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-29)",
+      "imageId": "kigo-11-29"
+    },
+    "11-30": {
+      "kanji": "晩秋",
+      "reading": "ばんしゅう",
+      "description": "Late autumn deepens in the eleventh month; bare branches frame pale skies above fallen leaf carpets. (11-30)",
+      "imageId": "kigo-11-30"
+    },
+    "12-01": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-01)",
+      "imageId": "kigo-12-01"
+    },
+    "12-02": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-02)",
+      "imageId": "kigo-12-02"
+    },
+    "12-03": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-03)",
+      "imageId": "kigo-12-03"
+    },
+    "12-04": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-04)",
+      "imageId": "kigo-12-04"
+    },
+    "12-05": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-05)",
+      "imageId": "kigo-12-05"
+    },
+    "12-06": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-06)",
+      "imageId": "kigo-12-06"
+    },
+    "12-07": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-07)",
+      "imageId": "kigo-12-07"
+    },
+    "12-08": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-08)",
+      "imageId": "kigo-12-08"
+    },
+    "12-09": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-09)",
+      "imageId": "kigo-12-09"
+    },
+    "12-10": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-10)",
+      "imageId": "kigo-12-10"
+    },
+    "12-11": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-11)",
+      "imageId": "kigo-12-11"
+    },
+    "12-12": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-12)",
+      "imageId": "kigo-12-12"
+    },
+    "12-13": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-13)",
+      "imageId": "kigo-12-13"
+    },
+    "12-14": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-14)",
+      "imageId": "kigo-12-14"
+    },
+    "12-15": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-15)",
+      "imageId": "kigo-12-15"
+    },
+    "12-16": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-16)",
+      "imageId": "kigo-12-16"
+    },
+    "12-17": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-17)",
+      "imageId": "kigo-12-17"
+    },
+    "12-18": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-18)",
+      "imageId": "kigo-12-18"
+    },
+    "12-19": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-19)",
+      "imageId": "kigo-12-19"
+    },
+    "12-20": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-20)",
+      "imageId": "kigo-12-20"
+    },
+    "12-21": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-21)",
+      "imageId": "kigo-12-21"
+    },
+    "12-22": {
+      "kanji": "冬至",
+      "reading": "とうじ",
+      "description": "Winter solstice — the year's shortest day; yuzu baths and pumpkin porridge ward off winter illness.",
+      "imageId": "kigo-12-22"
+    },
+    "12-23": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-23)",
+      "imageId": "kigo-12-23"
+    },
+    "12-24": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-24)",
+      "imageId": "kigo-12-24"
+    },
+    "12-25": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-25)",
+      "imageId": "kigo-12-25"
+    },
+    "12-26": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-26)",
+      "imageId": "kigo-12-26"
+    },
+    "12-27": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-27)",
+      "imageId": "kigo-12-27"
+    },
+    "12-28": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-28)",
+      "imageId": "kigo-12-28"
+    },
+    "12-29": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-29)",
+      "imageId": "kigo-12-29"
+    },
+    "12-30": {
+      "kanji": "冬の訪れ",
+      "reading": "ふゆのおとずれ",
+      "description": "Winter arrives in the twelfth month; frost glitters at dawn and the year draws quietly toward its close. (12-30)",
+      "imageId": "kigo-12-30"
+    },
+    "12-31": {
+      "kanji": "大晦日",
+      "reading": "おおみそか",
+      "description": "New Year's Eve — temple bells toll 108 times at midnight to cleanse the worldly desires of the old year.",
+      "imageId": "kigo-12-31"
     }
   },
   "ko": [

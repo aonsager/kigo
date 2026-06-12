@@ -18,4 +18,102 @@ final class ManifestValidationTests: XCTestCase {
             "Decoded Manifest must carry a non-empty schemaVersion"
         )
     }
+
+    // MARK: - Daily Map coverage
+
+    private func loadManifest() throws -> Manifest {
+        let url = try XCTUnwrap(
+            Bundle.main.url(forResource: "manifest", withExtension: "json"),
+            "manifest.json must be bundled in the Kigo app target"
+        )
+        let data = try Data(contentsOf: url)
+        return try JSONDecoder().decode(Manifest.self, from: data)
+    }
+
+    /// Acceptance criterion 1: exactly 366 distinct MM-DD keys including 02-29.
+    func testDailyMapContainsExactly366Keys() throws {
+        let manifest = try loadManifest()
+        XCTAssertEqual(
+            manifest.dailyMap.count,
+            366,
+            "dailyMap must contain exactly 366 MM-DD keys (all calendar days including 02-29)"
+        )
+    }
+
+    func testDailyMapContainsLeapDay() throws {
+        let manifest = try loadManifest()
+        XCTAssertNotNil(
+            manifest.dailyMap["02-29"],
+            "dailyMap must include 02-29 (leap day)"
+        )
+    }
+
+    /// Acceptance criterion 2: every entry has non-empty kanji and reading.
+    func testEveryDailyMapEntryHasNonEmptyKanjiAndReading() throws {
+        let manifest = try loadManifest()
+        for (key, entry) in manifest.dailyMap {
+            XCTAssertFalse(
+                entry.kanji.isEmpty,
+                "Entry for \(key) has empty kanji"
+            )
+            XCTAssertFalse(
+                entry.reading.isEmpty,
+                "Entry for \(key) has empty reading"
+            )
+        }
+    }
+
+    /// Acceptance criterion 3: every entry's description is ≥20 chars and imageId is non-empty.
+    func testEveryDailyMapEntryHasDescriptionAndImageId() throws {
+        let manifest = try loadManifest()
+        for (key, entry) in manifest.dailyMap {
+            XCTAssertGreaterThanOrEqual(
+                entry.description.count,
+                20,
+                "Entry for \(key) has description shorter than 20 characters: '\(entry.description)'"
+            )
+            XCTAssertFalse(
+                entry.imageId.isEmpty,
+                "Entry for \(key) has empty imageId"
+            )
+        }
+    }
+
+    /// Validates the exact set of 366 MM-DD keys (all calendar days + 02-29).
+    func testDailyMapContainsAllExpectedKeys() throws {
+        let manifest = try loadManifest()
+
+        // Build the expected 366 keys programmatically
+        let calendar = Calendar(identifier: .gregorian)
+        var expected = Set<String>()
+
+        // Use 2000 as a leap year to cover 02-29
+        var components = DateComponents()
+        components.year = 2000
+        let daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        for month in 1...12 {
+            for day in 1...daysInMonth[month - 1] {
+                components.month = month
+                components.day = day
+                let key = String(format: "%02d-%02d", month, day)
+                expected.insert(key)
+            }
+        }
+        // Verify we built exactly 366 expected keys
+        XCTAssertEqual(expected.count, 366, "Test setup error: expected key set should have 366 items")
+
+        let actual = Set(manifest.dailyMap.keys)
+        let missing = expected.subtracting(actual)
+        let extra = actual.subtracting(expected)
+
+        XCTAssertTrue(
+            missing.isEmpty,
+            "dailyMap is missing these keys: \(missing.sorted().joined(separator: ", "))"
+        )
+        XCTAssertTrue(
+            extra.isEmpty,
+            "dailyMap has unexpected keys: \(extra.sorted().joined(separator: ", "))"
+        )
+        _ = calendar // suppress unused warning
+    }
 }
