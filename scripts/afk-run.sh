@@ -4,7 +4,6 @@
 # until the loop reports DONE/BLOCKED or a safety bound trips. Installed by /afk-init.
 #
 # Config (env vars):
-#   AFK_BUDGET_USD    notional cost cap per run (default 20)
 #   AFK_MAX_ITER      iteration ceiling backstop (default 50)
 #   AFK_ITER_TIMEOUT  per-iteration wall-clock cap in seconds (default 2700 = 45min)
 #   AFK_MODEL         optional --model override for afk-step sessions
@@ -14,7 +13,6 @@
 
 set -u
 
-AFK_BUDGET_USD="${AFK_BUDGET_USD:-20}"
 AFK_MAX_ITER="${AFK_MAX_ITER:-50}"
 AFK_ITER_TIMEOUT="${AFK_ITER_TIMEOUT:-2700}"
 MAX_CONSEC_FAIL=3
@@ -98,10 +96,6 @@ PY
 EOF
   total_cost=$(python3 -c "print(f'{$total_cost + $cost:.4f}')")
   log "iteration $iter done | cost \$$cost | total \$$total_cost | $summary"
-
-  if python3 -c "exit(0 if $total_cost >= $AFK_BUDGET_USD else 1)"; then
-    notify "BUDGET" "notional spend \$$total_cost reached cap \$$AFK_BUDGET_USD at iteration $iter"; break
-  fi
 
   sleep 5
 done
