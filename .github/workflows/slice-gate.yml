@@ -1,0 +1,21 @@
+name: slice-gate
+
+# Instant, always-green check for slice PRs (base = integration/*, never main).
+# Its job is purely mechanical: give `gh pr checks` a concluded green check so
+# afk-advance's poll-then-merge flow has a signal and never chokes on the
+# "no checks reported" exit code. It VERIFIES NOTHING — slice correctness is
+# established by afk-advance re-running the test suite in-session, and the real
+# clean-checkout build+test runs in afk-ci on the integration->main PR. Costs a
+# few seconds of 1x Linux minutes; the macOS build never runs per slice.
+
+on:
+  pull_request:
+    branches-ignore: [main]
+
+jobs:
+  slice-gate:
+    name: slice-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - run: echo "slice gate (no-op): real verification = afk-advance in-session tests + afk-ci on integration->main"
