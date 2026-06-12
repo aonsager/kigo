@@ -49,6 +49,29 @@ final class HoldingFakeContentSource: ContentSource, @unchecked Sendable {
     }
 }
 
+// MARK: - CountingFakeContentSource
+
+/// A test-only `ContentSource` that counts `load()` invocations.
+/// The first call returns the provided `Manifest`; subsequent calls throw.
+/// This lets tests assert that `todayEntry()` serves from cache without
+/// re-invoking the source.
+actor CountingFakeContentSource: ContentSource {
+    let manifest: Manifest
+    private(set) var loadCallCount: Int = 0
+
+    init(manifest: Manifest) {
+        self.manifest = manifest
+    }
+
+    func load() async throws -> Manifest {
+        loadCallCount += 1
+        if loadCallCount == 1 {
+            return manifest
+        }
+        throw FailingContentSource.LoadFailure()
+    }
+}
+
 // MARK: - ContentStoreTests
 
 final class ContentStoreTests: XCTestCase {
@@ -174,5 +197,104 @@ final class ContentStoreTests: XCTestCase {
         XCTAssertEqual(loaded.dailyMap.count, manifest.dailyMap.count)
         XCTAssertEqual(loaded.ko.count, manifest.ko.count)
         XCTAssertEqual(loaded.sekki.count, manifest.sekki.count)
+    }
+
+    // MARK: - Criterion 5 (slice #21): DateProvider seam + todayEntry()
+
+    /// AC1: A FixedDateProvider injected with 2024-01-01 produces a day-key of "01-01"
+    /// and todayEntry() returns the dailyMap entry for that key from the loaded manifest.
+    @MainActor
+    func testTodayEntryReturnsCorrectEntryForInjectedDate() async throws {
+        // The fake manifest has a "01-01" entry.
+        let manifest = makeManifest()
+        let source = FakeContentSource(manifest: manifest)
+        // January 1 UTC → day-key "01-01"
+        let jan1 = FixedDateProvider(date: makeUTCDate(month: 1, day: 1))
+        let store = ContentStore(source: source, dateProvider: jan1)
+
+        await store.waitForLoad()
+
+        let entry = store.todayEntry()
+        XCTAssertNotNil(entry, "todayEntry() must return a non-nil entry for a known day-key")
+        XCTAssertEqual(entry?.kanji, "款冬華", "Entry for 01-01 must have kanji 款冬華")
+    }
+
+    // MARK: - Criterion 6 (slice #21): Offline survival — cache hit with failing source
+
+    /// AC2/AC3: After one successful load warms the cache, replacing the source with an
+    /// always-failing one still yields today's entry from cache — no error, no source call.
+    ///
+    /// Implementation: todayEntry() reads only from `.loaded(Manifest)` and never calls
+    /// source.load(). So we verify (a) the entry is returned, (b) state is still .loaded
+    /// (not .unavailable), and (c) the load count from the source is exactly 1 (the initial
+    /// warm-up call, not a subsequent one when serving today's entry).
+    @MainActor
+    func testOfflineSurvival_cacheHitRequiresNoSourceCall() async throws {
+        let manifest = makeManifest()
+        // CountingFakeContentSource fails after the first call so we can detect re-calls.
+        let source = CountingFakeContentSource(manifest: manifest)
+        let jan1 = FixedDateProvider(date: makeUTCDate(month: 1, day: 1))
+        let store = ContentStore(source: source, dateProvider: jan1)
+
+        // Warm the cache with one successful load.
+        await store.waitForLoad()
+        guard case .loaded = store.state else {
+            XCTFail("Store must be .loaded after warm-up, got \(store.state)")
+            return
+        }
+
+        // Record load count after warm-up (must be exactly 1).
+        let callsAfterWarmUp = await source.loadCallCount
+        XCTAssertEqual(callsAfterWarmUp, 1, "Source must be called exactly once during warm-up")
+
+        // Now call todayEntry() — must return the cached entry without calling source again.
+        let entry = store.todayEntry()
+        XCTAssertNotNil(entry, "todayEntry() must return a non-nil entry from cache")
+        XCTAssertEqual(entry?.kanji, "款冬華")
+
+        // Store state is still .loaded — not .unavailable.
+        guard case .loaded = store.state else {
+            XCTFail("Store state must remain .loaded after serving from cache, got \(store.state)")
+            return
+        }
+
+        // Source must not have been called again.
+        let callsAfterServing = await source.loadCallCount
+        XCTAssertEqual(callsAfterServing, 1,
+            "todayEntry() must not call source.load(); extra call count: \(callsAfterServing - 1)")
+    }
+
+    // MARK: - Criterion 7 (slice #21): todayEntry() returns nil before load completes
+
+    /// Confirms todayEntry() returns nil while state is still .loading (cache not yet warm).
+    @MainActor
+    func testTodayEntryIsNilWhileLoading() async throws {
+        let source = HoldingFakeContentSource(manifest: makeManifest())
+        let jan1 = FixedDateProvider(date: makeUTCDate(month: 1, day: 1))
+        let store = ContentStore(source: source, dateProvider: jan1)
+
+        // Yield so the load task starts and suspends inside source.load().
+        await Task.yield()
+
+        // Before the source resumes, cache is cold — todayEntry() must return nil.
+        XCTAssertNil(store.todayEntry(), "todayEntry() must be nil while state is .loading")
+
+        // Clean up.
+        source.resume()
+        await store.waitForLoad()
+    }
+
+    // MARK: - Helpers
+
+    /// Creates a UTC `Date` for the given month and day (year is irrelevant for MM-DD lookup).
+    private func makeUTCDate(month: Int, day: Int) -> Date {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "UTC")!
+        var comps = DateComponents()
+        comps.year = 2024
+        comps.month = month
+        comps.day = day
+        comps.hour = 12
+        return cal.date(from: comps)!
     }
 }
