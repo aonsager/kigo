@@ -1,0 +1,62 @@
+name: Kigo
+
+options:
+  bundleIdPrefix: com.tomeitotameigo
+  deploymentTarget:
+    iOS: "26.0"
+  xcodeVersion: "26.4"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    CODE_SIGNING_ALLOWED: "NO"
+    IPHONEOS_DEPLOYMENT_TARGET: "26.0"
+
+targets:
+  Kigo:
+    type: application
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: Sources/Kigo
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigo
+        PRODUCT_NAME: Kigo
+        INFOPLIST_FILE: Sources/Kigo/Info.plist
+        SWIFT_VERSION: "6.0"
+        CODE_SIGNING_ALLOWED: "NO"
+
+  KigoTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: Tests/KigoTests
+    dependencies:
+      - target: Kigo
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigoTests
+        SWIFT_VERSION: "6.0"
+        CODE_SIGNING_ALLOWED: "NO"
+
+schemes:
+  Kigo:
+    build:
+      targets:
+        Kigo: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - name: KigoTests
+          parallelizable: false
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
