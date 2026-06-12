@@ -55,6 +55,19 @@ public final class ContentStore {
 
     private let source: any ContentSource
 
+    /// Provides the current date for day-key derivation. Injected for testability.
+    private let dateProvider: any DateProvider
+
+    /// UTC calendar used to derive `MM-DD` day-keys from a `Date`.
+    ///
+    /// UTC is chosen for determinism: the same `Date` value always produces the same
+    /// day-key regardless of the test runner's local timezone.
+    private static let utcCalendar: Calendar = {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "UTC")!
+        return cal
+    }()
+
     /// The task spawned on init (and on reload). Stored so `waitForLoad()` can
     /// await it deterministically in tests without introducing sleep/polling.
     private var loadTask: Task<Void, Never>?
@@ -64,9 +77,13 @@ public final class ContentStore {
     /// Creates a `ContentStore` backed by the given `ContentSource` and immediately
     /// begins loading. The caller does not need to trigger a separate `load()` call.
     ///
-    /// - Parameter source: A `ContentSource` implementation (production or test fake).
-    public init(source: any ContentSource) {
+    /// - Parameters:
+    ///   - source: A `ContentSource` implementation (production or test fake).
+    ///   - dateProvider: Provider for "today". Defaults to `SystemDateProvider`
+    ///     (current system clock). Inject a `FixedDateProvider` in tests.
+    public init(source: any ContentSource, dateProvider: any DateProvider = SystemDateProvider()) {
         self.source = source
+        self.dateProvider = dateProvider
         startLoading()
     }
 
@@ -84,6 +101,26 @@ public final class ContentStore {
                 state = .unavailable(error)
             }
         }
+    }
+
+    // MARK: - Today's entry
+
+    /// Returns today's `DailyMapEntry` from the in-memory cache, or `nil` if the
+    /// manifest has not yet loaded or does not contain an entry for today's day-key.
+    ///
+    /// The day-key is derived from `dateProvider.today` using UTC: `"MM-DD"`.
+    /// This implements the bare `dailyMap["MM-DD"]` lookup specified in ADR 0006 (C3
+    /// scope). No Kō/Sekki resolution is performed here — that is C4 scope.
+    ///
+    /// This method reads only from the already-cached `.loaded(Manifest)` associated
+    /// value and never calls `source.load()`, satisfying the offline-survival guarantee:
+    /// once the cache is warm, serving today's entry requires no source access at all.
+    public func todayEntry() -> DailyMapEntry? {
+        guard case .loaded(let manifest) = state else { return nil }
+        let comps = Self.utcCalendar.dateComponents([.month, .day], from: dateProvider.today)
+        guard let month = comps.month, let day = comps.day else { return nil }
+        let key = String(format: "%02d-%02d", month, day)
+        return manifest.dailyMap[key]
     }
 
     // MARK: - Testability

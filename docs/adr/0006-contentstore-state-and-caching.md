@@ -54,3 +54,18 @@ The C3/C4 boundary is drawn at the Daily Map: C3 reads `dailyMap["MM-DD"]` direc
 - Slices #19–#21 implement `ContentStore` with the state enum above; they do not need to revisit this shape.
 - The `DateProvider` injection point in C3 keeps the day-key lookup unit-testable without mocking the system clock.
 - C4 can build Microseason resolution on top of the already-loaded `Manifest` without changing `ContentSource`, `ContentStore`, or the JSON schema.
+
+## Implementation note (slice #21)
+
+`DateProvider` is implemented as a `Sendable` protocol with two concrete types:
+- `SystemDateProvider` (production default): returns `Date()`.
+- `FixedDateProvider` (tests): returns a frozen `Date` injected at init time.
+
+The day-key `"MM-DD"` is derived using a UTC `Calendar` (Gregorian). UTC is chosen
+for determinism: the same `Date` value always produces the same day-key regardless of
+the test runner's local timezone. This is consistent with ISO-8601 `MM-DD` keys in the
+manifest, which are timezone-agnostic by construction.
+
+`todayEntry() -> DailyMapEntry?` on `ContentStore` reads only from the `.loaded(Manifest)`
+cached value and never calls `source.load()`. This satisfies the offline-survival guarantee:
+once the cache is warm, serving today's entry requires no source access.
