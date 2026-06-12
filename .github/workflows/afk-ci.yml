@@ -1,0 +1,56 @@
+name: afk-ci
+
+# Tolerant CI for the afk- loop.
+# While the repo has no XcodeGen manifest yet (pre walking-skeleton), the job
+# exits 0 so PRs aren't blocked on an unbuildable world. Once project.yml exists
+# it really generates the project and runs the test suite — never relax this into
+# an unconditional pass.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: afk-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  afk-ci:
+    name: afk-ci
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      SCHEME: Kigo
+      DESTINATION: 'platform=iOS Simulator,name=iPhone 17'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select latest Xcode
+        run: |
+          set -euo pipefail
+          latest=$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -1 || true)
+          if [ -n "${latest:-}" ]; then sudo xcode-select -s "$latest"; fi
+          xcodebuild -version
+
+      - name: Build and test (or pass if no manifest yet)
+        run: |
+          set -euo pipefail
+          if [ ! -f project.yml ]; then
+            echo "No project.yml yet — pre walking-skeleton. Passing tolerantly."
+            exit 0
+          fi
+          echo "project.yml present — generating project and running tests."
+          if ! command -v xcodegen >/dev/null 2>&1; then
+            brew install xcodegen
+          fi
+          xcodegen generate
+          set -o pipefail
+          xcodebuild test \
+            -scheme "$SCHEME" \
+            -destination "$DESTINATION" \
+            -resultBundlePath TestResults \
+            CODE_SIGNING_ALLOWED=NO \
+            | tee xcodebuild.log
+          grep -q '\*\* TEST SUCCEEDED \*\*' xcodebuild.log
