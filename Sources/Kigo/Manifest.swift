@@ -8,7 +8,11 @@ import Foundation
 ///
 /// Intentionally imports Foundation only — no SwiftUI — so the test target
 /// can exercise this type directly without importing any UI framework.
-public struct Manifest: Codable, Sendable {
+// Equatable conformance is added so ContentStoreTests (slice #19) can assert
+// that the loaded Manifest equals the one returned by the injected ContentSource.
+// All member types are value types whose fields are all Equatable primitives,
+// so synthesis is correct and safe.
+public struct Manifest: Codable, Sendable, Equatable {
     /// Semantic version string (e.g. "1.0") used to detect schema drift.
     public let schemaVersion: String
     /// Perennial mapping from `MM-DD` date keys to Kigo entries.
@@ -22,7 +26,7 @@ public struct Manifest: Codable, Sendable {
 // MARK: - DailyMapEntry
 
 /// A single entry in the Daily Map, keyed by `MM-DD`.
-public struct DailyMapEntry: Codable, Sendable {
+public struct DailyMapEntry: Codable, Sendable, Equatable {
     /// Kanji representation of the Kigo.
     public let kanji: String
     /// Yomi (reading) of the Kigo in hiragana or rōmaji.
@@ -36,7 +40,7 @@ public struct DailyMapEntry: Codable, Sendable {
 // MARK: - Ko
 
 /// One of the 72 microseasons (七十二候), each spanning roughly 5 days.
-public struct Ko: Codable, Sendable {
+public struct Ko: Codable, Sendable, Equatable {
     /// Kanji name of the microseason (e.g. 腐草為螢).
     public let kanji: String
     /// Yomi (reading) of the Kō name.
@@ -53,7 +57,7 @@ public struct Ko: Codable, Sendable {
 }
 
 /// Inclusive date range expressed as `MM-DD` strings.
-public struct DateRange: Codable, Sendable {
+public struct DateRange: Codable, Sendable, Equatable {
     public let start: String
     public let end: String
 }
@@ -61,7 +65,7 @@ public struct DateRange: Codable, Sendable {
 // MARK: - Sekki
 
 /// One of the 24 solar terms (二十四節気), each spanning roughly 15 days.
-public struct Sekki: Codable, Sendable {
+public struct Sekki: Codable, Sendable, Equatable {
     /// Stable identifier referenced by `Ko.sekkiId`.
     public let id: String
     /// Kanji name of the solar term.
