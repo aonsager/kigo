@@ -20,6 +20,8 @@ targets:
     deploymentTarget: "26.0"
     sources:
       - path: Sources/Kigo
+      - path: Resources/manifest.json
+        buildPhase: resources
     dependencies:
       - target: KigoWidgetExtension
         embed: true
