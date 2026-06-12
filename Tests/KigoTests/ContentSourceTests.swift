@@ -1,6 +1,17 @@
 import XCTest
 @testable import Kigo
 
+// MARK: - FailingContentSource
+
+/// A test-only in-process fake `ContentSource` that always throws on `load()`.
+/// Used to verify the cold-start guarantee: an empty cache + failing source
+/// must never surface a thrown error to the caller; the store resolves to
+/// `.unavailable` instead.
+struct FailingContentSource: ContentSource {
+    struct LoadFailure: Error {}
+    func load() async throws -> Manifest { throw LoadFailure() }
+}
+
 final class ContentSourceTests: XCTestCase {
 
     // MARK: - Protocol conformance
@@ -89,5 +100,32 @@ final class ContentSourceTests: XCTestCase {
             manifest.schemaVersion.isEmpty,
             "BundledContentSource.load() must return a non-empty schemaVersion"
         )
+    }
+
+    // MARK: - Cold-start: empty cache + failing source
+
+    /// Acceptance criteria: with an empty cache and an always-failing ContentSource,
+    /// the store ends in the `.unavailable` state. The FailingContentSource's error
+    /// never requires a `try` at the store's public API surface (compile-time
+    /// guarantee confirmed by the absence of `try` in this test body). The fake
+    /// is in-process — no live network is used.
+    @MainActor
+    func testColdStartWithFailingSourceResolvesToUnavailable() async {
+        // Arrange: empty cache (no prior load), always-failing source.
+        let source = FailingContentSource()
+        let store = ContentStore(source: source)
+
+        // Act: wait for the store to finish loading.
+        // No `try` needed — the store's public API is non-throwing.
+        await store.waitForLoad()
+
+        // Assert: the store must be in the .unavailable state.
+        guard case .unavailable = store.state else {
+            XCTFail(
+                "Cold-start with failing source must resolve to .unavailable, got \(store.state)"
+            )
+            return
+        }
+        // If we reach here the store absorbed the error; no error escaped.
     }
 }
