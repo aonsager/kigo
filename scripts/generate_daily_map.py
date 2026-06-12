@@ -274,7 +274,7 @@ KO_DATA: list[dict] = [
     {"kanji": "魚上氷",     "reading": "うおこおりをいずる",         "gloss": "fish emerge from under the ice",      "sekkiId": "risshun",   "dateRange": {"start": "02-14", "end": "02-18"}},
     # 雨水 usui (~Feb 19)
     {"kanji": "土脉潤起",   "reading": "つちのしょううるおいおこる", "gloss": "soil moisture stirs and rises",        "sekkiId": "usui",      "dateRange": {"start": "02-19", "end": "02-23"}},
-    {"kanji": "霞始靆",     "reading": "かすみはじめてたなびく",     "gloss": "mist begins to drift",                "sekkiId": "usui",      "dateRange": {"start": "02-24", "end": "02-28"}},
+    {"kanji": "霞始靆",     "reading": "かすみはじめてたなびく",     "gloss": "mist begins to drift",                "sekkiId": "usui",      "dateRange": {"start": "02-24", "end": "02-29"}},
     {"kanji": "草木萌動",   "reading": "そうもくめばえいずる",       "gloss": "plants and trees begin to bud",       "sekkiId": "usui",      "dateRange": {"start": "03-01", "end": "03-05"}},
     # 啓蟄 keichitsu (~Mar 6)
     {"kanji": "蟄虫啓戸",   "reading": "すごもりのむしとをひらく",   "gloss": "hibernating insects open their doors", "sekkiId": "keichitsu", "dateRange": {"start": "03-06", "end": "03-10"}},
@@ -299,7 +299,7 @@ KO_DATA: list[dict] = [
     # 小満 shouman (~May 21)
     {"kanji": "蚕起食桑",   "reading": "かいこおきてくわをはむ",     "gloss": "silkworms wake and eat mulberry",     "sekkiId": "shouman",   "dateRange": {"start": "05-21", "end": "05-25"}},
     {"kanji": "紅花栄",     "reading": "べにばなさかう",             "gloss": "safflowers bloom",                    "sekkiId": "shouman",   "dateRange": {"start": "05-26", "end": "05-30"}},
-    {"kanji": "麦秋至",     "reading": "むぎのときいたる",           "gloss": "wheat ripens",                        "sekkiId": "shouman",   "dateRange": {"start": "05-31", "end": "06-04"}},
+    {"kanji": "麦秋至",     "reading": "むぎのときいたる",           "gloss": "wheat ripens",                        "sekkiId": "shouman",   "dateRange": {"start": "05-31", "end": "06-05"}},
     # 芒種 boshu (~Jun 6)
     {"kanji": "螳螂生",     "reading": "かまきりしょうず",           "gloss": "praying mantises hatch",              "sekkiId": "boshu",     "dateRange": {"start": "06-06", "end": "06-10"}},
     # NOTE: the canonical first Kō of boshu is 腐草為螢 (rotten grass becomes fireflies),
@@ -404,7 +404,7 @@ def build_sekki() -> list[dict]:
 
 
 def build_ko() -> list[dict]:
-    """Return the canonical 72 Kō list, validated for completeness."""
+    """Return the canonical 72 Kō list, validated for completeness and tiling."""
     assert len(KO_DATA) == 72, f"Expected 72 Kō, got {len(KO_DATA)}"
     sekki_ids = {s["id"] for s in SEKKI_DATA}
     for ko in KO_DATA:
@@ -412,6 +412,32 @@ def build_ko() -> list[dict]:
         assert ko["kanji"], f"Kō has empty kanji"
         assert ko["reading"], f"Kō '{ko['kanji']}' has empty reading"
         assert ko["gloss"], f"Kō '{ko['kanji']}' has empty gloss"
+
+    # --- Tiling validation: all 366 days must be covered exactly once (no gaps, no overlaps) ---
+    # Build ordered day list for a leap year (366 days: 01-01..12-31 including 02-29)
+    days_in_month = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    all_days: list[str] = []
+    for month in range(1, 13):
+        for day in range(1, days_in_month[month - 1] + 1):
+            all_days.append(f"{month:02d}-{day:02d}")
+    day_index = {d: i for i, d in enumerate(all_days)}
+
+    coverage = [0] * 366
+    for ko in KO_DATA:
+        start, end = ko["dateRange"]["start"], ko["dateRange"]["end"]
+        si, ei = day_index[start], day_index[end]
+        assert si <= ei, (
+            f"Kō '{ko['kanji']}' has start {start} after end {end} — "
+            f"cross-year spans are not supported in this model"
+        )
+        for i in range(si, ei + 1):
+            coverage[i] += 1
+
+    gaps = [all_days[i] for i, c in enumerate(coverage) if c == 0]
+    overlaps = [all_days[i] for i, c in enumerate(coverage) if c > 1]
+    assert not gaps, f"Kō ranges leave uncovered days: {gaps}"
+    assert not overlaps, f"Kō ranges overlap on days: {overlaps}"
+
     return KO_DATA
 
 
