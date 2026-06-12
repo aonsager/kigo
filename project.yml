@@ -20,11 +20,28 @@ targets:
     deploymentTarget: "26.0"
     sources:
       - path: Sources/Kigo
+    dependencies:
+      - target: KigoWidgetExtension
+        embed: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigo
         PRODUCT_NAME: Kigo
         INFOPLIST_FILE: Sources/Kigo/Info.plist
+        SWIFT_VERSION: "6.0"
+        CODE_SIGNING_ALLOWED: "NO"
+
+  KigoWidgetExtension:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: Sources/KigoWidgetExtension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigo.widgets
+        PRODUCT_NAME: KigoWidgetExtension
+        INFOPLIST_FILE: Sources/KigoWidgetExtension/Info.plist
         SWIFT_VERSION: "6.0"
         CODE_SIGNING_ALLOWED: "NO"
 
@@ -47,6 +64,7 @@ schemes:
     build:
       targets:
         Kigo: all
+        KigoWidgetExtension: all
     run:
       config: Debug
     test:
@@ -56,6 +74,17 @@ schemes:
           parallelizable: false
     profile:
       config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+
+  KigoWidgetExtension:
+    build:
+      targets:
+        KigoWidgetExtension: all
+    run:
+      config: Debug
     analyze:
       config: Debug
     archive:
