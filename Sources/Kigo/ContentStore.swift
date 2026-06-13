@@ -58,15 +58,9 @@ public final class ContentStore {
     /// Provides the current date for day-key derivation. Injected for testability.
     private let dateProvider: any DateProvider
 
-    /// UTC calendar used to derive `MM-DD` day-keys from a `Date`.
-    ///
-    /// UTC is chosen for determinism: the same `Date` value always produces the same
-    /// day-key regardless of the test runner's local timezone.
-    private static let utcCalendar: Calendar = {
-        var cal = Calendar(identifier: .gregorian)
-        cal.timeZone = TimeZone(identifier: "UTC")!
-        return cal
-    }()
+    // Day-key derivation is provided by `DayKey.make(from:)` (DayKey.swift).
+    // The UTC calendar is defined there; ContentStore references it through that
+    // single shared implementation rather than maintaining its own copy.
 
     /// The task spawned on init (and on reload). Stored so `waitForLoad()` can
     /// await it deterministically in tests without introducing sleep/polling.
@@ -117,9 +111,7 @@ public final class ContentStore {
     /// once the cache is warm, serving today's entry requires no source access at all.
     public func todayEntry() -> DailyMapEntry? {
         guard case .loaded(let manifest) = state else { return nil }
-        let comps = Self.utcCalendar.dateComponents([.month, .day], from: dateProvider.today)
-        guard let month = comps.month, let day = comps.day else { return nil }
-        let key = String(format: "%02d-%02d", month, day)
+        guard let key = DayKey.make(from: dateProvider.today) else { return nil }
         return manifest.dailyMap[key]
     }
 
