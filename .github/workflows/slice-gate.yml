@@ -18,4 +18,4 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - run: echo "slice gate (no-op): real verification = afk-advance in-session tests + afk-ci on integration->main"
+      - run: 'echo "slice gate (no-op): real verification = afk-advance in-session tests + afk-ci on integration->main"'
