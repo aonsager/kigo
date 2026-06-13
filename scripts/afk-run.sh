@@ -4,7 +4,6 @@
 # until the loop reports DONE/BLOCKED or a safety bound trips. Installed by /afk-init.
 #
 # Config (env vars):
-#   AFK_MAX_ITER      iteration ceiling backstop (default 50)
 #   AFK_ITER_TIMEOUT  per-iteration wall-clock cap in seconds (default 2700 = 45min)
 #   AFK_MODEL         optional --model override for afk-step sessions
 #   AFK_BYPASS        set to 1 to add --dangerously-skip-permissions (graduate only
@@ -13,7 +12,6 @@
 
 set -u
 
-AFK_MAX_ITER="${AFK_MAX_ITER:-50}"
 AFK_ITER_TIMEOUT="${AFK_ITER_TIMEOUT:-2700}"
 MAX_CONSEC_FAIL=3
 
@@ -54,10 +52,6 @@ while :; do
   if [ -f .afk/BLOCKED ]; then notify "BLOCKED" "$(head -c 180 .afk/BLOCKED)"; break; fi
 
   iter=$((iter + 1))
-  if [ "$iter" -gt "$AFK_MAX_ITER" ]; then
-    notify "ITER-CAP" "hit $AFK_MAX_ITER iterations without DONE/BLOCKED"; break
-  fi
-
   log "iteration $iter starting (total \$$total_cost so far)"
   extra=()
   [ -n "${AFK_MODEL:-}" ] && extra+=(--model "$AFK_MODEL")
