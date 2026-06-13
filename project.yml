@@ -53,8 +53,11 @@ targets:
     deploymentTarget: "26.0"
     sources:
       - path: Tests/KigoTests
+      - path: Kigo.storekit
+        buildPhase: resources
     dependencies:
       - target: Kigo
+      - sdk: StoreKitTest.framework
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigoTests
@@ -71,6 +74,7 @@ schemes:
       config: Debug
     test:
       config: Debug
+      storeKitConfiguration: Kigo.storekit
       targets:
         - name: KigoTests
           parallelizable: false
