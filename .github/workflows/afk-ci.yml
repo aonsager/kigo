@@ -50,10 +50,19 @@ jobs:
           fi
           xcodegen generate
           set -o pipefail
-          xcodebuild test \
-            -scheme "$SCHEME" \
-            -destination "$DESTINATION" \
-            -resultBundlePath TestResults \
-            CODE_SIGNING_ALLOWED=NO \
-            | tee xcodebuild.log
+          # Fail fast on a hang: an inner 20-min cap (perl alarm — macOS runners
+          # have no coreutils `timeout`) so a wedged test or simulator does not burn
+          # the full 45-min job at 10x macOS minutes; XCTest execution-time
+          # allowances force an individual stuck test to fail with a diagnostic at
+          # 120s instead of hanging. See CLAUDE.md "Build & test" for the rationale.
+          perl -e 'alarm shift; exec @ARGV' 1200 \
+            xcodebuild test \
+              -scheme "$SCHEME" \
+              -destination "$DESTINATION" \
+              -resultBundlePath TestResults \
+              -test-timeouts-enabled YES \
+              -default-test-execution-time-allowance 120 \
+              -maximum-test-execution-time-allowance 300 \
+              CODE_SIGNING_ALLOWED=NO \
+              | tee xcodebuild.log
           grep -q '\*\* TEST SUCCEEDED \*\*' xcodebuild.log

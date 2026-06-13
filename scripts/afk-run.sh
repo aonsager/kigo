@@ -45,7 +45,7 @@ notify() {  # $1 = headline, $2 = detail
   return 0
 }
 
-iter=0; consec_fail=0; total_cost="0"
+iter=0; consec_fail=0; consec_timeout=0; total_cost="0"; last_summary="(none yet)"
 
 while :; do
   if [ -f .afk/DONE ];    then notify "DONE"    "$(head -c 180 .afk/DONE)";    break; fi
@@ -63,6 +63,38 @@ while :; do
     > .afk/last.json 2>>"$LOG"
   rc=$?
 
+  # rc=142 (128 + SIGALRM 14): the perl alarm fired — the iteration ran past
+  # AFK_ITER_TIMEOUT and was killed. That almost always means a command INSIDE
+  # the session wedged (a hung test, network call, simulator boot, or an await
+  # that never resolves), not a transient crash — and it tends to repeat
+  # identically. So treat it as its own class: halt faster (2, not 3) and, since
+  # the killed session could not record its own forensics, have the WRAPPER write
+  # .afk/BLOCKED with a WEDGED diagnosis. The real fix lives downstream (wrap slow
+  # commands in their own timeout so they fail fast); this is the backstop.
+  if [ $rc -eq 142 ]; then
+    consec_timeout=$((consec_timeout + 1))
+    log "iteration $iter TIMED OUT after ${AFK_ITER_TIMEOUT}s (rc=142, consecutive timeouts=$consec_timeout) — a command in the session likely hung"
+    if [ "$consec_timeout" -ge 2 ]; then
+      {
+        printf 'WEDGED — afk loop halted by the wrapper after %s consecutive iteration timeouts.\n\n' "$consec_timeout"
+        printf 'Each iteration exceeded AFK_ITER_TIMEOUT=%ss and was killed by SIGALRM (rc=142),\n' "$AFK_ITER_TIMEOUT"
+        printf 'meaning a command INSIDE the afk-step session hung rather than failing fast\n'
+        printf '(hung test, network call, simulator boot, or an await that never resolves).\n'
+        printf 'The session was killed mid-flight, so it could not record its own forensics.\n\n'
+        printf 'Where to look: the slice/phase from the last good iteration below, and that\n'
+        printf "slice's build/test command. Fix: give slow commands their own inner timeout and\n"
+        printf 'enable XCTest execution-time allowances so a stuck test fails fast and visibly\n'
+        printf 'instead of consuming the whole iteration budget (see CLAUDE.md build/test notes).\n\n'
+        printf 'Last good iteration summary:\n  %s\n\n' "$last_summary"
+        printf 'Recent wrapper log:\n'
+        tail -n 15 "$LOG"
+      } > .afk/BLOCKED
+      notify "WEDGED" "$consec_timeout consecutive ${AFK_ITER_TIMEOUT}s timeouts — likely a hung command; see .afk/BLOCKED"
+      break
+    fi
+    sleep 30; continue
+  fi
+
   if [ $rc -ne 0 ]; then
     consec_fail=$((consec_fail + 1))
     log "iteration $iter FAILED (rc=$rc, consecutive=$consec_fail)"
@@ -71,7 +103,7 @@ while :; do
     fi
     sleep 30; continue
   fi
-  consec_fail=0
+  consec_fail=0; consec_timeout=0
 
   # Parse cost + the AFK-STEP summary line from the JSON result (python3 ships with macOS).
   read -r cost summary <<EOF
@@ -89,6 +121,7 @@ PY
 )
 EOF
   total_cost=$(python3 -c "print(f'{$total_cost + $cost:.4f}')")
+  last_summary="$summary"
   log "iteration $iter done | cost \$$cost | total \$$total_cost | $summary"
 
   sleep 5
