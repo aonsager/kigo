@@ -46,6 +46,9 @@ targets:
       - path: Sources/Kigo/DateProvider.swift
       - path: Sources/Kigo/TodayResolution.swift
       - path: Sources/Kigo/ContentSource.swift
+      # Slice #71: EntitlementSharedStore protocol + UserDefaultsEntitlementStore — Foundation-only
+      # (no StoreKit) so the widget extension can read the active flag from the app-group store.
+      - path: Sources/Kigo/EntitlementSharedStore.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigo.widgets
@@ -98,6 +101,8 @@ targets:
       - path: Sources/Kigo/DateProvider.swift
       - path: Sources/Kigo/TodayResolution.swift
       - path: Sources/Kigo/ContentSource.swift
+      # Slice #71: EntitlementSharedStore protocol — Foundation-only (no StoreKit).
+      - path: Sources/Kigo/EntitlementSharedStore.swift
     dependencies:
       - sdk: WidgetKit.framework
     settings:
