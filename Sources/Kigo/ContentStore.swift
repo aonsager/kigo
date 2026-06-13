@@ -115,6 +115,21 @@ public final class ContentStore {
         return manifest.dailyMap[key]
     }
 
+    /// Resolves the full `ResolvedDay` (Kigo entry + Kō + Sekki) for the date produced
+    /// by the injected `DateProvider`.
+    ///
+    /// This is the correct seam for the Today screen (AC4 of slice #55): it ensures
+    /// "today" flows from the provider that was injected at the app root, never from a
+    /// raw `Date()` call inside a view. Slice #56 can substitute a `FixedDateProvider`
+    /// at the app root and this path automatically uses the overridden date.
+    ///
+    /// Returns `nil` if the manifest has not yet loaded, or if the derived day-key has
+    /// no matching entry (or no containing Kō) in the manifest.
+    public func todayResolved() -> ResolvedDay? {
+        guard case .loaded(let manifest) = state else { return nil }
+        return TodayResolver.resolve(date: dateProvider.today, manifest: manifest)
+    }
+
     // MARK: - Testability
 
     /// Awaits the in-flight load task. Intended for use in tests to deterministically
