@@ -16,40 +16,50 @@ import SwiftUI
 ///   — e.g. "ぼうしゅ". Shown beneath the Kō with a smaller, secondary font weight
 ///   to signal the containing solar term.
 ///
-/// Additional fields (image) are out of scope — see slice #59.
+/// Extended in slice #59 to add a full-bleed deterministic placeholder image behind
+/// the text content (`kigo.image`). The placeholder is derived from the entry's
+/// `imageId` — same imageId always renders the same gradient, different imageIds
+/// render distinct gradients. No real image assets are loaded (ADR 0001 / J2).
 struct TodayView: View {
     let resolvedDay: ResolvedDay
 
     var body: some View {
-        VStack(spacing: 8) {
-            Text(resolvedDay.kigoEntry.kanji)
-                .font(.largeTitle)
-                .accessibilityIdentifier("kigo.kanji")
+        ZStack {
+            // Full-bleed placeholder image layer — behind the text content.
+            // Derived deterministically from imageId (slice #59, AC1–AC2).
+            KigoPlaceholderView(imageId: resolvedDay.kigoEntry.imageId)
 
-            Text(resolvedDay.kigoEntry.reading)
-                .font(.title2)
-                .accessibilityIdentifier("kigo.reading")
+            // Text content layer — rendered on top of the placeholder.
+            VStack(spacing: 8) {
+                Text(resolvedDay.kigoEntry.kanji)
+                    .font(.largeTitle)
+                    .accessibilityIdentifier("kigo.kanji")
 
-            Text(resolvedDay.kigoEntry.description)
-                .font(.body)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-                .accessibilityIdentifier("kigo.description")
+                Text(resolvedDay.kigoEntry.reading)
+                    .font(.title2)
+                    .accessibilityIdentifier("kigo.reading")
 
-            Divider()
-                .padding(.vertical, 4)
+                Text(resolvedDay.kigoEntry.description)
+                    .font(.body)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+                    .accessibilityIdentifier("kigo.description")
 
-            // Microseason section — Kō as primary, Sekki as secondary.
-            // Text representation: hiragana reading for both, consistent with
-            // the Kigo reading style above.
-            Text(resolvedDay.ko.reading)
-                .font(.headline)
-                .accessibilityIdentifier("microseason.ko")
+                Divider()
+                    .padding(.vertical, 4)
 
-            Text(resolvedDay.sekki.reading)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .accessibilityIdentifier("microseason.sekki")
+                // Microseason section — Kō as primary, Sekki as secondary.
+                // Text representation: hiragana reading for both, consistent with
+                // the Kigo reading style above.
+                Text(resolvedDay.ko.reading)
+                    .font(.headline)
+                    .accessibilityIdentifier("microseason.ko")
+
+                Text(resolvedDay.sekki.reading)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .accessibilityIdentifier("microseason.sekki")
+            }
         }
     }
 }
