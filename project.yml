@@ -61,6 +61,20 @@ targets:
         SWIFT_VERSION: "6.0"
         CODE_SIGNING_ALLOWED: "NO"
 
+  KigoUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: Tests/KigoUITests
+    dependencies:
+      - target: Kigo
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigoUITests
+        SWIFT_VERSION: "6.0"
+        CODE_SIGNING_ALLOWED: "NO"
+
 schemes:
   Kigo:
     build:
@@ -73,6 +87,8 @@ schemes:
       config: Debug
       targets:
         - name: KigoTests
+          parallelizable: false
+        - name: KigoUITests
           parallelizable: false
     profile:
       config: Release
