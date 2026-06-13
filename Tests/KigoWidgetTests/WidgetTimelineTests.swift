@@ -98,7 +98,7 @@ final class WidgetTimelineTests: XCTestCase {
 
     /// Injecting a fixed date and a minimal manifest: the built entry's kanji,
     /// reading, and imageId must equal the manifest's daily-map entry for that date.
-    func testBuilderEntryMatchesManifestForFixedDate() {
+    func testBuilderEntryMatchesManifestForFixedDate() async {
         let dayKey = "06-14"
         let manifest = makeMinimalManifest(dayKey: dayKey,
                                            kanji: "蛍",
@@ -108,7 +108,7 @@ final class WidgetTimelineTests: XCTestCase {
         let provider = FixedDateProvider(date: date)
 
         let builder = WidgetTimelineBuilder(dateProvider: provider, manifest: manifest)
-        let entry = builder.buildEntry()
+        let entry = await builder.buildEntry()
 
         XCTAssertNotNil(entry, "Builder must return a non-nil entry for a known date")
         XCTAssertEqual(entry?.kanji, "蛍",     "Entry kanji must match manifest daily-map")
@@ -118,7 +118,7 @@ final class WidgetTimelineTests: XCTestCase {
     }
 
     /// Verify that different injected dates each produce the correct manifest entry.
-    func testBuilderEntryMatchesManifestForMultipleDates() {
+    func testBuilderEntryMatchesManifestForMultipleDates() async {
         let cases: [(month: Int, day: Int, kanji: String, reading: String, imageId: String)] = [
             (1,  1,  "寒椿",   "かんつばき",   "img-001"),
             (7,  7,  "天の川", "あまのがわ",   "img-002"),
@@ -135,7 +135,7 @@ final class WidgetTimelineTests: XCTestCase {
             let provider = FixedDateProvider(date: date)
 
             let builder = WidgetTimelineBuilder(dateProvider: provider, manifest: manifest)
-            let entry = builder.buildEntry()
+            let entry = await builder.buildEntry()
 
             XCTAssertNotNil(entry, "Builder must return non-nil for \(dayKey)")
             XCTAssertEqual(entry?.kanji, c.kanji,   "kanji mismatch for \(dayKey)")
@@ -145,13 +145,13 @@ final class WidgetTimelineTests: XCTestCase {
     }
 
     /// Builder returns nil when the manifest has no entry for the resolved date.
-    func testBuilderReturnsNilForUnknownDate() {
+    func testBuilderReturnsNilForUnknownDate() async {
         let manifest = makeMinimalManifest(dayKey: "01-01")
         let date = makeUTCDate(month: 6, day: 14) // not in manifest
         let provider = FixedDateProvider(date: date)
 
         let builder = WidgetTimelineBuilder(dateProvider: provider, manifest: manifest)
-        let entry = builder.buildEntry()
+        let entry = await builder.buildEntry()
 
         XCTAssertNil(entry, "Builder must return nil when manifest has no entry for the resolved date")
     }
@@ -164,7 +164,7 @@ final class WidgetTimelineTests: XCTestCase {
     /// Using a UTC calendar for both construction and the `buildTimeline(calendar:)` call
     /// guarantees the "next midnight" assertion is deterministic regardless of the
     /// test-runner's local timezone (see ADR 0010).
-    func testTimelineHasTwoEntriesAndSecondIsAtNextMidnight() {
+    func testTimelineHasTwoEntriesAndSecondIsAtNextMidnight() async {
         let todayDayKey = "06-14"
         let tomorrowDayKey = "06-15"
         let manifest = makeTwoDayManifest(
@@ -176,7 +176,7 @@ final class WidgetTimelineTests: XCTestCase {
         let provider = FixedDateProvider(date: today)
         let builder = WidgetTimelineBuilder(dateProvider: provider, manifest: manifest)
 
-        let timeline = builder.buildTimeline(calendar: utcCalendar)
+        let timeline = await builder.buildTimeline(calendar: utcCalendar)
 
         XCTAssertEqual(timeline.count, 2, "Timeline must have exactly 2 entries")
 
@@ -191,7 +191,7 @@ final class WidgetTimelineTests: XCTestCase {
 
     /// AC2: The second timeline entry resolves to the next day's Kigo (kanji/reading/imageId
     /// matching the manifest entry for the next-day key).
-    func testTimelineSecondEntryResolvesToNextDayKigo() {
+    func testTimelineSecondEntryResolvesToNextDayKigo() async {
         let todayDayKey = "06-14"
         let tomorrowDayKey = "06-15"
         let manifest = makeTwoDayManifest(
@@ -202,7 +202,7 @@ final class WidgetTimelineTests: XCTestCase {
         let provider = FixedDateProvider(date: today)
         let builder = WidgetTimelineBuilder(dateProvider: provider, manifest: manifest)
 
-        let timeline = builder.buildTimeline(calendar: utcCalendar)
+        let timeline = await builder.buildTimeline(calendar: utcCalendar)
 
         XCTAssertEqual(timeline.count, 2, "Timeline must have exactly 2 entries")
 
@@ -219,7 +219,7 @@ final class WidgetTimelineTests: XCTestCase {
 
     /// AC3: Timeline determinism — injecting `FixedDateProvider` and an explicit calendar
     /// means no real clock dependency. Verify with a different date (year-boundary: Dec 31 → Jan 1).
-    func testTimelineRolloverAtYearBoundaryIsDeterministic() {
+    func testTimelineRolloverAtYearBoundaryIsDeterministic() async {
         let todayDayKey = "12-31"
         let tomorrowDayKey = "01-01"
         let manifest = makeTwoDayManifest(
@@ -231,7 +231,7 @@ final class WidgetTimelineTests: XCTestCase {
         let provider = FixedDateProvider(date: today)
         let builder = WidgetTimelineBuilder(dateProvider: provider, manifest: manifest)
 
-        let timeline = builder.buildTimeline(calendar: utcCalendar)
+        let timeline = await builder.buildTimeline(calendar: utcCalendar)
 
         XCTAssertEqual(timeline.count, 2, "Timeline must have exactly 2 entries at year boundary")
 
@@ -254,8 +254,76 @@ final class WidgetTimelineTests: XCTestCase {
                        "Second entry imageId must match Jan 1 manifest entry")
     }
 
+    // MARK: - Slice #71: Entitlement reveal — showsImage derivation
+
+    /// In-memory EntitlementSharedStore fake: reports whatever isActive was last set to.
+    private actor FakeEntitlementStore: EntitlementSharedStore {
+        var isActive: Bool
+        init(isActive: Bool = false) { self.isActive = isActive }
+        func setActive(_ value: Bool) { isActive = value }
+    }
+
+    /// AC1 (systemSmall context): entry built with ACTIVE entitlement has showsImage==true
+    /// and carries a non-nil imageId.
+    func testActiveEntitlementShowsImageTrue_systemSmall() async {
+        let dayKey = "06-14"
+        let manifest = makeMinimalManifest(dayKey: dayKey, imageId: "img-firefly")
+        let date = makeUTCDate(month: 6, day: 14)
+        let provider = FixedDateProvider(date: date)
+        let store = FakeEntitlementStore(isActive: true)
+
+        let builder = WidgetTimelineBuilder(dateProvider: provider, manifest: manifest, entitlementStore: store)
+        let entry = await builder.buildEntry()
+
+        XCTAssertNotNil(entry, "Builder must return a non-nil entry")
+        XCTAssertTrue(entry!.showsImage, "showsImage must be true when entitlement is active")
+        XCTAssertEqual(entry!.imageId, "img-firefly", "imageId must be carried when entitlement is active")
+    }
+
+    /// AC1 (systemMedium context): same expectation, same builder — showsImage is entry-level,
+    /// not per-family. The builder is family-agnostic; the test verifies showsImage is true
+    /// for any family when entitlement is active.
+    func testActiveEntitlementShowsImageTrue_systemMedium() async {
+        let dayKey = "07-07"
+        let manifest = makeMinimalManifest(dayKey: dayKey, kanji: "天の川", reading: "あまのがわ", imageId: "img-milky")
+        let date = makeUTCDate(month: 7, day: 7)
+        let provider = FixedDateProvider(date: date)
+        let store = FakeEntitlementStore(isActive: true)
+
+        let builder = WidgetTimelineBuilder(dateProvider: provider, manifest: manifest, entitlementStore: store)
+        let entry = await builder.buildEntry()
+
+        XCTAssertNotNil(entry, "Builder must return a non-nil entry for 07-07")
+        XCTAssertTrue(entry!.showsImage, "showsImage must be true when entitlement is active (systemMedium context)")
+        XCTAssertEqual(entry!.imageId, "img-milky", "imageId must be carried when entitlement is active")
+    }
+
+    /// AC2: showsImage tracks the injected entitlement flag — toggling the store
+    /// from active→inactive in the same test path produces false.
+    func testShowsImageTracksEntitlementFlag() async {
+        let dayKey = "06-14"
+        let manifest = makeMinimalManifest(dayKey: dayKey, imageId: "img-firefly")
+        let date = makeUTCDate(month: 6, day: 14)
+        let provider = FixedDateProvider(date: date)
+        let store = FakeEntitlementStore(isActive: true)
+
+        // Active → showsImage == true
+        let builderActive = WidgetTimelineBuilder(dateProvider: provider, manifest: manifest, entitlementStore: store)
+        let activeEntry = await builderActive.buildEntry()
+        XCTAssertTrue(activeEntry!.showsImage, "showsImage must be true when entitlement is active")
+
+        // Toggle to inactive
+        await store.setActive(false)
+
+        // Rebuild with the same store now reporting inactive
+        let builderInactive = WidgetTimelineBuilder(dateProvider: provider, manifest: manifest, entitlementStore: store)
+        let inactiveEntry = await builderInactive.buildEntry()
+        XCTAssertNotNil(inactiveEntry, "Builder must return a non-nil entry even without entitlement")
+        XCTAssertFalse(inactiveEntry!.showsImage, "showsImage must be false when entitlement is inactive")
+    }
+
     /// Timeline entries are ordered: first entry's date comes before second entry's date.
-    func testTimelineEntriesAreOrdered() {
+    func testTimelineEntriesAreOrdered() async {
         let manifest = makeTwoDayManifest(
             dayKey: "07-07", kanji: "天の川", reading: "あまのがわ", imageId: "img-a",
             nextDayKey: "07-08", nextKanji: "朝霧", nextReading: "あさぎり", nextImageId: "img-b"
@@ -264,7 +332,7 @@ final class WidgetTimelineTests: XCTestCase {
         let provider = FixedDateProvider(date: today)
         let builder = WidgetTimelineBuilder(dateProvider: provider, manifest: manifest)
 
-        let timeline = builder.buildTimeline(calendar: utcCalendar)
+        let timeline = await builder.buildTimeline(calendar: utcCalendar)
 
         XCTAssertEqual(timeline.count, 2)
         XCTAssertLessThan(timeline[0].date, timeline[1].date,
