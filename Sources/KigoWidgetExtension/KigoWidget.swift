@@ -1,12 +1,6 @@
 import WidgetKit
 import SwiftUI
 
-// MARK: - Timeline Entry
-
-struct KigoWidgetEntry: TimelineEntry {
-    let date: Date
-}
-
 // MARK: - Timeline Provider
 
 struct KigoWidgetProvider: TimelineProvider {
