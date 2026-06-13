@@ -115,6 +115,49 @@ public final class ContentStore {
         return manifest.dailyMap[key]
     }
 
+    /// Resolves the full `ResolvedDay` (Kigo entry + Kō + Sekki) for the date produced
+    /// by the injected `DateProvider`.
+    ///
+    /// This is the correct seam for the Today screen (AC4 of slice #55): it ensures
+    /// "today" flows from the provider that was injected at the app root, never from a
+    /// raw `Date()` call inside a view. Slice #56 can substitute a `FixedDateProvider`
+    /// at the app root and this path automatically uses the overridden date.
+    ///
+    /// Returns `nil` if the manifest has not yet loaded, or if the derived day-key has
+    /// no matching entry (or no containing Kō) in the manifest.
+    public func todayResolved() -> ResolvedDay? {
+        guard case .loaded(let manifest) = state else { return nil }
+        return TodayResolver.resolve(date: dateProvider.today, manifest: manifest)
+    }
+
+    // MARK: - Screen-state mapping
+
+    /// Maps the current `ContentState` to the `AppScreenState` that the app root should render.
+    ///
+    /// This is the single authoritative mapping for slice #60 (AC4). `ContentView` switches on
+    /// this value; there is no conditional logic scattered across views.
+    ///
+    /// - `.loading` → `.loadingPlaceholder` (defined, non-crashing)
+    /// - `.loaded` where `todayResolved()` succeeds → `.today(ResolvedDay)`
+    /// - `.loaded` where `todayResolved()` returns nil (no entry for today) → `.unavailablePlaceholder`
+    ///   (a content gap is terminal — waiting cannot resolve it — so it surfaces the
+    ///   defined non-error *terminal* state, never an indefinite loading spinner)
+    /// - `.unavailable` → `.unavailablePlaceholder` (defined, non-crashing)
+    public var screenState: AppScreenState {
+        switch state {
+        case .loading:
+            return .loadingPlaceholder
+        case .loaded:
+            if let resolved = todayResolved() {
+                return .today(resolved)
+            } else {
+                return .unavailablePlaceholder
+            }
+        case .unavailable:
+            return .unavailablePlaceholder
+        }
+    }
+
     // MARK: - Testability
 
     /// Awaits the in-flight load task. Intended for use in tests to deterministically

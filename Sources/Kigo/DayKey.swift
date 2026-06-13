@@ -17,7 +17,12 @@ public enum DayKey {
     ///
     /// Using a `static let` ensures the calendar is initialised once and reused;
     /// `Calendar` construction is non-trivial so this avoids repeated allocation.
-    static let utcCalendar: Calendar = {
+    ///
+    /// Exposed as `public` so that `launchDateProvider(environment:)` (and any
+    /// future callers outside this file) can parse dates using the same canonical
+    /// UTC calendar that `DayKey.make(from:)` uses for key derivation —
+    /// satisfying acceptance criterion #4 (one shared UTC calendar, no duplication).
+    public static let utcCalendar: Calendar = {
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = TimeZone(identifier: "UTC")!
         return cal

@@ -284,6 +284,32 @@ final class ContentStoreTests: XCTestCase {
         await store.waitForLoad()
     }
 
+    // MARK: - Criterion 8 (slice #55): AC4 — todayResolved() uses the injected DateProvider
+
+    /// AC4: The composition resolves through the injected DateProvider, not a raw Date().
+    ///
+    /// Injects a FixedDateProvider for a known date (January 1) and asserts that
+    /// `store.todayResolved()` returns the matching ResolvedDay from the loaded manifest —
+    /// proving resolution flows through the seam rather than bypassing it with Date().
+    @MainActor
+    func testTodayResolvedUsesInjectedDateProvider() async throws {
+        // The fake manifest has a "01-01" entry with full Ko+Sekki data for resolution.
+        let manifest = makeManifest()
+        let source = FakeContentSource(manifest: manifest)
+        // Fix the date to January 1 — the only date present in the fake manifest.
+        let jan1 = FixedDateProvider(date: makeUTCDate(month: 1, day: 1))
+        let store = ContentStore(source: source, dateProvider: jan1)
+
+        await store.waitForLoad()
+
+        let resolved = store.todayResolved()
+        XCTAssertNotNil(resolved, "todayResolved() must return a non-nil ResolvedDay for a known day")
+        XCTAssertEqual(
+            resolved?.kigoEntry.kanji, "款冬華",
+            "todayResolved() must resolve the entry for the injected DateProvider's date (01-01 → 款冬華)"
+        )
+    }
+
     // MARK: - Helpers
 
     /// Creates a UTC `Date` for the given month and day (year is irrelevant for MM-DD lookup).
