@@ -89,7 +89,9 @@ public struct EntitlementProvider: Sendable {
 
     /// The product ID for the widget-access monthly subscription.
     /// Shared by all methods so the constant is never duplicated.
-    static let widgetMonthlyProductID = "com.tomeitotameigo.kigo.widgets.monthly"
+    /// Public so that `PaywallModel` (and other UI-layer callers) can surface the
+    /// product ID without hard-coding the string outside this type.
+    public static let widgetMonthlyProductID = "com.tomeitotameigo.kigo.widgets.monthly"
 
     private let source: EntitlementTransactionSource
     private let store: EntitlementSharedStore
