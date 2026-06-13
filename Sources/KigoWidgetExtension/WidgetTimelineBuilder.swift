@@ -8,6 +8,17 @@ import Foundation
 // produces a `KigoWidgetEntry` whose content fields (kanji, reading, imageId)
 // match the Manifest's daily-map entry for the injected date.
 //
+// Slice #70: Extended with `buildTimeline(calendar:)` to return a two-entry
+// ordered timeline:
+//   - Entry 0: the current date's Kigo (same as `buildEntry()`).
+//   - Entry 1: dated at the next local midnight (per the injected calendar),
+//              resolving to the next day's Kigo via `TodayResolver`.
+//
+// The rollover boundary is computed using the caller-supplied `Calendar` so
+// that tests can inject a UTC calendar for full determinism (no dependency on
+// the test-runner's local timezone). In production, pass `Calendar.current`.
+// See ADR 0010 for the UTC-vs-local-midnight design decision.
+//
 // Resolution is delegated entirely to `TodayResolver` / `DayKey` — there is
 // no reimplementation of the day-key or Ko/Sekki lookup logic here.
 //
@@ -41,5 +52,56 @@ public struct WidgetTimelineBuilder: Sendable {
             reading: resolved.kigoEntry.reading,
             imageId: resolved.kigoEntry.imageId
         )
+    }
+
+    /// Builds a two-entry ordered timeline for the Kigo widget.
+    ///
+    /// - Parameter calendar: The calendar used to compute the next local midnight.
+    ///   Pass `Calendar.current` in production for the device's local timezone.
+    ///   Inject a UTC `Calendar` in tests for full determinism regardless of the
+    ///   test-runner's timezone. See ADR 0010.
+    ///
+    /// Returns an array of exactly 2 `KigoWidgetEntry` values:
+    ///   - Index 0: current date entry (same as `buildEntry()`).
+    ///   - Index 1: next local midnight entry (next day's Kigo, resolved via `TodayResolver`).
+    ///
+    /// If either resolution fails (missing manifest entry), the corresponding entry
+    /// is included with nil content fields (unresolved placeholder). This preserves
+    /// the two-entry contract so WidgetKit always has a rollover timestamp.
+    public func buildTimeline(calendar: Calendar = .current) -> [KigoWidgetEntry] {
+        let today = dateProvider.today
+
+        // Entry 0: current date
+        let firstEntry: KigoWidgetEntry
+        if let resolved = TodayResolver.resolve(date: today, manifest: manifest) {
+            firstEntry = KigoWidgetEntry(
+                date: today,
+                kanji: resolved.kigoEntry.kanji,
+                reading: resolved.kigoEntry.reading,
+                imageId: resolved.kigoEntry.imageId
+            )
+        } else {
+            firstEntry = KigoWidgetEntry(date: today)
+        }
+
+        // Entry 1: next local midnight
+        // `startOfDay` on `today + 1 day` gives the start of the next calendar day
+        // in the injected calendar's timezone — i.e. the next local midnight.
+        let tomorrowDate = calendar.date(byAdding: .day, value: 1, to: today) ?? today
+        let nextMidnight = calendar.startOfDay(for: tomorrowDate)
+
+        let secondEntry: KigoWidgetEntry
+        if let resolved = TodayResolver.resolve(date: nextMidnight, manifest: manifest) {
+            secondEntry = KigoWidgetEntry(
+                date: nextMidnight,
+                kanji: resolved.kigoEntry.kanji,
+                reading: resolved.kigoEntry.reading,
+                imageId: resolved.kigoEntry.imageId
+            )
+        } else {
+            secondEntry = KigoWidgetEntry(date: nextMidnight)
+        }
+
+        return [firstEntry, secondEntry]
     }
 }
