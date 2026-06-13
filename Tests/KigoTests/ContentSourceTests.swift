@@ -102,6 +102,70 @@ final class ContentSourceTests: XCTestCase {
         )
     }
 
+    // MARK: - Offline survival: cache hit requires no source call
+
+    /// C3 assertion: after one successful load warms the cache, the source is
+    /// (effectively) replaced with an always-failing one, yet today's entry is
+    /// still served from cache without calling the source again.
+    ///
+    /// Uses `CountingFakeContentSource` (defined in ContentStoreTests.swift, same
+    /// test module): first call succeeds and warms the cache; subsequent calls throw.
+    /// `loadCallCount` must remain exactly 1 after `todayEntry()` is called.
+    @MainActor
+    func testOfflineSurvival_cacheHitRequiresNoSourceCall() async throws {
+        // Build a minimal manifest with a known "01-01" entry.
+        let dailyMap: [String: DailyMapEntry] = [
+            "01-01": DailyMapEntry(
+                kanji: "款冬華",
+                reading: "ふきのはなさく",
+                description: "Butterbur blooms.",
+                imageId: "img-0101"
+            )
+        ]
+        let ko = [Ko(
+            kanji: "款冬華",
+            reading: "ふきのはなさく",
+            gloss: "Butterbur blooms",
+            sekkiId: "sekki-01",
+            dateRange: DateRange(start: "01-01", end: "01-05")
+        )]
+        let sekki = [Sekki(id: "sekki-01", kanji: "小寒", reading: "しょうかん")]
+        let manifest = Manifest(schemaVersion: "1.0", dailyMap: dailyMap, ko: ko, sekki: sekki)
+
+        // CountingFakeContentSource: first call returns the manifest; subsequent calls throw.
+        let source = CountingFakeContentSource(manifest: manifest)
+        // Pin "today" to 01-01 so todayEntry() looks up the "01-01" key.
+        let jan1 = FixedDateProvider(date: makeUTCDateInContentSourceTests(month: 1, day: 1))
+        let store = ContentStore(source: source, dateProvider: jan1)
+
+        // Warm the cache with one successful load.
+        await store.waitForLoad()
+        guard case .loaded = store.state else {
+            XCTFail("Store must be .loaded after warm-up, got \(store.state)")
+            return
+        }
+
+        // Record load count after warm-up (must be exactly 1).
+        let callsAfterWarmUp = await source.loadCallCount
+        XCTAssertEqual(callsAfterWarmUp, 1, "Source must be called exactly once during warm-up")
+
+        // Call todayEntry() — must return the cached entry without calling source again.
+        let entry = store.todayEntry()
+        XCTAssertNotNil(entry, "todayEntry() must return a non-nil entry from cache")
+        XCTAssertEqual(entry?.kanji, "款冬華", "Cached entry kanji must match the warm-up manifest")
+
+        // State must remain .loaded (not .unavailable) — cache is intact.
+        guard case .loaded = store.state else {
+            XCTFail("Store state must remain .loaded after serving from cache, got \(store.state)")
+            return
+        }
+
+        // Source must not have been called again after warm-up.
+        let callsAfterServing = await source.loadCallCount
+        XCTAssertEqual(callsAfterServing, 1,
+            "todayEntry() must not call source.load(); extra call count: \(callsAfterServing - 1)")
+    }
+
     // MARK: - Cold-start: empty cache + failing source
 
     /// Acceptance criteria: with an empty cache and an always-failing ContentSource,
@@ -127,5 +191,20 @@ final class ContentSourceTests: XCTestCase {
             return
         }
         // If we reach here the store absorbed the error; no error escaped.
+    }
+
+    // MARK: - Helpers
+
+    /// Creates a UTC `Date` for the given month and day (year is irrelevant for MM-DD lookup).
+    /// Named distinctly from the `private` helper in `ContentStoreTests` to avoid ambiguity.
+    private func makeUTCDateInContentSourceTests(month: Int, day: Int) -> Date {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "UTC")!
+        var comps = DateComponents()
+        comps.year = 2024
+        comps.month = month
+        comps.day = day
+        comps.hour = 12
+        return cal.date(from: comps)!
     }
 }
