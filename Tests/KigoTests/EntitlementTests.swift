@@ -41,4 +41,30 @@ final class EntitlementTests: XCTestCase {
         let isActive = await provider.isEntitlementActive()
         XCTAssertFalse(isActive, "only an unrelated product entitled → inactive")
     }
+
+    // MARK: - Shared store activation (slice #46)
+
+    /// In-memory shared-store seam: captures the last value written by activation.
+    private actor FakeSharedStore: EntitlementSharedStore {
+        var isActive: Bool = false
+        func setActive(_ value: Bool) { isActive = value }
+    }
+
+    func testActivationWritesTrueWhenWidgetProductEntitled() async {
+        let source = FakeTransactionSource(productIDs: [Self.widgetProductID])
+        let store = FakeSharedStore()
+        let provider = EntitlementProvider(source: source, store: store)
+        await provider.refreshEntitlement()
+        let flag = await store.isActive
+        XCTAssertTrue(flag, "widget product entitled → shared store active flag is true")
+    }
+
+    func testActivationWritesFalseWhenNoProductsEntitled() async {
+        let source = FakeTransactionSource(productIDs: [])
+        let store = FakeSharedStore()
+        let provider = EntitlementProvider(source: source, store: store)
+        await provider.refreshEntitlement()
+        let flag = await store.isActive
+        XCTAssertFalse(flag, "no entitlements → shared store active flag is false")
+    }
 }
