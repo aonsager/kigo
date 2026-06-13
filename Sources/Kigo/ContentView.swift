@@ -12,8 +12,8 @@ struct ContentView: View {
         switch store.state {
         case .loading:
             Text("Loading…")
-        case .loaded(let manifest):
-            if let resolved = TodayResolver.resolve(date: Date(), manifest: manifest) {
+        case .loaded:
+            if let resolved = store.todayResolved() {
                 TodayView(resolvedDay: resolved)
             } else {
                 Text("No entry for today")
