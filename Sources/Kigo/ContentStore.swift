@@ -130,6 +130,33 @@ public final class ContentStore {
         return TodayResolver.resolve(date: dateProvider.today, manifest: manifest)
     }
 
+    // MARK: - Screen-state mapping
+
+    /// Maps the current `ContentState` to the `AppScreenState` that the app root should render.
+    ///
+    /// This is the single authoritative mapping for slice #60 (AC4). `ContentView` switches on
+    /// this value; there is no conditional logic scattered across views.
+    ///
+    /// - `.loading` → `.loadingPlaceholder` (defined, non-crashing)
+    /// - `.loaded` where `todayResolved()` succeeds → `.today(ResolvedDay)`
+    /// - `.loaded` where `todayResolved()` returns nil (no entry for today) → `.loadingPlaceholder`
+    ///   (treated as a transient gap; not surfaced as an error)
+    /// - `.unavailable` → `.unavailablePlaceholder` (defined, non-crashing)
+    public var screenState: AppScreenState {
+        switch state {
+        case .loading:
+            return .loadingPlaceholder
+        case .loaded:
+            if let resolved = todayResolved() {
+                return .today(resolved)
+            } else {
+                return .loadingPlaceholder
+            }
+        case .unavailable:
+            return .unavailablePlaceholder
+        }
+    }
+
     // MARK: - Testability
 
     /// Awaits the in-flight load task. Intended for use in tests to deterministically
