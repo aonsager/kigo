@@ -121,4 +121,19 @@ public struct EntitlementProvider: Sendable {
         let active = await isEntitlementActive()
         await store.setActive(active)
     }
+
+    // MARK: - Restore
+
+    /// Re-derives the active flag from the source and re-writes the shared store.
+    /// Models the "Restore Purchases" path: call this after the user taps Restore
+    /// (in production, run `AppStore.sync()` first to refresh the transaction
+    /// journal, then call this). The implementation is intentionally identical to
+    /// `refreshEntitlement()` — both re-derive from the injected source and persist
+    /// into the injected store — so the restore path is exercised purely through the
+    /// injected fakes in tests, with no `SKTestSession`, no `buyProduct`, and no
+    /// real StoreKit call (which hangs under `xcodebuild` from the CLI; ADR 0009).
+    public func restoreEntitlement() async {
+        let active = await isEntitlementActive()
+        await store.setActive(active)
+    }
 }
