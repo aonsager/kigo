@@ -49,6 +49,13 @@ targets:
       # Slice #71: EntitlementSharedStore protocol + UserDefaultsEntitlementStore — Foundation-only
       # (no StoreKit) so the widget extension can read the active flag from the app-group store.
       - path: Sources/Kigo/EntitlementSharedStore.swift
+      # Slice #73: KigoPlaceholderView (SwiftUI, no StoreKit) — deterministic gradient placeholder
+      # reused by KigoWidgetView for the image layer (ADR 0001 / J2).
+      - path: Sources/Kigo/KigoPlaceholder.swift
+    resources:
+      # Slice #73: manifest.json bundled into the widget extension so the TimelineProvider can
+      # load content without the app process running (ADR 0012).
+      - path: Resources/manifest.json
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigo.widgets
@@ -95,6 +102,8 @@ targets:
       # Widget extension sources (excluding KigoWidget.swift which has @main)
       - path: Sources/KigoWidgetExtension/KigoWidgetEntry.swift
       - path: Sources/KigoWidgetExtension/WidgetTimelineBuilder.swift
+      # Slice #73: KigoWidgetView extracted to its own file so it can be compiled into KigoWidgetTests.
+      - path: Sources/KigoWidgetExtension/KigoWidgetView.swift
       # Shared Foundation-only types from the Kigo app target
       - path: Sources/Kigo/Manifest.swift
       - path: Sources/Kigo/DayKey.swift
@@ -103,6 +112,8 @@ targets:
       - path: Sources/Kigo/ContentSource.swift
       # Slice #71: EntitlementSharedStore protocol — Foundation-only (no StoreKit).
       - path: Sources/Kigo/EntitlementSharedStore.swift
+      # Slice #73: KigoPlaceholderView (SwiftUI) for image rendering in KigoWidgetView.
+      - path: Sources/Kigo/KigoPlaceholder.swift
     dependencies:
       - sdk: WidgetKit.framework
     settings:
