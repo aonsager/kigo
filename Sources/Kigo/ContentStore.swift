@@ -139,8 +139,9 @@ public final class ContentStore {
     ///
     /// - `.loading` → `.loadingPlaceholder` (defined, non-crashing)
     /// - `.loaded` where `todayResolved()` succeeds → `.today(ResolvedDay)`
-    /// - `.loaded` where `todayResolved()` returns nil (no entry for today) → `.loadingPlaceholder`
-    ///   (treated as a transient gap; not surfaced as an error)
+    /// - `.loaded` where `todayResolved()` returns nil (no entry for today) → `.unavailablePlaceholder`
+    ///   (a content gap is terminal — waiting cannot resolve it — so it surfaces the
+    ///   defined non-error *terminal* state, never an indefinite loading spinner)
     /// - `.unavailable` → `.unavailablePlaceholder` (defined, non-crashing)
     public var screenState: AppScreenState {
         switch state {
@@ -150,7 +151,7 @@ public final class ContentStore {
             if let resolved = todayResolved() {
                 return .today(resolved)
             } else {
-                return .loadingPlaceholder
+                return .unavailablePlaceholder
             }
         case .unavailable:
             return .unavailablePlaceholder

@@ -132,6 +132,36 @@ final class ContentRootStateTests: XCTestCase {
         )
     }
 
+    // MARK: - AC2 & AC4: loaded but no entry for today → defined non-error state
+
+    /// When the manifest is loaded but has no entry for the resolved date,
+    /// `todayResolved()` returns nil. Waiting cannot fix a content gap, so the
+    /// mapping must surface the defined non-error *terminal* state
+    /// (`.unavailablePlaceholder`) — never an indefinite `.loadingPlaceholder`
+    /// spinner that can never resolve.
+    @MainActor
+    func testLoadedWithNoEntryForTodayProducesUnavailablePlaceholder() async throws {
+        let manifest = makeManifest() // only has a 01-01 entry
+        let source = FakeContentSource(manifest: manifest)
+        // Pin to a date the minimal manifest has no entry for.
+        let june1 = FixedDateProvider(date: makeUTCDate(month: 6, day: 1))
+        let store = ContentStore(source: source, dateProvider: june1)
+
+        await store.waitForLoad()
+
+        guard case .loaded = store.state else {
+            XCTFail("Expected .loaded state with fake source, got \(store.state)")
+            return
+        }
+        XCTAssertNil(store.todayResolved(), "Precondition: June 1 has no entry in the minimal manifest")
+
+        // A loaded-but-unresolvable day is a terminal gap, not a transient load.
+        guard case .unavailablePlaceholder = store.screenState else {
+            XCTFail("screenState must be .unavailablePlaceholder when loaded with no entry for today, got \(store.screenState)")
+            return
+        }
+    }
+
     // MARK: - Helpers
 
     private func makeUTCDate(month: Int, day: Int) -> Date {
