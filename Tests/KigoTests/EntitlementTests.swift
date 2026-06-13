@@ -67,4 +67,41 @@ final class EntitlementTests: XCTestCase {
         let flag = await store.isActive
         XCTAssertFalse(flag, "no entitlements → shared store active flag is false")
     }
+
+    // MARK: - Restore (slice #47)
+
+    func testRestoreReEstablishesActiveFlagAfterStoreClear() async {
+        // Arrange: source is entitled; activate to write true into the store.
+        let source = FakeTransactionSource(productIDs: [Self.widgetProductID])
+        let store = FakeSharedStore()
+        let provider = EntitlementProvider(source: source, store: store)
+        await provider.refreshEntitlement()
+
+        // Simulate a cleared store (fresh install / "Restore" before restore runs).
+        await store.setActive(false)
+        let clearedFlag = await store.isActive
+        XCTAssertFalse(clearedFlag, "precondition: flag is false after clear")
+
+        // Act: restore re-reads the still-entitled source and re-writes the flag.
+        await provider.restoreEntitlement()
+
+        // Assert: flag is true again — rebuilt purely from source + shared-store seam.
+        let restoredFlag = await store.isActive
+        XCTAssertTrue(restoredFlag, "restore with entitled source → active flag is true")
+    }
+
+    func testRestoreLeavesActiveFalseWhenSourceReportsNothing() async {
+        // Source reports no products (e.g. subscription lapsed / wrong account).
+        let source = FakeTransactionSource(productIDs: [])
+        let store = FakeSharedStore()
+        let provider = EntitlementProvider(source: source, store: store)
+
+        // Even if the store somehow has true already, restore should correct it.
+        await store.setActive(true)
+
+        await provider.restoreEntitlement()
+
+        let flag = await store.isActive
+        XCTAssertFalse(flag, "restore with no entitled products → active flag is false")
+    }
 }
