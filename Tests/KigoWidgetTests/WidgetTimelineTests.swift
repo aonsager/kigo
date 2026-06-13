@@ -322,6 +322,50 @@ final class WidgetTimelineTests: XCTestCase {
         XCTAssertFalse(inactiveEntry!.showsImage, "showsImage must be false when entitlement is inactive")
     }
 
+    // MARK: - Slice #72: Inactive entitlement withholds image but keeps Kigo name
+
+    /// AC1 (systemSmall context): entry built with INACTIVE entitlement has showsImage==false,
+    /// but still carries the Kigo kanji and reading (non-nil, matching the manifest entry).
+    func testInactiveEntitlementShowsImageFalse_systemSmall() async {
+        let dayKey = "06-14"
+        let manifest = makeMinimalManifest(dayKey: dayKey,
+                                           kanji: "蛍",
+                                           reading: "ほたる",
+                                           imageId: "img-firefly")
+        let date = makeUTCDate(month: 6, day: 14)
+        let provider = FixedDateProvider(date: date)
+        let store = FakeEntitlementStore(isActive: false)
+
+        let builder = WidgetTimelineBuilder(dateProvider: provider, manifest: manifest, entitlementStore: store)
+        let entry = await builder.buildEntry()
+
+        XCTAssertNotNil(entry, "Builder must return a non-nil entry even when entitlement is inactive")
+        XCTAssertFalse(entry!.showsImage, "showsImage must be false when entitlement is inactive (systemSmall context)")
+        XCTAssertEqual(entry!.kanji, "蛍",      "kanji must be carried even when entitlement is inactive")
+        XCTAssertEqual(entry!.reading, "ほたる", "reading must be carried even when entitlement is inactive")
+    }
+
+    /// AC1 (systemMedium context): same expectation with a different date — showsImage is false
+    /// for inactive entitlement regardless of family, and the Kigo name is still present.
+    func testInactiveEntitlementShowsImageFalse_systemMedium() async {
+        let dayKey = "07-07"
+        let manifest = makeMinimalManifest(dayKey: dayKey,
+                                           kanji: "天の川",
+                                           reading: "あまのがわ",
+                                           imageId: "img-milky")
+        let date = makeUTCDate(month: 7, day: 7)
+        let provider = FixedDateProvider(date: date)
+        let store = FakeEntitlementStore(isActive: false)
+
+        let builder = WidgetTimelineBuilder(dateProvider: provider, manifest: manifest, entitlementStore: store)
+        let entry = await builder.buildEntry()
+
+        XCTAssertNotNil(entry, "Builder must return a non-nil entry even when entitlement is inactive")
+        XCTAssertFalse(entry!.showsImage, "showsImage must be false when entitlement is inactive (systemMedium context)")
+        XCTAssertEqual(entry!.kanji, "天の川",      "kanji must be carried even when entitlement is inactive")
+        XCTAssertEqual(entry!.reading, "あまのがわ", "reading must be carried even when entitlement is inactive")
+    }
+
     /// Timeline entries are ordered: first entry's date comes before second entry's date.
     func testTimelineEntriesAreOrdered() async {
         let manifest = makeTwoDayManifest(
