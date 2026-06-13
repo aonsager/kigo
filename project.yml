@@ -39,6 +39,13 @@ targets:
     deploymentTarget: "26.0"
     sources:
       - path: Sources/KigoWidgetExtension
+      # Shared Foundation-only types reused by the widget extension (AC4: no hand-edits to xcodeproj).
+      # These files are listed individually to avoid pulling in SwiftUI files from Sources/Kigo.
+      - path: Sources/Kigo/Manifest.swift
+      - path: Sources/Kigo/DayKey.swift
+      - path: Sources/Kigo/DateProvider.swift
+      - path: Sources/Kigo/TodayResolution.swift
+      - path: Sources/Kigo/ContentSource.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigo.widgets
@@ -75,6 +82,30 @@ targets:
         SWIFT_VERSION: "6.0"
         CODE_SIGNING_ALLOWED: "NO"
 
+  KigoWidgetTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      # Test sources
+      - path: Tests/KigoWidgetTests
+      # Widget extension sources (excluding KigoWidget.swift which has @main)
+      - path: Sources/KigoWidgetExtension/KigoWidgetEntry.swift
+      - path: Sources/KigoWidgetExtension/WidgetTimelineBuilder.swift
+      # Shared Foundation-only types from the Kigo app target
+      - path: Sources/Kigo/Manifest.swift
+      - path: Sources/Kigo/DayKey.swift
+      - path: Sources/Kigo/DateProvider.swift
+      - path: Sources/Kigo/TodayResolution.swift
+      - path: Sources/Kigo/ContentSource.swift
+    dependencies:
+      - sdk: WidgetKit.framework
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigoWidgetTests
+        SWIFT_VERSION: "6.0"
+        CODE_SIGNING_ALLOWED: "NO"
+
 schemes:
   Kigo:
     build:
@@ -89,6 +120,8 @@ schemes:
         - name: KigoTests
           parallelizable: false
         - name: KigoUITests
+          parallelizable: false
+        - name: KigoWidgetTests
           parallelizable: false
     profile:
       config: Release
