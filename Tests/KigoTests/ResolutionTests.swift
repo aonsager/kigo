@@ -225,4 +225,108 @@ final class ResolutionTests: XCTestCase {
         XCTAssertEqual(resolved.ko.kanji, "螳螂生", "06-06 (start of range) must resolve to Ko kanji 螳螂生")
         XCTAssertEqual(resolved.ko.reading, "かまきりしょうず", "06-06 (start of range) must resolve to Ko reading かまきりしょうず")
     }
+
+    // MARK: - slice #32: ResolvedDay carries the parent Sekki (full triple)
+
+    /// Winter (01-07): Ko 芹乃栄 belongs to Sekki 小寒 (id: shoukan).
+    /// Pinned from bundled manifest.
+    func testSekkiResolvedForWinterDate() throws {
+        let manifest = try loadBundledManifest()
+        let date = makeUTCDate(month: 1, day: 7)
+
+        let resolved = try XCTUnwrap(
+            TodayResolver.resolve(date: date, manifest: manifest),
+            "Resolver must return a non-nil ResolvedDay for 01-07"
+        )
+
+        XCTAssertEqual(resolved.ko.kanji, "芹乃栄", "01-07 must resolve to Ko kanji 芹乃栄")
+        XCTAssertEqual(resolved.sekki.id, "shoukan", "01-07 Ko belongs to Sekki id shoukan")
+        XCTAssertEqual(resolved.sekki.kanji, "小寒", "01-07 Sekki kanji must be 小寒")
+        XCTAssertEqual(resolved.sekki.reading, "しょうかん", "01-07 Sekki reading must be しょうかん")
+    }
+
+    /// Spring (04-07): Ko 玄鳥至 belongs to Sekki 清明 (id: seimei).
+    /// Pinned from bundled manifest.
+    func testSekkiResolvedForSpringDate() throws {
+        let manifest = try loadBundledManifest()
+        let date = makeUTCDate(month: 4, day: 7)
+
+        let resolved = try XCTUnwrap(
+            TodayResolver.resolve(date: date, manifest: manifest),
+            "Resolver must return a non-nil ResolvedDay for 04-07"
+        )
+
+        XCTAssertEqual(resolved.ko.kanji, "玄鳥至", "04-07 must resolve to Ko kanji 玄鳥至")
+        XCTAssertEqual(resolved.sekki.id, "seimei", "04-07 Ko belongs to Sekki id seimei")
+        XCTAssertEqual(resolved.sekki.kanji, "清明", "04-07 Sekki kanji must be 清明")
+        XCTAssertEqual(resolved.sekki.reading, "せいめい", "04-07 Sekki reading must be せいめい")
+    }
+
+    /// Summer (07-09): Ko 温風至 belongs to Sekki 小暑 (id: shousho).
+    /// Pinned from bundled manifest.
+    func testSekkiResolvedForSummerDate() throws {
+        let manifest = try loadBundledManifest()
+        let date = makeUTCDate(month: 7, day: 9)
+
+        let resolved = try XCTUnwrap(
+            TodayResolver.resolve(date: date, manifest: manifest),
+            "Resolver must return a non-nil ResolvedDay for 07-09"
+        )
+
+        XCTAssertEqual(resolved.ko.kanji, "温風至", "07-09 must resolve to Ko kanji 温風至")
+        XCTAssertEqual(resolved.sekki.id, "shousho", "07-09 Ko belongs to Sekki id shousho")
+        XCTAssertEqual(resolved.sekki.kanji, "小暑", "07-09 Sekki kanji must be 小暑")
+        XCTAssertEqual(resolved.sekki.reading, "しょうしょ", "07-09 Sekki reading must be しょうしょ")
+    }
+
+    /// Autumn (09-15): Ko 鶺鴒鳴 belongs to Sekki 白露 (id: hakuro).
+    /// Pinned from bundled manifest.
+    func testSekkiResolvedForAutumnDate() throws {
+        let manifest = try loadBundledManifest()
+        let date = makeUTCDate(month: 9, day: 15)
+
+        let resolved = try XCTUnwrap(
+            TodayResolver.resolve(date: date, manifest: manifest),
+            "Resolver must return a non-nil ResolvedDay for 09-15"
+        )
+
+        XCTAssertEqual(resolved.ko.kanji, "鶺鴒鳴", "09-15 must resolve to Ko kanji 鶺鴒鳴")
+        XCTAssertEqual(resolved.sekki.id, "hakuro", "09-15 Ko belongs to Sekki id hakuro")
+        XCTAssertEqual(resolved.sekki.kanji, "白露", "09-15 Sekki kanji must be 白露")
+        XCTAssertEqual(resolved.sekki.reading, "はくろ", "09-15 Sekki reading must be はくろ")
+    }
+
+    /// Boundary (06-06): Ko 螳螂生 (start of 芒種, id: boshu).
+    /// Pinned from bundled manifest.
+    func testSekkiResolvedForKoBoundaryDate() throws {
+        let manifest = try loadBundledManifest()
+        let date = makeUTCDate(month: 6, day: 6)
+
+        let resolved = try XCTUnwrap(
+            TodayResolver.resolve(date: date, manifest: manifest),
+            "Resolver must return a non-nil ResolvedDay for 06-06"
+        )
+
+        XCTAssertEqual(resolved.ko.kanji, "螳螂生", "06-06 must resolve to Ko kanji 螳螂生")
+        XCTAssertEqual(resolved.sekki.id, "boshu", "06-06 Ko belongs to Sekki id boshu")
+        XCTAssertEqual(resolved.sekki.kanji, "芒種", "06-06 Sekki kanji must be 芒種")
+        XCTAssertEqual(resolved.sekki.reading, "ぼうしゅ", "06-06 Sekki reading must be ぼうしゅ")
+    }
+
+    /// Leap day (02-29): absorbed into Ko 霞始靆 (sekkiId: usui → Sekki 雨水).
+    /// Per ADR 0005 amendment, 02-29 maps to 霞始靆 in the bundled manifest.
+    func testSekkiResolvedForLeapDay() throws {
+        let manifest = try loadBundledManifest()
+        let date = makeUTCDate(month: 2, day: 29)
+
+        let resolved = try XCTUnwrap(
+            TodayResolver.resolve(date: date, manifest: manifest),
+            "Resolver must return a non-nil ResolvedDay for 02-29"
+        )
+
+        XCTAssertEqual(resolved.ko.kanji, "霞始靆", "02-29 must resolve to Ko kanji 霞始靆 (leap-day absorbing Ko)")
+        XCTAssertEqual(resolved.sekki.id, "usui", "02-29 Ko belongs to Sekki id usui")
+        XCTAssertEqual(resolved.sekki.kanji, "雨水", "02-29 Sekki kanji must be 雨水")
+        XCTAssertEqual(resolved.sekki.reading, "うすい", "02-29 Sekki reading must be うすい")
+    }
 }

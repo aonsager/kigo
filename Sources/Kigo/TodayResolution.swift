@@ -20,8 +20,10 @@ public struct ResolvedDay: Sendable, Equatable {
     /// with no year-wrap logic (see ADR 0008).
     public let ko: Ko
 
-    // Future slice #32 will add:
-    //   public let sekki: Sekki
+    /// The parent solar term (Sekki) that contains the resolved Kō.
+    /// Resolved by matching `ko.sekkiId` to `Sekki.id` in the manifest.
+    /// C2 guarantees referential integrity, so a miss is a programming error.
+    public let sekki: Sekki
 }
 
 // MARK: - TodayResolver
@@ -56,6 +58,9 @@ public enum TodayResolver {
               let ko = manifest.ko.first(where: { $0.dateRange.start <= key && key <= $0.dateRange.end }) else {
             return nil
         }
-        return ResolvedDay(kigoEntry: entry, ko: ko)
+        guard let sekki = manifest.sekki.first(where: { $0.id == ko.sekkiId }) else {
+            preconditionFailure("Manifest referential integrity violation: Ko '\(ko.kanji)' has sekkiId '\(ko.sekkiId)' but no matching Sekki found. C2 guarantees all sekkiId values resolve.")
+        }
+        return ResolvedDay(kigoEntry: entry, ko: ko, sekki: sekki)
     }
 }
