@@ -144,4 +144,85 @@ final class ResolutionTests: XCTestCase {
         let resolved = TodayResolver.resolve(date: date, manifest: emptyManifest)
         XCTAssertNil(resolved, "Resolver must return nil when manifest has no entry for the derived key")
     }
+
+    // MARK: - AC1 & AC2 (slice #31): ResolvedDay carries the current Kō per season
+
+    /// Winter (January): 01-07 falls in 芹乃栄 (01-05 – 01-09).
+    /// Values pinned from bundled manifest (index 66).
+    func testKoResolvedForWinterDate() throws {
+        let manifest = try loadBundledManifest()
+        let date = makeUTCDate(month: 1, day: 7)
+
+        let resolved = try XCTUnwrap(
+            TodayResolver.resolve(date: date, manifest: manifest),
+            "Resolver must return a non-nil ResolvedDay for 01-07"
+        )
+
+        XCTAssertEqual(resolved.ko.kanji, "芹乃栄", "01-07 must resolve to Ko kanji 芹乃栄")
+        XCTAssertEqual(resolved.ko.reading, "せりすなわちさかう", "01-07 must resolve to Ko reading せりすなわちさかう")
+    }
+
+    /// Spring (April): 04-07 falls in 玄鳥至 (04-05 – 04-09).
+    /// Values pinned from bundled manifest (index 12).
+    func testKoResolvedForSpringDate() throws {
+        let manifest = try loadBundledManifest()
+        let date = makeUTCDate(month: 4, day: 7)
+
+        let resolved = try XCTUnwrap(
+            TodayResolver.resolve(date: date, manifest: manifest),
+            "Resolver must return a non-nil ResolvedDay for 04-07"
+        )
+
+        XCTAssertEqual(resolved.ko.kanji, "玄鳥至", "04-07 must resolve to Ko kanji 玄鳥至")
+        XCTAssertEqual(resolved.ko.reading, "つばめきたる", "04-07 must resolve to Ko reading つばめきたる")
+    }
+
+    /// Summer (July): 07-09 falls in 温風至 (07-07 – 07-11).
+    /// Values pinned from bundled manifest (index 30).
+    func testKoResolvedForSummerDate() throws {
+        let manifest = try loadBundledManifest()
+        let date = makeUTCDate(month: 7, day: 9)
+
+        let resolved = try XCTUnwrap(
+            TodayResolver.resolve(date: date, manifest: manifest),
+            "Resolver must return a non-nil ResolvedDay for 07-09"
+        )
+
+        XCTAssertEqual(resolved.ko.kanji, "温風至", "07-09 must resolve to Ko kanji 温風至")
+        XCTAssertEqual(resolved.ko.reading, "あつかぜいたる", "07-09 must resolve to Ko reading あつかぜいたる")
+    }
+
+    /// Autumn (September): 09-15 falls in 鶺鴒鳴 (09-13 – 09-17).
+    /// Values pinned from bundled manifest (index 43).
+    func testKoResolvedForAutumnDate() throws {
+        let manifest = try loadBundledManifest()
+        let date = makeUTCDate(month: 9, day: 15)
+
+        let resolved = try XCTUnwrap(
+            TodayResolver.resolve(date: date, manifest: manifest),
+            "Resolver must return a non-nil ResolvedDay for 09-15"
+        )
+
+        XCTAssertEqual(resolved.ko.kanji, "鶺鴒鳴", "09-15 must resolve to Ko kanji 鶺鴒鳴")
+        XCTAssertEqual(resolved.ko.reading, "せきれいなく", "09-15 must resolve to Ko reading せきれいなく")
+    }
+
+    // MARK: - AC3 (slice #31): Kō boundary day resolves to exactly one Kō (inclusive)
+
+    /// Boundary test: 06-06 is the START of 螳螂生 (06-06 – 06-10).
+    /// Containment is inclusive (start ≤ key ≤ end), so the boundary day must
+    /// resolve to exactly one Kō — 螳螂生 — with no gap or overlap.
+    /// Values pinned from bundled manifest (index 24).
+    func testKoBoundaryStartDayResolvesToExactlyOneKo() throws {
+        let manifest = try loadBundledManifest()
+        let date = makeUTCDate(month: 6, day: 6)
+
+        let resolved = try XCTUnwrap(
+            TodayResolver.resolve(date: date, manifest: manifest),
+            "Resolver must return a non-nil ResolvedDay for 06-06 (Ko boundary start)"
+        )
+
+        XCTAssertEqual(resolved.ko.kanji, "螳螂生", "06-06 (start of range) must resolve to Ko kanji 螳螂生")
+        XCTAssertEqual(resolved.ko.reading, "かまきりしょうず", "06-06 (start of range) must resolve to Ko reading かまきりしょうず")
+    }
 }
