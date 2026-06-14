@@ -1,16 +1,16 @@
 name: afk-ci
 
 # Clean-checkout build+test gate for the afk- loop, on macOS (expensive: macOS
-# Actions minutes bill at 10x). Scoped to integration->main PRs and pushes to
-# main — NOT per slice. Slice PRs target integration/* and are verified by
+# Actions minutes bill at 10x). Scoped to integration->main PRs only — NOT per
+# slice, and NOT on push to main (that re-ran the same commit the PR already
+# tested, double-billing macOS minutes). Slice PRs target integration/* and are
+# verified by
 # afk-advance re-running the suite in-session, plus the trivial slice-gate check.
 # Tolerant: while the repo has no XcodeGen manifest yet (pre walking-skeleton)
 # the job exits 0; once project.yml exists it really builds and tests — never
 # relax that into an unconditional pass.
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
