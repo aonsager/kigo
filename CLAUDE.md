@@ -92,6 +92,21 @@ The real StoreKit adapter, if you want it exercised end-to-end, gets at most a
 IDE / a manual lane), never on the loop's gating path. See ADR 0009 and the C6
 criterion in `docs/GOAL.md`.
 
+## Watching the loop
+
+`afk-run.sh`'s `wrapper.log` only shows per-iteration start/done lines — the
+slice work runs as an Agent-tool subagent inside each headless session, so its
+blow-by-blow is persisted to `~/.claude/projects/<repo-slug>/<uuid>.jsonl` (the
+orchestrator) and `<uuid>/subagents/agent-*.jsonl` (the worktree work), not to
+`wrapper.log`. `scripts/afk-tail.py` (read-only) follows both and renders them
+in the wrapper's `TS |   · …` format, nesting subagent lines as `↳`. Use it via:
+
+```bash
+./scripts/afk-watch.sh          # run the loop + follow it live (Ctrl-C stops both)
+./scripts/afk-tail.sh           # just follow (loop already running elsewhere)
+tail -f .afk/stream.log         # ...or tail the persisted render from anywhere
+```
+
 ## Conventions
 
 - ADRs live in `docs/adr/` — add one for decisions that are hard to reverse,
