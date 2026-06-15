@@ -149,6 +149,33 @@ targets:
         SWIFT_VERSION: "6.0"
         CODE_SIGNING_ALLOWED: "NO"
 
+  # J4 manual lane (ADR 0009): the ONE place the production StoreKit adapters are
+  # exercised end-to-end against a real (local test) storekitd via SKTestSession.
+  # Deliberately NOT a target of the `Kigo` scheme's test action, so the canonical
+  # `xcodebuild test -scheme Kigo` loop invocation never builds or runs it. Run it
+  # intentionally from Xcode via the `KigoStoreKitIntegrationTests` scheme (Cmd+U) —
+  # SKTestSession only works through the IDE launch path; from the public CLI it
+  # errors or hangs. The gating suites (C6/C9/C10) never touch this target.
+  KigoStoreKitIntegrationTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: Tests/KigoStoreKitIntegrationTests
+      # The local StoreKit config, bundled so SKTestSession(configurationFileNamed:)
+      # can load it by name. Same buildPhase:resources pattern as manifest.json
+      # (XcodeGen has no top-level `resources:` target key).
+      - path: Products.storekit
+        buildPhase: resources
+    dependencies:
+      - target: Kigo
+      - sdk: StoreKitTest.framework
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigoStoreKitIntegrationTests
+        SWIFT_VERSION: "6.0"
+        CODE_SIGNING_ALLOWED: "NO"
+
 schemes:
   Kigo:
     build:
@@ -191,3 +218,23 @@ schemes:
       config: Debug
     archive:
       config: Release
+
+  # IDE-only scheme for the SKTestSession integration lane (ADR 0009). Select it in
+  # Xcode and press Cmd+U to exercise the real StoreKit adapters against a local
+  # test storekitd. The test action sets KIGO_RUN_STOREKIT_INTEGRATION=1 so the
+  # tests opt in; under any run WITHOUT that variable (e.g. if this target were ever
+  # pulled onto a headless path) the tests XCTSkip before touching StoreKit, so they
+  # cannot hang. Do NOT run this scheme via `xcodebuild test` from the CLI — drive it
+  # only through the Xcode IDE.
+  KigoStoreKitIntegrationTests:
+    build:
+      targets:
+        Kigo: all
+        KigoWidgetExtension: all
+    test:
+      config: Debug
+      environmentVariables:
+        KIGO_RUN_STOREKIT_INTEGRATION: "1"
+      targets:
+        - name: KigoStoreKitIntegrationTests
+          parallelizable: false
