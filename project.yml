@@ -135,6 +135,12 @@ targets:
       - path: Sources/Kigo/EntitlementSharedStore.swift
       # Slice #73: KigoPlaceholderView (SwiftUI) for image rendering in KigoWidgetView.
       - path: Sources/Kigo/KigoPlaceholder.swift
+      # Slice #81: manifest.json bundled into KigoWidgetTests so BundledContentSource()
+      # can resolve it via Bundle(for:) / Bundle.main without injecting a hand-built Manifest.
+      # Must be a `sources` entry with `buildPhase: resources` — XcodeGen has no top-level
+      # `resources:` target key (same pattern as the app and widget extension targets).
+      - path: Resources/manifest.json
+        buildPhase: resources
     dependencies:
       - sdk: WidgetKit.framework
     settings:
