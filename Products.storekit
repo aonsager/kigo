@@ -1,0 +1,50 @@
+{
+  "identifier" : "5E5A3F1C-0001-4A2B-8C3D-000000000001",
+  "nonRenewingSubscriptions" : [],
+  "products" : [],
+  "settings" : {
+    "_applicationInternalID" : "",
+    "_developerTeamID" : "S25KR8TV8T",
+    "_failTransactionsEnabled" : false,
+    "_locale" : "ja_JP",
+    "_storefront" : "JPN"
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21520757",
+      "localizations" : [],
+      "name" : "Widget Access",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "displayPrice" : "300",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "5E5A3F1C-0002-4A2B-8C3D-000000000002",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Reveal today's Kigo image on your home-screen widget. Renews monthly.",
+              "displayName" : "Widget Access",
+              "locale" : "ja_JP"
+            },
+            {
+              "description" : "Reveal today's Kigo image on your home-screen widget. Renews monthly.",
+              "displayName" : "Widget Access",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.tomeitotameigo.kigo.widgets.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Widget Access Monthly",
+          "subscriptionGroupID" : "21520757",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

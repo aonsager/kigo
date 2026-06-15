@@ -157,6 +157,14 @@ schemes:
         KigoWidgetExtension: all
     run:
       config: Debug
+      # Local StoreKit Testing config for the J4 manual lane: with this attached to
+      # the Run action, Cmd+R in Xcode exercises the REAL Product.purchase() sheet,
+      # restore, and product loading against a local storekitd — no App Store
+      # Connect, no account, no money. Deliberately ONLY on `run`, never on `test`:
+      # driving real StoreKit under `xcodebuild test` from the CLI hangs and would
+      # wedge the headless loop (ADR 0009). The gating test suites use injected
+      # fakes (C6/C9/C10) and never touch this file.
+      storeKitConfiguration: Products.storekit
     test:
       config: Debug
       targets:
