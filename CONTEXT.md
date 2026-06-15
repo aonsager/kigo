@@ -38,8 +38,48 @@ A user's active "widget access" subscription state, derived from StoreKit and sh
 **Widget Gate**:
 The rule that the home-screen **Widget** renders the full image+Kigo only when the **Entitlement** is active; without it, the widget shows the Kigo name (kanji + reading) **without the image**.
 
+**Premium** / **Basic**:
+A user's plan, derived from the **Entitlement**. **Premium** = the Entitlement is
+active (the user holds the widget-access subscription). **Basic** = no active
+Entitlement (the free default). These are display words for the two entitlement
+states; there is no separate account or stored "plan" — plan ⇔ Entitlement state.
+_Avoid_: "free tier" / "paid tier" (implies multiple products; there is one), "pro".
+
 **Paywall**:
-The single screen offering the auto-renewable "widget access" subscription, with restore.
+The single screen offering the auto-renewable "widget access" subscription. Reached
+from the Today screen via the **Upgrade entry**, presented as a sheet. For a **Basic**
+user it shows the premium **Benefits**, the price and subscription duration, a
+prominent buy button, a Restore Purchases button, and links to Terms of Use and a
+Privacy Policy (all required by App Store review of auto-renewable subscriptions).
+For a **Premium** user it shows an active/manage state instead of the buy button.
+
+**Upgrade entry**:
+The small, low-contrast control in a corner of the Today screen that opens the
+**Paywall**. Deliberately unobtrusive so it does not disturb the calm nightstand
+aesthetic (J1); the prominence lives inside the Paywall splash, not on the Today
+screen. Shown in both plan states (opens the buy offer for **Basic**, the manage
+state for **Premium**).
+_Avoid_: "upgrade banner", "buy button" (that is the prominent control *inside* the Paywall).
+
+**Benefits**:
+The premium value proposition shown on the **Paywall**. The subscription unlocks
+exactly one capability — the **Widget Gate** revealing the day's image on the home
+screen — so the Benefits are an honest single benefit (with supporting sub-points),
+never invented features.
+
+**SubscriptionPurchaser**:
+The injectable StoreKit seam that *initiates* a purchase of the widget-access product
+(production: StoreKit 2 `Product.purchase()`; tests: an in-memory fake returning a
+configured outcome). Mirrors `EntitlementTransactionSource` (which *reads* held
+entitlements) — splitting "start a purchase" from "read what is owned" so the
+purchase→activation *logic* is verifiable headlessly without a real purchase sheet
+(which hangs under `xcodebuild` from the CLI — ADR 0009).
+
+**Offer display** (ProductInfo seam):
+The injectable seam supplying the **Paywall**'s display price and subscription
+duration (production: a StoreKit 2 `Product`; tests: a fake). Loading a real
+`Product` from the App Store, like a real purchase, is off the headless gating path;
+the seam lets the price/duration *rendering* be tested deterministically.
 
 ## Relationships
 
@@ -47,6 +87,8 @@ The single screen offering the auto-renewable "widget access" subscription, with
 - **Today** also resolves to exactly one **Kō**, which belongs to exactly one **Sekki**.
 - The app reads all content through a **ContentSource**; the **BundledContentSource** is fed the generated **Manifest**.
 - An active **Entitlement** unlocks the image in the **Widget**; otherwise the **Widget Gate** hides it.
+- A user is **Premium** ⇔ their **Entitlement** is active, else **Basic**; this drives what the **Paywall** shows.
+- The **Upgrade entry** on the Today screen opens the **Paywall**; the buy button drives the **SubscriptionPurchaser**, whose success refreshes the **Entitlement** (activating the **Widget Gate**).
 
 ## Example dialogue
 
