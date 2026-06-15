@@ -195,6 +195,58 @@ final class PaywallUITests: XCTestCase {
         )
     }
 
+    // MARK: - AC (slice #88): paywall.terms and paywall.privacy link elements
+
+    /// Slice #88: The Basic (inactive) Paywall must show link elements for
+    /// Terms of Use (`paywall.terms`) and Privacy Policy (`paywall.privacy`).
+    ///
+    /// Screenshot evidence: captured after both elements are confirmed present,
+    /// attached as `paywall-legal-links` with lifetime `.keepAlways`.
+    /// Full test identifier: KigoUITests/PaywallUITests/testBasicPaywallShowsLegalLinks
+    func testBasicPaywallShowsLegalLinks() {
+        // Open the paywall sheet via the upgrade entry.
+        let entry = app.buttons["paywall.entry"]
+        XCTAssertTrue(
+            entry.waitForExistence(timeout: 10),
+            "paywall.entry must exist before tapping"
+        )
+        entry.tap()
+
+        // Assert the sheet container is present.
+        let sheetElement = app.descendants(matching: .any)
+            .matching(identifier: "paywall.sheet")
+            .firstMatch
+        XCTAssertTrue(
+            sheetElement.waitForExistence(timeout: 10),
+            "paywall.sheet must appear after tapping Upgrade"
+        )
+
+        // --- AC: paywall.terms link element is present ---
+        let termsElement = app.descendants(matching: .any)
+            .matching(identifier: "paywall.terms")
+            .firstMatch
+        XCTAssertTrue(
+            termsElement.waitForExistence(timeout: 5),
+            "paywall.terms element must exist in the Basic paywall sheet"
+        )
+
+        // --- AC: paywall.privacy link element is present ---
+        let privacyElement = app.descendants(matching: .any)
+            .matching(identifier: "paywall.privacy")
+            .firstMatch
+        XCTAssertTrue(
+            privacyElement.waitForExistence(timeout: 5),
+            "paywall.privacy element must exist in the Basic paywall sheet"
+        )
+
+        // Screenshot evidence — captured after both link elements confirmed present.
+        let screenshot = XCUIScreen.main.screenshot()
+        let attachment = XCTAttachment(screenshot: screenshot)
+        attachment.lifetime = .keepAlways
+        attachment.name = "paywall-legal-links"
+        add(attachment)
+    }
+
     // MARK: - AC3 (slice #86): paywall.price and paywall.duration elements
 
     /// AC3: Opening the Paywall with `KIGO_FAKE_PRICE=¥300` must show an element

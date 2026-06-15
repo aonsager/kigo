@@ -1,4 +1,5 @@
 import SwiftUI
+import Foundation
 
 // MARK: - PaywallView
 
@@ -81,6 +82,21 @@ public struct PaywallView: View {
                 }
                 .buttonStyle(.bordered)
                 .accessibilityIdentifier("paywall.restore")
+
+                // Legal links — placeholder URLs (ADR 0013 / J4).
+                // Real legal copy and hosting are out of scope this milestone;
+                // the URLs are gated as well-formed https constants in PaywallConfigTests.
+                HStack(spacing: 16) {
+                    Link("Terms of Use", destination: PaywallConfig.termsOfUseURL)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .accessibilityIdentifier("paywall.terms")
+
+                    Link("Privacy Policy", destination: PaywallConfig.privacyPolicyURL)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .accessibilityIdentifier("paywall.privacy")
+                }
             }
             .padding()
         }
