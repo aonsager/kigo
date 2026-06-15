@@ -13,6 +13,15 @@ import SwiftUI
 /// date for the entire session; otherwise it falls back to `SystemDateProvider`.
 /// This makes the rendered Today screen deterministic under the environment
 /// override (slice #56, acceptance criterion #1).
+///
+/// Slice #85: The `EntitlementProvider` is resolved via `launchEntitlementProvider(environment:)`,
+/// which reads `KIGO_FAKE_ENTITLEMENT` to inject a fake source (active/inactive) or fall
+/// through to the production StoreKit-backed provider. The `RootView` wrapper owns the
+/// paywall entry and sheet-presentation state so it has access to the resolved provider.
+///
+/// Slice #86: The `OfferDisplay` is resolved via `launchOfferDisplay(environment:)`,
+/// which reads `KIGO_FAKE_PRICE` to inject fixed price/duration strings or fall through
+/// to the production placeholder (real `Product`-backed adapter is a J4 lane concern).
 @main
 struct KigoApp: App {
     @State private var store = ContentStore(
@@ -20,10 +29,50 @@ struct KigoApp: App {
         dateProvider: launchDateProvider(environment: ProcessInfo.processInfo.environment)
     )
 
+    private let entitlementProvider = launchEntitlementProvider(
+        environment: ProcessInfo.processInfo.environment
+    )
+
+    private let offerDisplay = launchOfferDisplay(
+        environment: ProcessInfo.processInfo.environment
+    )
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView(entitlementProvider: entitlementProvider, offerDisplay: offerDisplay)
                 .environment(store)
         }
+    }
+}
+
+// MARK: - RootView
+
+/// Thin wrapper around `ContentView` that owns the paywall entry and sheet state.
+///
+/// Placing entry+sheet ownership here (rather than inside `TodayView` or `ContentView`)
+/// keeps `ContentView` free of paywall concerns and gives `RootView` unambiguous access
+/// to the resolved `EntitlementProvider` and `OfferDisplay` passed down from `KigoApp`.
+///
+/// The Upgrade button (`paywall.entry`) is always present, overlaid as a small, unobtrusive
+/// control at the bottom-trailing corner of the screen via a `ZStack` / `overlay`.
+struct RootView: View {
+    let entitlementProvider: EntitlementProvider
+    let offerDisplay: OfferDisplay
+
+    @State private var isPaywallPresented = false
+
+    var body: some View {
+        ContentView()
+            .overlay(alignment: .bottomTrailing) {
+                Button("Upgrade") {
+                    isPaywallPresented = true
+                }
+                .buttonStyle(.borderedProminent)
+                .padding()
+                .accessibilityIdentifier("paywall.entry")
+            }
+            .sheet(isPresented: $isPaywallPresented) {
+                PaywallView(model: PaywallModel(provider: entitlementProvider, offerDisplay: offerDisplay))
+            }
     }
 }

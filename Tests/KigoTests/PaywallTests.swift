@@ -127,4 +127,51 @@ final class PaywallTests: XCTestCase {
         XCTAssertTrue(storeFlag,
                       "restore with entitled source → shared store active flag is true")
     }
+
+    // MARK: - Slice #86: offer-display seam
+
+    /// AC3 (headless): PaywallModel fed an injected `OfferDisplay` exposes exactly the
+    /// injected price string and a non-empty duration string.
+    ///
+    /// This test exercises the full injection chain:
+    ///  1. A `FixedOfferDisplay` (equivalent to what `launchOfferDisplay` returns under
+    ///     `KIGO_FAKE_PRICE=¥300`) is constructed with a known price.
+    ///  2. `PaywallModel` is initialised with that offer display.
+    ///  3. `model.price` must equal the injected price string.
+    ///  4. `model.duration` must be non-empty.
+    ///
+    /// No StoreKit `Product`, no `storekitd`, no async — pure synchronous injection.
+    func testModelExposesInjectedOfferDisplayPriceAndDuration() {
+        let source = FakeTransactionSource(productIDs: [])
+        let store = FakeSharedStore()
+        let provider = EntitlementProvider(source: source, store: store)
+
+        let injected = OfferDisplay(price: "¥300", duration: "1 month")
+        let model = PaywallModel(provider: provider, offerDisplay: injected)
+
+        XCTAssertEqual(model.price, "¥300",
+                       "model.price must equal the injected price string")
+        XCTAssertFalse(model.duration.isEmpty,
+                       "model.duration must be non-empty")
+    }
+
+    /// launchOfferDisplay resolver: present KIGO_FAKE_PRICE → returns that price string.
+    func testLaunchOfferDisplayReturnsFakePriceWhenEnvPresent() {
+        let result = launchOfferDisplay(environment: ["KIGO_FAKE_PRICE": "¥300"])
+        XCTAssertEqual(result.price, "¥300",
+                       "resolver must return the KIGO_FAKE_PRICE value as the price")
+        XCTAssertFalse(result.duration.isEmpty,
+                       "resolver must return a non-empty duration when KIGO_FAKE_PRICE is set")
+    }
+
+    /// launchOfferDisplay resolver: absent KIGO_FAKE_PRICE → returns production path (non-empty strings).
+    func testLaunchOfferDisplayReturnsProductionPathWhenEnvAbsent() {
+        let result = launchOfferDisplay(environment: [:])
+        // We don't assert a specific price (it's the production placeholder), but
+        // both strings must be non-empty so the UI never shows blank text.
+        XCTAssertFalse(result.price.isEmpty,
+                       "production path must return a non-empty price string")
+        XCTAssertFalse(result.duration.isEmpty,
+                       "production path must return a non-empty duration string")
+    }
 }

@@ -15,6 +15,8 @@ import Observation
 ///
 /// - `productID`: the widget-access product ID, exposed so the view can display
 ///   the product surface without hard-coding the constant in the UI layer.
+/// - `price`: localised price string from the injected `OfferDisplay`, e.g. "¥300".
+/// - `duration`: localised duration string from the injected `OfferDisplay`, e.g. "1 month".
 /// - `isActive`: the reflected entitlement flag; updated by `loadState()` and
 ///   `restore()`.
 /// - `loadState()`: re-derives the current entitlement from the source and
@@ -31,6 +33,18 @@ public final class PaywallModel {
     /// Presented by the view so users know which product they are purchasing.
     public let productID: String = EntitlementProvider.widgetMonthlyProductID
 
+    // MARK: - Offer display
+
+    /// The localised price string for the subscription offer, e.g. "¥300".
+    /// Sourced from the injected `OfferDisplay`; tests inject a `FixedOfferDisplay`
+    /// with a known string — no real StoreKit `Product` is ever loaded on the test path.
+    public let price: String
+
+    /// The localised duration string for the subscription offer, e.g. "1 month".
+    /// Non-empty in all conformers (fixed fakes use "1 month"; production uses the
+    /// subscription period from the resolved `Product`).
+    public let duration: String
+
     // MARK: - Reflected state
 
     /// `true` iff the user currently holds a verified entitlement for the
@@ -43,10 +57,17 @@ public final class PaywallModel {
 
     // MARK: - Init
 
-    /// - Parameter provider: The entitlement provider. Tests inject a provider
-    ///   built with in-memory fakes; production passes the live provider.
-    public init(provider: EntitlementProvider) {
+    /// - Parameters:
+    ///   - provider: The entitlement provider. Tests inject a provider built with
+    ///     in-memory fakes; production passes the live provider.
+    ///   - offerDisplay: The offer-display value carrying the price and duration
+    ///     strings. Defaults to a placeholder so existing call sites that omit it
+    ///     compile without change; production and UI-test call sites should pass
+    ///     the resolved `launchOfferDisplay(environment:)` value.
+    public init(provider: EntitlementProvider, offerDisplay: OfferDisplay = OfferDisplay(price: "—", duration: "Monthly")) {
         self.provider = provider
+        self.price = offerDisplay.price
+        self.duration = offerDisplay.duration
     }
 
     // MARK: - Actions
