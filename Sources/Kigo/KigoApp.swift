@@ -18,6 +18,10 @@ import SwiftUI
 /// which reads `KIGO_FAKE_ENTITLEMENT` to inject a fake source (active/inactive) or fall
 /// through to the production StoreKit-backed provider. The `RootView` wrapper owns the
 /// paywall entry and sheet-presentation state so it has access to the resolved provider.
+///
+/// Slice #86: The `OfferDisplay` is resolved via `launchOfferDisplay(environment:)`,
+/// which reads `KIGO_FAKE_PRICE` to inject fixed price/duration strings or fall through
+/// to the production placeholder (real `Product`-backed adapter is a J4 lane concern).
 @main
 struct KigoApp: App {
     @State private var store = ContentStore(
@@ -29,9 +33,13 @@ struct KigoApp: App {
         environment: ProcessInfo.processInfo.environment
     )
 
+    private let offerDisplay = launchOfferDisplay(
+        environment: ProcessInfo.processInfo.environment
+    )
+
     var body: some Scene {
         WindowGroup {
-            RootView(entitlementProvider: entitlementProvider)
+            RootView(entitlementProvider: entitlementProvider, offerDisplay: offerDisplay)
                 .environment(store)
         }
     }
@@ -43,12 +51,13 @@ struct KigoApp: App {
 ///
 /// Placing entry+sheet ownership here (rather than inside `TodayView` or `ContentView`)
 /// keeps `ContentView` free of paywall concerns and gives `RootView` unambiguous access
-/// to the resolved `EntitlementProvider` passed down from `KigoApp`.
+/// to the resolved `EntitlementProvider` and `OfferDisplay` passed down from `KigoApp`.
 ///
 /// The Upgrade button (`paywall.entry`) is always present, overlaid as a small, unobtrusive
 /// control at the bottom-trailing corner of the screen via a `ZStack` / `overlay`.
 struct RootView: View {
     let entitlementProvider: EntitlementProvider
+    let offerDisplay: OfferDisplay
 
     @State private var isPaywallPresented = false
 
@@ -63,7 +72,7 @@ struct RootView: View {
                 .accessibilityIdentifier("paywall.entry")
             }
             .sheet(isPresented: $isPaywallPresented) {
-                PaywallView(model: PaywallModel(provider: entitlementProvider))
+                PaywallView(model: PaywallModel(provider: entitlementProvider, offerDisplay: offerDisplay))
             }
     }
 }

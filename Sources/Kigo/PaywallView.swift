@@ -19,11 +19,21 @@ public struct PaywallView: View {
     }
 
     public var body: some View {
-        // The ZStack root carries `paywall.sheet` so the sheet's presence is
-        // machine-checkable by the UI test before inner content surfaces exist.
-        // ZStack with .frame(maxWidth:maxHeight:) renders as an accessible container
-        // (`otherElements`) that XCUI can locate by identifier even on iOS 26.
+        // `paywall.sheet` is placed on a transparent overlay `Color.clear` that covers the
+        // full sheet area. This makes the sheet presence machine-checkable by UI tests while
+        // NOT inheriting the identifier onto the VStack and its Text children.
+        //
+        // On iOS 26 SwiftUI propagates an accessibilityIdentifier set on a Stack to ALL its
+        // StaticText descendants (every child Text gets the container's identifier, overwriting
+        // their own). By isolating `paywall.sheet` to a separate Color.clear element we avoid
+        // that propagation, letting `paywall.price` and `paywall.duration` remain on the
+        // individual Text views where the UI test expects them (ADR 0013 / slice #86).
         ZStack {
+            // Invisible sentinel — carries `paywall.sheet` without overwriting children.
+            Color.clear
+                .accessibilityIdentifier("paywall.sheet")
+                .accessibilityHidden(false)
+
             VStack(spacing: 24) {
                 Text("Kigo Widgets")
                     .font(.largeTitle)
@@ -36,6 +46,18 @@ public struct PaywallView: View {
                 Text(model.productID)
                     .font(.caption)
                     .foregroundStyle(.tertiary)
+
+                // Offer-display: price and duration surfaced via accessibility identifiers
+                // so UI tests can assert on the rendered strings (slice #86 / ADR 0013).
+                Text(model.price)
+                    .font(.title2)
+                    .bold()
+                    .accessibilityIdentifier("paywall.price")
+
+                Text(model.duration)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .accessibilityIdentifier("paywall.duration")
 
                 if model.isActive {
                     Label("Subscription active", systemImage: "checkmark.seal.fill")
@@ -58,8 +80,6 @@ public struct PaywallView: View {
             }
             .padding()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .accessibilityIdentifier("paywall.sheet")
         .task { await model.loadState() }
     }
 }
