@@ -247,6 +247,115 @@ final class PaywallUITests: XCTestCase {
         add(attachment)
     }
 
+    // MARK: - Slice #89: Premium (active) Paywall shows manage surface and hides buy button
+
+    /// Slice #89: When `KIGO_FAKE_ENTITLEMENT=active`, the Paywall sheet must show an element
+    /// `paywall.manage` and must NOT show `paywall.buy`.
+    ///
+    /// Acceptance criteria:
+    ///   AC1: `paywall.manage` is present.
+    ///   AC2: `paywall.buy` is absent.
+    ///
+    /// Screenshot evidence: captured after `paywall.manage` is confirmed, attached as
+    /// `premium-paywall-manage` with lifetime `.keepAlways`.
+    /// Full test identifier: KigoUITests/PaywallUITests/testPremiumPaywallShowsManage
+    func testPremiumPaywallShowsManage() {
+        // Re-launch with active entitlement.
+        app.terminate()
+        app = XCUIApplication()
+        app.launchEnvironment["KIGO_FAKE_DATE"] = "2026-06-12"
+        app.launchEnvironment["KIGO_FAKE_ENTITLEMENT"] = "active"
+        app.launchEnvironment["KIGO_FAKE_PRICE"] = "¥300"
+        app.launch()
+
+        // Open the paywall sheet via the upgrade entry.
+        // Note: paywall.entry may not appear in the active case — the sheet may need to be
+        // triggered by an alternate path, but the existing architecture still shows the
+        // entry button regardless; it's just the paywall content that changes.
+        let entry = app.descendants(matching: .any)
+            .matching(identifier: "paywall.entry")
+            .firstMatch
+        XCTAssertTrue(
+            entry.waitForExistence(timeout: 10),
+            "paywall.entry must exist to open the paywall sheet"
+        )
+        entry.tap()
+
+        // Assert the sheet container is present.
+        let sheetElement = app.descendants(matching: .any)
+            .matching(identifier: "paywall.sheet")
+            .firstMatch
+        XCTAssertTrue(
+            sheetElement.waitForExistence(timeout: 10),
+            "paywall.sheet must appear after tapping paywall.entry"
+        )
+
+        // AC1: paywall.manage must be present
+        let manageElement = app.descendants(matching: .any)
+            .matching(identifier: "paywall.manage")
+            .firstMatch
+        XCTAssertTrue(
+            manageElement.waitForExistence(timeout: 5),
+            "paywall.manage element must exist when KIGO_FAKE_ENTITLEMENT=active"
+        )
+
+        // Screenshot evidence — captured AFTER paywall.manage confirmed present.
+        let screenshot = XCUIScreen.main.screenshot()
+        let attachment = XCTAttachment(screenshot: screenshot)
+        attachment.lifetime = .keepAlways
+        attachment.name = "premium-paywall-manage"
+        add(attachment)
+
+        // AC2: paywall.buy must NOT be present
+        let buyElement = app.descendants(matching: .any)
+            .matching(identifier: "paywall.buy")
+            .firstMatch
+        XCTAssertFalse(
+            buyElement.exists,
+            "paywall.buy must NOT exist when KIGO_FAKE_ENTITLEMENT=active"
+        )
+    }
+
+    /// Slice #89 regression: When `KIGO_FAKE_ENTITLEMENT=inactive`, the Paywall sheet
+    /// must still show `paywall.buy` and must NOT show `paywall.manage`.
+    func testBasicPaywallDoesNotShowManage() {
+        // setUp already launches with KIGO_FAKE_ENTITLEMENT=inactive
+        let entry = app.descendants(matching: .any)
+            .matching(identifier: "paywall.entry")
+            .firstMatch
+        XCTAssertTrue(
+            entry.waitForExistence(timeout: 10),
+            "paywall.entry must exist"
+        )
+        entry.tap()
+
+        let sheetElement = app.descendants(matching: .any)
+            .matching(identifier: "paywall.sheet")
+            .firstMatch
+        XCTAssertTrue(
+            sheetElement.waitForExistence(timeout: 10),
+            "paywall.sheet must appear"
+        )
+
+        // paywall.buy must be present
+        let buyElement = app.descendants(matching: .any)
+            .matching(identifier: "paywall.buy")
+            .firstMatch
+        XCTAssertTrue(
+            buyElement.waitForExistence(timeout: 5),
+            "paywall.buy must exist when KIGO_FAKE_ENTITLEMENT=inactive"
+        )
+
+        // paywall.manage must NOT be present
+        let manageElement = app.descendants(matching: .any)
+            .matching(identifier: "paywall.manage")
+            .firstMatch
+        XCTAssertFalse(
+            manageElement.exists,
+            "paywall.manage must NOT exist when KIGO_FAKE_ENTITLEMENT=inactive"
+        )
+    }
+
     // MARK: - AC3 (slice #86): paywall.price and paywall.duration elements
 
     /// AC3: Opening the Paywall with `KIGO_FAKE_PRICE=¥300` must show an element

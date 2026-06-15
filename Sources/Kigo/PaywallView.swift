@@ -64,8 +64,13 @@ public struct PaywallView: View {
                     .accessibilityIdentifier("paywall.duration")
 
                 if model.isActive {
+                    // Premium / manage surface — shown instead of the buy button when the
+                    // user already has an active entitlement. `paywall.manage` is a present-
+                    // surface-only indicator; no deep-link / subscription-management UI is
+                    // wired here (out of scope for this milestone).
                     Label("Subscription active", systemImage: "checkmark.seal.fill")
                         .foregroundStyle(.green)
+                        .accessibilityIdentifier("paywall.manage")
                 } else {
                     // Purchase button surface. Carries `paywall.buy` for UI test assertions.
                     // Inert this milestone — no purchase flow is wired (that is C10).
