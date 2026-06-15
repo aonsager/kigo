@@ -30,5 +30,24 @@
       "Bash(plutil:*)"
     ],
     "deny": []
+  },
+  "sandbox": {
+    "excludedCommands": [
+      "gh *",
+      "git fetch *",
+      "git push *",
+      "git pull *",
+      "git clone *",
+      "git ls-remote *"
+    ],
+    "network": {
+      "allowedDomains": [
+        "github.com",
+        "api.github.com",
+        "codeload.github.com",
+        "objects.githubusercontent.com",
+        "raw.githubusercontent.com"
+      ]
+    }
   }
 }

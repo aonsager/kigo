@@ -107,6 +107,26 @@ in the wrapper's `TS |   · …` format, nesting subagent lines as `↳`. Use it
 tail -f .afk/stream.log         # ...or tail the persisted render from anywhere
 ```
 
+## Screenshot evidence — the `afk-evidence` release must pre-exist
+
+The loop publishes UI screenshots by uploading them as assets on a GitHub
+**release tagged `afk-evidence`** (a pre-release) and inline-embedding the
+download URL (`…/releases/download/afk-evidence/slice-<N>-<desc>.png`) in the
+issue/PR comment. The repo is public, so `![…]` embeds render.
+
+**The trap:** *creating* a release is a sensitive outward-facing action the
+harness permission classifier declines autonomously, but *uploading an asset to
+an existing release* is allowed. So if `afk-evidence` does not yet exist, the
+very first slice's screenshot fails to land — the comment falls back to a text
+"⚠️ visual evidence did not land" explanation (this is exactly what happened to
+#85; the PNG was recovered post-hoc from the `.xcresult` in DerivedData via
+`xcrun xcresulttool export attachments` and uploaded once the release existed).
+
+**Therefore: pre-create the `afk-evidence` release during `afk-init`** (e.g.
+`gh release create afk-evidence --prerelease --notes "afk loop screenshot
+evidence"`) so the per-slice upload path is never blocked mid-loop. Naming
+convention for assets: `slice-<N>-<short-desc>.png`.
+
 ## Conventions
 
 - ADRs live in `docs/adr/` — add one for decisions that are hard to reverse,
