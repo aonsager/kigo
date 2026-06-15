@@ -10,7 +10,6 @@ options:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    CODE_SIGNING_ALLOWED: "NO"
     IPHONEOS_DEPLOYMENT_TARGET: "26.0"
 
 targets:
@@ -25,13 +24,23 @@ targets:
     dependencies:
       - target: KigoWidgetExtension
         embed: true
+    entitlements:
+      # App Group so the main app and the widget extension share the same
+      # UserDefaults suite (group.com.tomeitotameigo.kigo). Without this the
+      # entitlement flag the app writes and the flag the widget reads land in
+      # separate `.standard` containers, so the subscriber image never shows.
+      path: Sources/Kigo/Kigo.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.tomeitotameigo.kigo
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigo
         PRODUCT_NAME: Kigo
         INFOPLIST_FILE: Sources/Kigo/Info.plist
         SWIFT_VERSION: "6.0"
-        CODE_SIGNING_ALLOWED: "NO"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: S25KR8TV8T
 
   KigoWidgetExtension:
     type: app-extension
@@ -52,17 +61,29 @@ targets:
       # Slice #73: KigoPlaceholderView (SwiftUI, no StoreKit) — deterministic gradient placeholder
       # reused by KigoWidgetView for the image layer (ADR 0001 / J2).
       - path: Sources/Kigo/KigoPlaceholder.swift
-    resources:
       # Slice #73: manifest.json bundled into the widget extension so the TimelineProvider can
       # load content without the app process running (ADR 0012).
+      # NOTE: must be a `sources` entry with `buildPhase: resources` — XcodeGen has no
+      # top-level `resources:` target key, so the previous `resources:` block was silently
+      # ignored and the manifest never made it into the .appex (widget showed only the
+      # redacted placeholder because the timeline provider could not load content).
       - path: Resources/manifest.json
+        buildPhase: resources
+    entitlements:
+      # Same App Group as the host app so the widget reads the entitlement flag
+      # from the shared UserDefaults suite (see EntitlementSharedStore).
+      path: Sources/KigoWidgetExtension/KigoWidgetExtension.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.tomeitotameigo.kigo
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigo.widgets
         PRODUCT_NAME: KigoWidgetExtension
         INFOPLIST_FILE: Sources/KigoWidgetExtension/Info.plist
         SWIFT_VERSION: "6.0"
-        CODE_SIGNING_ALLOWED: "NO"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: S25KR8TV8T
 
   KigoTests:
     type: bundle.unit-test
