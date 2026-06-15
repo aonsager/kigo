@@ -214,6 +214,56 @@ Goal state met ⇔ every `C*` procedure below passes on `main`.
      - an entry built with an **inactive** entitlement has `showsImage == false` and
        still carries the Kigo kanji + reading.
 
+### C8: The widget works through the real built artifact (honest integration)
+
+- **Depends on:** C3, C6, C7
+- **Statement:** The widget's content and shared-container wiring work through the
+  *real* built artifact, not injected stand-ins: the extension actually carries the
+  content it loads, the real content path resolves today's Kigo, and the app↔widget
+  App Group is configured. This is the gate that catches "logic green, product
+  mis-wired" — the failure where every widget logic test (C7) passed yet the widget
+  rendered blank on a device because `manifest.json` was never bundled into the
+  extension and the App Group was never configured. C7 verifies the timeline *logic*
+  against an injected manifest and shared store; C8 verifies the production *wiring*
+  those injections hide.
+- **Evidence:**
+  1. Run `xcodegen generate`, then build with the product path pinned:
+     ```
+     perl -e 'alarm shift; exec @ARGV' 720 \
+       xcodebuild build -scheme Kigo \
+         -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.4.1' \
+         -derivedDataPath build CODE_SIGNING_ALLOWED=NO
+     ```
+     — expect `** BUILD SUCCEEDED **` and exit 0. Then run
+     `test -f build/Build/Products/Debug-iphonesimulator/Kigo.app/PlugIns/KigoWidgetExtension.appex/manifest.json`
+     — expect exit 0. *(Built-product wiring check: the content the extension's
+     `TimelineProvider` loads is actually inside the shipped `.appex`, not only the app
+     bundle. XcodeGen silently ignoring a malformed resources entry is exactly how this
+     regressed.)*
+  2. Run the canonical test invocation (Constraints) with
+     `-only-testing:KigoWidgetTests/WidgetRealContentTests` — expect `** TEST SUCCEEDED **`
+     and exit 0, with `WidgetRealContentTests` containing ≥1 test. The suite loads content
+     through the **real** `BundledContentSource` (no injected or hand-built manifest) and
+     asserts that, for a pinned date, the `WidgetTimelineBuilder`'s entry carries that
+     date's actual `kanji` and `reading` from the bundled manifest — proving the real
+     content path resolves end-to-end, so the widget renders today's Kigo rather than the
+     redacted placeholder.
+  3. Run `xcodegen generate`, then assert the app↔widget App Group is declared on both
+     targets:
+     ```
+     /usr/libexec/PlistBuddy -c "Print :com.apple.security.application-groups:0" \
+       Sources/Kigo/Kigo.entitlements
+     /usr/libexec/PlistBuddy -c "Print :com.apple.security.application-groups:0" \
+       Sources/KigoWidgetExtension/KigoWidgetExtension.entitlements
+     ```
+     — expect both print `group.com.tomeitotameigo.kigo`. *(Build-configuration wiring
+     check. On-device entitlement **enforcement** needs signing/provisioning to run and
+     is verified by J3, off the headless gating path — see the "requires provisioning to
+     run" row in the headless-integration-traps catalog. This step deterministically
+     catches the App-Group-never-configured regression headlessly: when neither target
+     declares the group, app and widget silently fall back to separate `.standard`
+     stores and the subscriber image never reveals.)*
+
 ## Judgment claims
 
 Reported in the milestone report for async human review — never termination gates,
@@ -235,3 +285,16 @@ these are surfaced for awareness only.)
   (currently placeholder) images suit each Kigo and season.
 - **Lens:** Read a sample of Daily Map entries across seasons for accuracy and tone;
   view the rendered images. Note that images are intentionally placeholders for now.
+
+### J3: The widget renders correctly on a real home screen
+
+- **Applies to:** C7, C8
+- **Claim:** Added to a real device's home screen, both widget sizes (systemSmall and
+  systemMedium) show today's Kigo name; a non-subscriber sees the name without the image,
+  and a subscriber sees the image — i.e. the shared entitlement is actually enforced
+  across the app↔widget process boundary and the gating works visually.
+- **Lens:** On a signed device build, add both widget sizes to the home screen; confirm
+  name-only for a free user, and the image revealed after purchase/restore. The
+  home-screen render and real entitlement enforcement both need signing/provisioning and
+  a human eye, so this is reported off the headless gating path — never a termination
+  gate.
