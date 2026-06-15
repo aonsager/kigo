@@ -9,6 +9,3 @@ build/
 TestResults*
 *.xcresult
 xcodebuild.log
-
-# afk slice screenshot evidence (kept on disk, never committed)
-widget-real-content-screenshot.png
