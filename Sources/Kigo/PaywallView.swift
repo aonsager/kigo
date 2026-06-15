@@ -19,39 +19,47 @@ public struct PaywallView: View {
     }
 
     public var body: some View {
-        VStack(spacing: 24) {
-            Text("Kigo Widgets")
-                .font(.largeTitle)
-                .bold()
+        // The ZStack root carries `paywall.sheet` so the sheet's presence is
+        // machine-checkable by the UI test before inner content surfaces exist.
+        // ZStack with .frame(maxWidth:maxHeight:) renders as an accessible container
+        // (`otherElements`) that XCUI can locate by identifier even on iOS 26.
+        ZStack {
+            VStack(spacing: 24) {
+                Text("Kigo Widgets")
+                    .font(.largeTitle)
+                    .bold()
 
-            Text("Unlock widget access with the monthly subscription.")
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
+                Text("Unlock widget access with the monthly subscription.")
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.secondary)
 
-            Text(model.productID)
-                .font(.caption)
-                .foregroundStyle(.tertiary)
+                Text(model.productID)
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
 
-            if model.isActive {
-                Label("Subscription active", systemImage: "checkmark.seal.fill")
-                    .foregroundStyle(.green)
-            } else {
-                // Purchase button surface. In production this would invoke the
-                // StoreKit purchase sheet. No test drives a real purchase (see
-                // CLAUDE.md / ADR 0009 — it hangs under xcodebuild from the CLI).
-                Button("Subscribe") {
-                    // Purchase flow: out of scope for this slice.
-                    // Wire to `AppStore.sync()` + StoreKit purchase sheet in C7 or later.
+                if model.isActive {
+                    Label("Subscription active", systemImage: "checkmark.seal.fill")
+                        .foregroundStyle(.green)
+                } else {
+                    // Purchase button surface. In production this would invoke the
+                    // StoreKit purchase sheet. No test drives a real purchase (see
+                    // CLAUDE.md / ADR 0009 — it hangs under xcodebuild from the CLI).
+                    Button("Subscribe") {
+                        // Purchase flow: out of scope for this slice.
+                        // Wire to `AppStore.sync()` + StoreKit purchase sheet in C7 or later.
+                    }
+                    .buttonStyle(.borderedProminent)
                 }
-                .buttonStyle(.borderedProminent)
-            }
 
-            Button("Restore Purchases") {
-                Task { await model.restore() }
+                Button("Restore Purchases") {
+                    Task { await model.restore() }
+                }
+                .buttonStyle(.bordered)
             }
-            .buttonStyle(.bordered)
+            .padding()
         }
-        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .accessibilityIdentifier("paywall.sheet")
         .task { await model.loadState() }
     }
 }
