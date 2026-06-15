@@ -91,6 +91,110 @@ final class PaywallUITests: XCTestCase {
         add(attachment)
     }
 
+    // MARK: - AC (slice #87): paywall.benefits, paywall.buy, paywall.restore; buy is inert
+
+    /// Slice #87: The Basic (inactive) Paywall must show:
+    ///   - `paywall.benefits` with a non-empty label describing the Widget image-reveal benefit.
+    ///   - `paywall.buy` — the prominent buy button (present but inert this milestone).
+    ///   - `paywall.restore` — the Restore Purchases button.
+    /// After tapping `paywall.buy`, the sheet must remain visible (buy is inert — no purchase
+    /// flow wired yet; that is C10 / out of scope for this slice).
+    ///
+    /// Screenshot evidence: captured after all elements are confirmed present, attached as
+    /// `slice-87-basic-paywall` with lifetime `.keepAlways`.
+    /// Full test identifier: KigoUITests/PaywallUITests/testBasicPaywallShowsBenefitsBuyRestore
+    func testBasicPaywallShowsBenefitsBuyRestore() {
+        // Re-launch with KIGO_FAKE_PRICE set.
+        app.terminate()
+        app = XCUIApplication()
+        app.launchEnvironment["KIGO_FAKE_DATE"] = "2026-06-12"
+        app.launchEnvironment["KIGO_FAKE_ENTITLEMENT"] = "inactive"
+        app.launchEnvironment["KIGO_FAKE_PRICE"] = "¥300"
+        app.launch()
+
+        // Open the paywall sheet via the upgrade entry.
+        let entry = app.buttons["paywall.entry"]
+        XCTAssertTrue(
+            entry.waitForExistence(timeout: 10),
+            "paywall.entry must exist before tapping"
+        )
+        entry.tap()
+
+        // Assert the sheet container is present.
+        let sheetElement = app.descendants(matching: .any)
+            .matching(identifier: "paywall.sheet")
+            .firstMatch
+        XCTAssertTrue(
+            sheetElement.waitForExistence(timeout: 10),
+            "paywall.sheet must appear after tapping Upgrade"
+        )
+
+        // --- AC: paywall.benefits is present and non-empty ---
+        let benefitsAny = app.descendants(matching: .any)
+            .matching(identifier: "paywall.benefits")
+            .firstMatch
+        XCTAssertTrue(
+            benefitsAny.waitForExistence(timeout: 5),
+            "paywall.benefits element must exist in the paywall sheet"
+        )
+        XCTAssertFalse(
+            benefitsAny.label.isEmpty,
+            "paywall.benefits label must be non-empty; got empty string"
+        )
+
+        // --- AC: paywall.buy is present ---
+        let buyAny = app.descendants(matching: .any)
+            .matching(identifier: "paywall.buy")
+            .firstMatch
+        XCTAssertTrue(
+            buyAny.waitForExistence(timeout: 5),
+            "paywall.buy element must exist in the paywall sheet"
+        )
+
+        // --- AC: paywall.restore is present ---
+        let restoreAny = app.descendants(matching: .any)
+            .matching(identifier: "paywall.restore")
+            .firstMatch
+        XCTAssertTrue(
+            restoreAny.waitForExistence(timeout: 5),
+            "paywall.restore element must exist in the paywall sheet"
+        )
+
+        // Screenshot evidence — captured BEFORE the inertness assertion (sheet still open).
+        let screenshot = XCUIScreen.main.screenshot()
+        let attachment = XCTAttachment(screenshot: screenshot)
+        attachment.lifetime = .keepAlways
+        attachment.name = "slice-87-basic-paywall"
+        add(attachment)
+
+        // --- AC: buy is inert — tapping buy must NOT dismiss the sheet ---
+        // Re-fetch buy element after screenshot so we have a fresh reference.
+        let buyButton = app.descendants(matching: .any)
+            .matching(identifier: "paywall.buy")
+            .firstMatch
+        XCTAssertTrue(
+            buyButton.exists,
+            "paywall.buy must still exist before inertness tap"
+        )
+        buyButton.tap()
+
+        // Wait briefly for any animation that a dismissal might trigger, then assert.
+        let sheetStillPresent = app.descendants(matching: .any)
+            .matching(identifier: "paywall.sheet")
+            .firstMatch
+        XCTAssertTrue(
+            sheetStillPresent.waitForExistence(timeout: 3),
+            "paywall.sheet must remain visible after tapping paywall.buy (buy is inert this milestone)"
+        )
+        let buyStillPresent = app.descendants(matching: .any)
+            .matching(identifier: "paywall.buy")
+            .firstMatch
+        XCTAssertTrue(
+            buyStillPresent.exists,
+            "paywall.buy must remain present after tapping (buy is inert this milestone)"
+        )
+    }
+
     // MARK: - AC3 (slice #86): paywall.price and paywall.duration elements
 
     /// AC3: Opening the Paywall with `KIGO_FAKE_PRICE=¥300` must show an element

@@ -39,9 +39,12 @@ public struct PaywallView: View {
                     .font(.largeTitle)
                     .bold()
 
-                Text("Unlock widget access with the monthly subscription.")
+                // Benefits copy — describes the single honest premium benefit (widget image reveal).
+                // Carries `paywall.benefits` so the UI test can assert it is present and non-empty.
+                Text("Reveal the seasonal illustration on your home screen widget.")
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.secondary)
+                    .accessibilityIdentifier("paywall.benefits")
 
                 Text(model.productID)
                     .font(.caption)
@@ -63,20 +66,21 @@ public struct PaywallView: View {
                     Label("Subscription active", systemImage: "checkmark.seal.fill")
                         .foregroundStyle(.green)
                 } else {
-                    // Purchase button surface. In production this would invoke the
-                    // StoreKit purchase sheet. No test drives a real purchase (see
-                    // CLAUDE.md / ADR 0009 — it hangs under xcodebuild from the CLI).
+                    // Purchase button surface. Carries `paywall.buy` for UI test assertions.
+                    // Inert this milestone — no purchase flow is wired (that is C10).
+                    // Wire to `AppStore.sync()` + StoreKit purchase sheet in C10 or later.
                     Button("Subscribe") {
-                        // Purchase flow: out of scope for this slice.
-                        // Wire to `AppStore.sync()` + StoreKit purchase sheet in C7 or later.
+                        // Purchase flow: out of scope for this slice (C10).
                     }
                     .buttonStyle(.borderedProminent)
+                    .accessibilityIdentifier("paywall.buy")
                 }
 
                 Button("Restore Purchases") {
                     Task { await model.restore() }
                 }
                 .buttonStyle(.bordered)
+                .accessibilityIdentifier("paywall.restore")
             }
             .padding()
         }
