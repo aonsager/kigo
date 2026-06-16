@@ -54,6 +54,18 @@ public struct AlmanacPositions: Sendable, Equatable {
     ///
     /// Example: 梅子黄 (06-16–06-20) → `koRangeLength` == 5.
     public let koRangeLength: Int
+
+    /// The 1-indexed position of the current Kō among the Kō sharing the current Sekki,
+    /// ordered by `dateRange.start` (lexicographic MM-DD, equal to calendar order).
+    ///
+    /// Each Sekki contains exactly 3 Kō; on a Sekki-boundary day this resets to 1
+    /// (the date falls in the first Kō of the new Sekki).
+    ///
+    /// Example: 梅子黄 is the third Kō of 芒種 → `koWithinSekki` == 3.
+    public let koWithinSekki: Int
+
+    /// The total number of Kō in the current Sekki (always 3 for the bundled content).
+    public let koWithinSekkiTotal: Int
 }
 
 // MARK: - AlmanacResolver
@@ -222,13 +234,33 @@ public enum AlmanacResolver {
         let dayWithinKo  = dayOffset + 1   // 1-indexed
         let koRangeLength = rangeSpan + 1  // inclusive endpoint
 
+        // MARK: Kō-within-Sekki (slice #109)
+        //
+        // Collect all Kō that share the current Sekki, sort them by dateRange.start
+        // (lexicographic MM-DD == calendar order), and find the 1-indexed position of
+        // the current Kō. This is the same ordering used for the Kō year-position above.
+        let sekkiKo = manifest.ko
+            .filter { $0.sekkiId == currentKo.sekkiId }
+            .sorted { $0.dateRange.start < $1.dateRange.start }
+
+        guard let koWithinSekkiIndex = sekkiKo.firstIndex(where: {
+            $0.kanji == currentKo.kanji
+        }) else {
+            return nil
+        }
+
+        let koWithinSekki = koWithinSekkiIndex + 1  // 1-indexed
+        let koWithinSekkiTotal = sekkiKo.count       // always 3 for bundled content
+
         return AlmanacPositions(
-            koYearPosition: positionIndex + 1,      // 1-indexed
+            koYearPosition: positionIndex + 1,          // 1-indexed
             koYearTotal: rotated.count,
-            sekkiYearPosition: sekkiPositionIndex + 1, // 1-indexed
+            sekkiYearPosition: sekkiPositionIndex + 1,  // 1-indexed
             sekkiYearTotal: rotatedSekki.count,
             dayWithinKo: dayWithinKo,
-            koRangeLength: koRangeLength
+            koRangeLength: koRangeLength,
+            koWithinSekki: koWithinSekki,
+            koWithinSekkiTotal: koWithinSekkiTotal
         )
     }
 }
