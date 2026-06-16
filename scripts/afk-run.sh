@@ -5,7 +5,18 @@
 #
 # Config (env vars):
 #   AFK_ITER_TIMEOUT  per-iteration wall-clock cap in seconds (default 2700 = 45min)
-#   AFK_MODEL         optional --model override for afk-step sessions
+#   AFK_MODEL         --model for the afk-step ORCHESTRATOR session (default
+#                     "sonnet"). This drives the loop logic — phase
+#                     derivation, dispatch/halt/retry/bounce decisions, GitHub
+#                     ops, reading subagent results — across ~60 turns/iteration,
+#                     and was ~73% of the loop's token bill when left on Opus.
+#                     Sonnet is sufficient because every judgment-critical fork
+#                     pins its OWN model regardless of this orchestrator: the
+#                     implementer escalates to opus on attempts 2-3, and the
+#                     audit→main gate runs an opus subagent. The skills were
+#                     explicitly designed for a cheap orchestrator (see the
+#                     "parent model … may itself be a cheap orchestrator" note in
+#                     afk-advance). Set AFK_MODEL=opus to revert.
 #   AFK_BYPASS        set to 1 to add --dangerously-skip-permissions (graduate only
 #                     after the skills have a few clean runs)
 #   AFK_NTFY_URL      optional ntfy.sh-style URL for push notification on exit
@@ -13,6 +24,7 @@
 set -u
 
 AFK_ITER_TIMEOUT="${AFK_ITER_TIMEOUT:-2700}"
+AFK_MODEL="${AFK_MODEL:-sonnet}"   # orchestrator model; see header
 MAX_CONSEC_FAIL=3
 
 # Always bill the subscription's Agent SDK credit, never an API key.
