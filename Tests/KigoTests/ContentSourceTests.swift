@@ -129,7 +129,9 @@ final class ContentSourceTests: XCTestCase {
             sekkiId: "sekki-01",
             dateRange: DateRange(start: "01-01", end: "01-05")
         )]
-        let sekki = [Sekki(id: "sekki-01", kanji: "小寒", reading: "しょうかん")]
+        let sekki = [Sekki(id: "sekki-01", kanji: "小寒", reading: "しょうかん",
+                           gloss: LocalizedText(ja: "寒さの始まり"),
+                           description: LocalizedText(ja: "寒さが厳しくなる時期。"))]
         let manifest = Manifest(schemaVersion: "1.0", dailyMap: dailyMap, ko: ko, sekki: sekki)
 
         // CountingFakeContentSource: first call returns the manifest; subsequent calls throw.

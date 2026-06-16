@@ -65,7 +65,9 @@ final class WidgetTimelineTests: XCTestCase {
                         gloss: "earth is damp and sultry",
                         sekkiId: "shousho",
                         dateRange: DateRange(start: nextDayKey, end: nextDayKey))
-        let sekki = Sekki(id: "shousho", kanji: "小暑", reading: "しょうしょ")
+        let sekki = Sekki(id: "shousho", kanji: "小暑", reading: "しょうしょ",
+                          gloss: LocalizedText(ja: "暑さが増してくる"),
+                          description: LocalizedText(ja: "本格的な暑さが始まる時期。"))
         return Manifest(schemaVersion: "1.0",
                         dailyMap: [dayKey: entry, nextDayKey: nextEntry],
                         ko: [ko, nextKo],
@@ -87,7 +89,9 @@ final class WidgetTimelineTests: XCTestCase {
                     gloss: "rotten grass becomes fireflies",
                     sekkiId: "shousho",
                     dateRange: DateRange(start: dayKey, end: dayKey))
-        let sekki = Sekki(id: "shousho", kanji: "小暑", reading: "しょうしょ")
+        let sekki = Sekki(id: "shousho", kanji: "小暑", reading: "しょうしょ",
+                          gloss: LocalizedText(ja: "暑さが増してくる"),
+                          description: LocalizedText(ja: "本格的な暑さが始まる時期。"))
         return Manifest(schemaVersion: "1.0",
                         dailyMap: [dayKey: entry],
                         ko: [ko],
