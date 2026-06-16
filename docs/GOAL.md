@@ -36,6 +36,34 @@ on the calm Today screen (J1).
 Audience: people who want a small daily encounter with the Japanese seasons —
 contemplative, aesthetic, low-friction.
 
+### Visual revamp (Asagiri) — added 2026-06-16
+
+The app's deliberately-minimal first design is being replaced by a full visual revamp,
+internally **Asagiri** (朝霧): full-bleed per-day photography, centered sumi-ink **Mincho**
+typography, generous quiet space, a feathered frosted-glass plate that keeps the text
+legible over busy photos, and a gentle entrance — in **both light and dark** appearance,
+following the system. The canonical reference is the `Kigo Revamp.dc.html` handoff
+(design tokens, layout, motion, and the per-surface accessibility identifiers it preserves).
+
+The revamp keeps everything above and **deliberately reuses the existing accessibility
+identifiers** (`kigo.*`, `paywall.*`, `microseason.ko/sekki`, the placeholders), so the
+prior capabilities (C1–C10) still hold after the reskin. It adds three **opt-in overlays on
+the Today screen** and one settings change — none of which add a second destination or
+violate the "only today" calm:
+
+- **Microseason Almanac** — the floating Microseason line becomes a resting **Year timeline**
+  (sekki · kō above 72 ticks) that taps to expand a sheet with the kō/sekki year-positions,
+  day-within-kō and kō-within-sekki **progress gauges**, glosses, and prose.
+- **Image Attribution panel** — an **(i)** control (top-left) slides a per-image credit panel
+  down from the top.
+- **Settings menu** — the bare **Upgrade entry** becomes a top-right **Settings gear** opening
+  a sheet with three sections: a **Language preference** switcher (JP/EN), the widget
+  subscribe offer (the Paywall, unchanged in substance), and the legal links.
+
+Pixel-fidelity to the Asagiri mockup is inherently subjective and is reported as a judgment
+claim (J6), **never a termination gate** — what the loop hard-gates is the new *structure,
+data, wiring, and measurable composition*, and that both appearances render without breaking.
+
 ## Out of scope
 
 The autonomous planner must treat these as a hard fence — never plan work that
@@ -70,6 +98,21 @@ serves only these, even if it seems helpful:
 - **Sourcing real photography/art.** Images are tasteful placeholders for now
   (see ADR 0001 / J2); curating real imagery is not part of this goal.
 - **Pre-iOS-26 support.** Deployment target is iOS 26 (see ADR 0002).
+- **English content & full localization.** The **Language preference** (C15) ships the
+  switcher, a persisted preference, and English **UI-chrome** strings only. Translating the
+  per-entry Kigo/Kō/Sekki descriptions and glosses into English, and any region/date/number
+  localization, are **deferred** — the schema reserves optional English fields (ADR 0014) but
+  populating them is a later goal. Content kanji names never translate.
+- **Browsing the year via the Almanac.** The Microseason Almanac shows only *today's*
+  position in the year (counters + gauges + this kō/sekki's copy). It must never become a
+  way to scrub to other days, kō, or sekki — that would breach the Today-only fence above.
+- **Real photography & real attribution values.** Images remain tasteful placeholders (as
+  before); the new **Image Attribution** strings are likewise placeholders. Their schema
+  presence/well-formedness is gated (C12/C14); sourcing real images and real credits is out
+  of scope (J2/J6).
+- **In-app subscription management UI (restated).** Folding the subscribe offer into the
+  **Settings menu** does not add manage/cancel UI; it is still one product, one honest
+  benefit, with at most a deep link to Apple's system screen (J4).
 
 ## Constraints
 
@@ -132,6 +175,22 @@ Standing rules every milestone inherits:
   `com.tomeitotameigo.kigo.widgets.monthly` (loop may refine the app group / product
   naming, but the bundle id is fixed).
 - **Date semantics:** "today" is the device's local calendar day (CONTEXT.md).
+- **Revamp launch-env injection (extends ADR 0013):** the `KIGO_FAKE_*` convention gains two
+  variables so the revamp's appearance- and language-dependent UI is driven deterministically
+  under headless UI test — `KIGO_FAKE_APPEARANCE=light|dark` (pins
+  `.preferredColorScheme`; absent ⇒ follow system) and `KIGO_FAKE_LANGUAGE=ja|en` (pins the
+  Language preference; absent ⇒ the persisted value, default Japanese). Same pattern as the
+  existing `LaunchDateProvider`/`LaunchEntitlementProvider`/`LaunchOfferDisplay` resolvers.
+- **Fonts:** the Asagiri type identity uses **Shippori Mincho** and **Zen Kaku Gothic New**
+  (both OFL, free to bundle). They are bundled into the app and registered in `UIAppFonts`;
+  C17 gates that wiring against the built product (a missing/unregistered font silently
+  falls back to the system font — exactly the kind of regression C8 was written to catch).
+- **Content schema (ADR 0014):** the Contract is extended once to be localization-ready
+  (Kō `description`; Sekki `gloss`+`description`; per-image `attribution`; optional English
+  fields decodable whether present or absent; `schemaVersion` bumped). C12 gates the
+  Japanese-side completeness and the optional-English forward-compatibility.
+- **Almanac indexing:** all year-positions are **1-indexed** (梅子黄 = 27/72), matching the
+  lit timeline tick (CONTEXT.md; overrides the mockup's literal "26/72").
 
 ## Criteria
 
@@ -371,6 +430,175 @@ Goal state met ⇔ every `C*` procedure below passes on `main`.
      - **failed:** with the purchaser configured to throw, after `buy()` the model
        reports inactive (`isActive == false`) — the failure is handled, not crashed.
 
+### Revamp note — C9 / C10 survive the reskin
+
+The Asagiri revamp folds the subscribe offer into the **Settings menu** but **preserves the
+`paywall.*` accessibility identifiers** (`paywall.entry` now on the Settings gear,
+`paywall.sheet` on the menu, and `paywall.benefits/price/duration/buy/restore/terms/privacy/manage`
+inside it). C9 and C10 are therefore **unchanged** and re-verified as written against the new
+menu — if the reskin drops or moves one of those identifiers, their procedures fail and the
+loop catches it. Do not renumber or rewrite C9/C10.
+
+### C11: Microseason almanac positions resolve correctly
+
+- **Depends on:** C1, C2, C4
+- **Statement:** Given a date, the resolver derives the four **Almanac positions** the
+  expanded almanac renders — the Kō year-position (N of 72, **1-indexed**), the Sekki
+  year-position (M of 24, 1-indexed), the **day-within-Kō** (d of the Kō date-range length,
+  1-indexed), and the **Kō-within-Sekki** (k of the Kō sharing that Sekki, 1-indexed). Pure,
+  deterministic, made testable by date injection (no UI).
+- **Evidence:**
+  1. Run the canonical test invocation (Constraints) with
+     `-only-testing:KigoTests/AlmanacResolutionTests` — expect `** TEST SUCCEEDED **`, exit
+     0, **and** output matching `Executed [1-9][0-9]* test`. Injecting a `DateProvider`, the
+     suite asserts for a fixed set of dates spanning the year (including a Kō-boundary day,
+     a Sekki-boundary day, and `02-29`):
+     - for `2026-06-16` (梅子黄, range `06-16`–`06-20`): Kō year-position `27/72`, Sekki
+       (芒種) year-position `9/24`, day-within-Kō `1/5`, Kō-within-Sekki `1/3`;
+     - for a mid-range date (`2026-06-18`): day-within-Kō `3/5`;
+     - the counts are 1-indexed and the totals are exactly 72 (Kō) and 24 (Sekki);
+     - `02-29` resolves to a defined position without crashing.
+
+### C12: Almanac & attribution content is complete and the schema is localization-ready
+
+- **Depends on:** C2
+- **Statement:** The Manifest carries the content the Almanac and Attribution panel render,
+  structurally complete and localization-ready (ADR 0014): every Kō has a non-empty
+  `description`; every Sekki has a non-empty `gloss` and `description`; every Daily Map
+  image has well-formed `attribution` (non-empty title, credit, license); and the schema
+  decodes optional English fields whether present or absent, so English content can be added
+  later without a schema break. Literary/photo quality is **not** gated here (J2/J6).
+- **Evidence:**
+  1. Run the canonical test invocation (Constraints) with
+     `-only-testing:KigoTests/AlmanacContentValidationTests` — expect `** TEST SUCCEEDED **`,
+     exit 0, and `Executed [1-9][0-9]* test`. The suite loads the bundled Manifest and asserts:
+     - all **72** Kō have a non-empty `description`;
+     - all **24** Sekki have a non-empty `gloss` **and** a non-empty `description`;
+     - all **366** Daily Map entries resolve to an `attribution` with non-empty `title`,
+       `credit`, and `license`.
+  2. Run the canonical test invocation (Constraints) with
+     `-only-testing:KigoTests/LocalizableContentTests` — expect `** TEST SUCCEEDED **`, exit
+     0, and `Executed [1-9][0-9]* test`. The suite asserts the Manifest decodes a fixture
+     entry that **includes** the optional English field(s) and one that **omits** them (both
+     succeed and round-trip), pinning the forward-compatibility ADR 0014 requires.
+
+### C13: Today shows the resting timeline and expands the almanac (reachable)
+
+- **Depends on:** C5, C11, C12
+- **Statement:** The Today screen replaces the floating Microseason line with the resting
+  **Year timeline** and, tapping it, expands the **Almanac** sheet showing the derived
+  positions and copy — verified through the *real, reachable* live app (not merely that a
+  view type exists).
+- **Evidence:**
+  1. Run the canonical test invocation (Constraints) with
+     `-only-testing:KigoUITests/MicroseasonAlmanacUITests` — expect `** TEST SUCCEEDED **`,
+     exit 0, and `Executed [1-9][0-9]* test`. Launched with `KIGO_FAKE_DATE=2026-06-16`, the
+     suite asserts via accessibility identifiers:
+     - the resting state shows `microseason.sekki` (text contains 芒種), `microseason.ko`
+       (text contains 梅子黄), and a tappable `microseason.timeline`;
+     - tapping `microseason.timeline` presents `microseason.almanac`;
+     - the almanac shows `microseason.koPosition` whose text contains both `27` and `72`, a
+       `microseason.dayGauge`, and a non-empty `microseason.koDescription`;
+     - dismissing (grab indicator or backdrop) hides `microseason.almanac`.
+
+### C14: Image-attribution panel is reachable from Today
+
+- **Depends on:** C5, C12
+- **Statement:** An **(i)** control on the Today screen opens an **Attribution panel**
+  showing the resolved image's credit — verified through the real app; dismissed by the grab
+  indicator or backdrop (no label, no close button).
+- **Evidence:**
+  1. Run the canonical test invocation (Constraints) with
+     `-only-testing:KigoUITests/AttributionPanelUITests` — expect `** TEST SUCCEEDED **`,
+     exit 0, and `Executed [1-9][0-9]* test`. Launched with `KIGO_FAKE_DATE=2026-06-16`, the
+     suite asserts: `info.entry` is present; tapping it presents `info.panel`; the panel
+     shows a non-empty `info.credit` and a non-empty `info.title`; dismissing via the
+     backdrop hides `info.panel`.
+
+### C15: Language preference switches the app's UI-chrome strings
+
+- **Depends on:** C5, C9
+- **Statement:** A persisted **Language preference** (Japanese default) drives the app's own
+  UI-chrome strings, and the **Settings menu** exposes a JP/EN switcher; selecting English
+  renders chrome in English. Content kanji names are unchanged and per-entry English content
+  is deferred (ADR 0014) — only the mechanism, the chrome strings, and the switcher control
+  are gated.
+- **Evidence:**
+  1. Run the canonical test invocation (Constraints) with
+     `-only-testing:KigoTests/LanguagePreferenceTests` — expect `** TEST SUCCEEDED **`, exit
+     0, and `Executed [1-9][0-9]* test`. Driving the localized-strings seam over an injected
+     store, the suite asserts: chrome strings (e.g. the Restore-purchases and loading labels)
+     return their Japanese form by default; their English form when the preference is set to
+     English; the selection persists across a re-read; and an absent/unrecognized value
+     falls back to Japanese.
+  2. Run the canonical test invocation (Constraints) with
+     `-only-testing:KigoUITests/SettingsLanguageUITests` — expect `** TEST SUCCEEDED **`,
+     exit 0, and `Executed [1-9][0-9]* test`. Launching the real app and opening the Settings
+     menu via `paywall.entry`, the suite asserts a `settings.language` switcher is present
+     with a Japanese and an English option; and that launching with `KIGO_FAKE_LANGUAGE=en`
+     renders a known chrome string in English (e.g. `paywall.restore` reads its English
+     label) while the default launch renders it in Japanese.
+
+### C16: Both appearances render without breaking (dark mode)
+
+- **Depends on:** C5, C9
+- **Statement:** The app follows the system **Appearance**; in **dark** appearance the Today
+  screen and the Settings sheet still surface their key elements — no blank, broken, or
+  crashed render. Visual fidelity of dark mode is J6, not gated here.
+- **Evidence:**
+  1. Run the canonical test invocation (Constraints) with
+     `-only-testing:KigoUITests/DarkModeUITests` — expect `** TEST SUCCEEDED **`, exit 0,
+     and `Executed [1-9][0-9]* test`. Launched with `KIGO_FAKE_DATE=2026-06-16` and
+     `KIGO_FAKE_APPEARANCE=dark`, the suite asserts the Today screen still shows `kigo.kanji`,
+     `kigo.description`, `microseason.ko`, `info.entry`, and `paywall.entry`; and that tapping
+     `paywall.entry` still presents `paywall.sheet` containing a non-empty `paywall.benefits`.
+
+### C17: Asagiri fonts are bundled and registered (built-product wiring)
+
+- **Depends on:** C1
+- **Statement:** The Asagiri fonts ship inside the built app bundle and are registered in
+  `UIAppFonts`, so the app uses them rather than silently falling back to the system font.
+  (Whether the type *looks* right is J6; whether it is *wired* is gated here — the same
+  built-product-wiring discipline as C8.)
+- **Evidence:**
+  1. Run `xcodegen generate`, then build with the product path pinned:
+     ```
+     perl -e 'alarm shift; exec @ARGV' 720 \
+       xcodebuild build -scheme Kigo \
+         -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.4.1' \
+         -derivedDataPath build CODE_SIGNING_ALLOWED=NO
+     ```
+     — expect `** BUILD SUCCEEDED **` and exit 0.
+  2. Assert the `UIAppFonts` array in the **built** app's Info.plist is non-empty with at
+     least two entries:
+     `/usr/libexec/PlistBuddy -c "Print :UIAppFonts:0" build/Build/Products/Debug-iphonesimulator/Kigo.app/Info.plist`
+     and `:UIAppFonts:1` — expect both print a font filename (exit 0). *(Built-config wiring:
+     an unregistered font silently never loads.)*
+  3. For each filename printed in step 2, assert the file actually ships in the bundle:
+     `test -f "build/Build/Products/Debug-iphonesimulator/Kigo.app/<that filename>"` — expect
+     exit 0. *(Built-product wiring: the registered fonts are physically inside the shipped
+     bundle, not merely referenced — the XcodeGen-silently-dropped-resource failure mode C8
+     guards, applied to fonts.)*
+
+### C18: Today screen composition (measurable visual facts)
+
+- **Depends on:** C5
+- **Statement:** The Today screen composes the Asagiri structure as objectively measurable
+  facts: a **full-bleed** image filling the screen (not a small corner box — the exact bug
+  the designer hit), a **legibility treatment** behind the centered text, and the controls in
+  their corners (the **(i)** top-left, the **Settings gear** top-right). Aesthetic fidelity is
+  J6; these geometric facts are gated.
+- **Evidence:**
+  1. Run the canonical test invocation (Constraints) with
+     `-only-testing:KigoUITests/TodayLayoutUITests` — expect `** TEST SUCCEEDED **`, exit 0,
+     and `Executed [1-9][0-9]* test`. Launched with `KIGO_FAKE_DATE=2026-06-16`, the suite
+     asserts against the app window's frame:
+     - `kigo.image` is full-bleed — its width is within a small tolerance of the window width
+       **and** its height is ≥ 90% of the window height (catches the "small box" regression);
+     - a `kigo.scrim` legibility element is present in the hierarchy;
+     - `info.entry`'s center is in the top-left region (x < width/2, y < height/3) and
+       `paywall.entry`'s center is in the top-right region (x > width/2, y < height/3).
+
 ## Judgment claims
 
 Reported in the milestone report for async human review — never termination gates,
@@ -387,11 +615,14 @@ these are surfaced for awareness only.)
 
 ### J2: The Kigo content and imagery are evocative and accurate
 
-- **Applies to:** C2, C5
-- **Claim:** The generated Kigo descriptions are accurate and evocative, and the
-  (currently placeholder) images suit each Kigo and season.
-- **Lens:** Read a sample of Daily Map entries across seasons for accuracy and tone;
-  view the rendered images. Note that images are intentionally placeholders for now.
+- **Applies to:** C2, C5, C12, C13, C14
+- **Claim:** The generated Kigo descriptions are accurate and evocative; the new per-Kō and
+  per-Sekki almanac descriptions/glosses are accurate, in the right quiet voice, and give
+  real "where am I in the year" context; the (currently placeholder) images and their
+  (placeholder) attribution suit each Kigo and season.
+- **Lens:** Read a sample of Daily Map entries and almanac kō/sekki descriptions across
+  seasons for accuracy and tone; view the rendered images and the attribution panel. Note
+  that images and attribution values are intentionally placeholders for now.
 
 ### J3: The widget renders correctly on a real home screen
 
@@ -430,6 +661,25 @@ these are surfaced for awareness only.)
   calm nightstand feel (J1) — it reads as a quiet affordance, not an upsell badge —
   and the Paywall splash itself is tasteful, restrained, and on-brand rather than a
   pushy storefront.
-- **Lens:** Launch the app; judge whether the Upgrade entry intrudes on the Today
-  screen's restraint, then open the Paywall and judge its typography, spacing, and
-  tone as a calm-seeking, non-developer user would.
+- **Lens:** Launch the app; judge whether the Settings gear (the revamp's quiet
+  replacement for the Upgrade entry) intrudes on the Today screen's restraint, then open the
+  Settings menu and judge its typography, spacing, and tone as a calm-seeking, non-developer
+  user would.
+
+### J6: The revamp faithfully realizes the Asagiri direction in light and dark
+
+- **Applies to:** C13, C14, C15, C16, C18, and the Today / Settings / Widget surfaces
+- **Claim:** The implemented surfaces faithfully render the `Kigo Revamp.dc.html` Asagiri
+  mockup — full-bleed photography under a feathered frosted-glass legibility plate; centered
+  **Shippori Mincho** kanji at the specified type scale; the quiet **Year timeline** that
+  taps to expand the almanac (positions, gauges, gloss, prose); the **(i)** attribution
+  panel; the **Settings menu** (language / subscribe / legal); the gentle entrance motion;
+  and the gated Widget — all in **both light and dark**, reading as the calm nightstand
+  object (reinforcing J1/J5). Dark-mode polish (saturated season bands, warm-gold gloss, the
+  scrim tuned per theme) is part of this claim.
+- **Lens:** Launch in the simulator in **both** appearances against the design tokens in the
+  handoff README; click through Today → Almanac, the (i) panel, and Settings (language toggle,
+  subscribe/manage, legal); compare layout, color, Mincho type, scrim/plate legibility over a
+  real photo, motion, and dark polish to `Kigo Revamp.dc.html`. Pixel-fidelity is reported
+  for async human review — **never a termination gate** (the C* above gate the structure,
+  data, wiring, and that both appearances render without breaking; the *look* is judged here).
