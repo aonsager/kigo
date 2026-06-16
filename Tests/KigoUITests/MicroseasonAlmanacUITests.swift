@@ -320,5 +320,13 @@ final class MicroseasonAlmanacUITests: XCTestCase {
         attachment.name = "almanac-sheet-open"
         attachment.lifetime = .keepAlways
         add(attachment)
+
+        // Additional screenshot evidence for slice #132: confirms the almanac sheet
+        // presents reliably after the enum-driven sheet consolidation.
+        let consolidatedScreenshot = XCUIScreen.main.screenshot()
+        let consolidatedAttachment = XCTAttachment(screenshot: consolidatedScreenshot)
+        consolidatedAttachment.name = "almanac-sheet-consolidated.png"
+        consolidatedAttachment.lifetime = .keepAlways
+        add(consolidatedAttachment)
     }
 }
