@@ -167,14 +167,17 @@ final class PaywallUITests: XCTestCase {
         attachment.name = "slice-87-basic-paywall"
         add(attachment)
 
-        // --- AC: buy is inert — tapping buy must NOT dismiss the sheet ---
+        // --- AC: tapping buy without KIGO_FAKE_PURCHASER set must not crash or dismiss the sheet ---
+        // With no KIGO_FAKE_PURCHASER, the production StoreKitSubscriptionPurchaser is used;
+        // Product.products(for:) will fail (no StoreKit config under xcodebuild) and buy()
+        // swallows the error — isActive stays false, sheet stays open, no crash.
         // Re-fetch buy element after screenshot so we have a fresh reference.
         let buyButton = app.descendants(matching: .any)
             .matching(identifier: "paywall.buy")
             .firstMatch
         XCTAssertTrue(
             buyButton.exists,
-            "paywall.buy must still exist before inertness tap"
+            "paywall.buy must still exist before tapping"
         )
         buyButton.tap()
 
@@ -184,14 +187,14 @@ final class PaywallUITests: XCTestCase {
             .firstMatch
         XCTAssertTrue(
             sheetStillPresent.waitForExistence(timeout: 3),
-            "paywall.sheet must remain visible after tapping paywall.buy (buy is inert this milestone)"
+            "paywall.sheet must remain visible after tapping paywall.buy with no fake purchaser (error swallowed)"
         )
         let buyStillPresent = app.descendants(matching: .any)
             .matching(identifier: "paywall.buy")
             .firstMatch
         XCTAssertTrue(
             buyStillPresent.exists,
-            "paywall.buy must remain present after tapping (buy is inert this milestone)"
+            "paywall.buy must remain present (isActive stays false when purchaser fails silently)"
         )
     }
 
@@ -353,6 +356,91 @@ final class PaywallUITests: XCTestCase {
         XCTAssertFalse(
             manageElement.exists,
             "paywall.manage must NOT exist when KIGO_FAKE_ENTITLEMENT=inactive"
+        )
+    }
+
+    // MARK: - AC (slice #117): Wire Subscribe button → paywall.manage appears after simulated buy
+
+    /// Slice #117: With `KIGO_FAKE_PURCHASER=succeed`, tapping `paywall.buy` must cause
+    /// the model to call through the injected fake purchaser (which flips the mutable
+    /// entitlement source to report the widget product as owned), triggering a
+    /// `refreshEntitlement()` that sets `isActive = true` — causing `paywall.manage` to
+    /// appear and `paywall.buy` to disappear.
+    ///
+    /// Acceptance criteria verified:
+    ///   AC1: `paywall.manage` appears within the timeout after tapping `paywall.buy`.
+    ///   AC2: `paywall.buy` is no longer present after `paywall.manage` appears.
+    ///
+    /// Screenshot evidence: captured after `paywall.manage` is confirmed, attached as
+    /// `slice-c10-buy-wiring` with lifetime `.keepAlways`.
+    /// Full test identifier: KigoUITests/PaywallUITests/testWireSubscribeButtonShowsManageSurface
+    func testWireSubscribeButtonShowsManageSurface() {
+        // Re-launch with the fake purchaser env var set.
+        app.terminate()
+        app = XCUIApplication()
+        app.launchEnvironment["KIGO_FAKE_DATE"] = "2026-06-12"
+        app.launchEnvironment["KIGO_FAKE_ENTITLEMENT"] = "inactive"
+        app.launchEnvironment["KIGO_FAKE_PRICE"] = "¥300"
+        app.launchEnvironment["KIGO_FAKE_PURCHASER"] = "succeed"
+        app.launch()
+
+        // Open the paywall sheet via the upgrade entry.
+        let entry = app.descendants(matching: .any)
+            .matching(identifier: "paywall.entry")
+            .firstMatch
+        XCTAssertTrue(
+            entry.waitForExistence(timeout: 10),
+            "paywall.entry must exist to open the paywall sheet"
+        )
+        entry.tap()
+
+        // Assert the sheet container is present.
+        let sheetElement = app.descendants(matching: .any)
+            .matching(identifier: "paywall.sheet")
+            .firstMatch
+        XCTAssertTrue(
+            sheetElement.waitForExistence(timeout: 10),
+            "paywall.sheet must appear after tapping paywall.entry"
+        )
+
+        // Assert paywall.buy is present before tapping.
+        let buyButton = app.descendants(matching: .any)
+            .matching(identifier: "paywall.buy")
+            .firstMatch
+        XCTAssertTrue(
+            buyButton.waitForExistence(timeout: 5),
+            "paywall.buy must exist before tapping (inactive state)"
+        )
+
+        // Tap the Subscribe button — wired to Task { await model.buy() }.
+        buyButton.tap()
+
+        // AC1: paywall.manage must appear after the simulated purchase completes.
+        // The fake purchaser flips the mutable source synchronously; the async
+        // chain (purchase → refreshEntitlement → isEntitlementActive → isActive)
+        // must resolve before the timeout.
+        let manageElement = app.descendants(matching: .any)
+            .matching(identifier: "paywall.manage")
+            .firstMatch
+        XCTAssertTrue(
+            manageElement.waitForExistence(timeout: 10),
+            "paywall.manage must appear after tapping paywall.buy with KIGO_FAKE_PURCHASER=succeed"
+        )
+
+        // Screenshot evidence — captured AFTER paywall.manage appears.
+        let screenshot = XCUIScreen.main.screenshot()
+        let attachment = XCTAttachment(screenshot: screenshot)
+        attachment.lifetime = .keepAlways
+        attachment.name = "slice-c10-buy-wiring"
+        add(attachment)
+
+        // AC2: paywall.buy must no longer be present once paywall.manage appears.
+        let buyGone = app.descendants(matching: .any)
+            .matching(identifier: "paywall.buy")
+            .firstMatch
+        XCTAssertFalse(
+            buyGone.exists,
+            "paywall.buy must be absent after paywall.manage appears (isActive = true)"
         )
     }
 
