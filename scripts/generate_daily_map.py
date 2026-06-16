@@ -9,6 +9,10 @@ The script is fully deterministic: no Date.now(), no random. Running it twice
 produces byte-identical output. The existing single 06-12 菖蒲 entry is preserved
 verbatim; all other entries are generated from seasonal templates.
 
+Each DailyMapEntry now carries a required attribution {title, credit, license},
+each a LocalizedText shape {ja: "…"} — English is omitted (C15, a later slice).
+Placeholder values are intentional (J2 is deferred, not gated here).
+
 Output: Resources/manifest.json (pretty-printed, keys sorted for stable diffs)
 """
 
@@ -17,16 +21,32 @@ import os
 import sys
 
 # ---------------------------------------------------------------------------
+# Default attribution used for template-generated entries.
+# Placeholder values intentional — J2 (attribution suitability) is deferred.
+# ---------------------------------------------------------------------------
+PLACEHOLDER_ATTRIBUTION = {
+    "title": {"ja": "季語の風景"},
+    "credit": {"ja": "撮影者不明"},
+    "license": {"ja": "パブリックドメイン"},
+}
+
+# ---------------------------------------------------------------------------
 # Rich entries — real kigo where we have them, otherwise plausible seasonal words.
 # Keyed by MM-DD. The existing slice-8 entry is included here unchanged.
+# Each entry now carries a required attribution {title, credit, license} (slice #100).
 # ---------------------------------------------------------------------------
 RICH_ENTRIES: dict[str, dict] = {
-    # Existing real entry from slice #8 — keep verbatim
+    # Existing real entry from slice #8 — keep verbatim (attribution added)
     "06-12": {
         "kanji": "菖蒲",
         "reading": "しょうぶ",
         "description": "Sweet flag — the blade-like iris leaves used in summer purification rites, placed in baths on Tango no Sekku.",
         "imageId": "ayame-06-12",
+        "attribution": {
+            "title": {"ja": "菖蒲"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     # A selection of well-known seasonal words by month
     # January
@@ -35,18 +55,33 @@ RICH_ENTRIES: dict[str, dict] = {
         "reading": "はつひので",
         "description": "The first sunrise of the New Year, greeted from hilltops and shorelines across Japan.",
         "imageId": "kigo-01-01",
+        "attribution": {
+            "title": {"ja": "初日の出"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     "01-07": {
         "kanji": "七草",
         "reading": "ななくさ",
         "description": "Seven spring herbs — seri, nazuna, gogyo, hakobera, hotokenoza, suzuna, suzushiro — eaten in rice porridge for health.",
         "imageId": "kigo-01-07",
+        "attribution": {
+            "title": {"ja": "七草粥"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     "01-15": {
         "kanji": "小正月",
         "reading": "こしょうがつ",
         "description": "Little New Year, marked by rice-cake decoration and the burning of New Year ornaments at dawn.",
         "imageId": "kigo-01-15",
+        "attribution": {
+            "title": {"ja": "小正月の風景"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     # February
     "02-03": {
@@ -54,24 +89,44 @@ RICH_ENTRIES: dict[str, dict] = {
         "reading": "せつぶん",
         "description": "The eve of the first day of spring; roasted soybeans are scattered to drive out evil and invite good fortune.",
         "imageId": "kigo-02-03",
+        "attribution": {
+            "title": {"ja": "節分の豆まき"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     "02-04": {
         "kanji": "立春",
         "reading": "りっしゅん",
         "description": "First day of spring in the traditional calendar; plum blossoms begin to open in sheltered valleys.",
         "imageId": "kigo-02-04",
+        "attribution": {
+            "title": {"ja": "立春の梅"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     "02-11": {
         "kanji": "梅",
         "reading": "うめ",
         "description": "Plum blossom — the harbinger of spring, prized for its fragrance before the cherry unfurls.",
         "imageId": "kigo-02-11",
+        "attribution": {
+            "title": {"ja": "梅の花"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     "02-29": {
         "kanji": "閏日",
         "reading": "うるうび",
         "description": "Leap day — the extra calendar day inserted every four years to reconcile the solar year with the Gregorian count.",
         "imageId": "kigo-02-29",
+        "attribution": {
+            "title": {"ja": "閏日"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     # March
     "03-03": {
@@ -79,12 +134,22 @@ RICH_ENTRIES: dict[str, dict] = {
         "reading": "ひなまつり",
         "description": "Doll Festival — tiered displays of imperial court dolls celebrate girls' happiness and good health.",
         "imageId": "kigo-03-03",
+        "attribution": {
+            "title": {"ja": "雛人形"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     "03-21": {
         "kanji": "春分",
         "reading": "しゅんぶん",
         "description": "Spring equinox — day and night of equal length; ancestral graves are visited during Higan week.",
         "imageId": "kigo-03-21",
+        "attribution": {
+            "title": {"ja": "春分の彼岸"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     # April
     "04-01": {
@@ -92,12 +157,22 @@ RICH_ENTRIES: dict[str, dict] = {
         "reading": "はなみ",
         "description": "Cherry-blossom viewing — friends and families gather beneath blossoming trees for food, drink, and seasonal joy.",
         "imageId": "kigo-04-01",
+        "attribution": {
+            "title": {"ja": "花見の桜"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     "04-08": {
         "kanji": "花祭り",
         "reading": "はなまつり",
         "description": "Buddha's birthday; temples erect flower-draped shrines and sweet tea is poured over a small Buddha statue.",
         "imageId": "kigo-04-08",
+        "attribution": {
+            "title": {"ja": "花祭りの花御堂"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     # May
     "05-05": {
@@ -105,12 +180,22 @@ RICH_ENTRIES: dict[str, dict] = {
         "reading": "たんごのせっく",
         "description": "Children's Day; carp streamers fly from poles and families eat chimaki rice dumplings wrapped in bamboo.",
         "imageId": "kigo-05-05",
+        "attribution": {
+            "title": {"ja": "鯉のぼり"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     "05-21": {
         "kanji": "小満",
         "reading": "しょうまん",
         "description": "Grain Buds — the solar term when grains begin to fill and silkworms start to spin their cocoons.",
         "imageId": "kigo-05-21",
+        "attribution": {
+            "title": {"ja": "小満の田圃"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     # June
     "06-01": {
@@ -118,12 +203,22 @@ RICH_ENTRIES: dict[str, dict] = {
         "reading": "ころもがえ",
         "description": "The seasonal change of clothing from winter to summer weight, observed on the first day of June.",
         "imageId": "kigo-06-01",
+        "attribution": {
+            "title": {"ja": "衣替えの季節"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     "06-06": {
         "kanji": "蛍",
         "reading": "ほたる",
         "description": "Fireflies — their cold green light drifting over rice paddies and riverbanks on humid summer evenings.",
         "imageId": "kigo-06-06",
+        "attribution": {
+            "title": {"ja": "蛍の光"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     # July
     "07-07": {
@@ -131,12 +226,22 @@ RICH_ENTRIES: dict[str, dict] = {
         "reading": "たなばた",
         "description": "Star Festival — wishes written on tanzaku paper strips and hung from bamboo under the summer night sky.",
         "imageId": "kigo-07-07",
+        "attribution": {
+            "title": {"ja": "七夕の飾り"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     "07-23": {
         "kanji": "大暑",
         "reading": "たいしょ",
         "description": "Great Heat — the peak of summer's intensity, when the sun blazes longest and cicadas cry without pause.",
         "imageId": "kigo-07-23",
+        "attribution": {
+            "title": {"ja": "大暑の夏空"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     # August
     "08-07": {
@@ -144,12 +249,22 @@ RICH_ENTRIES: dict[str, dict] = {
         "reading": "りっしゅう",
         "description": "First day of autumn in the traditional calendar; evenings begin to carry the faintest autumnal chill.",
         "imageId": "kigo-08-07",
+        "attribution": {
+            "title": {"ja": "立秋の夕暮れ"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     "08-15": {
         "kanji": "盂蘭盆",
         "reading": "うらぼん",
         "description": "Obon — the mid-August festival when ancestral spirits are welcomed home with lanterns and bon odori dancing.",
         "imageId": "kigo-08-15",
+        "attribution": {
+            "title": {"ja": "盂蘭盆の提灯"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     # September
     "09-09": {
@@ -157,12 +272,22 @@ RICH_ENTRIES: dict[str, dict] = {
         "reading": "ちょうよう",
         "description": "Chrysanthemum Festival — chrysanthemum wine is drunk to ward off evil and pray for longevity.",
         "imageId": "kigo-09-09",
+        "attribution": {
+            "title": {"ja": "重陽の菊"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     "09-23": {
         "kanji": "秋分",
         "reading": "しゅうぶん",
         "description": "Autumn equinox — equal day and night; the higan week of visits to ancestral graves in autumn gold.",
         "imageId": "kigo-09-23",
+        "attribution": {
+            "title": {"ja": "秋分の彼岸"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     # October
     "10-10": {
@@ -170,6 +295,11 @@ RICH_ENTRIES: dict[str, dict] = {
         "reading": "あきばれ",
         "description": "Autumn clarity — the crystalline blue skies and cool, dry air that typify October days in Japan.",
         "imageId": "kigo-10-10",
+        "attribution": {
+            "title": {"ja": "秋晴れの空"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     # November
     "11-03": {
@@ -177,12 +307,22 @@ RICH_ENTRIES: dict[str, dict] = {
         "reading": "ぶんかのひ",
         "description": "Culture Day — clear November skies frame ceremonies honoring arts, science, and national heritage.",
         "imageId": "kigo-11-03",
+        "attribution": {
+            "title": {"ja": "文化の日の式典"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     "11-15": {
         "kanji": "七五三",
         "reading": "しちごさん",
         "description": "Children aged seven, five, and three visit shrines in formal dress to give thanks for their growth.",
         "imageId": "kigo-11-15",
+        "attribution": {
+            "title": {"ja": "七五三の晴れ着"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     # December
     "12-22": {
@@ -190,12 +330,22 @@ RICH_ENTRIES: dict[str, dict] = {
         "reading": "とうじ",
         "description": "Winter solstice — the year's shortest day; yuzu baths and pumpkin porridge ward off winter illness.",
         "imageId": "kigo-12-22",
+        "attribution": {
+            "title": {"ja": "冬至の柚子湯"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
     "12-31": {
         "kanji": "大晦日",
         "reading": "おおみそか",
         "description": "New Year's Eve — temple bells toll 108 times at midnight to cleanse the worldly desires of the old year.",
         "imageId": "kigo-12-31",
+        "attribution": {
+            "title": {"ja": "除夜の鐘"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"},
+        },
     },
 }
 
@@ -484,6 +634,7 @@ def generate_entry(month: int, day: int) -> dict:
         "reading": reading,
         "description": full_description,
         "imageId": f"kigo-{key}",
+        "attribution": PLACEHOLDER_ATTRIBUTION,
     }
 
 
@@ -566,8 +717,21 @@ def main() -> None:
     assert len(sekki) == 24, f"Expected 24 Sekki, got {len(sekki)}"
     assert len(ko) == 72, f"Expected 72 Kō, got {len(ko)}"
 
+    # Validate attribution on every daily map entry (slice #100)
+    for key, entry in daily_map.items():
+        attr = entry.get("attribution", {})
+        assert attr.get("title", {}).get("ja"), (
+            f"Entry '{key}' is missing a non-empty attribution.title.ja"
+        )
+        assert attr.get("credit", {}).get("ja"), (
+            f"Entry '{key}' is missing a non-empty attribution.credit.ja"
+        )
+        assert attr.get("license", {}).get("ja"), (
+            f"Entry '{key}' is missing a non-empty attribution.license.ja"
+        )
+
     manifest = {
-        "schemaVersion": "1.2",
+        "schemaVersion": "1.3",
         "dailyMap": dict(sorted(daily_map.items())),  # stable sort by MM-DD
         "ko": ko,
         "sekki": sekki,

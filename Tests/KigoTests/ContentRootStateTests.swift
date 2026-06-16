@@ -24,7 +24,12 @@ final class ContentRootStateTests: XCTestCase {
                 kanji: "款冬華",
                 reading: "ふきのはなさく",
                 description: "Butterbur blooms.",
-                imageId: "img-0101"
+                imageId: "img-0101",
+                attribution: Attribution(
+                    title: LocalizedText(ja: "季語の風景"),
+                    credit: LocalizedText(ja: "撮影者不明"),
+                    license: LocalizedText(ja: "パブリックドメイン")
+                )
             )
         ]
         let ko = [Ko(
