@@ -202,6 +202,143 @@ final class AlmanacResolutionTests: XCTestCase {
             "Sekki year total must be exactly 24")
     }
 
+    // MARK: - Slice #108: Day-within-Kō tests
+
+    /// AC: For 2026-06-16 (start of 梅子黄, range 06-16–06-20) the day-within-Kō is 1 and
+    /// the Kō range length is 5.
+    func testDayWithinKoFor0616IsDayOneOfFive() throws {
+        let manifest = try loadBundledManifest()
+        let date = makeUTCDate(month: 6, day: 16)
+
+        let positions = try XCTUnwrap(
+            AlmanacResolver.resolve(date: date, manifest: manifest),
+            "AlmanacResolver must return non-nil AlmanacPositions for 06-16"
+        )
+
+        XCTAssertEqual(positions.dayWithinKo, 1,
+            "Day-within-Kō for 06-16 (start of 梅子黄) must be 1")
+        XCTAssertEqual(positions.koRangeLength, 5,
+            "Kō range length for 梅子黄 (06-16 – 06-20) must be 5")
+    }
+
+    /// AC: For 2026-06-18 (mid-range of 梅子黄, range 06-16–06-20) the day-within-Kō is 3 of 5.
+    func testDayWithinKoFor0618IsDayThreeOfFive() throws {
+        let manifest = try loadBundledManifest()
+        let date = makeUTCDate(month: 6, day: 18)
+
+        let positions = try XCTUnwrap(
+            AlmanacResolver.resolve(date: date, manifest: manifest),
+            "AlmanacResolver must return non-nil AlmanacPositions for 06-18"
+        )
+
+        XCTAssertEqual(positions.dayWithinKo, 3,
+            "Day-within-Kō for 06-18 (mid-range of 梅子黄) must be 3")
+        XCTAssertEqual(positions.koRangeLength, 5,
+            "Kō range length for 梅子黄 (06-16 – 06-20) must be 5")
+    }
+
+    /// AC: On a Kō-boundary start day (06-16) the day-within-Kō resets to 1.
+    /// This is equivalent to the 06-16 test above, explicitly verifying the boundary reset.
+    func testDayWithinKoResetsToBoundaryStartDay() throws {
+        let manifest = try loadBundledManifest()
+
+        // Test another Kō boundary start date (02-04, 東風解凍 / risshun Kō start)
+        let date = makeUTCDate(month: 2, day: 4)
+
+        let positions = try XCTUnwrap(
+            AlmanacResolver.resolve(date: date, manifest: manifest),
+            "AlmanacResolver must return non-nil AlmanacPositions for 02-04"
+        )
+
+        XCTAssertEqual(positions.dayWithinKo, 1,
+            "Day-within-Kō for 02-04 (start of risshun Kō) must be 1")
+    }
+
+    /// AC: 02-29 resolves to a defined day-within-Kō without crashing.
+    /// 02-29 falls in 霞始靆 (range 02-24–02-29), so day-within-Kō = 6, length = 6.
+    func testDayWithinKoFor0229LeapDay() throws {
+        let manifest = try loadBundledManifest()
+
+        // Use a leap year so makeUTCDate can produce Feb 29
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "UTC")!
+        var comps = DateComponents()
+        comps.year = 2024  // leap year
+        comps.month = 2
+        comps.day = 29
+        comps.hour = 12
+        let date = cal.date(from: comps)!
+
+        let positions = try XCTUnwrap(
+            AlmanacResolver.resolve(date: date, manifest: manifest),
+            "AlmanacResolver must return non-nil AlmanacPositions for 02-29"
+        )
+
+        XCTAssertEqual(positions.dayWithinKo, 6,
+            "Day-within-Kō for 02-29 (end of 霞始靆, range 02-24–02-29) must be 6")
+        XCTAssertEqual(positions.koRangeLength, 6,
+            "Kō range length for 霞始靆 (02-24 – 02-29) must be 6")
+    }
+
+    // MARK: - Screenshot evidence: day-within-Kō host render (slice #108)
+
+    /// Screenshot evidence: renders a SwiftUI Text view showing "Day 3 / 5" (driven by the REAL
+    /// AlmanacResolver output for 2026-06-18) and emits a PNG as a keepAlways XCTAttachment.
+    ///
+    /// Full identifier: KigoTests/AlmanacResolutionTests/testDayWithinKoHostRender
+    /// Attachment name: "slice-108-day-within-ko"
+    @MainActor
+    func testDayWithinKoHostRender() throws {
+        let manifest = try loadBundledManifest()
+        let date = makeUTCDate(month: 6, day: 18)
+
+        let positions = try XCTUnwrap(
+            AlmanacResolver.resolve(date: date, manifest: manifest),
+            "AlmanacResolver must return non-nil AlmanacPositions for 06-18"
+        )
+
+        let displayText = "Day \(positions.dayWithinKo) / \(positions.koRangeLength)"
+
+        let debugView = ZStack {
+            Color(white: 0.1)
+            VStack(spacing: 8) {
+                Text("Day within Kō")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text(displayText)
+                    .font(.system(size: 48, weight: .bold, design: .rounded))
+                    .foregroundStyle(.white)
+                Text("梅子黄 · 2026-06-18")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(24)
+        }
+        .frame(width: 300, height: 160)
+
+        let renderer = ImageRenderer(content: debugView)
+        renderer.scale = 2.0
+
+        guard let uiImage = renderer.uiImage else {
+            XCTFail("ImageRenderer failed to produce a UIImage for the day-within-Kō view")
+            return
+        }
+
+        guard let pngData = uiImage.pngData() else {
+            XCTFail("Failed to convert UIImage to PNG data")
+            return
+        }
+
+        let attachment = XCTAttachment(data: pngData, uniformTypeIdentifier: "public.png")
+        attachment.name = "slice-108-day-within-ko"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+
+        // Assert the rendered text matches the expected value
+        XCTAssertEqual(displayText, "Day 3 / 5",
+            "Host-rendered text must show 'Day 3 / 5' for 2026-06-18")
+    }
+
     // MARK: - Screenshot evidence: Kō + Sekki combined host render (slice #107)
 
     /// Screenshot evidence: renders a SwiftUI view showing BOTH "Kō 27 / 72" AND "Sekki 9 / 24"
