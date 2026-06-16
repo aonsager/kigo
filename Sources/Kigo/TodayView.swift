@@ -30,12 +30,24 @@ import SwiftUI
 ///
 /// Extended in slice #128 to add an `info.entry` button (top-left, x < width/2, y < height/3)
 /// that presents `AttributionPanelView` as a `.sheet` for image attribution info.
+///
+/// Extended in slice #132 to consolidate the two-Bool sheet pattern into a single
+/// `ActiveSheet` enum-driven `.sheet(item:)` modifier, eliminating the two stacked
+/// `.sheet` modifiers and replacing them with one.
 struct TodayView: View {
     let resolvedDay: ResolvedDay
     let almanacPositions: AlmanacPositions
 
-    @State private var isAlmanacPresented = false
-    @State private var isAttributionPresented = false
+    /// Identifies which sheet is currently active. Conforms to `Identifiable` so
+    /// it can drive the single `.sheet(item:)` modifier.
+    private enum ActiveSheet: Identifiable {
+        case almanac
+        case attribution
+
+        var id: Self { self }
+    }
+
+    @State private var activeSheet: ActiveSheet?
 
     var body: some View {
         ZStack {
@@ -77,7 +89,7 @@ struct TodayView: View {
                 // Microseason timeline affordance (slice #122 / #123).
                 // Tapping presents AlmanacSheetView as a modal sheet.
                 Button(action: {
-                    isAlmanacPresented = true
+                    activeSheet = .almanac
                 }) {
                     HStack(spacing: 6) {
                         Image(systemName: "calendar")
@@ -98,7 +110,7 @@ struct TodayView: View {
             VStack {
                 HStack {
                     Button(action: {
-                        isAttributionPresented = true
+                        activeSheet = .attribution
                     }) {
                         Image(systemName: "info.circle")
                             .font(.title3)
@@ -116,11 +128,13 @@ struct TodayView: View {
                 Spacer()
             }
         }
-        .sheet(isPresented: $isAlmanacPresented) {
-            AlmanacSheetView(almanacPositions: almanacPositions, ko: resolvedDay.ko)
-        }
-        .sheet(isPresented: $isAttributionPresented) {
-            AttributionPanelView(attribution: resolvedDay.kigoEntry.attribution)
+        .sheet(item: $activeSheet) { sheet in
+            switch sheet {
+            case .almanac:
+                AlmanacSheetView(almanacPositions: almanacPositions, ko: resolvedDay.ko)
+            case .attribution:
+                AttributionPanelView(attribution: resolvedDay.kigoEntry.attribution)
+            }
         }
     }
 }
