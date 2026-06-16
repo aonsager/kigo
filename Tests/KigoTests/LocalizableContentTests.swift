@@ -113,4 +113,48 @@ final class LocalizableContentTests: XCTestCase {
         XCTAssertEqual(sekki.gloss.ja, "春の始まり")
         XCTAssertEqual(sekki.description.ja, "太陽が黄経315度に達する日。春の気配が感じられる。")
     }
+
+    // MARK: - Ko fixture: description decodes with and without English (slice #99)
+
+    /// A Ko JSON fixture carrying LocalizedText for description must decode
+    /// when only the required Japanese value is present.
+    func testKoDecodesWithJapaneseOnlyDescription() throws {
+        let json = """
+        {
+          "kanji": "東風解凍",
+          "reading": "はるかぜこおりをとく",
+          "gloss": "east wind thaws the ice",
+          "sekkiId": "risshun",
+          "dateRange": {"start": "02-04", "end": "02-08"},
+          "description": {"ja": "春の東風が氷を解かし始める。"}
+        }
+        """
+        let data = Data(json.utf8)
+        let ko = try JSONDecoder().decode(Ko.self, from: data)
+        XCTAssertEqual(ko.kanji, "東風解凍")
+        XCTAssertEqual(ko.description.ja, "春の東風が氷を解かし始める。",
+                       "description.ja must match the input")
+        XCTAssertNil(ko.description.en,
+                     "description.en must be nil when 'en' key is absent")
+    }
+
+    /// A Ko JSON fixture with both Japanese and English description values must decode both.
+    func testKoDecodesWithBothJapaneseAndEnglishDescription() throws {
+        let json = """
+        {
+          "kanji": "東風解凍",
+          "reading": "はるかぜこおりをとく",
+          "gloss": "east wind thaws the ice",
+          "sekkiId": "risshun",
+          "dateRange": {"start": "02-04", "end": "02-08"},
+          "description": {"ja": "春の東風が氷を解かし始める。", "en": "The spring east wind begins to thaw the ice."}
+        }
+        """
+        let data = Data(json.utf8)
+        let ko = try JSONDecoder().decode(Ko.self, from: data)
+        XCTAssertEqual(ko.description.ja, "春の東風が氷を解かし始める。",
+                       "Japanese description must be decoded when both values present")
+        XCTAssertEqual(ko.description.en, "The spring east wind begins to thaw the ice.",
+                       "English description must be decoded when present")
+    }
 }

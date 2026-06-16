@@ -96,7 +96,8 @@ final class ContentStoreTests: XCTestCase {
                 reading: "ふきのはなさく",
                 gloss: "Butterbur blooms",
                 sekkiId: "sekki-01",
-                dateRange: DateRange(start: "01-01", end: "01-05")
+                dateRange: DateRange(start: "01-01", end: "01-05"),
+                description: LocalizedText(ja: "フキノトウが花を咲かせる。")
             )
         ]
         let sekki = [
