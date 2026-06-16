@@ -27,11 +27,15 @@ import SwiftUI
 /// Extended in slice #123 to wire the tap action: tapping `microseason.timeline`
 /// sets `isAlmanacPresented = true` and presents `AlmanacSheetView` as a `.sheet`.
 /// Swiping down or tapping the backdrop sets `isAlmanacPresented = false`.
+///
+/// Extended in slice #128 to add an `info.entry` button (top-left, x < width/2, y < height/3)
+/// that presents `AttributionPanelView` as a `.sheet` for image attribution info.
 struct TodayView: View {
     let resolvedDay: ResolvedDay
     let almanacPositions: AlmanacPositions
 
     @State private var isAlmanacPresented = false
+    @State private var isAttributionPresented = false
 
     var body: some View {
         ZStack {
@@ -88,9 +92,35 @@ struct TodayView: View {
                 .accessibilityIdentifier("microseason.timeline")
                 .accessibilityLabel("Microseason timeline: Kō \(almanacPositions.koYearPosition) of \(almanacPositions.koYearTotal)")
             }
+
+            // Info entry button — top-left placement (x < width/2, y < height/3).
+            // Tapping presents AttributionPanelView as a modal sheet.
+            VStack {
+                HStack {
+                    Button(action: {
+                        isAttributionPresented = true
+                    }) {
+                        Image(systemName: "info.circle")
+                            .font(.title3)
+                            .foregroundStyle(.secondary)
+                            .padding(12)
+                            .background(.ultraThinMaterial, in: Circle())
+                    }
+                    .accessibilityIdentifier("info.entry")
+                    .accessibilityLabel("Image attribution")
+                    .padding(.leading, 16)
+                    .padding(.top, 16)
+
+                    Spacer()
+                }
+                Spacer()
+            }
         }
         .sheet(isPresented: $isAlmanacPresented) {
             AlmanacSheetView(almanacPositions: almanacPositions, ko: resolvedDay.ko)
+        }
+        .sheet(isPresented: $isAttributionPresented) {
+            AttributionPanelView(attribution: resolvedDay.kigoEntry.attribution)
         }
     }
 }
