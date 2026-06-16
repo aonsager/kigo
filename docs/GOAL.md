@@ -454,7 +454,8 @@ loop catches it. Do not renumber or rewrite C9/C10.
      suite asserts for a fixed set of dates spanning the year (including a Kō-boundary day,
      a Sekki-boundary day, and `02-29`):
      - for `2026-06-16` (梅子黄, range `06-16`–`06-20`): Kō year-position `27/72`, Sekki
-       (芒種) year-position `9/24`, day-within-Kō `1/5`, Kō-within-Sekki `1/3`;
+       (芒種) year-position `9/24`, day-within-Kō `1/5`, Kō-within-Sekki `3/3`
+       (梅子黄 is the 3rd of 芒種's three Kō: 螳螂生 06-06, 腐草為螢 06-11, 梅子黄 06-16);
      - for a mid-range date (`2026-06-18`): day-within-Kō `3/5`;
      - the counts are 1-indexed and the totals are exactly 72 (Kō) and 24 (Sekki);
      - `02-29` resolves to a defined position without crashing.
