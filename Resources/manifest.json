@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "1.1",
   "dailyMap": {
     "01-01": {
       "kanji": "初日の出",
@@ -2924,122 +2924,266 @@
     {
       "id": "risshun",
       "kanji": "立春",
-      "reading": "りっしゅん"
+      "reading": "りっしゅん",
+      "gloss": {
+        "ja": "春の始まり"
+      },
+      "description": {
+        "ja": "太陽が黄経315度に達する日。春の気配が感じられ始める二十四節気の最初の節気。"
+      }
     },
     {
       "id": "usui",
       "kanji": "雨水",
-      "reading": "うすい"
+      "reading": "うすい",
+      "gloss": {
+        "ja": "雨と雪解け"
+      },
+      "description": {
+        "ja": "太陽が黄経330度に達する日。雪が雨に変わり、氷が溶け始める時期。"
+      }
     },
     {
       "id": "keichitsu",
       "kanji": "啓蟄",
-      "reading": "けいちつ"
+      "reading": "けいちつ",
+      "gloss": {
+        "ja": "虫が土から出る"
+      },
+      "description": {
+        "ja": "太陽が黄経345度に達する日。冬ごもりしていた虫が地中から這い出てくる時期。"
+      }
     },
     {
       "id": "shunbun",
       "kanji": "春分",
-      "reading": "しゅんぶん"
+      "reading": "しゅんぶん",
+      "gloss": {
+        "ja": "昼と夜が等しい春の日"
+      },
+      "description": {
+        "ja": "太陽が黄経0度（春分点）に達する日。昼と夜の長さが等しくなる。"
+      }
     },
     {
       "id": "seimei",
       "kanji": "清明",
-      "reading": "せいめい"
+      "reading": "せいめい",
+      "gloss": {
+        "ja": "清らかで明るい"
+      },
+      "description": {
+        "ja": "太陽が黄経15度に達する日。万物が清らかで生き生きとする時期。"
+      }
     },
     {
       "id": "kokuu",
       "kanji": "穀雨",
-      "reading": "こくう"
+      "reading": "こくう",
+      "gloss": {
+        "ja": "穀物を育てる雨"
+      },
+      "description": {
+        "ja": "太陽が黄経30度に達する日。穀物の成長を助ける春の雨が降る時期。"
+      }
     },
     {
       "id": "rikka",
       "kanji": "立夏",
-      "reading": "りっか"
+      "reading": "りっか",
+      "gloss": {
+        "ja": "夏の始まり"
+      },
+      "description": {
+        "ja": "太陽が黄経45度に達する日。夏の気配が感じられ始める時期。"
+      }
     },
     {
       "id": "shouman",
       "kanji": "小満",
-      "reading": "しょうまん"
+      "reading": "しょうまん",
+      "gloss": {
+        "ja": "草木が満ちてくる"
+      },
+      "description": {
+        "ja": "太陽が黄経60度に達する日。草木が成長し、万物が満ちてくる時期。"
+      }
     },
     {
       "id": "boshu",
       "kanji": "芒種",
-      "reading": "ぼうしゅ"
+      "reading": "ぼうしゅ",
+      "gloss": {
+        "ja": "芒のある穀物を蒔く"
+      },
+      "description": {
+        "ja": "太陽が黄経75度に達する日。稲や麦など芒のある穀物を種まきする時期。"
+      }
     },
     {
       "id": "geshi",
       "kanji": "夏至",
-      "reading": "げし"
+      "reading": "げし",
+      "gloss": {
+        "ja": "昼が最も長い日"
+      },
+      "description": {
+        "ja": "太陽が黄経90度に達する日。北半球で昼の時間が最も長くなる。"
+      }
     },
     {
       "id": "shousho",
       "kanji": "小暑",
-      "reading": "しょうしょ"
+      "reading": "しょうしょ",
+      "gloss": {
+        "ja": "暑さが増してくる"
+      },
+      "description": {
+        "ja": "太陽が黄経105度に達する日。本格的な暑さが始まる時期。"
+      }
     },
     {
       "id": "taisho",
       "kanji": "大暑",
-      "reading": "たいしょ"
+      "reading": "たいしょ",
+      "gloss": {
+        "ja": "最も暑い時期"
+      },
+      "description": {
+        "ja": "太陽が黄経120度に達する日。一年で最も暑さが厳しい時期。"
+      }
     },
     {
       "id": "risshu",
       "kanji": "立秋",
-      "reading": "りっしゅう"
+      "reading": "りっしゅう",
+      "gloss": {
+        "ja": "秋の始まり"
+      },
+      "description": {
+        "ja": "太陽が黄経135度に達する日。暦の上では秋が始まる。"
+      }
     },
     {
       "id": "shosho",
       "kanji": "処暑",
-      "reading": "しょしょ"
+      "reading": "しょしょ",
+      "gloss": {
+        "ja": "暑さが和らぐ"
+      },
+      "description": {
+        "ja": "太陽が黄経150度に達する日。暑さが峠を越えて和らいでくる時期。"
+      }
     },
     {
       "id": "hakuro",
       "kanji": "白露",
-      "reading": "はくろ"
+      "reading": "はくろ",
+      "gloss": {
+        "ja": "白い露が降りる"
+      },
+      "description": {
+        "ja": "太陽が黄経165度に達する日。草木に白い露が宿り始める時期。"
+      }
     },
     {
       "id": "shubun",
       "kanji": "秋分",
-      "reading": "しゅうぶん"
+      "reading": "しゅうぶん",
+      "gloss": {
+        "ja": "昼と夜が等しい秋の日"
+      },
+      "description": {
+        "ja": "太陽が黄経180度（秋分点）に達する日。昼と夜の長さが等しくなる。"
+      }
     },
     {
       "id": "kanro",
       "kanji": "寒露",
-      "reading": "かんろ"
+      "reading": "かんろ",
+      "gloss": {
+        "ja": "冷たい露が降りる"
+      },
+      "description": {
+        "ja": "太陽が黄経195度に達する日。露が冷たくなり、秋の深まりを感じる時期。"
+      }
     },
     {
       "id": "soko",
       "kanji": "霜降",
-      "reading": "そうこう"
+      "reading": "そうこう",
+      "gloss": {
+        "ja": "霜が降りる"
+      },
+      "description": {
+        "ja": "太陽が黄経210度に達する日。霜が降り始め、紅葉が深まる時期。"
+      }
     },
     {
       "id": "rittou",
       "kanji": "立冬",
-      "reading": "りっとう"
+      "reading": "りっとう",
+      "gloss": {
+        "ja": "冬の始まり"
+      },
+      "description": {
+        "ja": "太陽が黄経225度に達する日。暦の上では冬が始まる時期。"
+      }
     },
     {
       "id": "shousetsu",
       "kanji": "小雪",
-      "reading": "しょうせつ"
+      "reading": "しょうせつ",
+      "gloss": {
+        "ja": "少し雪が降る"
+      },
+      "description": {
+        "ja": "太陽が黄経240度に達する日。北国では雪が降り始める時期。"
+      }
     },
     {
       "id": "taisetsu",
       "kanji": "大雪",
-      "reading": "たいせつ"
+      "reading": "たいせつ",
+      "gloss": {
+        "ja": "雪が多く降る"
+      },
+      "description": {
+        "ja": "太陽が黄経255度に達する日。本格的な雪の季節が訪れる時期。"
+      }
     },
     {
       "id": "touji",
       "kanji": "冬至",
-      "reading": "とうじ"
+      "reading": "とうじ",
+      "gloss": {
+        "ja": "昼が最も短い日"
+      },
+      "description": {
+        "ja": "太陽が黄経270度に達する日。北半球で昼の時間が最も短くなる。"
+      }
     },
     {
       "id": "shoukan",
       "kanji": "小寒",
-      "reading": "しょうかん"
+      "reading": "しょうかん",
+      "gloss": {
+        "ja": "寒さが厳しくなる"
+      },
+      "description": {
+        "ja": "太陽が黄経285度に達する日。寒の入りで、本格的な寒さが始まる時期。"
+      }
     },
     {
       "id": "daikan",
       "kanji": "大寒",
-      "reading": "だいかん"
+      "reading": "だいかん",
+      "gloss": {
+        "ja": "最も寒い時期"
+      },
+      "description": {
+        "ja": "太陽が黄経300度に達する日。一年で最も寒さが厳しい時期。"
+      }
     }
   ]
 }
