@@ -51,10 +51,17 @@ final class WidgetTimelineTests: XCTestCase {
                                     nextKanji: String,
                                     nextReading: String,
                                     nextImageId: String) -> Manifest {
+        let placeholderAttribution = Attribution(
+            title: LocalizedText(ja: "季語の風景"),
+            credit: LocalizedText(ja: "撮影者不明"),
+            license: LocalizedText(ja: "パブリックドメイン")
+        )
         let entry = DailyMapEntry(kanji: kanji, reading: reading,
-                                  description: "Today's Kigo.", imageId: imageId)
+                                  description: "Today's Kigo.", imageId: imageId,
+                                  attribution: placeholderAttribution)
         let nextEntry = DailyMapEntry(kanji: nextKanji, reading: nextReading,
-                                     description: "Tomorrow's Kigo.", imageId: nextImageId)
+                                     description: "Tomorrow's Kigo.", imageId: nextImageId,
+                                     attribution: placeholderAttribution)
         let ko = Ko(kanji: "腐草為螢",
                     reading: "くされたるくさほたるとなる",
                     gloss: "rotten grass becomes fireflies",
@@ -85,7 +92,12 @@ final class WidgetTimelineTests: XCTestCase {
         let entry = DailyMapEntry(kanji: kanji,
                                   reading: reading,
                                   description: "Fireflies glow in summer dusk.",
-                                  imageId: imageId)
+                                  imageId: imageId,
+                                  attribution: Attribution(
+                                      title: LocalizedText(ja: "季語の風景"),
+                                      credit: LocalizedText(ja: "撮影者不明"),
+                                      license: LocalizedText(ja: "パブリックドメイン")
+                                  ))
         let ko = Ko(kanji: "腐草為螢",
                     reading: "くされたるくさほたるとなる",
                     gloss: "rotten grass becomes fireflies",

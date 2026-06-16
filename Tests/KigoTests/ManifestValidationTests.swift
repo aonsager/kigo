@@ -79,6 +79,25 @@ final class ManifestValidationTests: XCTestCase {
         }
     }
 
+    /// Acceptance criterion (slice #100): every entry has non-empty attribution title, credit, and license.
+    func testEveryDailyMapEntryHasNonEmptyAttribution() throws {
+        let manifest = try loadManifest()
+        for (key, entry) in manifest.dailyMap {
+            XCTAssertFalse(
+                entry.attribution.title.ja.isEmpty,
+                "Entry for \(key) has empty attribution.title.ja"
+            )
+            XCTAssertFalse(
+                entry.attribution.credit.ja.isEmpty,
+                "Entry for \(key) has empty attribution.credit.ja"
+            )
+            XCTAssertFalse(
+                entry.attribution.license.ja.isEmpty,
+                "Entry for \(key) has empty attribution.license.ja"
+            )
+        }
+    }
+
     // MARK: - Kō and Sekki counts (slice #10)
 
     /// Acceptance criterion 1: exactly 72 Kō in the bundled manifest.
