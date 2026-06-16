@@ -22,6 +22,22 @@ public struct AlmanacPositions: Sendable, Equatable {
 
     /// Total number of Kō in the manifest (always 72 for the bundled content).
     public let koYearTotal: Int
+
+    /// The 1-indexed position of the current Sekki within the risshun-anchored almanac year.
+    ///
+    /// Ordering: the 24 Sekki are ordered by the earliest `dateRange.start` of their
+    /// constituent Kō (lexicographic MM-DD), then rotated so the sequence begins at
+    /// 立春/risshun — the Sekki whose earliest Kō starts at `"02-04"` — mirroring
+    /// the same anchoring applied to the Kō ordering (ADR 0015).
+    ///
+    /// The current Sekki is identified via the already-resolved current Kō's `sekkiId`,
+    /// avoiding a redundant date-containment pass.
+    ///
+    /// Example: 芒種 (Bōshu, containing 梅子黄 at 06-16) → `sekkiYearPosition` == 9.
+    public let sekkiYearPosition: Int
+
+    /// Total number of Sekki in the manifest (always 24 for the bundled content).
+    public let sekkiYearTotal: Int
 }
 
 // MARK: - AlmanacResolver
@@ -94,9 +110,56 @@ public enum AlmanacResolver {
             return nil
         }
 
+        // MARK: Sekki year-position (slice #107)
+        //
+        // Identify the current Sekki via the already-resolved Kō's sekkiId — no second
+        // date-containment pass needed.
+        guard manifest.sekki.first(where: { $0.id == currentKo.sekkiId }) != nil else {
+            return nil
+        }
+
+        // Build the risshun-anchored Sekki ordering:
+        // 1. For each Sekki, find the earliest dateRange.start among its constituent Kō.
+        // 2. Sort the 24 Sekki by that earliest start (lexicographic == calendar order for MM-DD).
+        // 3. Rotate so the sequence begins at the Sekki whose earliest Kō starts at "02-04"
+        //    (立春/risshun), mirroring the Kō anchoring from ADR 0015.
+        let sortedSekki = manifest.sekki.sorted { lhs, rhs in
+            let lhsEarliestStart = manifest.ko
+                .filter { $0.sekkiId == lhs.id }
+                .map { $0.dateRange.start }
+                .min() ?? ""
+            let rhsEarliestStart = manifest.ko
+                .filter { $0.sekkiId == rhs.id }
+                .map { $0.dateRange.start }
+                .min() ?? ""
+            return lhsEarliestStart < rhsEarliestStart
+        }
+
+        // Find the Sekki whose earliest Kō start is the risshun anchor ("02-04").
+        guard let risshunSekkiIndex = sortedSekki.firstIndex(where: { sekki in
+            let earliestStart = manifest.ko
+                .filter { $0.sekkiId == sekki.id }
+                .map { $0.dateRange.start }
+                .min() ?? ""
+            return earliestStart == risshunStart
+        }) else {
+            return nil
+        }
+
+        let rotatedSekki = Array(sortedSekki[risshunSekkiIndex...]) + Array(sortedSekki[..<risshunSekkiIndex])
+
+        // Find the 1-indexed position of the current Sekki in the rotated ordering.
+        guard let sekkiPositionIndex = rotatedSekki.firstIndex(where: {
+            $0.id == currentKo.sekkiId
+        }) else {
+            return nil
+        }
+
         return AlmanacPositions(
-            koYearPosition: positionIndex + 1, // 1-indexed
-            koYearTotal: rotated.count
+            koYearPosition: positionIndex + 1,      // 1-indexed
+            koYearTotal: rotated.count,
+            sekkiYearPosition: sekkiPositionIndex + 1, // 1-indexed
+            sekkiYearTotal: rotatedSekki.count
         )
     }
 }
