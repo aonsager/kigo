@@ -59,12 +59,14 @@ final class WidgetTimelineTests: XCTestCase {
                     reading: "くされたるくさほたるとなる",
                     gloss: "rotten grass becomes fireflies",
                     sekkiId: "shousho",
-                    dateRange: DateRange(start: dayKey, end: dayKey))
+                    dateRange: DateRange(start: dayKey, end: dayKey),
+                    description: LocalizedText(ja: "腐った草からホタルが生まれると古人は信じた。"))
         let nextKo = Ko(kanji: "土潤溽暑",
                         reading: "つちうるおうてむしあつし",
                         gloss: "earth is damp and sultry",
                         sekkiId: "shousho",
-                        dateRange: DateRange(start: nextDayKey, end: nextDayKey))
+                        dateRange: DateRange(start: nextDayKey, end: nextDayKey),
+                        description: LocalizedText(ja: "大地が湿り気を帯び、蒸し暑さが極まる。"))
         let sekki = Sekki(id: "shousho", kanji: "小暑", reading: "しょうしょ",
                           gloss: LocalizedText(ja: "暑さが増してくる"),
                           description: LocalizedText(ja: "本格的な暑さが始まる時期。"))
@@ -88,7 +90,8 @@ final class WidgetTimelineTests: XCTestCase {
                     reading: "くされたるくさほたるとなる",
                     gloss: "rotten grass becomes fireflies",
                     sekkiId: "shousho",
-                    dateRange: DateRange(start: dayKey, end: dayKey))
+                    dateRange: DateRange(start: dayKey, end: dayKey),
+                    description: LocalizedText(ja: "腐った草からホタルが生まれると古人は信じた。"))
         let sekki = Sekki(id: "shousho", kanji: "小暑", reading: "しょうしょ",
                           gloss: LocalizedText(ja: "暑さが増してくる"),
                           description: LocalizedText(ja: "本格的な暑さが始まる時期。"))

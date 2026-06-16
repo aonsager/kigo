@@ -75,6 +75,8 @@ public struct Ko: Codable, Sendable, Equatable {
     /// A simple, codable representation sufficient for this milestone;
     /// precise boundary handling is deferred to later slices.
     public let dateRange: DateRange
+    /// Prose description of the microseason. Required Japanese, optional English (ADR 0014).
+    public let description: LocalizedText
 }
 
 /// Inclusive date range expressed as `MM-DD` strings.

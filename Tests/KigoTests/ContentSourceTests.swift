@@ -127,7 +127,8 @@ final class ContentSourceTests: XCTestCase {
             reading: "ふきのはなさく",
             gloss: "Butterbur blooms",
             sekkiId: "sekki-01",
-            dateRange: DateRange(start: "01-01", end: "01-05")
+            dateRange: DateRange(start: "01-01", end: "01-05"),
+            description: LocalizedText(ja: "フキノトウが花を咲かせる。")
         )]
         let sekki = [Sekki(id: "sekki-01", kanji: "小寒", reading: "しょうかん",
                            gloss: LocalizedText(ja: "寒さの始まり"),
