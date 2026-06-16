@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import StoreKit
 
 // MARK: - PaywallModel
 
@@ -55,6 +56,13 @@ public final class PaywallModel {
 
     private let provider: EntitlementProvider
 
+    // MARK: - Injected purchaser
+
+    /// The subscription purchaser seam. Tests inject a `FakeSubscriptionPurchaser`;
+    /// production uses `StoreKitSubscriptionPurchaser()`. Defaulted so existing
+    /// call sites that omit the parameter compile without change (ADR 0009).
+    private let purchaser: SubscriptionPurchaser
+
     // MARK: - Init
 
     /// - Parameters:
@@ -64,10 +72,17 @@ public final class PaywallModel {
     ///     strings. Defaults to a placeholder so existing call sites that omit it
     ///     compile without change; production and UI-test call sites should pass
     ///     the resolved `launchOfferDisplay(environment:)` value.
-    public init(provider: EntitlementProvider, offerDisplay: OfferDisplay = OfferDisplay(price: "—", duration: "Monthly")) {
+    ///   - purchaser: The subscription purchaser. Defaults to the production
+    ///     `StoreKitSubscriptionPurchaser`; tests inject a fake.
+    public init(
+        provider: EntitlementProvider,
+        offerDisplay: OfferDisplay = OfferDisplay(price: "—", duration: "Monthly"),
+        purchaser: SubscriptionPurchaser = StoreKitSubscriptionPurchaser()
+    ) {
         self.provider = provider
         self.price = offerDisplay.price
         self.duration = offerDisplay.duration
+        self.purchaser = purchaser
     }
 
     // MARK: - Actions
@@ -90,5 +105,31 @@ public final class PaywallModel {
     public func restore() async {
         await provider.restoreEntitlement()
         isActive = await provider.isEntitlementActive()
+    }
+
+    /// Initiates a subscription purchase for the widget-access product via the
+    /// injected `SubscriptionPurchaser` seam.
+    ///
+    /// On success, calls `provider.refreshEntitlement()` (which re-derives and
+    /// persists the active flag) then re-reads `isActive` so the view updates.
+    ///
+    /// On cancellation (`SubscriptionPurchaserCancellation`) or any other error,
+    /// the error is swallowed and `isActive` is left unchanged — no crash on any
+    /// path. The model does NOT surface a visible error state this milestone; that
+    /// is out of scope (see slice #116 PRD).
+    ///
+    /// Driving a real purchase via `Product.purchase()` headlessly hangs under
+    /// `xcodebuild` from the CLI (ADR 0009 / CLAUDE.md). Tests inject a
+    /// `FakeSubscriptionPurchaser` configured to succeed, throw cancellation, or
+    /// throw an arbitrary error.
+    public func buy() async {
+        do {
+            try await purchaser.purchase(productID)
+            await provider.refreshEntitlement()
+            isActive = await provider.isEntitlementActive()
+        } catch {
+            // Swallow both cancellation and unexpected errors — no crash on any path.
+            // isActive is intentionally left unchanged.
+        }
     }
 }
