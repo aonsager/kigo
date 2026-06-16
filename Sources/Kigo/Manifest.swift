@@ -1,5 +1,26 @@
 import Foundation
 
+// MARK: - LocalizedText
+
+/// A localization-ready text container carrying a required Japanese value and
+/// an optional English value. Decodes successfully whether or not the "en" key
+/// is present, so adding English content later is a data change only (ADR 0014).
+///
+/// JSON shapes:
+///   `{ "ja": "…" }` — Japanese only (no English yet)
+///   `{ "ja": "…", "en": "…" }` — both values present
+public struct LocalizedText: Codable, Sendable, Equatable {
+    /// Required Japanese prose value.
+    public let ja: String
+    /// Optional English prose value; nil when the "en" key is absent in JSON.
+    public let en: String?
+
+    public init(ja: String, en: String? = nil) {
+        self.ja = ja
+        self.en = en
+    }
+}
+
 // MARK: - Manifest
 
 /// The single content document that conforms to the Contract (ADR 0001).
@@ -23,6 +44,26 @@ public struct Manifest: Codable, Sendable, Equatable {
     public let sekki: [Sekki]
 }
 
+// MARK: - Attribution
+
+/// Per-image attribution carrying title, credit (photographer/source), and license.
+/// Each field uses the localizable free-text shape (required Japanese, optional English),
+/// so English attribution can be added as a data change without a schema bump (ADR 0014).
+public struct Attribution: Codable, Sendable, Equatable {
+    /// Title of the image or artwork.
+    public let title: LocalizedText
+    /// Credit line (photographer, source, institution).
+    public let credit: LocalizedText
+    /// License or rights statement (e.g. "パブリックドメイン", "CC BY 4.0").
+    public let license: LocalizedText
+
+    public init(title: LocalizedText, credit: LocalizedText, license: LocalizedText) {
+        self.title = title
+        self.credit = credit
+        self.license = license
+    }
+}
+
 // MARK: - DailyMapEntry
 
 /// A single entry in the Daily Map, keyed by `MM-DD`.
@@ -35,6 +76,8 @@ public struct DailyMapEntry: Codable, Sendable, Equatable {
     public let description: String
     /// Identifier for the paired image asset.
     public let imageId: String
+    /// Per-image attribution (title, credit, license). Required for every entry.
+    public let attribution: Attribution
 }
 
 // MARK: - Ko
@@ -54,6 +97,8 @@ public struct Ko: Codable, Sendable, Equatable {
     /// A simple, codable representation sufficient for this milestone;
     /// precise boundary handling is deferred to later slices.
     public let dateRange: DateRange
+    /// Prose description of the microseason. Required Japanese, optional English (ADR 0014).
+    public let description: LocalizedText
 }
 
 /// Inclusive date range expressed as `MM-DD` strings.
@@ -72,4 +117,8 @@ public struct Sekki: Codable, Sendable, Equatable {
     public let kanji: String
     /// Yomi (reading) of the Sekki name.
     public let reading: String
+    /// Short localized gloss (e.g. "春の始まり"). Required Japanese, optional English (ADR 0014).
+    public let gloss: LocalizedText
+    /// Prose description of the solar term. Required Japanese, optional English (ADR 0014).
+    public let description: LocalizedText
 }

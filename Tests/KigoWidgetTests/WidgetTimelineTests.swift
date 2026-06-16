@@ -51,21 +51,32 @@ final class WidgetTimelineTests: XCTestCase {
                                     nextKanji: String,
                                     nextReading: String,
                                     nextImageId: String) -> Manifest {
+        let placeholderAttribution = Attribution(
+            title: LocalizedText(ja: "季語の風景"),
+            credit: LocalizedText(ja: "撮影者不明"),
+            license: LocalizedText(ja: "パブリックドメイン")
+        )
         let entry = DailyMapEntry(kanji: kanji, reading: reading,
-                                  description: "Today's Kigo.", imageId: imageId)
+                                  description: "Today's Kigo.", imageId: imageId,
+                                  attribution: placeholderAttribution)
         let nextEntry = DailyMapEntry(kanji: nextKanji, reading: nextReading,
-                                     description: "Tomorrow's Kigo.", imageId: nextImageId)
+                                     description: "Tomorrow's Kigo.", imageId: nextImageId,
+                                     attribution: placeholderAttribution)
         let ko = Ko(kanji: "腐草為螢",
                     reading: "くされたるくさほたるとなる",
                     gloss: "rotten grass becomes fireflies",
                     sekkiId: "shousho",
-                    dateRange: DateRange(start: dayKey, end: dayKey))
+                    dateRange: DateRange(start: dayKey, end: dayKey),
+                    description: LocalizedText(ja: "腐った草からホタルが生まれると古人は信じた。"))
         let nextKo = Ko(kanji: "土潤溽暑",
                         reading: "つちうるおうてむしあつし",
                         gloss: "earth is damp and sultry",
                         sekkiId: "shousho",
-                        dateRange: DateRange(start: nextDayKey, end: nextDayKey))
-        let sekki = Sekki(id: "shousho", kanji: "小暑", reading: "しょうしょ")
+                        dateRange: DateRange(start: nextDayKey, end: nextDayKey),
+                        description: LocalizedText(ja: "大地が湿り気を帯び、蒸し暑さが極まる。"))
+        let sekki = Sekki(id: "shousho", kanji: "小暑", reading: "しょうしょ",
+                          gloss: LocalizedText(ja: "暑さが増してくる"),
+                          description: LocalizedText(ja: "本格的な暑さが始まる時期。"))
         return Manifest(schemaVersion: "1.0",
                         dailyMap: [dayKey: entry, nextDayKey: nextEntry],
                         ko: [ko, nextKo],
@@ -81,13 +92,21 @@ final class WidgetTimelineTests: XCTestCase {
         let entry = DailyMapEntry(kanji: kanji,
                                   reading: reading,
                                   description: "Fireflies glow in summer dusk.",
-                                  imageId: imageId)
+                                  imageId: imageId,
+                                  attribution: Attribution(
+                                      title: LocalizedText(ja: "季語の風景"),
+                                      credit: LocalizedText(ja: "撮影者不明"),
+                                      license: LocalizedText(ja: "パブリックドメイン")
+                                  ))
         let ko = Ko(kanji: "腐草為螢",
                     reading: "くされたるくさほたるとなる",
                     gloss: "rotten grass becomes fireflies",
                     sekkiId: "shousho",
-                    dateRange: DateRange(start: dayKey, end: dayKey))
-        let sekki = Sekki(id: "shousho", kanji: "小暑", reading: "しょうしょ")
+                    dateRange: DateRange(start: dayKey, end: dayKey),
+                    description: LocalizedText(ja: "腐った草からホタルが生まれると古人は信じた。"))
+        let sekki = Sekki(id: "shousho", kanji: "小暑", reading: "しょうしょ",
+                          gloss: LocalizedText(ja: "暑さが増してくる"),
+                          description: LocalizedText(ja: "本格的な暑さが始まる時期。"))
         return Manifest(schemaVersion: "1.0",
                         dailyMap: [dayKey: entry],
                         ko: [ko],

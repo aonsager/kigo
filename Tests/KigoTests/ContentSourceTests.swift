@@ -119,7 +119,12 @@ final class ContentSourceTests: XCTestCase {
                 kanji: "款冬華",
                 reading: "ふきのはなさく",
                 description: "Butterbur blooms.",
-                imageId: "img-0101"
+                imageId: "img-0101",
+                attribution: Attribution(
+                    title: LocalizedText(ja: "季語の風景"),
+                    credit: LocalizedText(ja: "撮影者不明"),
+                    license: LocalizedText(ja: "パブリックドメイン")
+                )
             )
         ]
         let ko = [Ko(
@@ -127,9 +132,12 @@ final class ContentSourceTests: XCTestCase {
             reading: "ふきのはなさく",
             gloss: "Butterbur blooms",
             sekkiId: "sekki-01",
-            dateRange: DateRange(start: "01-01", end: "01-05")
+            dateRange: DateRange(start: "01-01", end: "01-05"),
+            description: LocalizedText(ja: "フキノトウが花を咲かせる。")
         )]
-        let sekki = [Sekki(id: "sekki-01", kanji: "小寒", reading: "しょうかん")]
+        let sekki = [Sekki(id: "sekki-01", kanji: "小寒", reading: "しょうかん",
+                           gloss: LocalizedText(ja: "寒さの始まり"),
+                           description: LocalizedText(ja: "寒さが厳しくなる時期。"))]
         let manifest = Manifest(schemaVersion: "1.0", dailyMap: dailyMap, ko: ko, sekki: sekki)
 
         // CountingFakeContentSource: first call returns the manifest; subsequent calls throw.
