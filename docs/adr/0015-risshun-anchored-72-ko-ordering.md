@@ -70,7 +70,7 @@ domain model.
 - `AlmanacPositions.koYearPosition` is 1-indexed and risshun-anchored. Callers must not
   interpret it as a calendar-year offset.
 - The first Kō in the bundled manifest by this ordering is **東風解凍** (position 1,
-  `02-04 – 02-08`). The last is **款冬華** (position 72, `01-25 – 01-29`).
+  `02-04 – 02-08`). The last is **鶏始乳** (position 72, `01-30 – 02-03`).
 - Slices #107–#109 (Sekki year-position, day-within-Kō, Kō-within-Sekki) extend
   `AlmanacPositions` additively; this ADR governs only the Kō year-position.
 - If the bundled manifest's risshun Kō ever moves (its `dateRange.start` changes),
