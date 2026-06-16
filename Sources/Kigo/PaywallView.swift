@@ -73,10 +73,10 @@ public struct PaywallView: View {
                         .accessibilityIdentifier("paywall.manage")
                 } else {
                     // Purchase button surface. Carries `paywall.buy` for UI test assertions.
-                    // Inert this milestone — no purchase flow is wired (that is C10).
-                    // Wire to `AppStore.sync()` + StoreKit purchase sheet in C10 or later.
+                    // Wired to `PaywallModel.buy()` which calls through the injected
+                    // `SubscriptionPurchaser` seam (C10 / slice #116).
                     Button("Subscribe") {
-                        // Purchase flow: out of scope for this slice (C10).
+                        Task { await model.buy() }
                     }
                     .buttonStyle(.borderedProminent)
                     .accessibilityIdentifier("paywall.buy")

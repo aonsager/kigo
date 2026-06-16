@@ -22,6 +22,13 @@ import SwiftUI
 /// Slice #86: The `OfferDisplay` is resolved via `launchOfferDisplay(environment:)`,
 /// which reads `KIGO_FAKE_PRICE` to inject fixed price/duration strings or fall through
 /// to the production placeholder (real `Product`-backed adapter is a J4 lane concern).
+///
+/// Slice #117: The `SubscriptionPurchaser` is resolved via `launchPurchaser(environment:)`,
+/// which reads `KIGO_FAKE_PURCHASER` to inject a fake purchaser (succeed/cancel) or fall
+/// through to the production `StoreKitSubscriptionPurchaser`. When `KIGO_FAKE_PURCHASER=succeed`
+/// the resolver also returns a `MutableEntitlementTransactionSource` that the purchaser flips
+/// on success; this override source is used to build the `EntitlementProvider` so the flip
+/// is visible to `PaywallModel.buy()` → `provider.refreshEntitlement()` (ADR 0009).
 @main
 struct KigoApp: App {
     @State private var store = ContentStore(
@@ -29,17 +36,33 @@ struct KigoApp: App {
         dateProvider: launchDateProvider(environment: ProcessInfo.processInfo.environment)
     )
 
-    private let entitlementProvider = launchEntitlementProvider(
-        environment: ProcessInfo.processInfo.environment
-    )
+    private let entitlementProvider: EntitlementProvider
+    private let purchaser: any SubscriptionPurchaser
+    private let offerDisplay: OfferDisplay
 
-    private let offerDisplay = launchOfferDisplay(
-        environment: ProcessInfo.processInfo.environment
-    )
+    init() {
+        let env = ProcessInfo.processInfo.environment
+        offerDisplay = launchOfferDisplay(environment: env)
+
+        if let fakePurchaser = launchPurchaser(environment: env) {
+            // KIGO_FAKE_PURCHASER is set: use the resolved purchaser.
+            // If it comes with an override source (succeed path), build the entitlement
+            // provider over that mutable source so the flip is visible after purchase.
+            purchaser = fakePurchaser.purchaser
+            if let overrideSource = fakePurchaser.overrideSource {
+                entitlementProvider = EntitlementProvider(source: overrideSource)
+            } else {
+                entitlementProvider = launchEntitlementProvider(environment: env)
+            }
+        } else {
+            purchaser = StoreKitSubscriptionPurchaser()
+            entitlementProvider = launchEntitlementProvider(environment: env)
+        }
+    }
 
     var body: some Scene {
         WindowGroup {
-            RootView(entitlementProvider: entitlementProvider, offerDisplay: offerDisplay)
+            RootView(entitlementProvider: entitlementProvider, offerDisplay: offerDisplay, purchaser: purchaser)
                 .environment(store)
         }
     }
@@ -58,6 +81,7 @@ struct KigoApp: App {
 struct RootView: View {
     let entitlementProvider: EntitlementProvider
     let offerDisplay: OfferDisplay
+    let purchaser: any SubscriptionPurchaser
 
     @State private var isPaywallPresented = false
 
@@ -72,7 +96,11 @@ struct RootView: View {
                 .accessibilityIdentifier("paywall.entry")
             }
             .sheet(isPresented: $isPaywallPresented) {
-                PaywallView(model: PaywallModel(provider: entitlementProvider, offerDisplay: offerDisplay))
+                PaywallView(model: PaywallModel(
+                    provider: entitlementProvider,
+                    offerDisplay: offerDisplay,
+                    purchaser: purchaser
+                ))
             }
     }
 }
