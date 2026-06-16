@@ -20,8 +20,18 @@ import SwiftUI
 /// the text content (`kigo.image`). The placeholder is derived from the entry's
 /// `imageId` — same imageId always renders the same gradient, different imageIds
 /// render distinct gradients. No real image assets are loaded (ADR 0001 / J2).
+///
+/// Extended in slice #122 to accept `AlmanacPositions` and render the
+/// `microseason.timeline` tappable affordance beneath the Microseason section.
+///
+/// Extended in slice #123 to wire the tap action: tapping `microseason.timeline`
+/// sets `isAlmanacPresented = true` and presents `AlmanacSheetView` as a `.sheet`.
+/// Swiping down or tapping the backdrop sets `isAlmanacPresented = false`.
 struct TodayView: View {
     let resolvedDay: ResolvedDay
+    let almanacPositions: AlmanacPositions
+
+    @State private var isAlmanacPresented = false
 
     var body: some View {
         ZStack {
@@ -59,7 +69,28 @@ struct TodayView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .accessibilityIdentifier("microseason.sekki")
+
+                // Microseason timeline affordance (slice #122 / #123).
+                // Tapping presents AlmanacSheetView as a modal sheet.
+                Button(action: {
+                    isAlmanacPresented = true
+                }) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "calendar")
+                        Text("\(almanacPositions.koYearPosition) / \(almanacPositions.koYearTotal)")
+                    }
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(.ultraThinMaterial, in: Capsule())
+                }
+                .accessibilityIdentifier("microseason.timeline")
+                .accessibilityLabel("Microseason timeline: Kō \(almanacPositions.koYearPosition) of \(almanacPositions.koYearTotal)")
             }
+        }
+        .sheet(isPresented: $isAlmanacPresented) {
+            AlmanacSheetView(almanacPositions: almanacPositions, ko: resolvedDay.ko)
         }
     }
 }

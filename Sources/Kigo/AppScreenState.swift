@@ -18,7 +18,13 @@ import Foundation
 /// `AppScreenState` is `Sendable` (all associated values are `Sendable`).
 public enum AppScreenState: Sendable {
     /// Content loaded and today fully resolved — render `TodayView`.
-    case today(ResolvedDay)
+    ///
+    /// Carries both the resolved Kigo/Kō/Sekki for the day (`ResolvedDay`) and
+    /// the almanac year-position values (`AlmanacPositions`) so `TodayView` can
+    /// display the microseason timeline affordance without reaching back into the
+    /// store (ADR 0007 pattern — extend the case payload rather than adding a
+    /// separate observable property).
+    case today(ResolvedDay, AlmanacPositions)
     /// Content is loading — render a non-error loading placeholder.
     case loadingPlaceholder
     /// Content is unavailable — render a non-error unavailable placeholder.
