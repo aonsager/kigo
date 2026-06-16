@@ -16,8 +16,11 @@ final class ContentRootStateTests: XCTestCase {
 
     // MARK: - Helpers
 
-    /// Builds a minimal `Manifest` with a single "01-01" entry, supporting
-    /// Ko + Sekki resolution. Mirrors the helper in `ContentStoreTests`.
+    /// Builds a minimal `Manifest` with two Ko/Sekki entries — one for "01-01" (the
+    /// test-pinned date) and a risshun Ko at "02-04" required by `AlmanacResolver`
+    /// (it needs a risshun anchor to build the rotated ordering). Slice #122 wires
+    /// `AlmanacResolver` into `screenState`, so the manifest must contain a risshun Ko
+    /// for the `.today` path to succeed.
     private func makeManifest() -> Manifest {
         let dailyMap: [String: DailyMapEntry] = [
             "01-01": DailyMapEntry(
@@ -32,17 +35,33 @@ final class ContentRootStateTests: XCTestCase {
                 )
             )
         ]
-        let ko = [Ko(
-            kanji: "款冬華",
-            reading: "ふきのはなさく",
-            gloss: "Butterbur blooms",
-            sekkiId: "sekki-01",
-            dateRange: DateRange(start: "01-01", end: "01-05"),
-            description: LocalizedText(ja: "フキノトウが花を咲かせる。")
-        )]
-        let sekki = [Sekki(id: "sekki-01", kanji: "小寒", reading: "しょうかん",
-                           gloss: LocalizedText(ja: "寒さの始まり"),
-                           description: LocalizedText(ja: "寒さが厳しくなる時期。"))]
+        let ko = [
+            Ko(
+                kanji: "款冬華",
+                reading: "ふきのはなさく",
+                gloss: "Butterbur blooms",
+                sekkiId: "sekki-01",
+                dateRange: DateRange(start: "01-01", end: "01-05"),
+                description: LocalizedText(ja: "フキノトウが花を咲かせる。")
+            ),
+            // Risshun Ko required by AlmanacResolver to anchor the rotated ordering.
+            Ko(
+                kanji: "東風解凍",
+                reading: "はるかぜこおりをとく",
+                gloss: "East wind thaws ice",
+                sekkiId: "sekki-02",
+                dateRange: DateRange(start: "02-04", end: "02-08"),
+                description: LocalizedText(ja: "東風が氷を解かし始める。")
+            )
+        ]
+        let sekki = [
+            Sekki(id: "sekki-01", kanji: "小寒", reading: "しょうかん",
+                  gloss: LocalizedText(ja: "寒さの始まり"),
+                  description: LocalizedText(ja: "寒さが厳しくなる時期。")),
+            Sekki(id: "sekki-02", kanji: "立春", reading: "りっしゅん",
+                  gloss: LocalizedText(ja: "春の始まり"),
+                  description: LocalizedText(ja: "春が始まる。"))
+        ]
         return Manifest(schemaVersion: "1.0", dailyMap: dailyMap, ko: ko, sekki: sekki)
     }
 
@@ -108,7 +127,7 @@ final class ContentRootStateTests: XCTestCase {
     // MARK: - AC3 & AC4: warm bundled path → Today screen
 
     /// After a successful load with an injected date that resolves a known day,
-    /// `screenState` maps to `.today(ResolvedDay)` — confirming the warm bundled
+    /// `screenState` maps to `.today(ResolvedDay, AlmanacPositions)` — confirming the warm bundled
     /// path still reaches the Today screen.
     ///
     /// This verifies AC3 (warm bundled path → Today screen) and AC4 (mapping tested).
@@ -128,7 +147,7 @@ final class ContentRootStateTests: XCTestCase {
         }
 
         // The app root mapping must produce .today with a resolved day.
-        guard case .today(let resolved) = store.screenState else {
+        guard case .today(let resolved, _) = store.screenState else {
             XCTFail("screenState must be .today when store is .loaded and date resolves, got \(store.screenState)")
             return
         }

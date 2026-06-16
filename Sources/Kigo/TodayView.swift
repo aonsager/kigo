@@ -20,8 +20,13 @@ import SwiftUI
 /// the text content (`kigo.image`). The placeholder is derived from the entry's
 /// `imageId` — same imageId always renders the same gradient, different imageIds
 /// render distinct gradients. No real image assets are loaded (ADR 0001 / J2).
+///
+/// Extended in slice #122 to accept `AlmanacPositions` and render the
+/// `microseason.timeline` tappable affordance beneath the Microseason section.
+/// The affordance is a Button with no action yet (sheet presentation is slice #123).
 struct TodayView: View {
     let resolvedDay: ResolvedDay
+    let almanacPositions: AlmanacPositions
 
     var body: some View {
         ZStack {
@@ -59,6 +64,25 @@ struct TodayView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .accessibilityIdentifier("microseason.sekki")
+
+                // Microseason timeline affordance (slice #122).
+                // A tappable element that will present the almanac timeline sheet
+                // in slice #123. For now it is visible and hittable with no action.
+                Button(action: {
+                    // Sheet presentation wired in slice #123.
+                }) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "calendar")
+                        Text("\(almanacPositions.koYearPosition) / \(almanacPositions.koYearTotal)")
+                    }
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(.ultraThinMaterial, in: Capsule())
+                }
+                .accessibilityIdentifier("microseason.timeline")
+                .accessibilityLabel("Microseason timeline: Kō \(almanacPositions.koYearPosition) of \(almanacPositions.koYearTotal)")
             }
         }
     }

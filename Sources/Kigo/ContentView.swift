@@ -5,7 +5,7 @@ import SwiftUI
 ///
 /// Owns no loading or resolution logic; all mapping is in `ContentStore.screenState`.
 /// Three branches:
-/// - `.today(ResolvedDay)` — renders `TodayView` (warm bundled path, AC3).
+/// - `.today(ResolvedDay, AlmanacPositions)` — renders `TodayView` (warm bundled path, AC3).
 /// - `.loadingPlaceholder` — renders `LoadingPlaceholderView` (AC1).
 /// - `.unavailablePlaceholder` — renders `UnavailablePlaceholderView` (AC2).
 struct ContentView: View {
@@ -13,8 +13,8 @@ struct ContentView: View {
 
     var body: some View {
         switch store.screenState {
-        case .today(let resolved):
-            TodayView(resolvedDay: resolved)
+        case .today(let resolved, let positions):
+            TodayView(resolvedDay: resolved, almanacPositions: positions)
         case .loadingPlaceholder:
             LoadingPlaceholderView()
         case .unavailablePlaceholder:

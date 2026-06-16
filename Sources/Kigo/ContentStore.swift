@@ -138,7 +138,7 @@ public final class ContentStore {
     /// this value; there is no conditional logic scattered across views.
     ///
     /// - `.loading` → `.loadingPlaceholder` (defined, non-crashing)
-    /// - `.loaded` where `todayResolved()` succeeds → `.today(ResolvedDay)`
+    /// - `.loaded` where `todayResolved()` and `AlmanacResolver.resolve()` succeed → `.today(ResolvedDay, AlmanacPositions)`
     /// - `.loaded` where `todayResolved()` returns nil (no entry for today) → `.unavailablePlaceholder`
     ///   (a content gap is terminal — waiting cannot resolve it — so it surfaces the
     ///   defined non-error *terminal* state, never an indefinite loading spinner)
@@ -147,12 +147,18 @@ public final class ContentStore {
         switch state {
         case .loading:
             return .loadingPlaceholder
-        case .loaded:
-            if let resolved = todayResolved() {
-                return .today(resolved)
-            } else {
+        case .loaded(let manifest):
+            guard let resolved = todayResolved() else {
                 return .unavailablePlaceholder
             }
+            // Resolve almanac year-position. If AlmanacResolver returns nil (date
+            // falls outside all Kō ranges — a content gap, not a transient failure)
+            // treat it the same as an unresolvable day and surface the terminal
+            // non-error state rather than an indefinite loading spinner.
+            guard let positions = AlmanacResolver.resolve(date: dateProvider.today, manifest: manifest) else {
+                return .unavailablePlaceholder
+            }
+            return .today(resolved, positions)
         case .unavailable:
             return .unavailablePlaceholder
         }
