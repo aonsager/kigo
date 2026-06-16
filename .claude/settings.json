@@ -38,7 +38,13 @@
       "git push *",
       "git pull *",
       "git clone *",
-      "git ls-remote *"
+      "git ls-remote *",
+      "xcodebuild *",
+      "xcrun *",
+      "xcodegen *",
+      "xcodegen",
+      "swift *",
+      "xcode-select *"
     ],
     "network": {
       "allowedDomains": [
