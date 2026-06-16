@@ -23,10 +23,15 @@ import SwiftUI
 ///
 /// Extended in slice #122 to accept `AlmanacPositions` and render the
 /// `microseason.timeline` tappable affordance beneath the Microseason section.
-/// The affordance is a Button with no action yet (sheet presentation is slice #123).
+///
+/// Extended in slice #123 to wire the tap action: tapping `microseason.timeline`
+/// sets `isAlmanacPresented = true` and presents `AlmanacSheetView` as a `.sheet`.
+/// Swiping down or tapping the backdrop sets `isAlmanacPresented = false`.
 struct TodayView: View {
     let resolvedDay: ResolvedDay
     let almanacPositions: AlmanacPositions
+
+    @State private var isAlmanacPresented = false
 
     var body: some View {
         ZStack {
@@ -65,11 +70,10 @@ struct TodayView: View {
                     .foregroundStyle(.secondary)
                     .accessibilityIdentifier("microseason.sekki")
 
-                // Microseason timeline affordance (slice #122).
-                // A tappable element that will present the almanac timeline sheet
-                // in slice #123. For now it is visible and hittable with no action.
+                // Microseason timeline affordance (slice #122 / #123).
+                // Tapping presents AlmanacSheetView as a modal sheet.
                 Button(action: {
-                    // Sheet presentation wired in slice #123.
+                    isAlmanacPresented = true
                 }) {
                     HStack(spacing: 6) {
                         Image(systemName: "calendar")
@@ -84,6 +88,9 @@ struct TodayView: View {
                 .accessibilityIdentifier("microseason.timeline")
                 .accessibilityLabel("Microseason timeline: Kō \(almanacPositions.koYearPosition) of \(almanacPositions.koYearTotal)")
             }
+        }
+        .sheet(isPresented: $isAlmanacPresented) {
+            AlmanacSheetView(almanacPositions: almanacPositions, ko: resolvedDay.ko)
         }
     }
 }
