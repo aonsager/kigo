@@ -339,6 +339,151 @@ final class AlmanacResolutionTests: XCTestCase {
             "Host-rendered text must show 'Day 3 / 5' for 2026-06-18")
     }
 
+    // MARK: - Slice #109: Kō-within-Sekki tests
+
+    /// AC2: For 2026-06-16 (梅子黄, the third Kō of 芒種) the Kō-within-Sekki is 3 of 3.
+    ///
+    /// 芒種 contains: 螳螂生 (06-06), 腐草為螢 (06-11), 梅子黄 (06-16) — ordered by dateRange.start.
+    /// 梅子黄 is at position 3 of 3.
+    func testKoWithinSekkiFor0616IsThirdOfThree() throws {
+        let manifest = try loadBundledManifest()
+        let date = makeUTCDate(month: 6, day: 16)
+
+        let positions = try XCTUnwrap(
+            AlmanacResolver.resolve(date: date, manifest: manifest),
+            "AlmanacResolver must return non-nil AlmanacPositions for 06-16"
+        )
+
+        XCTAssertEqual(positions.koWithinSekki, 3,
+            "Kō-within-Sekki for 06-16 (梅子黄, 3rd Kō of 芒種) must be 3")
+        XCTAssertEqual(positions.koWithinSekkiTotal, 3,
+            "Kō-within-Sekki total must always be 3")
+    }
+
+    /// AC3: On a Sekki-boundary day (06-06, start of 螳螂生, first Kō of 芒種)
+    /// the Kō-within-Sekki resets to 1 and the Sekki year-position advances.
+    ///
+    /// 06-06 is the first day of 螳螂生, which is the first Kō of 芒種 (position 9 in
+    /// risshun-anchored ordering). So: Kō-within-Sekki = 1, Sekki year-position = 9.
+    func testKoWithinSekkiResetsAtSekkiBoundary() throws {
+        let manifest = try loadBundledManifest()
+        let date = makeUTCDate(month: 6, day: 6)
+
+        let positions = try XCTUnwrap(
+            AlmanacResolver.resolve(date: date, manifest: manifest),
+            "AlmanacResolver must return non-nil AlmanacPositions for 06-06"
+        )
+
+        XCTAssertEqual(positions.koWithinSekki, 1,
+            "Kō-within-Sekki on Sekki-boundary day 06-06 (螳螂生, first Kō of 芒種) must be 1")
+        XCTAssertEqual(positions.koWithinSekkiTotal, 3,
+            "Kō-within-Sekki total must always be 3")
+        XCTAssertEqual(positions.sekkiYearPosition, 9,
+            "Sekki year-position for 芒種 (06-06) must be 9")
+    }
+
+    /// AC4: A single resolve(date:manifest:) call returns all four positions coherently.
+    func testAllFourPositionsCoherentFor0616() throws {
+        let manifest = try loadBundledManifest()
+        let date = makeUTCDate(month: 6, day: 16)
+
+        let positions = try XCTUnwrap(
+            AlmanacResolver.resolve(date: date, manifest: manifest),
+            "AlmanacResolver must return non-nil AlmanacPositions for 06-16"
+        )
+
+        // Kō 27/72, Sekki 9/24, day-within-Kō 1/5, Kō-within-Sekki 3/3
+        XCTAssertEqual(positions.koYearPosition, 27, "Kō year-position must be 27")
+        XCTAssertEqual(positions.koYearTotal, 72, "Kō year total must be 72")
+        XCTAssertEqual(positions.sekkiYearPosition, 9, "Sekki year-position must be 9")
+        XCTAssertEqual(positions.sekkiYearTotal, 24, "Sekki year total must be 24")
+        XCTAssertEqual(positions.dayWithinKo, 1, "Day-within-Kō must be 1")
+        XCTAssertEqual(positions.koRangeLength, 5, "Kō range length must be 5")
+        XCTAssertEqual(positions.koWithinSekki, 3, "Kō-within-Sekki must be 3")
+        XCTAssertEqual(positions.koWithinSekkiTotal, 3, "Kō-within-Sekki total must be 3")
+    }
+
+    // MARK: - Screenshot evidence: four-positions host render (slice #109)
+
+    /// Screenshot evidence: renders a SwiftUI Text view showing all four positions
+    /// (driven by the REAL AlmanacResolver output for 2026-06-16) and emits a PNG
+    /// as a keepAlways XCTAttachment.
+    ///
+    /// Full identifier: KigoTests/AlmanacResolutionTests/testFourPositionsHostRender
+    /// Attachment name: "slice-109-four-positions"
+    @MainActor
+    func testFourPositionsHostRender() throws {
+        let manifest = try loadBundledManifest()
+        let date = makeUTCDate(month: 6, day: 16)
+
+        let positions = try XCTUnwrap(
+            AlmanacResolver.resolve(date: date, manifest: manifest),
+            "AlmanacResolver must return non-nil AlmanacPositions for 06-16"
+        )
+
+        let koText = "Kō \(positions.koYearPosition)/\(positions.koYearTotal)"
+        let sekkiText = "Sekki \(positions.sekkiYearPosition)/\(positions.sekkiYearTotal)"
+        let dayText = "Day \(positions.dayWithinKo)/\(positions.koRangeLength)"
+        let koInSekkiText = "k \(positions.koWithinSekki)/\(positions.koWithinSekkiTotal)"
+
+        let debugView = ZStack {
+            Color(white: 0.1)
+            VStack(spacing: 10) {
+                Text("2026-06-16 · 梅子黄 · 芒種")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                HStack(spacing: 20) {
+                    VStack(spacing: 4) {
+                        Text(koText)
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
+                            .foregroundStyle(.white)
+                        Text(sekkiText)
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
+                            .foregroundStyle(.white)
+                    }
+                    VStack(spacing: 4) {
+                        Text(dayText)
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
+                            .foregroundStyle(.white)
+                        Text(koInSekkiText)
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
+                            .foregroundStyle(.white)
+                    }
+                }
+            }
+            .padding(24)
+        }
+        .frame(width: 360, height: 180)
+
+        let renderer = ImageRenderer(content: debugView)
+        renderer.scale = 2.0
+
+        guard let uiImage = renderer.uiImage else {
+            XCTFail("ImageRenderer failed to produce a UIImage for the four-positions view")
+            return
+        }
+
+        guard let pngData = uiImage.pngData() else {
+            XCTFail("Failed to convert UIImage to PNG data")
+            return
+        }
+
+        let attachment = XCTAttachment(data: pngData, uniformTypeIdentifier: "public.png")
+        attachment.name = "slice-109-four-positions"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+
+        // Assert all four positions match expected values
+        XCTAssertEqual(koText, "Kō 27/72",
+            "Host-rendered Kō text must show 'Kō 27/72' for 2026-06-16")
+        XCTAssertEqual(sekkiText, "Sekki 9/24",
+            "Host-rendered Sekki text must show 'Sekki 9/24' for 2026-06-16")
+        XCTAssertEqual(dayText, "Day 1/5",
+            "Host-rendered day text must show 'Day 1/5' for 2026-06-16")
+        XCTAssertEqual(koInSekkiText, "k 3/3",
+            "Host-rendered Kō-within-Sekki text must show 'k 3/3' for 2026-06-16")
+    }
+
     // MARK: - Screenshot evidence: Kō + Sekki combined host render (slice #107)
 
     /// Screenshot evidence: renders a SwiftUI view showing BOTH "Kō 27 / 72" AND "Sekki 9 / 24"
