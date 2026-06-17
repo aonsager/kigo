@@ -2,51 +2,36 @@ import XCTest
 
 // MARK: - SettingsLanguageUITests
 
-/// UI tests for Slice #136: Reactive chrome-string seam wired end-to-end into PaywallView.
+/// UI tests for `KIGO_FAKE_LANGUAGE` resolver and chrome-string seam (Slice #136–#137).
 ///
-/// Acceptance criterion verified:
-///   AC: On a default launch (no language env var), `paywall.restore` shows the Japanese
-///       restore string ("復元") because `InMemoryLanguageStore` defaults to `.japanese`.
+/// Acceptance criteria verified:
+///   AC-ja: Default launch (no language env var) → `paywall.restore` shows "復元".
+///   AC-en: `KIGO_FAKE_LANGUAGE=en` launch → `paywall.restore` shows "Restore Purchases".
+///   AC-ja-env: `KIGO_FAKE_LANGUAGE=ja` launch → `paywall.restore` shows "復元".
 ///
-/// The test launches without any `KIGO_FAKE_LANGUAGE` override so it exercises the
-/// production-default code path (no env-var resolver yet — that is slice #137).
-///
-/// Screenshot evidence:
-///   XCTAttachment name: "paywall-restore-japanese"
+/// Screenshot evidence (required for Slice #137):
+///   XCTAttachment name: "slice-137-language-en-restore"
 ///   Lifetime: .keepAlways
-///   Test identifier: KigoUITests/SettingsLanguageUITests/testDefaultLaunchShowsJapaneseRestoreString
+///   Test identifier: KigoUITests/SettingsLanguageUITests/testEnvEnglishLaunchShowsEnglishRestoreString
 final class SettingsLanguageUITests: XCTestCase {
 
-    var app: XCUIApplication!
+    // MARK: - Helpers
 
-    override func setUpWithError() throws {
-        continueAfterFailure = false
-        app = XCUIApplication()
-        // Fix the date so Today-screen content is deterministic.
-        app.launchEnvironment["KIGO_FAKE_DATE"] = "2026-06-12"
-        // Inactive entitlement so the paywall shows the buy/restore surface (not manage).
-        app.launchEnvironment["KIGO_FAKE_ENTITLEMENT"] = "inactive"
-        // Set a fake price so the paywall loads synchronously without StoreKit.
-        app.launchEnvironment["KIGO_FAKE_PRICE"] = "¥300"
-        // No KIGO_FAKE_LANGUAGE — exercises the production-default .japanese path.
-        app.launch()
+    /// Shared environment variables common to all tests in this suite.
+    private var baseEnvironment: [String: String] {
+        [
+            "KIGO_FAKE_DATE": "2026-06-12",
+            "KIGO_FAKE_ENTITLEMENT": "inactive",
+            "KIGO_FAKE_PRICE": "¥300",
+        ]
     }
 
-    override func tearDownWithError() throws {
-        app = nil
-    }
-
-    // MARK: - Default-launch: paywall.restore shows Japanese restore string
-
-    /// On a default launch, `paywall.restore` must display the Japanese restore string ("復元").
+    /// Launches the app and opens the paywall sheet, returning the restore element.
     ///
-    /// This exercises the full injection chain:
-    ///  1. KigoApp creates an `InMemoryLanguageStore()` — defaults to `.japanese`.
-    ///  2. `ChromeStrings(.japanese).restore` == "復元".
-    ///  3. PaywallView renders the button with that label.
-    ///  4. The UI test reads `paywall.restore`'s label and asserts equality.
-    func testDefaultLaunchShowsJapaneseRestoreString() {
-        // Open the paywall sheet via the upgrade entry.
+    /// Asserts the paywall.entry and paywall.sheet exist before returning.
+    private func launchAndOpenPaywall(app: XCUIApplication) -> XCUIElement {
+        app.launch()
+
         let entry = app.descendants(matching: .any)
             .matching(identifier: "paywall.entry")
             .firstMatch
@@ -56,7 +41,6 @@ final class SettingsLanguageUITests: XCTestCase {
         )
         entry.tap()
 
-        // Wait for the paywall sheet to appear.
         let sheet = app.descendants(matching: .any)
             .matching(identifier: "paywall.sheet")
             .firstMatch
@@ -65,8 +49,6 @@ final class SettingsLanguageUITests: XCTestCase {
             "paywall.sheet must appear after tapping paywall.entry"
         )
 
-        // Locate the restore button (search all descendants for resilience to
-        // SwiftUI's accessibility element-type mapping on iOS 26).
         let restoreElement = app.descendants(matching: .any)
             .matching(identifier: "paywall.restore")
             .firstMatch
@@ -74,19 +56,93 @@ final class SettingsLanguageUITests: XCTestCase {
             restoreElement.waitForExistence(timeout: 5),
             "paywall.restore element must exist in the paywall sheet"
         )
+        return restoreElement
+    }
 
-        // Assert the label equals the Japanese restore string.
+    // MARK: - AC-ja: Default-launch: paywall.restore shows Japanese restore string
+
+    /// On a default launch (no `KIGO_FAKE_LANGUAGE`), `paywall.restore` must show "復元".
+    ///
+    /// This exercises the full injection chain:
+    ///  1. KigoApp calls `launchLanguageStore(environment:)` — no env var → `UserDefaultsLanguageStore`.
+    ///  2. `UserDefaultsLanguageStore` with no prior write → defaults to `.japanese`.
+    ///  3. `ChromeStrings(.japanese).restore` == "復元".
+    ///  4. PaywallView renders the restore button with that label.
+    ///
+    /// Screenshot evidence:
+    ///   XCTAttachment name: "paywall-restore-japanese"
+    func testDefaultLaunchShowsJapaneseRestoreString() {
+        let app = XCUIApplication()
+        baseEnvironment.forEach { app.launchEnvironment[$0.key] = $0.value }
+        // No KIGO_FAKE_LANGUAGE — exercises the UserDefaultsLanguageStore default path.
+
+        let restoreElement = launchAndOpenPaywall(app: app)
+
         let label = restoreElement.label
         XCTAssertEqual(
             label, "復元",
-            "paywall.restore label must equal '復元' (Japanese restore string) on a default launch; got: '\(label)'"
+            "paywall.restore label must equal '復元' on a default launch; got: '\(label)'"
         )
 
-        // Screenshot evidence — captured AFTER the assertion passes.
         let screenshot = XCUIScreen.main.screenshot()
         let attachment = XCTAttachment(screenshot: screenshot)
         attachment.lifetime = .keepAlways
         attachment.name = "paywall-restore-japanese"
         add(attachment)
+    }
+
+    // MARK: - AC-en (Slice #137): KIGO_FAKE_LANGUAGE=en → English restore string
+
+    /// Launching with `KIGO_FAKE_LANGUAGE=en` must show "Restore Purchases" on `paywall.restore`.
+    ///
+    /// This exercises the `launchLanguageStore` resolver:
+    ///  1. `KIGO_FAKE_LANGUAGE=en` → locked `InMemoryLanguageStore(.english)`.
+    ///  2. `ChromeStrings(.english).restore` == "Restore Purchases".
+    ///  3. PaywallView renders the restore button with that label.
+    ///
+    /// Screenshot evidence (required for Slice #137):
+    ///   XCTAttachment name: "slice-137-language-en-restore"
+    ///   Lifetime: .keepAlways
+    func testEnvEnglishLaunchShowsEnglishRestoreString() {
+        let app = XCUIApplication()
+        baseEnvironment.forEach { app.launchEnvironment[$0.key] = $0.value }
+        app.launchEnvironment["KIGO_FAKE_LANGUAGE"] = "en"
+
+        let restoreElement = launchAndOpenPaywall(app: app)
+
+        let label = restoreElement.label
+        XCTAssertEqual(
+            label, "Restore Purchases",
+            "paywall.restore label must equal 'Restore Purchases' with KIGO_FAKE_LANGUAGE=en; got: '\(label)'"
+        )
+
+        // Screenshot evidence — captured AFTER assertion passes.
+        let screenshot = XCUIScreen.main.screenshot()
+        let attachment = XCTAttachment(screenshot: screenshot)
+        attachment.lifetime = .keepAlways
+        attachment.name = "slice-137-language-en-restore"
+        add(attachment)
+    }
+
+    // MARK: - AC-ja-env (Slice #137): KIGO_FAKE_LANGUAGE=ja → Japanese restore string
+
+    /// Launching with `KIGO_FAKE_LANGUAGE=ja` must show "復元" on `paywall.restore`.
+    ///
+    /// This exercises the `launchLanguageStore` resolver:
+    ///  1. `KIGO_FAKE_LANGUAGE=ja` → locked `InMemoryLanguageStore(.japanese)`.
+    ///  2. `ChromeStrings(.japanese).restore` == "復元".
+    ///  3. PaywallView renders the restore button with that label.
+    func testEnvJapaneseLaunchShowsJapaneseRestoreString() {
+        let app = XCUIApplication()
+        baseEnvironment.forEach { app.launchEnvironment[$0.key] = $0.value }
+        app.launchEnvironment["KIGO_FAKE_LANGUAGE"] = "ja"
+
+        let restoreElement = launchAndOpenPaywall(app: app)
+
+        let label = restoreElement.label
+        XCTAssertEqual(
+            label, "復元",
+            "paywall.restore label must equal '復元' with KIGO_FAKE_LANGUAGE=ja; got: '\(label)'"
+        )
     }
 }
