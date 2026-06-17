@@ -29,6 +29,11 @@ import SwiftUI
 /// the resolver also returns a `MutableEntitlementTransactionSource` that the purchaser flips
 /// on success; this override source is used to build the `EntitlementProvider` so the flip
 /// is visible to `PaywallModel.buy()` → `provider.refreshEntitlement()` (ADR 0009).
+///
+/// Slice #136: An `InMemoryLanguageStore` is created at app startup and injected into
+/// `RootView` → `PaywallView` so the Paywall's chrome strings react to the user's
+/// language preference. Persistence (UserDefaults) and the `KIGO_FAKE_LANGUAGE` resolver
+/// are deferred to slice #137.
 @main
 struct KigoApp: App {
     @State private var store = ContentStore(
@@ -39,6 +44,7 @@ struct KigoApp: App {
     private let entitlementProvider: EntitlementProvider
     private let purchaser: any SubscriptionPurchaser
     private let offerDisplay: OfferDisplay
+    @State private var languageStore = InMemoryLanguageStore()
 
     init() {
         let env = ProcessInfo.processInfo.environment
@@ -62,8 +68,13 @@ struct KigoApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView(entitlementProvider: entitlementProvider, offerDisplay: offerDisplay, purchaser: purchaser)
-                .environment(store)
+            RootView(
+                entitlementProvider: entitlementProvider,
+                offerDisplay: offerDisplay,
+                purchaser: purchaser,
+                languageStore: languageStore
+            )
+            .environment(store)
         }
     }
 }
@@ -78,10 +89,15 @@ struct KigoApp: App {
 ///
 /// The Upgrade button (`paywall.entry`) is always present, overlaid as a small, unobtrusive
 /// control at the bottom-trailing corner of the screen via a `ZStack` / `overlay`.
+///
+/// Slice #136: `languageStore` carries the user's language preference; `ChromeStrings` is
+/// derived at sheet-construction time and passed into `PaywallView` so the restore label
+/// reflects the active locale.
 struct RootView: View {
     let entitlementProvider: EntitlementProvider
     let offerDisplay: OfferDisplay
     let purchaser: any SubscriptionPurchaser
+    let languageStore: InMemoryLanguageStore
 
     @State private var isPaywallPresented = false
 
@@ -96,11 +112,14 @@ struct RootView: View {
                 .accessibilityIdentifier("paywall.entry")
             }
             .sheet(isPresented: $isPaywallPresented) {
-                PaywallView(model: PaywallModel(
-                    provider: entitlementProvider,
-                    offerDisplay: offerDisplay,
-                    purchaser: purchaser
-                ))
+                PaywallView(
+                    model: PaywallModel(
+                        provider: entitlementProvider,
+                        offerDisplay: offerDisplay,
+                        purchaser: purchaser
+                    ),
+                    chromeStrings: ChromeStrings(languageStore.preference)
+                )
             }
     }
 }
