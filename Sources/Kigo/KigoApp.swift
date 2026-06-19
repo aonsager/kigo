@@ -112,21 +112,23 @@ struct RootView: View {
     var body: some View {
         ContentView()
             .overlay(alignment: .bottomTrailing) {
-                Button("Upgrade") {
+                Button {
                     isPaywallPresented = true
+                } label: {
+                    Image(systemName: "gearshape.fill")
                 }
                 .buttonStyle(.borderedProminent)
                 .padding()
                 .accessibilityIdentifier("paywall.entry")
             }
             .sheet(isPresented: $isPaywallPresented) {
-                PaywallView(
+                SettingsView(
                     model: PaywallModel(
                         provider: entitlementProvider,
                         offerDisplay: offerDisplay,
                         purchaser: purchaser
                     ),
-                    chromeStrings: ChromeStrings(languageStore.preference)
+                    languageStore: languageStore
                 )
             }
     }
