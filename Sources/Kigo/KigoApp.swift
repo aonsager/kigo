@@ -100,7 +100,9 @@ struct KigoApp: App {
 /// to the resolved `EntitlementProvider` and `OfferDisplay` passed down from `KigoApp`.
 ///
 /// The Upgrade button (`paywall.entry`) is always present, overlaid as a small, unobtrusive
-/// control at the bottom-trailing corner of the screen via a `ZStack` / `overlay`.
+/// control at the top-trailing corner of the screen via `.overlay(alignment: .topTrailing)`.
+/// Moved from `.bottomTrailing` to `.topTrailing` in slice #154 so it sits symmetrically
+/// opposite `info.entry` (top-leading) — both in the top third of the screen.
 ///
 /// Slice #136: `languageStore` carries the user's language preference; `ChromeStrings` is
 /// derived at sheet-construction time and passed into `PaywallView` so the restore label
@@ -118,14 +120,19 @@ struct RootView: View {
 
     var body: some View {
         ContentView()
-            .overlay(alignment: .bottomTrailing) {
+            .overlay(alignment: .topTrailing) {
                 Button {
                     isPaywallPresented = true
                 } label: {
                     Image(systemName: "gearshape.fill")
+                        .font(.title3)
+                        .foregroundStyle(.secondary)
+                        .padding(12)
+                        .background(.ultraThinMaterial, in: Circle())
                 }
-                .buttonStyle(.borderedProminent)
-                .padding()
+                .buttonStyle(.plain)
+                .padding(.trailing, 16)
+                .padding(.top, 16)
                 .accessibilityIdentifier("paywall.entry")
             }
             .sheet(isPresented: $isPaywallPresented) {
