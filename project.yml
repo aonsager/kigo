@@ -21,6 +21,8 @@ targets:
       - path: Sources/Kigo
       - path: Resources/manifest.json
         buildPhase: resources
+      - path: Resources/Fonts/ShipporiMincho-Regular.ttf
+        buildPhase: resources
     dependencies:
       - target: KigoWidgetExtension
         embed: true
