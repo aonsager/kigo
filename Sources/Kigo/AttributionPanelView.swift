@@ -12,6 +12,8 @@ import SwiftUI
 ///
 /// The root container uses the Color.clear sentinel pattern (ADR 0013) so that
 /// `waitForExistence("info.panel")` targets only the clear layer, not child Text elements.
+///
+/// Extended in slice #149 to apply KigoFont.zenKakuGothicNewRegular to UI-chrome text elements.
 struct AttributionPanelView: View {
     let attribution: Attribution
 
@@ -25,7 +27,7 @@ struct AttributionPanelView: View {
             VStack(spacing: 20) {
                 // Attribution title
                 Text(attribution.title.ja)
-                    .font(.title2)
+                    .font(KigoFont.zenKakuGothicNewRegular(size: 20, relativeTo: .title2))
                     .fontWeight(.semibold)
                     .multilineTextAlignment(.center)
                     .padding(.top, 24)
@@ -35,7 +37,7 @@ struct AttributionPanelView: View {
 
                 // Credit line (photographer / source)
                 Text(attribution.credit.ja)
-                    .font(.body)
+                    .font(KigoFont.zenKakuGothicNewRegular(size: 17, relativeTo: .body))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 24)
