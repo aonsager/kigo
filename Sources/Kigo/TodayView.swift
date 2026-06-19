@@ -35,8 +35,13 @@ import SwiftUI
 /// `ActiveSheet` enum-driven `.sheet(item:)` modifier, eliminating the two stacked
 /// `.sheet` modifiers and replacing them with one.
 ///
-/// Extended in slice #149 to apply KigoFont.zenKakuGothicNewRegular to UI-chrome
-/// text elements (reading, description, ko, sekki, calendar button label).
+/// Extended in slice #154 to add a frosted-glass legibility plate (`kigo.scrim`) between
+/// the image layer and the text content. The scrim is a full-bleed `.ultraThinMaterial`
+/// rectangle that softens the placeholder image and improves text contrast without
+/// obscuring the underlying colour gradient.
+///
+/// Also in slice #154: the `paywall.entry` gear button was moved from `.bottomTrailing` to
+/// `.topTrailing` (in `KigoApp.RootView`) so it sits symmetrically opposite `info.entry`.
 struct TodayView: View {
     let resolvedDay: ResolvedDay
     let almanacPositions: AlmanacPositions
@@ -58,7 +63,15 @@ struct TodayView: View {
             // Derived deterministically from imageId (slice #59, AC1–AC2).
             KigoPlaceholderView(imageId: resolvedDay.kigoEntry.imageId)
 
-            // Text content layer — rendered on top of the placeholder.
+            // Frosted-glass legibility plate — between image and text content.
+            // Softens the placeholder gradient to improve text contrast.
+            Rectangle()
+                .fill(.ultraThinMaterial)
+                .ignoresSafeArea()
+                .accessibilityIdentifier("kigo.scrim")
+                .accessibilityHidden(true)
+
+            // Text content layer — rendered on top of the scrim.
             VStack(spacing: 8) {
                 Text(resolvedDay.kigoEntry.kanji)
                     .font(KigoFont.shipporiMinchoRegular(size: 48, relativeTo: .largeTitle))
