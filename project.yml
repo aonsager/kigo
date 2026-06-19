@@ -23,6 +23,8 @@ targets:
         buildPhase: resources
       - path: Resources/Fonts/ShipporiMincho-Regular.ttf
         buildPhase: resources
+      - path: Resources/Fonts/ZenKakuGothicNew-Regular.ttf
+        buildPhase: resources
     dependencies:
       - target: KigoWidgetExtension
         embed: true

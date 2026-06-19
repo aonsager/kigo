@@ -12,6 +12,9 @@ import Foundation
 /// purchase. Real purchase flow (calling `AppStore.sync()` → StoreKit purchase
 /// sheet → `PaywallModel.loadState()`) requires a live StoreKit session and is
 /// exercised only via the Xcode IDE run path, never on the CLI gating path.
+///
+/// Extended in slice #149 to apply KigoFont.zenKakuGothicNewRegular to UI-chrome
+/// text elements (benefits copy, price, duration, legal link labels).
 public struct PaywallView: View {
     @State private var model: PaywallModel
     private let chromeStrings: ChromeStrings
@@ -50,6 +53,7 @@ public struct PaywallView: View {
                 // Benefits copy — describes the single honest premium benefit (widget image reveal).
                 // Carries `paywall.benefits` so the UI test can assert it is present and non-empty.
                 Text("Reveal the seasonal illustration on your home screen widget.")
+                    .font(KigoFont.zenKakuGothicNewRegular(size: 17, relativeTo: .body))
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.secondary)
                     .accessibilityIdentifier("paywall.benefits")
@@ -61,12 +65,12 @@ public struct PaywallView: View {
                 // Offer-display: price and duration surfaced via accessibility identifiers
                 // so UI tests can assert on the rendered strings (slice #86 / ADR 0013).
                 Text(model.price)
-                    .font(.title2)
+                    .font(KigoFont.zenKakuGothicNewRegular(size: 20, relativeTo: .title2))
                     .bold()
                     .accessibilityIdentifier("paywall.price")
 
                 Text(model.duration)
-                    .font(.subheadline)
+                    .font(KigoFont.zenKakuGothicNewRegular(size: 15, relativeTo: .subheadline))
                     .foregroundStyle(.secondary)
                     .accessibilityIdentifier("paywall.duration")
 
@@ -100,12 +104,12 @@ public struct PaywallView: View {
                 // the URLs are gated as well-formed https constants in PaywallConfigTests.
                 HStack(spacing: 16) {
                     Link("Terms of Use", destination: PaywallConfig.termsOfUseURL)
-                        .font(.caption)
+                        .font(KigoFont.zenKakuGothicNewRegular(size: 12, relativeTo: .caption))
                         .foregroundStyle(.secondary)
                         .accessibilityIdentifier("paywall.terms")
 
                     Link("Privacy Policy", destination: PaywallConfig.privacyPolicyURL)
-                        .font(.caption)
+                        .font(KigoFont.zenKakuGothicNewRegular(size: 12, relativeTo: .caption))
                         .foregroundStyle(.secondary)
                         .accessibilityIdentifier("paywall.privacy")
                 }
