@@ -13,6 +13,8 @@ import SwiftUI
 ///
 /// The root container uses the Color.clear sentinel pattern (ADR 0013) so that
 /// `waitForExistence("microseason.almanac")` targets only the clear layer, not child Text elements.
+///
+/// Extended in slice #149 to apply KigoFont.zenKakuGothicNewRegular to UI-chrome text elements.
 struct AlmanacSheetView: View {
     let almanacPositions: AlmanacPositions
     let ko: Ko
@@ -33,7 +35,7 @@ struct AlmanacSheetView: View {
                     .padding(.top, 24)
 
                 Text(ko.reading)
-                    .font(.title3)
+                    .font(KigoFont.zenKakuGothicNewRegular(size: 20, relativeTo: .title3))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
 
@@ -41,7 +43,7 @@ struct AlmanacSheetView: View {
 
                 // Year position: e.g. "27 / 72"
                 Text("\(almanacPositions.koYearPosition) / \(almanacPositions.koYearTotal)")
-                    .font(.headline)
+                    .font(KigoFont.zenKakuGothicNewRegular(size: 17, relativeTo: .headline))
                     .accessibilityIdentifier("microseason.koPosition")
 
                 // Day-within-Kō progress gauge
@@ -55,7 +57,7 @@ struct AlmanacSheetView: View {
 
                 // Ko description in Japanese
                 Text(ko.description.ja)
-                    .font(.body)
+                    .font(KigoFont.zenKakuGothicNewRegular(size: 17, relativeTo: .body))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 24)
                     .accessibilityIdentifier("microseason.koDescription")

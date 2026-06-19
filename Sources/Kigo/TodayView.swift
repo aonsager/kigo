@@ -34,6 +34,9 @@ import SwiftUI
 /// Extended in slice #132 to consolidate the two-Bool sheet pattern into a single
 /// `ActiveSheet` enum-driven `.sheet(item:)` modifier, eliminating the two stacked
 /// `.sheet` modifiers and replacing them with one.
+///
+/// Extended in slice #149 to apply KigoFont.zenKakuGothicNewRegular to UI-chrome
+/// text elements (reading, description, ko, sekki, calendar button label).
 struct TodayView: View {
     let resolvedDay: ResolvedDay
     let almanacPositions: AlmanacPositions
@@ -58,15 +61,15 @@ struct TodayView: View {
             // Text content layer — rendered on top of the placeholder.
             VStack(spacing: 8) {
                 Text(resolvedDay.kigoEntry.kanji)
-                    .font(.largeTitle)
+                    .font(KigoFont.shipporiMinchoRegular(size: 48, relativeTo: .largeTitle))
                     .accessibilityIdentifier("kigo.kanji")
 
                 Text(resolvedDay.kigoEntry.reading)
-                    .font(.title2)
+                    .font(KigoFont.zenKakuGothicNewRegular(size: 20, relativeTo: .title2))
                     .accessibilityIdentifier("kigo.reading")
 
                 Text(resolvedDay.kigoEntry.description)
-                    .font(.body)
+                    .font(KigoFont.zenKakuGothicNewRegular(size: 17, relativeTo: .body))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
                     .accessibilityIdentifier("kigo.description")
@@ -78,11 +81,11 @@ struct TodayView: View {
                 // Text representation: hiragana reading for both, consistent with
                 // the Kigo reading style above.
                 Text(resolvedDay.ko.reading)
-                    .font(.headline)
+                    .font(KigoFont.zenKakuGothicNewRegular(size: 17, relativeTo: .headline))
                     .accessibilityIdentifier("microseason.ko")
 
                 Text(resolvedDay.sekki.reading)
-                    .font(.subheadline)
+                    .font(KigoFont.zenKakuGothicNewRegular(size: 15, relativeTo: .subheadline))
                     .foregroundStyle(.secondary)
                     .accessibilityIdentifier("microseason.sekki")
 
@@ -95,7 +98,7 @@ struct TodayView: View {
                         Image(systemName: "calendar")
                         Text("\(almanacPositions.koYearPosition) / \(almanacPositions.koYearTotal)")
                     }
-                    .font(.footnote)
+                    .font(KigoFont.zenKakuGothicNewRegular(size: 13, relativeTo: .footnote))
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
