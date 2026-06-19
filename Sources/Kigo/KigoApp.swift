@@ -124,14 +124,15 @@ struct RootView: View {
                 Button {
                     isPaywallPresented = true
                 } label: {
-                    Image(systemName: "gearshape.fill")
-                        .font(.title3)
-                        .foregroundStyle(.secondary)
-                        .padding(12)
+                    Image(systemName: "gearshape")
+                        .font(.system(size: 15, weight: .regular))
+                        .foregroundStyle(KigoTheme.inkReading)
+                        .frame(width: KigoTheme.Radius.entryCircle, height: KigoTheme.Radius.entryCircle)
                         .background(.ultraThinMaterial, in: Circle())
+                        .overlay(Circle().strokeBorder(KigoTheme.hairline, lineWidth: 1))
                 }
                 .buttonStyle(.plain)
-                .padding(.trailing, 16)
+                .padding(.trailing, 22)
                 .padding(.top, 16)
                 .accessibilityIdentifier("paywall.entry")
             }

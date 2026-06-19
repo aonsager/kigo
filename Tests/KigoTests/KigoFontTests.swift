@@ -91,4 +91,34 @@ final class KigoFontTests: XCTestCase {
             }
         }
     }
+
+    // MARK: - Asagiri revamp weights
+
+    /// Verifies every Shippori Mincho and Zen Kaku Gothic New weight the Asagiri
+    /// redesign relies on is bundled and declared in UIAppFonts, so `Font.custom`
+    /// resolves the real face rather than silently falling back to the system font.
+    func testAsagiriFontWeightsAreRegistered() {
+        let postScriptNames = [
+            KigoFont.Mincho.regular.rawValue,
+            KigoFont.Mincho.medium.rawValue,
+            KigoFont.Mincho.semibold.rawValue,
+            KigoFont.Mincho.bold.rawValue,
+            KigoFont.Mincho.extrabold.rawValue,
+            KigoFont.ZenKaku.light.rawValue,
+            KigoFont.ZenKaku.regular.rawValue,
+            KigoFont.ZenKaku.medium.rawValue,
+        ]
+
+        for name in postScriptNames {
+            let font = UIFont(name: name, size: 17)
+            XCTAssertNotNil(
+                font,
+                "UIFont(name:\"\(name)\", size:17) must resolve — check the .ttf resource and UIAppFonts in Info.plist"
+            )
+            XCTAssertEqual(
+                font?.fontName, name,
+                "Resolved UIFont fontName must equal the requested PostScript name \"\(name)\", got: \(font?.fontName ?? "nil")"
+            )
+        }
+    }
 }

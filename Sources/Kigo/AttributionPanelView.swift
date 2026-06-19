@@ -2,49 +2,51 @@ import SwiftUI
 
 /// The attribution panel sheet presented when the user taps `info.entry` on the Today screen.
 ///
-/// Introduced in slice #128 (C14). Displays the image title and credit line for the
-/// current Kigo entry's associated image.
+/// Introduced in slice #128 (C14). **Asagiri revamp**: restyled to the quiet
+/// image-credit panel from `Kigo Revamp.dc.html` §6 — image title (Mincho), a
+/// 写真 credit line, and a license/source line, over the shared sheet surface, with
+/// a grab indicator and no header/close button (dismiss via grab or backdrop).
 ///
-/// Accessibility identifiers (ADR 0013 Color.clear sentinel pattern for the root container):
+/// Accessibility identifiers (ADR 0013 Color.clear sentinel pattern):
 /// - `info.panel` — root Color.clear layer (ZStack sentinel)
 /// - `info.title` — Text showing attribution.title.ja
 /// - `info.credit` — Text showing attribution.credit.ja
-///
-/// The root container uses the Color.clear sentinel pattern (ADR 0013) so that
-/// `waitForExistence("info.panel")` targets only the clear layer, not child Text elements.
-///
-/// Extended in slice #149 to apply KigoFont.zenKakuGothicNewRegular to UI-chrome text elements.
+/// - `info.license` — Text showing attribution.license.ja (additive)
 struct AttributionPanelView: View {
     let attribution: Attribution
 
     var body: some View {
         ZStack {
-            // ADR 0013: Color.clear sentinel — applies the root identifier only to this layer,
-            // not to child elements, so waitForExistence("info.panel") is unambiguous.
+            // ADR 0013: Color.clear sentinel — applies the root identifier only to this layer.
             Color.clear
                 .accessibilityIdentifier("info.panel")
 
-            VStack(spacing: 20) {
-                // Attribution title
+            VStack(alignment: .leading, spacing: 0) {
                 Text(attribution.title.ja)
-                    .font(KigoFont.zenKakuGothicNewRegular(size: 20, relativeTo: .title2))
-                    .fontWeight(.semibold)
-                    .multilineTextAlignment(.center)
-                    .padding(.top, 24)
+                    .font(KigoFont.mincho(.medium, size: 16, relativeTo: .headline))
+                    .foregroundStyle(KigoTheme.inkKanji)
+                    .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("info.title")
 
-                Divider()
-
-                // Credit line (photographer / source)
                 Text(attribution.credit.ja)
-                    .font(KigoFont.zenKakuGothicNewRegular(size: 17, relativeTo: .body))
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 24)
+                    .font(KigoFont.zenKaku(.regular, size: 13, relativeTo: .footnote))
+                    .foregroundStyle(KigoTheme.inkReading)
+                    .padding(.top, 8)
                     .accessibilityIdentifier("info.credit")
 
-                Spacer()
+                Text(attribution.license.ja)
+                    .font(KigoFont.zenKaku(.regular, size: 11.5, relativeTo: .caption))
+                    .foregroundStyle(KigoTheme.textTertiary)
+                    .padding(.top, 10)
+                    .accessibilityIdentifier("info.license")
+
+                Spacer(minLength: 0)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 30)
+            .padding(.top, 32)
         }
+        .presentationBackground(KigoTheme.sheetSurface)
+        .presentationDragIndicator(.visible)
     }
 }

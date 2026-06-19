@@ -23,7 +23,19 @@ targets:
         buildPhase: resources
       - path: Resources/Fonts/ShipporiMincho-Regular.ttf
         buildPhase: resources
+      - path: Resources/Fonts/ShipporiMincho-Medium.ttf
+        buildPhase: resources
+      - path: Resources/Fonts/ShipporiMincho-SemiBold.ttf
+        buildPhase: resources
+      - path: Resources/Fonts/ShipporiMincho-Bold.ttf
+        buildPhase: resources
+      - path: Resources/Fonts/ShipporiMincho-ExtraBold.ttf
+        buildPhase: resources
+      - path: Resources/Fonts/ZenKakuGothicNew-Light.ttf
+        buildPhase: resources
       - path: Resources/Fonts/ZenKakuGothicNew-Regular.ttf
+        buildPhase: resources
+      - path: Resources/Fonts/ZenKakuGothicNew-Medium.ttf
         buildPhase: resources
     dependencies:
       - target: KigoWidgetExtension
@@ -65,6 +77,27 @@ targets:
       # Slice #73: KigoPlaceholderView (SwiftUI, no StoreKit) — deterministic gradient placeholder
       # reused by KigoWidgetView for the image layer (ADR 0001 / J2).
       - path: Sources/Kigo/KigoPlaceholder.swift
+      # Asagiri revamp: KigoFont + KigoTheme (SwiftUI, no StoreKit) so the widget renders
+      # today's word in the same bundled Shippori Mincho / Zen Kaku faces as the app.
+      - path: Sources/Kigo/KigoFont.swift
+      - path: Sources/Kigo/KigoTheme.swift
+      # Bundled font faces so UIAppFonts in the appex Info.plist can register them in-process.
+      - path: Resources/Fonts/ShipporiMincho-Regular.ttf
+        buildPhase: resources
+      - path: Resources/Fonts/ShipporiMincho-Medium.ttf
+        buildPhase: resources
+      - path: Resources/Fonts/ShipporiMincho-SemiBold.ttf
+        buildPhase: resources
+      - path: Resources/Fonts/ShipporiMincho-Bold.ttf
+        buildPhase: resources
+      - path: Resources/Fonts/ShipporiMincho-ExtraBold.ttf
+        buildPhase: resources
+      - path: Resources/Fonts/ZenKakuGothicNew-Light.ttf
+        buildPhase: resources
+      - path: Resources/Fonts/ZenKakuGothicNew-Regular.ttf
+        buildPhase: resources
+      - path: Resources/Fonts/ZenKakuGothicNew-Medium.ttf
+        buildPhase: resources
       # Slice #73: manifest.json bundled into the widget extension so the TimelineProvider can
       # load content without the app process running (ADR 0012).
       # NOTE: must be a `sources` entry with `buildPhase: resources` — XcodeGen has no
@@ -139,6 +172,25 @@ targets:
       - path: Sources/Kigo/EntitlementSharedStore.swift
       # Slice #73: KigoPlaceholderView (SwiftUI) for image rendering in KigoWidgetView.
       - path: Sources/Kigo/KigoPlaceholder.swift
+      # Asagiri revamp: KigoFont + KigoTheme used by KigoWidgetView.
+      - path: Sources/Kigo/KigoFont.swift
+      - path: Sources/Kigo/KigoTheme.swift
+      - path: Resources/Fonts/ShipporiMincho-Regular.ttf
+        buildPhase: resources
+      - path: Resources/Fonts/ShipporiMincho-Medium.ttf
+        buildPhase: resources
+      - path: Resources/Fonts/ShipporiMincho-SemiBold.ttf
+        buildPhase: resources
+      - path: Resources/Fonts/ShipporiMincho-Bold.ttf
+        buildPhase: resources
+      - path: Resources/Fonts/ShipporiMincho-ExtraBold.ttf
+        buildPhase: resources
+      - path: Resources/Fonts/ZenKakuGothicNew-Light.ttf
+        buildPhase: resources
+      - path: Resources/Fonts/ZenKakuGothicNew-Regular.ttf
+        buildPhase: resources
+      - path: Resources/Fonts/ZenKakuGothicNew-Medium.ttf
+        buildPhase: resources
       # Slice #81: manifest.json bundled into KigoWidgetTests so BundledContentSource()
       # can resolve it via Bundle(for:) / Bundle.main without injecting a hand-built Manifest.
       # Must be a `sources` entry with `buildPhase: resources` — XcodeGen has no top-level

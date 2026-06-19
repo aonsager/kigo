@@ -16,6 +16,17 @@
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundlePackageType</key>
     <string>XPC!</string>
+    <key>UIAppFonts</key>
+    <array>
+        <string>ShipporiMincho-Regular.ttf</string>
+        <string>ShipporiMincho-Medium.ttf</string>
+        <string>ShipporiMincho-SemiBold.ttf</string>
+        <string>ShipporiMincho-Bold.ttf</string>
+        <string>ShipporiMincho-ExtraBold.ttf</string>
+        <string>ZenKakuGothicNew-Light.ttf</string>
+        <string>ZenKakuGothicNew-Regular.ttf</string>
+        <string>ZenKakuGothicNew-Medium.ttf</string>
+    </array>
     <key>NSExtension</key>
     <dict>
         <key>NSExtensionPointIdentifier</key>
