@@ -38,6 +38,10 @@ import SwiftUI
 /// Slice #137: `launchLanguageStore(environment:)` replaces the hardcoded `InMemoryLanguageStore`.
 /// It returns a locked store for `KIGO_FAKE_LANGUAGE=en/ja`, or `UserDefaultsLanguageStore`
 /// (persisted) when the env var is absent (ADR 0013 pattern).
+///
+/// Slice #144: `launchColorScheme(environment:)` resolves an optional `ColorScheme` from
+/// `KIGO_FAKE_APPEARANCE=dark/light`, applied via `.preferredColorScheme(_:)` on the root
+/// `WindowGroup` view. Absent or unrecognised values leave the system in control (nil).
 @main
 struct KigoApp: App {
     @State private var store = ContentStore(
@@ -49,11 +53,13 @@ struct KigoApp: App {
     private let purchaser: any SubscriptionPurchaser
     private let offerDisplay: OfferDisplay
     private let languageStore: any LanguageStore
+    private let colorScheme: ColorScheme?
 
     init() {
         let env = ProcessInfo.processInfo.environment
         offerDisplay = launchOfferDisplay(environment: env)
         languageStore = launchLanguageStore(environment: env)
+        colorScheme = launchColorScheme(environment: env)
 
         if let fakePurchaser = launchPurchaser(environment: env) {
             // KIGO_FAKE_PURCHASER is set: use the resolved purchaser.
@@ -80,6 +86,7 @@ struct KigoApp: App {
                 languageStore: languageStore
             )
             .environment(store)
+            .preferredColorScheme(colorScheme)
         }
     }
 }
