@@ -34,6 +34,10 @@ import SwiftUI
 /// `RootView` → `PaywallView` so the Paywall's chrome strings react to the user's
 /// language preference. Persistence (UserDefaults) and the `KIGO_FAKE_LANGUAGE` resolver
 /// are deferred to slice #137.
+///
+/// Slice #137: `launchLanguageStore(environment:)` replaces the hardcoded `InMemoryLanguageStore`.
+/// It returns a locked store for `KIGO_FAKE_LANGUAGE=en/ja`, or `UserDefaultsLanguageStore`
+/// (persisted) when the env var is absent (ADR 0013 pattern).
 @main
 struct KigoApp: App {
     @State private var store = ContentStore(
@@ -44,11 +48,12 @@ struct KigoApp: App {
     private let entitlementProvider: EntitlementProvider
     private let purchaser: any SubscriptionPurchaser
     private let offerDisplay: OfferDisplay
-    @State private var languageStore = InMemoryLanguageStore()
+    private let languageStore: any LanguageStore
 
     init() {
         let env = ProcessInfo.processInfo.environment
         offerDisplay = launchOfferDisplay(environment: env)
+        languageStore = launchLanguageStore(environment: env)
 
         if let fakePurchaser = launchPurchaser(environment: env) {
             // KIGO_FAKE_PURCHASER is set: use the resolved purchaser.
@@ -93,11 +98,14 @@ struct KigoApp: App {
 /// Slice #136: `languageStore` carries the user's language preference; `ChromeStrings` is
 /// derived at sheet-construction time and passed into `PaywallView` so the restore label
 /// reflects the active locale.
+///
+/// Slice #137: `languageStore` is now typed as `any LanguageStore` to accommodate both
+/// `UserDefaultsLanguageStore` (production) and `LockedInMemoryLanguageStore` (fake env path).
 struct RootView: View {
     let entitlementProvider: EntitlementProvider
     let offerDisplay: OfferDisplay
     let purchaser: any SubscriptionPurchaser
-    let languageStore: InMemoryLanguageStore
+    let languageStore: any LanguageStore
 
     @State private var isPaywallPresented = false
 
