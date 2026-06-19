@@ -145,4 +145,138 @@ final class SettingsLanguageUITests: XCTestCase {
             "paywall.restore label must equal '復元' with KIGO_FAKE_LANGUAGE=ja; got: '\(label)'"
         )
     }
+
+    // MARK: - Slice #138: SettingsView with JP/EN language switcher
+
+    /// SettingsView must show a `settings.language` segmented picker with Japanese and English options.
+    ///
+    /// Screenshot evidence (required for Slice #138):
+    ///   XCTAttachment name: "slice-138-settings-view"
+    ///   Lifetime: .keepAlways
+    ///   Test identifier: KigoUITests/SettingsLanguageUITests/testSettingsViewShowsLanguageSwitcher
+    func testSettingsViewShowsLanguageSwitcher() {
+        let app = XCUIApplication()
+        baseEnvironment.forEach { app.launchEnvironment[$0.key] = $0.value }
+        // No KIGO_FAKE_LANGUAGE — default Japanese path.
+
+        app.launch()
+
+        // Open settings via paywall.entry
+        let entry = app.descendants(matching: .any)
+            .matching(identifier: "paywall.entry")
+            .firstMatch
+        XCTAssertTrue(
+            entry.waitForExistence(timeout: 10),
+            "paywall.entry must exist on the Today screen"
+        )
+        entry.tap()
+
+        // SettingsView embeds PaywallView which has the paywall.sheet sentinel.
+        let sheet = app.descendants(matching: .any)
+            .matching(identifier: "paywall.sheet")
+            .firstMatch
+        XCTAssertTrue(
+            sheet.waitForExistence(timeout: 10),
+            "paywall.sheet sentinel must appear after tapping paywall.entry"
+        )
+
+        // The settings.language picker must be present.
+        let languagePicker = app.descendants(matching: .any)
+            .matching(identifier: "settings.language")
+            .firstMatch
+        XCTAssertTrue(
+            languagePicker.waitForExistence(timeout: 5),
+            "settings.language element must exist in the Settings sheet"
+        )
+
+        // Both "Japanese" and "English" segments must be present.
+        let japaneseOption = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label == 'Japanese'"))
+            .firstMatch
+        XCTAssertTrue(
+            japaneseOption.waitForExistence(timeout: 5),
+            "Japanese segment must exist in settings.language picker"
+        )
+
+        let englishOption = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label == 'English'"))
+            .firstMatch
+        XCTAssertTrue(
+            englishOption.waitForExistence(timeout: 5),
+            "English segment must exist in settings.language picker"
+        )
+
+        // paywall.restore must also be present inside the sheet.
+        let restoreElement = app.descendants(matching: .any)
+            .matching(identifier: "paywall.restore")
+            .firstMatch
+        XCTAssertTrue(
+            restoreElement.waitForExistence(timeout: 5),
+            "paywall.restore must be present in the Settings sheet"
+        )
+
+        // Screenshot evidence for Slice #138.
+        let screenshot = XCUIScreen.main.screenshot()
+        let attachment = XCTAttachment(screenshot: screenshot)
+        attachment.lifetime = .keepAlways
+        attachment.name = "slice-138-settings-view"
+        add(attachment)
+    }
+
+    // MARK: - Slice #138: All paywall identifiers accessible inside the Settings sheet
+
+    /// All paywall accessibility identifiers must be reachable inside the Settings sheet
+    /// on a default non-premium launch.
+    func testSettingsSheetContainsAllPaywallIdentifiers() {
+        let app = XCUIApplication()
+        baseEnvironment.forEach { app.launchEnvironment[$0.key] = $0.value }
+        // KIGO_FAKE_ENTITLEMENT=inactive (set in baseEnvironment) — non-premium.
+
+        let _ = launchAndOpenPaywall(app: app)
+
+        // paywall.benefits
+        let benefits = app.descendants(matching: .any)
+            .matching(identifier: "paywall.benefits")
+            .firstMatch
+        XCTAssertTrue(
+            benefits.waitForExistence(timeout: 5),
+            "paywall.benefits must be present in the Settings sheet"
+        )
+
+        // paywall.buy (shown for non-premium)
+        let buy = app.descendants(matching: .any)
+            .matching(identifier: "paywall.buy")
+            .firstMatch
+        XCTAssertTrue(
+            buy.waitForExistence(timeout: 5),
+            "paywall.buy must be present in the Settings sheet for non-premium launch"
+        )
+
+        // paywall.restore
+        let restore = app.descendants(matching: .any)
+            .matching(identifier: "paywall.restore")
+            .firstMatch
+        XCTAssertTrue(
+            restore.waitForExistence(timeout: 5),
+            "paywall.restore must be present in the Settings sheet"
+        )
+
+        // paywall.terms
+        let terms = app.descendants(matching: .any)
+            .matching(identifier: "paywall.terms")
+            .firstMatch
+        XCTAssertTrue(
+            terms.waitForExistence(timeout: 5),
+            "paywall.terms must be present in the Settings sheet"
+        )
+
+        // paywall.privacy
+        let privacy = app.descendants(matching: .any)
+            .matching(identifier: "paywall.privacy")
+            .firstMatch
+        XCTAssertTrue(
+            privacy.waitForExistence(timeout: 5),
+            "paywall.privacy must be present in the Settings sheet"
+        )
+    }
 }
