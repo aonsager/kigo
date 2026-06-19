@@ -10,7 +10,7 @@ enum KigoFont {
     /// The font is bundled under `Resources/Fonts/ShipporiMincho-Regular.ttf`
     /// and declared in `UIAppFonts` so UIKit/SwiftUI can resolve it by its
     /// PostScript name "ShipporiMincho-Regular".
-    static func shipporiMinchoRegular(size: CGFloat) -> Font {
-        Font.custom("ShipporiMincho-Regular", size: size)
+    static func shipporiMinchoRegular(size: CGFloat, relativeTo textStyle: Font.TextStyle = .body) -> Font {
+        Font.custom("ShipporiMincho-Regular", size: size, relativeTo: textStyle)
     }
 }
