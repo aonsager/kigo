@@ -14,9 +14,16 @@ import Foundation
 /// exercised only via the Xcode IDE run path, never on the CLI gating path.
 public struct PaywallView: View {
     @State private var model: PaywallModel
+    private let chromeStrings: ChromeStrings
 
-    public init(model: PaywallModel) {
+    /// - Parameters:
+    ///   - model: The paywall view model (injected for testability).
+    ///   - chromeStrings: Locale-specific button labels derived from the active
+    ///     `LanguagePreference`. Defaults to Japanese (the app's primary locale)
+    ///     when not provided.
+    public init(model: PaywallModel, chromeStrings: ChromeStrings = ChromeStrings(.japanese)) {
         _model = State(initialValue: model)
+        self.chromeStrings = chromeStrings
     }
 
     public var body: some View {
@@ -82,7 +89,7 @@ public struct PaywallView: View {
                     .accessibilityIdentifier("paywall.buy")
                 }
 
-                Button("Restore Purchases") {
+                Button(chromeStrings.restore) {
                     Task { await model.restore() }
                 }
                 .buttonStyle(.bordered)
