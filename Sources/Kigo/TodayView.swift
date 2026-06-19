@@ -58,7 +58,7 @@ struct TodayView: View {
             // Text content layer — rendered on top of the placeholder.
             VStack(spacing: 8) {
                 Text(resolvedDay.kigoEntry.kanji)
-                    .font(.largeTitle)
+                    .font(KigoFont.shipporiMinchoRegular(size: 48))
                     .accessibilityIdentifier("kigo.kanji")
 
                 Text(resolvedDay.kigoEntry.reading)

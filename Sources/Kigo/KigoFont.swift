@@ -1,0 +1,16 @@
+import SwiftUI
+
+/// A namespace for Kigo's custom font helpers.
+///
+/// Provides factory methods for each bundled typeface so that callers reference
+/// the font by name in a type-safe way rather than using raw string literals.
+enum KigoFont {
+    /// Returns a `Font` using ShipporiMincho-Regular at the given point size.
+    ///
+    /// The font is bundled under `Resources/Fonts/ShipporiMincho-Regular.ttf`
+    /// and declared in `UIAppFonts` so UIKit/SwiftUI can resolve it by its
+    /// PostScript name "ShipporiMincho-Regular".
+    static func shipporiMinchoRegular(size: CGFloat) -> Font {
+        Font.custom("ShipporiMincho-Regular", size: size)
+    }
+}
