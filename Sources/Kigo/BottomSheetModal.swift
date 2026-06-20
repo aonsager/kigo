@@ -66,13 +66,17 @@ private struct BottomSheetModifier<SheetContent: View>: ViewModifier {
 
     func body(content: Content) -> some View {
         content
+            // The overlay is ALWAYS mounted (it renders nothing when not
+            // presented). Gating the *whole* overlay with `if isPresented` would
+            // make the overlay the outermost view being inserted/removed, so
+            // SwiftUI would apply a single transition to it (defaulting to a
+            // fade) and the card's own grow-from-bottom transition would never
+            // fire. Keeping it mounted lets the backdrop and card be the views
+            // that are individually inserted/removed, so each runs its own
+            // transition.
             .overlay {
-                if isPresented {
-                    BottomSheetOverlay(isPresented: $isPresented, content: sheetContent)
-                        .transition(.opacity)
-                }
+                BottomSheetOverlay(isPresented: $isPresented, content: sheetContent)
             }
-            .animation(KigoTheme.Motion.sheet, value: isPresented)
     }
 }
 
@@ -88,8 +92,9 @@ private struct BottomSheetOverlay<SheetContent: View>: View {
     /// does not rubber-band upward).
     @State private var dragOffset: CGFloat = 0
 
-    /// Drives the slide-in: starts off-screen, animates to 0 on appear.
-    @State private var hasAppeared = false
+    /// Measured intrinsic height of the sheet content, so the card hugs it
+    /// (capped at `maxCardHeight`, beyond which the content scrolls).
+    @State private var contentHeight: CGFloat = 0
 
     /// Translation past which a drag-up-release dismisses.
     private let dismissThreshold: CGFloat = 60
@@ -101,51 +106,83 @@ private struct BottomSheetOverlay<SheetContent: View>: View {
             let maxCardHeight = screenHeight * 0.9
 
             ZStack(alignment: .bottom) {
-                // 1 · Dimmed backdrop — fills the screen, sits behind the card.
-                //     A single gesture handles BOTH a tap (tiny translation) and a
-                //     downward drag (translation.height > threshold) to dismiss.
-                Color.black.opacity(0.32)
-                    .ignoresSafeArea()
-                    .contentShape(Rectangle())
-                    .accessibilityIdentifier("modal.backdrop")
-                    .accessibilityAddTraits(.isButton)
-                    .accessibilityLabel("Dismiss")
-                    .gesture(
-                        DragGesture(minimumDistance: 0)
-                            .onEnded { value in
-                                // A tap registers as a near-zero translation; a
-                                // downward drag registers as translation.height > 0.
-                                // Either dismisses (tap-outside, or top→bottom drag
-                                // that begins on the backdrop).
-                                if abs(value.translation.height) < 10
-                                    && abs(value.translation.width) < 10 {
-                                    dismiss()
-                                } else if value.translation.height > dismissThreshold {
-                                    dismiss()
+                if isPresented {
+                    // 1 · Dimmed backdrop — fills the screen, sits behind the card.
+                    //     A single gesture handles BOTH a tap (tiny translation) and
+                    //     a downward drag (translation.height > threshold) to dismiss.
+                    Color.black.opacity(0.32)
+                        .ignoresSafeArea()
+                        .contentShape(Rectangle())
+                        .accessibilityIdentifier("modal.backdrop")
+                        .accessibilityAddTraits(.isButton)
+                        .accessibilityLabel("Dismiss")
+                        .gesture(
+                            DragGesture(minimumDistance: 0)
+                                .onEnded { value in
+                                    // A tap registers as a near-zero translation; a
+                                    // downward drag registers as translation.height > 0.
+                                    // Either dismisses (tap-outside, or top→bottom drag
+                                    // that begins on the backdrop).
+                                    if abs(value.translation.height) < 10
+                                        && abs(value.translation.width) < 10 {
+                                        dismiss()
+                                    } else if value.translation.height > dismissThreshold {
+                                        dismiss()
+                                    }
                                 }
-                            }
-                    )
+                        )
+                        // Fades in/out independently of the card's grow-from-bottom.
+                        .transition(.opacity)
 
-                // 2 · The content-height card, bottom-anchored.
-                card(maxCardHeight: maxCardHeight)
-                    .frame(maxWidth: .infinity)
-                    .frame(maxHeight: maxCardHeight, alignment: .bottom)
-                    // Slide-in from below, plus live drag offset.
-                    .offset(y: hasAppeared ? dragOffset : screenHeight)
+                    // 2 · The content-height card, bottom-anchored. It grows up from
+                    //     the bottom edge on present and slides back down on dismiss.
+                    card(maxCardHeight: maxCardHeight)
+                        .frame(maxWidth: .infinity)
+                        // Live drag offset (drag-to-dismiss); the present/dismiss
+                        // animation is driven by the offset transition below.
+                        .offset(y: dragOffset)
+                        // Pure slide from the bottom — no fade (the card slides
+                        // under the dimming backdrop, which fades on its own). A
+                        // fixed `screenHeight` offset (NOT `.move(edge:)`, which
+                        // moves by the view's own height = 0 on the first frame
+                        // before the content height is measured) guarantees a full
+                        // slide every time, including the first open of each sheet.
+                        .transition(.offset(y: screenHeight))
+                }
             }
+            // Drives both the backdrop fade and the card's grow-from-bottom as
+            // `isPresented` flips (the backdrop/card are inserted/removed here, so
+            // their individual transitions run).
+            .animation(KigoTheme.Motion.sheet, value: isPresented)
         }
         .ignoresSafeArea()
-        .onAppear { hasAppeared = true }
     }
 
     private func card(maxCardHeight: CGFloat) -> some View {
-        // `ScrollView` caps the card height; when content is shorter than the
-        // cap the `ScrollView` still sizes to its content, so the card hugs it.
+        // The card hugs its content: a background `GeometryReader` reports the
+        // content's intrinsic height, and the `ScrollView` is pinned to
+        // `min(contentHeight, maxCardHeight)`. A bare `ScrollView` is greedy — it
+        // fills all offered height — but it proposes *unbounded* height to its
+        // content, so the content settles at its natural size for the measurement.
+        // (`ViewThatFits` can't be used here: each sheet's root carries an
+        // ADR-0013 `Color.clear` sentinel, which is itself greedy, so when offered
+        // a finite height the content always reports "I fit" at full height.)
+        // The card's height is 0 on its very first frame (the measurement is one
+        // layout pass behind), so the entrance transition must NOT be height-based
+        // — see the `.offset(y: screenHeight)` transition at the call site.
         ScrollView {
             content()
+                .background(
+                    GeometryReader { geo in
+                        Color.clear
+                            .preference(key: SheetContentHeightKey.self, value: geo.size.height)
+                    }
+                )
         }
         .scrollBounceBehavior(.basedOnSize)
-        .frame(maxHeight: maxCardHeight)
+        .frame(maxWidth: .infinity)
+        .frame(height: min(contentHeight, maxCardHeight))
+        .onPreferenceChange(SheetContentHeightKey.self) { contentHeight = $0 }
         // The card surface + rounded top corners (the inner views no longer
         // supply these via `.presentationBackground`).
         .background(
@@ -182,5 +219,19 @@ private struct BottomSheetOverlay<SheetContent: View>: View {
         withAnimation(KigoTheme.Motion.sheet) {
             isPresented = false
         }
+        // Clear any leftover drag so the next present grows cleanly from the
+        // bottom (the card is re-inserted each time the sheet opens).
+        dragOffset = 0
+    }
+}
+
+// MARK: - SheetContentHeightKey
+
+/// Reports the sheet content's intrinsic height up to the card, so the card can
+/// hug its content instead of letting the inner `ScrollView` fill the screen.
+private struct SheetContentHeightKey: PreferenceKey {
+    static let defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
     }
 }

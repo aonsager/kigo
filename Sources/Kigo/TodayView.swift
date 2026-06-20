@@ -61,28 +61,32 @@ struct TodayView: View {
                 .ignoresSafeArea()
                 .allowsHitTesting(false)
 
-            // 3 · Frosted plate (`kigo.scrim`) — a feathered `.ultraThinMaterial` that
-            // frosts only the central text zone and fades to clear photo at the edges.
-            Rectangle()
-                .fill(.ultraThinMaterial)
-                .overlay(KigoTheme.frostedTint)
-                .mask(
-                    GeometryReader { proxy in
-                        RadialGradient(
+            // 3 · Frosted plate (`kigo.scrim`) — now behind the BOTTOM microseason
+            // panel rather than the central text zone (the kanji column reads
+            // directly over the photo + veil). A bottom-anchored `.ultraThinMaterial`
+            // band, masked to fade from clear at its top into a solid frost over the
+            // panel so the Kō/Sekki readings and year timeline stay legible.
+            GeometryReader { proxy in
+                Rectangle()
+                    .fill(.ultraThinMaterial)
+                    .overlay(KigoTheme.frostedTint)
+                    .mask(
+                        LinearGradient(
                             stops: [
-                                .init(color: .black, location: 0.34),
-                                .init(color: .clear, location: 0.76),
+                                .init(color: .clear, location: 0.0),
+                                .init(color: .black, location: 0.6),
                             ],
-                            center: UnitPoint(x: 0.5, y: 0.48),
-                            startRadius: 0,
-                            endRadius: max(proxy.size.width, proxy.size.height) * 0.7
+                            startPoint: .top,
+                            endPoint: .bottom
                         )
-                        .frame(width: proxy.size.width, height: proxy.size.height)
-                    }
-                )
-                .ignoresSafeArea()
-                .accessibilityIdentifier("kigo.scrim")
-                .accessibilityHidden(true)
+                    )
+                    .frame(height: proxy.size.height * 0.42)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+            }
+            .ignoresSafeArea()
+            .allowsHitTesting(false)
+            .accessibilityIdentifier("kigo.scrim")
+            .accessibilityHidden(true)
 
             // 4 · Centered sumi-ink text column.
             textColumn
