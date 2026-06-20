@@ -101,7 +101,7 @@ struct TodayView: View {
             guard !hasAppeared else { return }
             withAnimation(KigoTheme.Motion.imageReveal) { hasAppeared = true }
         }
-        .sheet(item: $activeSheet) { sheet in
+        .bottomSheet(item: $activeSheet) { sheet in
             switch sheet {
             case .almanac:
                 AlmanacSheetView(
@@ -176,40 +176,67 @@ struct TodayView: View {
     // MARK: - Bottom microseason block
 
     private var microseasonBlock: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "chevron.up")
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(KigoTheme.textTertiary)
-
-            // Kō (primary) above Sekki (secondary). The readings are standalone
-            // identified static texts — kō.minY < sekki.minY — and are NOT nested
-            // inside the timeline Button (which would merge them out of the a11y tree).
-            VStack(spacing: 4) {
-                HStack(alignment: .firstTextBaseline, spacing: 9) {
-                    Text(resolvedDay.ko.kanji)
-                        .font(KigoFont.mincho(.semibold, size: 19, relativeTo: .headline))
-                        .foregroundStyle(KigoTheme.inkKo)
-                    Text(resolvedDay.ko.reading)
-                        .font(KigoFont.zenKaku(.regular, size: 12.5, relativeTo: .footnote))
-                        .foregroundStyle(KigoTheme.inkReading)
-                        .accessibilityIdentifier("microseason.ko")
+        // The whole bottom band — from just above the chevron down through the
+        // season labels — is a single tap target that opens the almanac. A clear,
+        // band-filling Button carries `microseason.timeline` + `.contentShape`, and
+        // the visual VStack is overlaid with `.allowsHitTesting(false)` so taps fall
+        // through to the Button while the reading Texts stay in the a11y tree.
+        // (A SwiftUI Button merges its child Texts into one a11y element, so the
+        // readings must NOT be descendants of the Button — kō.minY < sekki.minY.)
+        // The visual content drives the band's height; the full-band tap target is a
+        // `Color.clear` Button laid *behind* it (as a background) so the tappable area
+        // hugs the band instead of expanding to fill the whole screen — which would
+        // overlap the top-corner `info.entry` / `paywall.entry` controls and steal
+        // their taps (Slice C: it did, opening the almanac on an info.entry tap).
+        timelineVisual
+            .background {
+                Button {
+                    activeSheet = .almanac
+                } label: {
+                    Color.clear
+                        .contentShape(Rectangle())
                 }
-
-                HStack(alignment: .firstTextBaseline, spacing: 9) {
-                    Text(resolvedDay.sekki.kanji)
-                        .font(KigoFont.mincho(.medium, size: 14, relativeTo: .subheadline))
-                        .foregroundStyle(KigoTheme.inkSekki)
-                    Text(resolvedDay.sekki.reading)
-                        .font(KigoFont.zenKaku(.regular, size: 11.5, relativeTo: .caption))
-                        .foregroundStyle(KigoTheme.textSecondary)
-                        .accessibilityIdentifier("microseason.sekki")
-                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("microseason.timeline")
+                .accessibilityLabel("Microseason timeline: Kō \(almanacPositions.koYearPosition) of \(almanacPositions.koYearTotal)")
             }
+            .padding(.bottom, 28)
+    }
 
-            // Tappable year timeline → almanac.
-            Button {
-                activeSheet = .almanac
-            } label: {
+    /// The non-interactive visual content of the microseason band (chevron, readings,
+    /// year-timeline strip). Extracted so the tap target can be sized to it.
+    private var timelineVisual: some View {
+        ZStack(alignment: .bottom) {
+            // Visual content — non-interactive so taps reach the background Button.
+            VStack(spacing: 12) {
+                Image(systemName: "chevron.up")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(KigoTheme.textTertiary)
+
+                // Kō (primary) above Sekki (secondary).
+                VStack(spacing: 4) {
+                    HStack(alignment: .firstTextBaseline, spacing: 9) {
+                        Text(resolvedDay.ko.kanji)
+                            .font(KigoFont.mincho(.semibold, size: 19, relativeTo: .headline))
+                            .foregroundStyle(KigoTheme.inkKo)
+                        Text(resolvedDay.ko.reading)
+                            .font(KigoFont.zenKaku(.regular, size: 12.5, relativeTo: .footnote))
+                            .foregroundStyle(KigoTheme.inkReading)
+                            .accessibilityIdentifier("microseason.ko")
+                    }
+
+                    HStack(alignment: .firstTextBaseline, spacing: 9) {
+                        Text(resolvedDay.sekki.kanji)
+                            .font(KigoFont.mincho(.medium, size: 14, relativeTo: .subheadline))
+                            .foregroundStyle(KigoTheme.inkSekki)
+                        Text(resolvedDay.sekki.reading)
+                            .font(KigoFont.zenKaku(.regular, size: 11.5, relativeTo: .caption))
+                            .foregroundStyle(KigoTheme.textSecondary)
+                            .accessibilityIdentifier("microseason.sekki")
+                    }
+                }
+
+                // Year timeline visual.
                 VStack(spacing: 8) {
                     MicroseasonTimelineStrip(
                         position: almanacPositions.koYearPosition,
@@ -226,13 +253,9 @@ struct TodayView: View {
                 }
                 .padding(.horizontal, 30)
                 .padding(.top, 4)
-                .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
-            .accessibilityIdentifier("microseason.timeline")
-            .accessibilityLabel("Microseason timeline: Kō \(almanacPositions.koYearPosition) of \(almanacPositions.koYearTotal)")
+            .allowsHitTesting(false)
         }
-        .padding(.bottom, 28)
     }
 }
 

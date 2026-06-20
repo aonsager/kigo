@@ -25,18 +25,25 @@ import SwiftUI
 struct SettingsView: View {
     let model: PaywallModel
     let languageStore: any LanguageStore
+    let appearanceStore: any AppearanceStore
 
     @State private var currentLanguage: LanguagePreference
+    @State private var currentAppearance: AppearancePreference
 
-    init(model: PaywallModel, languageStore: any LanguageStore) {
+    init(
+        model: PaywallModel,
+        languageStore: any LanguageStore,
+        appearanceStore: any AppearanceStore
+    ) {
         self.model = model
         self.languageStore = languageStore
+        self.appearanceStore = appearanceStore
         _currentLanguage = State(initialValue: languageStore.preference)
+        _currentAppearance = State(initialValue: appearanceStore.preference)
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
+        VStack(spacing: 0) {
                 GrabHandle()
                     .padding(.top, 10)
                     .padding(.bottom, 18)
@@ -62,6 +69,24 @@ struct SettingsView: View {
                 .padding(.horizontal, 28)
                 .padding(.top, 26)
 
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("表示")
+                        .font(KigoFont.zenKaku(.medium, size: 10.5, relativeTo: .caption2))
+                        .tracking(4)
+                        .foregroundStyle(KigoTheme.textTertiary)
+
+                    Picker("Appearance", selection: $currentAppearance) {
+                        Text("System").tag(AppearancePreference.system)
+                        Text("Light").tag(AppearancePreference.light)
+                        Text("Dark").tag(AppearancePreference.dark)
+                    }
+                    .pickerStyle(.segmented)
+                    .accessibilityIdentifier("settings.appearance")
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 28)
+                .padding(.top, 22)
+
                 Divider()
                     .overlay(KigoTheme.hairline)
                     .padding(.horizontal, 28)
@@ -71,13 +96,13 @@ struct SettingsView: View {
                     model: model,
                     chromeStrings: ChromeStrings(currentLanguage)
                 )
-            }
-            .padding(.bottom, 28)
         }
-        .presentationBackground(KigoTheme.sheetSurface)
-        .presentationDragIndicator(.hidden)
+        .padding(.bottom, 28)
         .onChange(of: currentLanguage) { _, newValue in
             languageStore.set(newValue)
+        }
+        .onChange(of: currentAppearance) { _, newValue in
+            appearanceStore.set(newValue)
         }
     }
 }

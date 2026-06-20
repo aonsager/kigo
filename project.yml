@@ -37,6 +37,10 @@ targets:
         buildPhase: resources
       - path: Resources/Fonts/ZenKakuGothicNew-Medium.ttf
         buildPhase: resources
+      # Asagiri revamp (#158): bundled full-bleed background photo, looked up via
+      # UIImage(named: "tsuyu") (loose-file lookup, not an asset catalog).
+      - path: Resources/Images/tsuyu.jpg
+        buildPhase: resources
     dependencies:
       - target: KigoWidgetExtension
         embed: true
@@ -105,6 +109,10 @@ targets:
       # ignored and the manifest never made it into the .appex (widget showed only the
       # redacted placeholder because the timeline provider could not load content).
       - path: Resources/manifest.json
+        buildPhase: resources
+      # Asagiri revamp (#158): bundled full-bleed background photo reused by
+      # KigoWidgetView's image layer via UIImage(named: "tsuyu").
+      - path: Resources/Images/tsuyu.jpg
         buildPhase: resources
     entitlements:
       # Same App Group as the host app so the widget reads the entitlement flag
@@ -196,6 +204,10 @@ targets:
       # Must be a `sources` entry with `buildPhase: resources` — XcodeGen has no top-level
       # `resources:` target key (same pattern as the app and widget extension targets).
       - path: Resources/manifest.json
+        buildPhase: resources
+      # Asagiri revamp (#158): bundled background photo so KigoPlaceholderView's
+      # UIImage(named: "tsuyu") lookup resolves in the test bundle too.
+      - path: Resources/Images/tsuyu.jpg
         buildPhase: resources
     dependencies:
       - sdk: WidgetKit.framework

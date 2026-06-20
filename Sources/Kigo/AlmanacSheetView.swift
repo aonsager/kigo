@@ -26,8 +26,7 @@ struct AlmanacSheetView: View {
             Color.clear
                 .accessibilityIdentifier("microseason.almanac")
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
                     GrabHandle()
                         .frame(maxWidth: .infinity)
                         .padding(.top, 10)
@@ -97,13 +96,10 @@ struct AlmanacSheetView: View {
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.top, 13)
                         .accessibilityIdentifier("microseason.sekkiDescription")
-                }
-                .padding(.horizontal, 28)
-                .padding(.bottom, 40)
             }
+            .padding(.horizontal, 28)
+            .padding(.bottom, 40)
         }
-        .presentationBackground(KigoTheme.sheetSurface)
-        .presentationDragIndicator(.hidden)
     }
 
     // MARK: - Section label

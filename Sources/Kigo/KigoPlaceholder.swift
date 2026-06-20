@@ -1,4 +1,7 @@
 import SwiftUI
+#if canImport(UIKit)
+import UIKit
+#endif
 
 // MARK: - KigoPlaceholder
 
@@ -58,19 +61,36 @@ public enum KigoPlaceholder {
 
 // MARK: - KigoPlaceholderView
 
-/// A full-bleed placeholder background layer for the Today screen.
+/// A full-bleed background layer for the Today screen.
 ///
-/// Renders a deterministic gradient derived from `imageId` — same entry always
-/// produces the same visual. Carries the accessibility identifier `kigo.image`
-/// so UI tests can locate it as an image element.
+/// Asagiri revamp (#158): renders the bundled photo `tsuyu.jpg` full-bleed.
+/// The image is looked up loose-file in the bundle via `UIImage(named:)`. If it
+/// fails to load (e.g. the resource is missing), the view falls back to the
+/// deterministic `KigoPlaceholder.gradient(for:)` so the screen is never blank.
+///
+/// Carries the accessibility identifier `kigo.image` so UI tests can locate it
+/// as a full-bleed image element.
 struct KigoPlaceholderView: View {
     let imageId: String
 
     var body: some View {
-        KigoPlaceholder.gradient(for: imageId)
+        background
             .ignoresSafeArea()
             .accessibilityIdentifier("kigo.image")
             .accessibilityLabel("Kigo background image")
             .accessibilityAddTraits(.isImage)
+    }
+
+    @ViewBuilder
+    private var background: some View {
+        if let uiImage = UIImage(named: "tsuyu") {
+            Image(uiImage: uiImage)
+                .resizable()
+                .scaledToFill()
+                .clipped()
+        } else {
+            // Fallback so the screen is never blank if the photo fails to load.
+            KigoPlaceholder.gradient(for: imageId)
+        }
     }
 }

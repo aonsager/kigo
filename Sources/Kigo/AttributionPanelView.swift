@@ -22,6 +22,11 @@ struct AttributionPanelView: View {
                 .accessibilityIdentifier("info.panel")
 
             VStack(alignment: .leading, spacing: 0) {
+                GrabHandle()
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 10)
+                    .padding(.bottom, 20)
+
                 Text(attribution.title.ja)
                     .font(KigoFont.mincho(.medium, size: 16, relativeTo: .headline))
                     .foregroundStyle(KigoTheme.inkKanji)
@@ -39,14 +44,10 @@ struct AttributionPanelView: View {
                     .foregroundStyle(KigoTheme.textTertiary)
                     .padding(.top, 10)
                     .accessibilityIdentifier("info.license")
-
-                Spacer(minLength: 0)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 30)
-            .padding(.top, 32)
+            .padding(.bottom, 40)
         }
-        .presentationBackground(KigoTheme.sheetSurface)
-        .presentationDragIndicator(.visible)
     }
 }
