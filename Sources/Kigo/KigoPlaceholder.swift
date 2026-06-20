@@ -57,6 +57,26 @@ public enum KigoPlaceholder {
             endPoint: .bottomTrailing
         )
     }
+
+    // MARK: - Bundled background photo (Asagiri revamp #158)
+
+    /// The base name of the bundled full-bleed background photo.
+    public static let backgroundImageName = "tsuyu"
+
+    /// Loads the bundled `tsuyu.jpg` background photo, or `nil` if it is missing.
+    ///
+    /// `UIImage(named:)` does NOT reliably resolve a *loose* `.jpg` sitting at the
+    /// bundle root (it primarily searches asset catalogs), so we resolve the file
+    /// URL explicitly via `Bundle.main` — which is the app bundle when running in
+    /// the app or hosted unit tests, and the appex bundle inside the widget, both
+    /// of which carry `tsuyu.jpg`. Falls back to `UIImage(named:)` just in case.
+    public static func backgroundImage() -> UIImage? {
+        if let url = Bundle.main.url(forResource: backgroundImageName, withExtension: "jpg"),
+           let image = UIImage(contentsOfFile: url.path) {
+            return image
+        }
+        return UIImage(named: backgroundImageName)
+    }
 }
 
 // MARK: - KigoPlaceholderView
@@ -83,7 +103,7 @@ struct KigoPlaceholderView: View {
 
     @ViewBuilder
     private var background: some View {
-        if let uiImage = UIImage(named: "tsuyu") {
+        if let uiImage = KigoPlaceholder.backgroundImage() {
             Image(uiImage: uiImage)
                 .resizable()
                 .scaledToFill()
