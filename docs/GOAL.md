@@ -14,9 +14,14 @@ no calendar, no feed, no streaks. It should feel like a tasteful object on the
 nightstand, closer to a wellness app than a productivity tool.
 
 The same Kigo is shown to everyone on a given date — the content is decided in
-advance by a perennial **Daily Map** (`MM-DD` → Kigo) and the Kigo always matches
-the current season. Content is loaded through a `ContentSource` seam so it can later
-be served from a real API; for now it is generated into the repo and bundled.
+advance by a **Daily Map** and the Kigo always matches the current season. The Daily
+Map is now keyed by **absolute date**, populated as an instrumented dummy dataset for
+**every day of 2026** (`2026-MM-DD` → Kigo), each description stamped with its own date
+so the right record is verifiably being read (ADR 0016, reversing the earlier perennial
+`MM-DD` keying); the 72 Kō / 24 Sekki stay perennial. Content is loaded through a
+`ContentSource` seam, served as a **fully localized** Japanese/English **Manifest** that
+can be **updated from a versioned remote URL** on app open (ADR 0017) — for now it is
+also generated into the repo and bundled as the seed/fallback.
 
 The app is free. A single auto-renewable subscription ("widget access") lets a
 subscriber put a small version of today's image+Kigo on their home screen as a
@@ -93,16 +98,19 @@ serves only these, even if it seems helpful:
 - **Real legal copy & hosting.** Terms of Use and Privacy Policy are placeholder
   `https` URL constants for now (their presence and well-formedness are gated;
   authoring and hosting the real documents are out of scope — see C9 / ADR 0013).
-- **A content backend.** No server is built or deployed. Content is generated into
-  the repo behind the `ContentSource` seam (see ADR 0001); the real API is later work.
+- **A content backend / server.** No server, API, or CMS is built or deployed. The app
+  *consumes* a versioned manifest from a placeholder remote `https` URL (the client side —
+  C21/ADR 0017), but **authoring and hosting** that endpoint is out of scope; content is
+  generated into the repo behind the `ContentSource` seam and bundled as the seed/fallback.
 - **Sourcing real photography/art.** Images are tasteful placeholders for now
   (see ADR 0001 / J2); curating real imagery is not part of this goal.
 - **Pre-iOS-26 support.** Deployment target is iOS 26 (see ADR 0002).
-- **English content & full localization.** The **Language preference** (C15) ships the
-  switcher, a persisted preference, and English **UI-chrome** strings only. Translating the
-  per-entry Kigo/Kō/Sekki descriptions and glosses into English, and any region/date/number
-  localization, are **deferred** — the schema reserves optional English fields (ADR 0014) but
-  populating them is a later goal. Content kanji names never translate.
+- **Region/number/date locale formatting.** Full JP⇄EN **content** localization is now
+  **in scope** — English prose for every Kigo/Kō/Sekki description and gloss, English
+  attribution, and **romanized (romaji) readings** in English mode, switching **live** (C19/C20,
+  ADR 0018) on top of the C15 chrome strings. What stays out of scope is **locale-aware
+  number/date/currency formatting** (no region localization). **Kanji content names never
+  translate** — they show identically in both languages.
 - **Browsing the year via the Almanac.** The Microseason Almanac shows only *today's*
   position in the year (counters + gauges + this kō/sekki's copy). It must never become a
   way to scrub to other days, kō, or sekki — that would breach the Today-only fence above.
@@ -191,6 +199,28 @@ Standing rules every milestone inherits:
   Japanese-side completeness and the optional-English forward-compatibility.
 - **Almanac indexing:** all year-positions are **1-indexed** (梅子黄 = 27/72), matching the
   lit timeline tick (CONTEXT.md; overrides the mockup's literal "26/72").
+- **Daily Map keying (ADR 0016):** the Daily Map is keyed by **absolute `YYYY-MM-DD`**,
+  populated for **every day of 2026** (365 entries; no `02-29`); resolution looks up today's
+  absolute date and an out-of-range date yields the defined "content unavailable" state (C3).
+  The 72 Kō / 24 Sekki keep **perennial `MM-DD`** date ranges (the Almanac resolver C11 is
+  unchanged). Each Daily-Map description carries its own ISO date (`2026-MM-DD`) for verification.
+- **Content schema migration (ADR 0018, supersedes part of ADR 0014):** `DailyMapEntry.description`,
+  `DailyMapEntry.reading`, `Ko.reading`, and `Sekki.reading` are `LocalizedText` (`ja`+`en`;
+  readings: `ja`=hiragana, `en`=romaji); all `LocalizedText` fields are populated in both
+  languages; `kanji` stays a single untranslated `String`; `schemaVersion` is bumped. The decode
+  must still succeed with or without `en` (ADR 0014 forward-compat preserved).
+- **Content version + remote update (ADR 0017):** the Manifest carries a monotonic integer
+  **`version`** (distinct from `schemaVersion`). A **`RemoteManifestSource`** seam
+  (`fetchLatest() async throws -> Manifest`) is injectable; the production adapter is a thin
+  `URLSession` reader of a placeholder `https` URL constant. On app open the store serves local
+  content immediately and checks the remote in the background; it replaces the local cache **iff**
+  the remote `version` is strictly newer **and** the body decodes/validates, and degrades silently
+  to the local copy on any failure. **No live network in any evidence procedure** (ADR 0001): the
+  update logic is gated through the injected fake (C21); the real fetch is off the gating path (J7).
+- **Live language store:** the persisted Language preference is exposed as a single observable
+  store the Today screen, Almanac, Attribution panel, and chrome all read; changing it re-renders
+  every visible string **without relaunch** (C20). `KIGO_FAKE_LANGUAGE=ja|en` still pins only the
+  *initial* value (ADR 0013); the live toggle is exercised through the Settings switcher.
 
 ## Criteria
 
@@ -209,22 +239,46 @@ Goal state met ⇔ every `C*` procedure below passes on `main`.
   3. Run the canonical test invocation (Constraints) with `-only-testing:KigoTests/SmokeTests`
      — expect `** TEST SUCCEEDED **` and exit 0, with `SmokeTests` containing ≥1 test.
 
-### C2: Content dataset is generated and structurally complete
+### C2: Content dataset is a complete, versioned 2026 dataset (amended — ADR 0016/0018)
 
 - **Depends on:** C1
-- **Statement:** A committed Manifest conforms to the Contract: a full perennial
-  Daily Map, the canonical 72 Kō, and the 24 Sekki, each entry well-formed. (Literary
-  quality of descriptions is not gated here — see J2.)
+- **Statement:** A committed Manifest conforms to the Contract: a full **absolute-date 2026
+  Daily Map**, the canonical 72 perennial Kō, and the 24 Sekki, each entry well-formed, carrying
+  a monotonic content `version`. (Literary quality is not gated here — see J2.)
 - **Evidence:**
-  1. Run the canonical test invocation (Constraints) with `-only-testing:KigoTests/ManifestValidationTests`
-     — expect `** TEST SUCCEEDED **` and exit 0. The suite loads the bundled Manifest and asserts:
-     - all 366 `MM-DD` keys present (including `02-29`); each entry has non-empty
-       `kanji`, `reading`, and a `description` of ≥ 20 characters, and an `imageId`;
-     - exactly 72 Kō, each with non-empty kanji/reading/gloss and a `sekkiId` that
-       resolves to one of exactly 24 Sekki;
-     - the 72 Kō date ranges are contiguous and cover the whole year with no gaps or
-       overlaps;
-     - `schemaVersion` is present.
+  1. **Data-shape precheck (external, deterministic).** Run against the bundled `Resources/manifest.json`:
+     ```
+     python3 - <<'PY'
+     import json, re, datetime, sys
+     m = json.load(open('Resources/manifest.json'))
+     dm = m['dailyMap']
+     assert isinstance(m.get('version'), int), 'missing integer content version'
+     assert 'schemaVersion' in m, 'missing schemaVersion'
+     ks = sorted(dm)
+     assert len(ks) == 365 and all(re.fullmatch(r'2026-\d{2}-\d{2}', k) for k in ks), 'keys must be 365 2026-MM-DD'
+     d = datetime.date(2026,1,1); want=[]
+     while d.year == 2026: want.append(d.isoformat()); d += datetime.timedelta(days=1)
+     assert ks == want, 'must cover every 2026 day, no gaps'
+     for k, e in dm.items():
+         assert e['kanji'] and e['imageId'], k
+         for f in ('reading','description'):
+             assert isinstance(e[f], dict) and e[f].get('ja'), f'{k}.{f} must be localized with ja'
+         assert len(e['description']['ja']) >= 20, k
+     print('OK'); sys.exit(0)
+     PY
+     ```
+     — expect `OK` and exit 0. *(Fails today: keys are `MM-DD`, no `version`, readings/description
+     are plain strings — so this reads unmet until the dataset is migrated.)*
+  2. Run the canonical test invocation (Constraints) with `-only-testing:KigoTests/ManifestValidationTests`
+     — expect `** TEST SUCCEEDED **`, exit 0, and `Executed [1-9][0-9]* test`. The suite loads the
+     bundled Manifest **through the decoder** and asserts:
+     - all 365 `2026-MM-DD` keys present and covering every day of 2026; each entry has non-empty
+       `kanji`, a `reading` and a `description` (each `LocalizedText` with non-empty `ja`,
+       `description.ja` ≥ 20 chars), and an `imageId`;
+     - exactly 72 Kō, each with non-empty `kanji`/`reading.ja`/`gloss` and a `sekkiId` that resolves
+       to one of exactly 24 Sekki; the 72 Kō **perennial `MM-DD`** date ranges are contiguous and
+       cover the whole year with no gaps or overlaps;
+     - `schemaVersion` and an integer `version` are present.
 
 ### C3: Content loads through ContentSource and survives offline
 
@@ -241,20 +295,26 @@ Goal state met ⇔ every `C*` procedure below passes on `main`.
      - with an empty cache and a failing source, the content store resolves to a
        `.loading`/`.unavailable` state (no thrown error surfaces to the UI layer).
 
-### C4: Today resolves to the correct Kigo and Microseason
+### C4: Today resolves to the correct Kigo and Microseason (amended — ADR 0016)
 
 - **Depends on:** C1, C2
-- **Statement:** Given a date, the app resolves the correct Kigo (via the Daily Map)
-  and the correct current Kō and parent Sekki — the "matches the current season"
-  behavior, made deterministic by date injection.
+- **Statement:** Given a date, the app resolves the correct Kigo by **absolute 2026 date** (via
+  the Daily Map) and the correct current Kō and parent Sekki by **perennial `MM-DD`** range; a
+  date outside the dataset resolves to the defined unavailable state, not a crash or wrong day.
 - **Evidence:**
   1. Run the canonical test invocation (Constraints) with `-only-testing:KigoTests/ResolutionTests`
-     — expect `** TEST SUCCEEDED **` and exit 0. The suite injects a `DateProvider`
-     and asserts, for a fixed set of dates spanning all four seasons (including a
-     Kō boundary day and `02-29`):
-     - the resolved Kigo id equals the Daily Map entry for that `MM-DD`;
-     - the resolved Kō is the one whose date range contains the date, and its
-       `sekkiId` resolves to the expected Sekki.
+     — expect `** TEST SUCCEEDED **`, exit 0, and `Executed [1-9][0-9]* test`. The suite injects a
+     `DateProvider` and asserts, for a fixed set of 2026 dates spanning all four seasons (including
+     a Kō boundary day):
+     - the resolved Kigo equals the Daily Map entry for that **`2026-MM-DD`** key, **and** the
+       resolved entry's `description.ja` and `description.en` each contain that ISO date string
+       (the date-stamp instrumentation — proves the correct per-day record is read);
+     - the resolved Kō is the one whose **perennial `MM-DD`** range contains the date, and its
+       `sekkiId` resolves to the expected Sekki;
+     - a **leap day** (e.g. `2024-02-29`, injected) resolves to a defined Kō without crashing
+       (Kō ranges are perennial, so a `02-29` still falls inside a range);
+     - an **out-of-range** date (e.g. `2027-01-01`, with no Daily-Map entry) resolves to the
+       defined "content unavailable" state (no entry, no thrown error to the UI).
 
 ### C5: Today screen shows today's Kigo and Microseason
 
@@ -600,6 +660,88 @@ loop catches it. Do not renumber or rewrite C9/C10.
      - `info.entry`'s center is in the top-left region (x < width/2, y < height/3) and
        `paywall.entry`'s center is in the top-right region (x > width/2, y < height/3).
 
+### C19: Manifest content is fully localized JP/EN, readings romanized (ADR 0018)
+
+- **Depends on:** C2, C12
+- **Statement:** Every localizable field in the Manifest is populated in **both** Japanese and
+  English — Kigo/Kō/Sekki descriptions and glosses, attribution, and **readings** (`ja`=hiragana,
+  `en`=romaji) — while kanji names stay single, untranslated values, and the schema still decodes
+  with or without `en` (ADR 0014 forward-compat preserved). Translation *quality* is J2, not gated.
+- **Evidence:**
+  1. **Data-shape precheck (external, deterministic).** Run against `Resources/manifest.json`:
+     ```
+     python3 - <<'PY'
+     import json, sys
+     m = json.load(open('Resources/manifest.json'))
+     def loc(x, path):
+         assert isinstance(x, dict) and x.get('ja') and x.get('en'), f'{path} needs ja+en'
+     for k, e in m['dailyMap'].items():
+         loc(e['reading'], f'{k}.reading'); loc(e['description'], f'{k}.description')
+         for f in ('title','credit','license'): loc(e['attribution'][f], f'{k}.attr.{f}')
+         assert isinstance(e['kanji'], str) and e['kanji'], k          # kanji single value
+     for o in m['ko']:
+         loc(o['reading'], 'ko.reading'); loc(o['description'], 'ko.description')
+     for s in m['sekki']:
+         loc(s['reading'], 'sekki.reading'); loc(s['gloss'], 'sekki.gloss'); loc(s['description'], 'sekki.description')
+     print('OK'); sys.exit(0)
+     PY
+     ```
+     — expect `OK` and exit 0. *(Fails today: readings/description are plain strings and `en` is
+     largely absent — reads unmet until the dataset is localized.)*
+  2. Run the canonical test invocation (Constraints) with
+     `-only-testing:KigoTests/ContentLocalizationCompletenessTests` — expect `** TEST SUCCEEDED **`,
+     exit 0, and `Executed [1-9][0-9]* test`. The suite loads the bundled Manifest through the decoder
+     and asserts: every Daily-Map entry, Kō, and Sekki resolves a non-empty **English** value for each
+     localizable field (description/gloss/reading/attribution); `kanji` is identical regardless of
+     language; and the language accessor falls back to `ja` for a fixture entry that omits `en`
+     (preserving the C12 / ADR 0014 forward-compat guarantee).
+
+### C20: Language preference switches all content + chrome live (no relaunch — ADR 0018)
+
+- **Depends on:** C13, C15, C19
+- **Statement:** Toggling the Language preference in the **Settings menu** re-renders **every**
+  visible string — Today (Kigo description, reading), the Almanac (Kō/Sekki gloss + prose), the
+  Attribution panel, and UI chrome — from Japanese to English **without relaunch**, verified
+  through the real, reachable live app. Kanji names are unchanged.
+- **Evidence:**
+  1. Run the canonical test invocation (Constraints) with
+     `-only-testing:KigoUITests/LiveLanguageSwitchUITests` — expect `** TEST SUCCEEDED **`, exit 0,
+     and `Executed [1-9][0-9]* test`. Launched with `KIGO_FAKE_DATE=2026-06-16` (default Japanese,
+     no `KIGO_FAKE_LANGUAGE`), the suite asserts via accessibility identifiers:
+     - initially `kigo.description` reads its Japanese form (text contains the date `2026-06-16`,
+       per C4) and `kigo.reading` shows the hiragana reading;
+     - open the Settings menu (`paywall.entry`), select the English option on `settings.language`,
+       dismiss — then **without relaunching**, `kigo.description` now reads its English form and
+       `kigo.reading` shows romaji, while `kigo.kanji` is unchanged;
+     - a known chrome string (e.g. `paywall.restore`) is in English after the toggle;
+     - toggling back to Japanese restores the Japanese strings (the switch is reversible and live).
+
+### C21: Manifest auto-updates from a versioned remote source (ADR 0017)
+
+- **Depends on:** C3
+- **Statement:** On app open the content store serves local content immediately and, in the
+  background, checks a **versioned** `RemoteManifestSource`; it replaces the local copy **iff** the
+  remote `version` is strictly newer and the body decodes/validates, and otherwise leaves the local
+  copy untouched with no error surfaced to the UI. The update *logic* is gated headlessly through an
+  injected fake (the real network fetch is off the gating path — J7 / ADR 0017).
+- **Evidence:**
+  1. Run the canonical test invocation (Constraints) with
+     `-only-testing:KigoTests/RemoteManifestUpdateTests` — expect `** TEST SUCCEEDED **`, exit 0, and
+     `Executed [1-9][0-9]* test`. With an injected fake `RemoteManifestSource` and an injected
+     local cache (no live network, no `URLSession`), the suite asserts:
+     - **newer:** local at `version` N, fake returns a valid manifest at N+1 ⇒ after the update check
+       the local cache holds the N+1 manifest and a subsequent resolve returns N+1 content;
+     - **not newer:** fake returns `version` ≤ N (or equal) ⇒ the local cache is unchanged;
+     - **malformed / schema-mismatch:** fake returns undecodable or schema-mismatched data ⇒ the
+       local cache is unchanged and no error is thrown to the caller;
+     - **fetch fails:** fake throws (network error) ⇒ the local cache is unchanged, no error surfaces;
+     - **non-blocking:** the store returns today's **local** content from the cache without awaiting
+       the remote check (local content is available independent of the remote result).
+  2. *(Residual on-path wiring, by inspection per ADR 0017.)* The production `RemoteManifestSource`
+     is a thin `URLSession` adapter over a placeholder `https` URL constant; the comparison /
+     apply / fallback logic it feeds is fully gated in step 1. The real end-to-end network fetch is
+     J7, off the headless gating path.
+
 ## Judgment claims
 
 Reported in the milestone report for async human review — never termination gates,
@@ -616,14 +758,17 @@ these are surfaced for awareness only.)
 
 ### J2: The Kigo content and imagery are evocative and accurate
 
-- **Applies to:** C2, C5, C12, C13, C14
+- **Applies to:** C2, C5, C12, C13, C14, C19
 - **Claim:** The generated Kigo descriptions are accurate and evocative; the new per-Kō and
   per-Sekki almanac descriptions/glosses are accurate, in the right quiet voice, and give
-  real "where am I in the year" context; the (currently placeholder) images and their
-  (placeholder) attribution suit each Kigo and season.
+  real "where am I in the year" context; the **English translations and romaji readings** are
+  accurate and natural; the (currently placeholder) images and their (placeholder) attribution
+  suit each Kigo and season. (The Daily-Map descriptions are currently instrumented dummy data
+  carrying a date stamp — quality of the final curated corpus is judged when it lands.)
 - **Lens:** Read a sample of Daily Map entries and almanac kō/sekki descriptions across
-  seasons for accuracy and tone; view the rendered images and the attribution panel. Note
-  that images and attribution values are intentionally placeholders for now.
+  seasons in **both languages** for accuracy and tone; view the rendered images and the
+  attribution panel. Note that images, attribution values, and the dummy date-stamped Daily-Map
+  copy are intentionally placeholders for now.
 
 ### J3: The widget renders correctly on a real home screen
 
@@ -684,3 +829,18 @@ these are surfaced for awareness only.)
   real photo, motion, and dark polish to `Kigo Revamp.dc.html`. Pixel-fidelity is reported
   for async human review — **never a termination gate** (the C* above gate the structure,
   data, wiring, and that both appearances render without breaking; the *look* is judged here).
+
+### J7: The remote manifest update works end-to-end over the real network
+
+- **Applies to:** C21
+- **Claim:** Pointed at a real hosted versioned manifest, the app on open downloads a strictly
+  newer version over the network, validates it, replaces the local copy, and shows the updated
+  content on the next resolve — and on a real network failure (offline, 404, corrupt body) it
+  silently keeps the local copy with no user-visible error. The placeholder remote URL constant
+  has been replaced with the real published endpoint before submission.
+- **Lens:** With a real manifest hosted at the configured URL (a higher `version` than the bundled
+  seed), launch the app on a device/simulator with live networking and confirm the new content
+  appears; then disable networking / point at a bad URL and confirm the app still shows local
+  content. The live network fetch is off the headless gating path by construction (ADR 0017 /
+  ADR 0001 — no live network in evidence procedures), so it is reported for human review, never a
+  termination gate.
