@@ -1,4 +1,7 @@
 import SwiftUI
+#if canImport(UIKit)
+import UIKit
+#endif
 
 // MARK: - KigoPlaceholder
 
@@ -54,23 +57,81 @@ public enum KigoPlaceholder {
             endPoint: .bottomTrailing
         )
     }
+
+    // MARK: - Bundled background photo (Asagiri revamp #158)
+
+    /// The base name of the bundled full-bleed background photo.
+    public static let backgroundImageName = "tsuyu"
+
+    /// Loads the bundled `tsuyu.jpg` background photo, or `nil` if it is missing.
+    ///
+    /// `UIImage(named:)` does NOT reliably resolve a *loose* `.jpg` sitting at the
+    /// bundle root (it primarily searches asset catalogs), so we resolve the file
+    /// URL explicitly via `Bundle.main` — which is the app bundle when running in
+    /// the app or hosted unit tests, and the appex bundle inside the widget, both
+    /// of which carry `tsuyu.jpg`. Falls back to `UIImage(named:)` just in case.
+    public static func backgroundImage() -> UIImage? {
+        if let url = Bundle.main.url(forResource: backgroundImageName, withExtension: "jpg"),
+           let image = UIImage(contentsOfFile: url.path) {
+            return image
+        }
+        return UIImage(named: backgroundImageName)
+    }
 }
 
 // MARK: - KigoPlaceholderView
 
-/// A full-bleed placeholder background layer for the Today screen.
+/// A full-bleed background layer for the Today screen.
 ///
-/// Renders a deterministic gradient derived from `imageId` — same entry always
-/// produces the same visual. Carries the accessibility identifier `kigo.image`
-/// so UI tests can locate it as an image element.
+/// Asagiri revamp (#158): renders the bundled photo `tsuyu.jpg` full-bleed.
+/// The image is looked up loose-file in the bundle via `UIImage(named:)`. If it
+/// fails to load (e.g. the resource is missing), the view falls back to the
+/// deterministic `KigoPlaceholder.gradient(for:)` so the screen is never blank.
+///
+/// Carries the accessibility identifier `kigo.image` so UI tests can locate it
+/// as a full-bleed image element.
 struct KigoPlaceholderView: View {
     let imageId: String
 
     var body: some View {
-        KigoPlaceholder.gradient(for: imageId)
-            .ignoresSafeArea()
-            .accessibilityIdentifier("kigo.image")
-            .accessibilityLabel("Kigo background image")
-            .accessibilityAddTraits(.isImage)
+        GeometryReader { geo in
+            ZStack {
+                // The decorative photo, pinned to the screen bounds and clipped.
+                // It is hidden from accessibility so its frame does not feed the
+                // `kigo.image` element below.
+                background
+                    .frame(width: geo.size.width, height: geo.size.height)
+                    .clipped()
+                    .accessibilityHidden(true)
+
+                // ADR-0013 sentinel: a full-screen `Color.clear` carries the
+                // `kigo.image` identifier with a frame that exactly matches the
+                // screen. `.scaledToFill()` leaves the Image's own frame wider
+                // than the screen (it overflows to cover), and the accessibility
+                // system reports that *overflow* width — `.clipped()` only clips
+                // the drawing, not the reported frame. When the identifier lived
+                // on the image (or a container unioning it), that broke
+                // `TodayLayoutUITests.testImageFullBleed`, which measures the
+                // `kigo.image` frame against the window width. A dedicated clear
+                // leaf sidesteps the overflow entirely.
+                Color.clear
+                    .accessibilityIdentifier("kigo.image")
+                    .accessibilityLabel("Kigo background image")
+                    .accessibilityAddTraits(.isImage)
+            }
+        }
+        .ignoresSafeArea()
+    }
+
+    @ViewBuilder
+    private var background: some View {
+        if let uiImage = KigoPlaceholder.backgroundImage() {
+            Image(uiImage: uiImage)
+                .resizable()
+                .scaledToFill()
+        } else {
+            // Fallback so the screen is never blank if the photo fails to load.
+            KigoPlaceholder.gradient(for: imageId)
+        }
     }
 }

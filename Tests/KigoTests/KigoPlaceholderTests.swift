@@ -48,4 +48,17 @@ final class KigoPlaceholderTests: XCTestCase {
         XCTAssertEqual(hue, expected, accuracy: 0.0001,
             "Hue for 'ayame-06-12' must be stable across calls")
     }
+
+    // MARK: - Asagiri #158: bundled background photo actually loads
+
+    /// Regression guard: the `tsuyu.jpg` background photo must resolve from the bundle.
+    /// `UIImage(named:)` does NOT reliably find a loose `.jpg` at the bundle root, which
+    /// silently fell back to the gradient — this asserts the real loader returns an image.
+    /// (KigoTests is hosted by the Kigo app, whose bundle carries `tsuyu.jpg`.)
+    func testBundledBackgroundImageLoads() {
+        XCTAssertNotNil(
+            KigoPlaceholder.backgroundImage(),
+            "KigoPlaceholder.backgroundImage() must resolve the bundled \(KigoPlaceholder.backgroundImageName).jpg — check it is bundled and the loader reads it by URL"
+        )
+    }
 }

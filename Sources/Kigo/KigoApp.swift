@@ -40,8 +40,16 @@ import SwiftUI
 /// (persisted) when the env var is absent (ADR 0013 pattern).
 ///
 /// Slice #144: `launchColorScheme(environment:)` resolves an optional `ColorScheme` from
-/// `KIGO_FAKE_APPEARANCE=dark/light`, applied via `.preferredColorScheme(_:)` on the root
-/// `WindowGroup` view. Absent or unrecognised values leave the system in control (nil).
+/// `KIGO_FAKE_APPEARANCE=dark/light`. Absent or unrecognised values leave the system in
+/// control (nil).
+///
+/// Slice D (#161): the static launch color scheme is superseded by a user-facing
+/// appearance control. `launchAppearanceStore(environment:)` returns a *locked* in-memory
+/// store for `KIGO_FAKE_APPEARANCE=dark/light` (reusing `launchColorScheme`) or a persisted
+/// `UserDefaultsAppearanceStore` (default `.system`) otherwise. `RootView` applies
+/// `.preferredColorScheme(appearanceStore.preference.colorScheme)` so the Settings sheet's
+/// System/Light/Dark picker re-themes the whole app reactively, and `DarkModeUITests`
+/// (launched with `KIGO_FAKE_APPEARANCE=dark`) still forces dark.
 @main
 struct KigoApp: App {
     @State private var store = ContentStore(
@@ -53,13 +61,13 @@ struct KigoApp: App {
     private let purchaser: any SubscriptionPurchaser
     private let offerDisplay: OfferDisplay
     private let languageStore: any LanguageStore
-    private let colorScheme: ColorScheme?
+    private let appearanceStore: any AppearanceStore
 
     init() {
         let env = ProcessInfo.processInfo.environment
         offerDisplay = launchOfferDisplay(environment: env)
         languageStore = launchLanguageStore(environment: env)
-        colorScheme = launchColorScheme(environment: env)
+        appearanceStore = launchAppearanceStore(environment: env)
 
         if let fakePurchaser = launchPurchaser(environment: env) {
             // KIGO_FAKE_PURCHASER is set: use the resolved purchaser.
@@ -83,10 +91,10 @@ struct KigoApp: App {
                 entitlementProvider: entitlementProvider,
                 offerDisplay: offerDisplay,
                 purchaser: purchaser,
-                languageStore: languageStore
+                languageStore: languageStore,
+                appearanceStore: appearanceStore
             )
             .environment(store)
-            .preferredColorScheme(colorScheme)
         }
     }
 }
@@ -115,34 +123,38 @@ struct RootView: View {
     let offerDisplay: OfferDisplay
     let purchaser: any SubscriptionPurchaser
     let languageStore: any LanguageStore
+    let appearanceStore: any AppearanceStore
 
     @State private var isPaywallPresented = false
 
     var body: some View {
         ContentView()
+            .preferredColorScheme(appearanceStore.preference.colorScheme)
             .overlay(alignment: .topTrailing) {
                 Button {
                     isPaywallPresented = true
                 } label: {
-                    Image(systemName: "gearshape.fill")
-                        .font(.title3)
-                        .foregroundStyle(.secondary)
-                        .padding(12)
+                    Image(systemName: "gearshape")
+                        .font(.system(size: 15, weight: .regular))
+                        .foregroundStyle(KigoTheme.inkReading)
+                        .frame(width: KigoTheme.Radius.entryCircle, height: KigoTheme.Radius.entryCircle)
                         .background(.ultraThinMaterial, in: Circle())
+                        .overlay(Circle().strokeBorder(KigoTheme.hairline, lineWidth: 1))
                 }
                 .buttonStyle(.plain)
-                .padding(.trailing, 16)
+                .padding(.trailing, 22)
                 .padding(.top, 16)
                 .accessibilityIdentifier("paywall.entry")
             }
-            .sheet(isPresented: $isPaywallPresented) {
+            .bottomSheet(isPresented: $isPaywallPresented) {
                 SettingsView(
                     model: PaywallModel(
                         provider: entitlementProvider,
                         offerDisplay: offerDisplay,
                         purchaser: purchaser
                     ),
-                    languageStore: languageStore
+                    languageStore: languageStore,
+                    appearanceStore: appearanceStore
                 )
             }
     }
