@@ -30,25 +30,37 @@ final class ManifestValidationTests: XCTestCase {
         return try JSONDecoder().decode(Manifest.self, from: data)
     }
 
-    /// Acceptance criterion 1: exactly 366 distinct MM-DD keys including 02-29.
-    func testDailyMapContainsExactly366Keys() throws {
+    /// Acceptance criterion 1: exactly 365 absolute 2026-MM-DD keys (2026 is not a leap year).
+    func testDailyMapContainsExactly365Keys() throws {
         let manifest = try loadManifest()
         XCTAssertEqual(
             manifest.dailyMap.count,
-            366,
-            "dailyMap must contain exactly 366 MM-DD keys (all calendar days including 02-29)"
+            365,
+            "dailyMap must contain exactly 365 absolute 2026-MM-DD keys (every day of 2026)"
         )
     }
 
-    func testDailyMapContainsLeapDay() throws {
+    /// 2026 is not a leap year, so the absolute daily map must NOT contain 2026-02-29.
+    func testDailyMapExcludesNonexistentLeapDay() throws {
         let manifest = try loadManifest()
-        XCTAssertNotNil(
-            manifest.dailyMap["02-29"],
-            "dailyMap must include 02-29 (leap day)"
+        XCTAssertNil(
+            manifest.dailyMap["2026-02-29"],
+            "dailyMap must not include 2026-02-29 (2026 is not a leap year)"
         )
     }
 
-    /// Acceptance criterion 2: every entry has non-empty kanji and reading.
+    /// Every daily-map key is a well-formed absolute 2026-MM-DD string.
+    func testEveryDailyMapKeyIsAbsolute2026Date() throws {
+        let manifest = try loadManifest()
+        for key in manifest.dailyMap.keys {
+            XCTAssertNotNil(
+                key.range(of: #"^2026-\d{2}-\d{2}$"#, options: .regularExpression),
+                "dailyMap key '\(key)' must be an absolute 2026-MM-DD date"
+            )
+        }
+    }
+
+    /// Acceptance criterion 2: every entry has non-empty kanji and a LocalizedText reading with non-empty ja.
     func testEveryDailyMapEntryHasNonEmptyKanjiAndReading() throws {
         let manifest = try loadManifest()
         for (key, entry) in manifest.dailyMap {
@@ -57,26 +69,38 @@ final class ManifestValidationTests: XCTestCase {
                 "Entry for \(key) has empty kanji"
             )
             XCTAssertFalse(
-                entry.reading.isEmpty,
-                "Entry for \(key) has empty reading"
+                entry.reading.ja.isEmpty,
+                "Entry for \(key) has empty reading.ja"
             )
         }
     }
 
-    /// Acceptance criterion 3: every entry's description is ≥20 chars and imageId is non-empty.
+    /// Acceptance criterion 3: every entry's description.ja is ≥20 chars, stamped with its own
+    /// absolute date (the C4 instrumentation), and imageId is non-empty.
     func testEveryDailyMapEntryHasDescriptionAndImageId() throws {
         let manifest = try loadManifest()
         for (key, entry) in manifest.dailyMap {
             XCTAssertGreaterThanOrEqual(
-                entry.description.count,
+                entry.description.ja.count,
                 20,
-                "Entry for \(key) has description shorter than 20 characters: '\(entry.description)'"
+                "Entry for \(key) has description.ja shorter than 20 characters: '\(entry.description.ja)'"
+            )
+            XCTAssertTrue(
+                entry.description.ja.contains(key),
+                "Entry for \(key) must stamp its absolute date into description.ja: '\(entry.description.ja)'"
             )
             XCTAssertFalse(
                 entry.imageId.isEmpty,
                 "Entry for \(key) has empty imageId"
             )
         }
+    }
+
+    /// The manifest carries both a non-empty schemaVersion and an integer content version.
+    func testManifestCarriesSchemaVersionAndIntegerVersion() throws {
+        let manifest = try loadManifest()
+        XCTAssertFalse(manifest.schemaVersion.isEmpty, "schemaVersion must be present and non-empty")
+        XCTAssertGreaterThanOrEqual(manifest.version, 1, "content version must be a positive integer")
     }
 
     /// Acceptance criterion (slice #100): every entry has non-empty attribution title, credit, and license.
@@ -129,8 +153,8 @@ final class ManifestValidationTests: XCTestCase {
                 "Kō at index \(index) has empty kanji"
             )
             XCTAssertFalse(
-                ko.reading.isEmpty,
-                "Kō at index \(index) has empty reading"
+                ko.reading.ja.isEmpty,
+                "Kō at index \(index) has empty reading.ja"
             )
             XCTAssertFalse(
                 ko.gloss.isEmpty,
@@ -223,28 +247,19 @@ final class ManifestValidationTests: XCTestCase {
         )
     }
 
-    /// Validates the exact set of 366 MM-DD keys (all calendar days + 02-29).
+    /// Validates the exact set of 365 absolute 2026-MM-DD keys (every day of 2026, no 02-29).
     func testDailyMapContainsAllExpectedKeys() throws {
         let manifest = try loadManifest()
 
-        // Build the expected 366 keys programmatically
-        let calendar = Calendar(identifier: .gregorian)
+        // Build the expected 365 absolute keys for 2026 (a non-leap year).
         var expected = Set<String>()
-
-        // Use 2000 as a leap year to cover 02-29
-        var components = DateComponents()
-        components.year = 2000
-        let daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        let daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
         for month in 1...12 {
             for day in 1...daysInMonth[month - 1] {
-                components.month = month
-                components.day = day
-                let key = String(format: "%02d-%02d", month, day)
-                expected.insert(key)
+                expected.insert(String(format: "2026-%02d-%02d", month, day))
             }
         }
-        // Verify we built exactly 366 expected keys
-        XCTAssertEqual(expected.count, 366, "Test setup error: expected key set should have 366 items")
+        XCTAssertEqual(expected.count, 365, "Test setup error: expected key set should have 365 items")
 
         let actual = Set(manifest.dailyMap.keys)
         let missing = expected.subtracting(actual)
@@ -258,6 +273,5 @@ final class ManifestValidationTests: XCTestCase {
             extra.isEmpty,
             "dailyMap has unexpected keys: \(extra.sorted().joined(separator: ", "))"
         )
-        _ = calendar // suppress unused warning
     }
 }

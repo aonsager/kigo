@@ -36,7 +36,14 @@ public struct LocalizedText: Codable, Sendable, Equatable {
 public struct Manifest: Codable, Sendable, Equatable {
     /// Semantic version string (e.g. "1.0") used to detect schema drift.
     public let schemaVersion: String
-    /// Perennial mapping from `MM-DD` date keys to Kigo entries.
+    /// Monotonic integer content version, bumped each time the dataset changes.
+    /// Distinct from `schemaVersion` (the shape) — this tracks the *data* so the
+    /// remote-update logic (C21) can compare a fetched manifest against the bundled
+    /// one without the production adapter needing to know the field exists.
+    public let version: Int
+    /// Absolute mapping from `2026-MM-DD` date keys to Kigo entries — one per day of
+    /// 2026 (ADR 0016). Lookup uses `DayKey.absolute(from:)`; the perennial `MM-DD`
+    /// keys live only in the Kō `dateRange` containment check.
     public let dailyMap: [String: DailyMapEntry]
     /// The 72 Kō (microseasons) of the traditional Japanese almanac.
     public let ko: [Ko]
@@ -70,10 +77,10 @@ public struct Attribution: Codable, Sendable, Equatable {
 public struct DailyMapEntry: Codable, Sendable, Equatable {
     /// Kanji representation of the Kigo.
     public let kanji: String
-    /// Yomi (reading) of the Kigo in hiragana or rōmaji.
-    public let reading: String
-    /// Short prose description of the Kigo.
-    public let description: String
+    /// Yomi (reading) of the Kigo. Required Japanese, optional English (ADR 0014).
+    public let reading: LocalizedText
+    /// Short prose description of the Kigo. Required Japanese, optional English (ADR 0014).
+    public let description: LocalizedText
     /// Identifier for the paired image asset.
     public let imageId: String
     /// Per-image attribution (title, credit, license). Required for every entry.
@@ -86,8 +93,8 @@ public struct DailyMapEntry: Codable, Sendable, Equatable {
 public struct Ko: Codable, Sendable, Equatable {
     /// Kanji name of the microseason (e.g. 腐草為螢).
     public let kanji: String
-    /// Yomi (reading) of the Kō name.
-    public let reading: String
+    /// Yomi (reading) of the Kō name. Required Japanese, optional English (ADR 0014).
+    public let reading: LocalizedText
     /// Short English gloss (e.g. "rotten grass becomes fireflies").
     public let gloss: String
     /// Identifier of the parent Sekki this Kō belongs to.
@@ -115,8 +122,8 @@ public struct Sekki: Codable, Sendable, Equatable {
     public let id: String
     /// Kanji name of the solar term.
     public let kanji: String
-    /// Yomi (reading) of the Sekki name.
-    public let reading: String
+    /// Yomi (reading) of the Sekki name. Required Japanese, optional English (ADR 0014).
+    public let reading: LocalizedText
     /// Short localized gloss (e.g. "春の始まり"). Required Japanese, optional English (ADR 0014).
     public let gloss: LocalizedText
     /// Prose description of the solar term. Required Japanese, optional English (ADR 0014).

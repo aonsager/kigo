@@ -83,10 +83,10 @@ final class ContentStoreTests: XCTestCase {
     /// so we can assert on the exact values we provided.
     private func makeManifest(schemaVersion: String = "1.0") -> Manifest {
         let dailyMap: [String: DailyMapEntry] = [
-            "01-01": DailyMapEntry(
+            "2026-01-01": DailyMapEntry(
                 kanji: "款冬華",
-                reading: "ふきのはなさく",
-                description: "Butterbur blooms.",
+                reading: LocalizedText(ja: "ふきのはなさく"),
+                description: LocalizedText(ja: "Butterbur blooms."),
                 imageId: "img-0101",
                 attribution: Attribution(
                     title: LocalizedText(ja: "季語の風景"),
@@ -98,7 +98,7 @@ final class ContentStoreTests: XCTestCase {
         let ko = [
             Ko(
                 kanji: "款冬華",
-                reading: "ふきのはなさく",
+                reading: LocalizedText(ja: "ふきのはなさく"),
                 gloss: "Butterbur blooms",
                 sekkiId: "sekki-01",
                 dateRange: DateRange(start: "01-01", end: "01-05"),
@@ -106,12 +106,13 @@ final class ContentStoreTests: XCTestCase {
             )
         ]
         let sekki = [
-            Sekki(id: "sekki-01", kanji: "小寒", reading: "しょうかん",
+            Sekki(id: "sekki-01", kanji: "小寒", reading: LocalizedText(ja: "しょうかん"),
                   gloss: LocalizedText(ja: "寒さの始まり"),
                   description: LocalizedText(ja: "寒さが厳しくなる時期。"))
         ]
         return Manifest(
             schemaVersion: schemaVersion,
+            version: 1,
             dailyMap: dailyMap,
             ko: ko,
             sekki: sekki
@@ -209,14 +210,14 @@ final class ContentStoreTests: XCTestCase {
 
     // MARK: - Criterion 5 (slice #21): DateProvider seam + todayEntry()
 
-    /// AC1: A FixedDateProvider injected with 2024-01-01 produces a day-key of "01-01"
-    /// and todayEntry() returns the dailyMap entry for that key from the loaded manifest.
+    /// AC1: A FixedDateProvider injected with 2026-01-01 produces an absolute day-key
+    /// of "2026-01-01" and todayEntry() returns the dailyMap entry for that key.
     @MainActor
     func testTodayEntryReturnsCorrectEntryForInjectedDate() async throws {
-        // The fake manifest has a "01-01" entry.
+        // The fake manifest has a "2026-01-01" entry.
         let manifest = makeManifest()
         let source = FakeContentSource(manifest: manifest)
-        // January 1 UTC → day-key "01-01"
+        // January 1 2026 UTC → absolute day-key "2026-01-01"
         let jan1 = FixedDateProvider(date: makeUTCDate(month: 1, day: 1))
         let store = ContentStore(source: source, dateProvider: jan1)
 
@@ -224,7 +225,7 @@ final class ContentStoreTests: XCTestCase {
 
         let entry = store.todayEntry()
         XCTAssertNotNil(entry, "todayEntry() must return a non-nil entry for a known day-key")
-        XCTAssertEqual(entry?.kanji, "款冬華", "Entry for 01-01 must have kanji 款冬華")
+        XCTAssertEqual(entry?.kanji, "款冬華", "Entry for 2026-01-01 must have kanji 款冬華")
     }
 
     // MARK: - Criterion 6 (slice #21): Offline survival — cache hit with failing source
@@ -320,12 +321,13 @@ final class ContentStoreTests: XCTestCase {
 
     // MARK: - Helpers
 
-    /// Creates a UTC `Date` for the given month and day (year is irrelevant for MM-DD lookup).
+    /// Creates a UTC `Date` in 2026 for the given month and day (the year matters now:
+    /// the daily map is keyed by absolute `2026-MM-DD` after the ADR 0016 migration).
     private func makeUTCDate(month: Int, day: Int) -> Date {
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = TimeZone(identifier: "UTC")!
         var comps = DateComponents()
-        comps.year = 2024
+        comps.year = 2026
         comps.month = month
         comps.day = day
         comps.hour = 12

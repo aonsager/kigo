@@ -29,10 +29,12 @@ final class WidgetTimelineTests: XCTestCase {
         return cal
     }
 
-    /// Creates a UTC `Date` for the given month and day (year is irrelevant for MM-DD lookup).
-    private func makeUTCDate(month: Int, day: Int, hour: Int = 12) -> Date {
+    /// Creates a UTC `Date` for the given month and day. The year defaults to 2026
+    /// because the daily map is keyed by absolute `2026-MM-DD` after the ADR 0016 migration;
+    /// the year-boundary rollover test overrides it.
+    private func makeUTCDate(year: Int = 2026, month: Int, day: Int, hour: Int = 12) -> Date {
         var comps = DateComponents()
-        comps.year = 2024
+        comps.year = year
         comps.month = month
         comps.day = day
         comps.hour = hour
@@ -43,6 +45,9 @@ final class WidgetTimelineTests: XCTestCase {
 
     /// Builds a minimal two-day manifest with entries for `dayKey` and `nextDayKey`.
     /// Each day gets its own Ko (sharing one Sekki) for the resolver to work.
+    /// `dayKey`/`nextDayKey` are perennial `MM-DD` (used for the Kō range and to derive the
+    /// absolute daily-map key). `year`/`nextYear` form the absolute `YYYY-MM-DD` daily-map keys
+    /// (default 2026; the year-boundary test passes 2026/2027).
     private func makeTwoDayManifest(dayKey: String,
                                     kanji: String,
                                     reading: String,
@@ -50,48 +55,54 @@ final class WidgetTimelineTests: XCTestCase {
                                     nextDayKey: String,
                                     nextKanji: String,
                                     nextReading: String,
-                                    nextImageId: String) -> Manifest {
+                                    nextImageId: String,
+                                    year: Int = 2026,
+                                    nextYear: Int = 2026) -> Manifest {
         let placeholderAttribution = Attribution(
             title: LocalizedText(ja: "季語の風景"),
             credit: LocalizedText(ja: "撮影者不明"),
             license: LocalizedText(ja: "パブリックドメイン")
         )
-        let entry = DailyMapEntry(kanji: kanji, reading: reading,
-                                  description: "Today's Kigo.", imageId: imageId,
+        let entry = DailyMapEntry(kanji: kanji, reading: LocalizedText(ja: reading),
+                                  description: LocalizedText(ja: "Today's Kigo."), imageId: imageId,
                                   attribution: placeholderAttribution)
-        let nextEntry = DailyMapEntry(kanji: nextKanji, reading: nextReading,
-                                     description: "Tomorrow's Kigo.", imageId: nextImageId,
+        let nextEntry = DailyMapEntry(kanji: nextKanji, reading: LocalizedText(ja: nextReading),
+                                     description: LocalizedText(ja: "Tomorrow's Kigo."), imageId: nextImageId,
                                      attribution: placeholderAttribution)
         let ko = Ko(kanji: "腐草為螢",
-                    reading: "くされたるくさほたるとなる",
+                    reading: LocalizedText(ja: "くされたるくさほたるとなる"),
                     gloss: "rotten grass becomes fireflies",
                     sekkiId: "shousho",
                     dateRange: DateRange(start: dayKey, end: dayKey),
                     description: LocalizedText(ja: "腐った草からホタルが生まれると古人は信じた。"))
         let nextKo = Ko(kanji: "土潤溽暑",
-                        reading: "つちうるおうてむしあつし",
+                        reading: LocalizedText(ja: "つちうるおうてむしあつし"),
                         gloss: "earth is damp and sultry",
                         sekkiId: "shousho",
                         dateRange: DateRange(start: nextDayKey, end: nextDayKey),
                         description: LocalizedText(ja: "大地が湿り気を帯び、蒸し暑さが極まる。"))
-        let sekki = Sekki(id: "shousho", kanji: "小暑", reading: "しょうしょ",
+        let sekki = Sekki(id: "shousho", kanji: "小暑", reading: LocalizedText(ja: "しょうしょ"),
                           gloss: LocalizedText(ja: "暑さが増してくる"),
                           description: LocalizedText(ja: "本格的な暑さが始まる時期。"))
         return Manifest(schemaVersion: "1.0",
-                        dailyMap: [dayKey: entry, nextDayKey: nextEntry],
+                        version: 1,
+                        dailyMap: ["\(year)-\(dayKey)": entry, "\(nextYear)-\(nextDayKey)": nextEntry],
                         ko: [ko, nextKo],
                         sekki: [sekki])
     }
 
     /// Builds a minimal manifest with one daily-map entry, one Ko, one Sekki —
     /// enough for the builder to resolve successfully without touching the bundle.
+    /// `dayKey` is perennial `MM-DD` (used for the Kō range and to derive the absolute
+    /// daily-map key); `year` (default 2026) forms the absolute `YYYY-MM-DD` daily-map key.
     private func makeMinimalManifest(dayKey: String,
+                                     year: Int = 2026,
                                      kanji: String = "蛍",
                                      reading: String = "ほたる",
                                      imageId: String = "img-001") -> Manifest {
         let entry = DailyMapEntry(kanji: kanji,
-                                  reading: reading,
-                                  description: "Fireflies glow in summer dusk.",
+                                  reading: LocalizedText(ja: reading),
+                                  description: LocalizedText(ja: "Fireflies glow in summer dusk."),
                                   imageId: imageId,
                                   attribution: Attribution(
                                       title: LocalizedText(ja: "季語の風景"),
@@ -99,16 +110,17 @@ final class WidgetTimelineTests: XCTestCase {
                                       license: LocalizedText(ja: "パブリックドメイン")
                                   ))
         let ko = Ko(kanji: "腐草為螢",
-                    reading: "くされたるくさほたるとなる",
+                    reading: LocalizedText(ja: "くされたるくさほたるとなる"),
                     gloss: "rotten grass becomes fireflies",
                     sekkiId: "shousho",
                     dateRange: DateRange(start: dayKey, end: dayKey),
                     description: LocalizedText(ja: "腐った草からホタルが生まれると古人は信じた。"))
-        let sekki = Sekki(id: "shousho", kanji: "小暑", reading: "しょうしょ",
+        let sekki = Sekki(id: "shousho", kanji: "小暑", reading: LocalizedText(ja: "しょうしょ"),
                           gloss: LocalizedText(ja: "暑さが増してくる"),
                           description: LocalizedText(ja: "本格的な暑さが始まる時期。"))
         return Manifest(schemaVersion: "1.0",
-                        dailyMap: [dayKey: entry],
+                        version: 1,
+                        dailyMap: ["\(year)-\(dayKey)": entry],
                         ko: [ko],
                         sekki: [sekki])
     }
@@ -241,11 +253,13 @@ final class WidgetTimelineTests: XCTestCase {
     func testTimelineRolloverAtYearBoundaryIsDeterministic() async {
         let todayDayKey = "12-31"
         let tomorrowDayKey = "01-01"
+        // Dec 31 2026 rolls over to Jan 1 2027: the next-day entry lives under the 2027 key.
         let manifest = makeTwoDayManifest(
             dayKey: todayDayKey, kanji: "年の瀬", reading: "としのせ", imageId: "img-dec31",
-            nextDayKey: tomorrowDayKey, nextKanji: "初日の出", nextReading: "はつひので", nextImageId: "img-jan01"
+            nextDayKey: tomorrowDayKey, nextKanji: "初日の出", nextReading: "はつひので", nextImageId: "img-jan01",
+            year: 2026, nextYear: 2027
         )
-        // 2024-12-31 12:00 UTC
+        // 2026-12-31 12:00 UTC
         let today = makeUTCDate(month: 12, day: 31, hour: 12)
         let provider = FixedDateProvider(date: today)
         let builder = WidgetTimelineBuilder(dateProvider: provider, manifest: manifest)
@@ -254,9 +268,9 @@ final class WidgetTimelineTests: XCTestCase {
 
         XCTAssertEqual(timeline.count, 2, "Timeline must have exactly 2 entries at year boundary")
 
-        // Second entry date = 2025-01-01 00:00:00 UTC
+        // Second entry date = 2027-01-01 00:00:00 UTC
         var comps = DateComponents()
-        comps.year = 2025
+        comps.year = 2027
         comps.month = 1
         comps.day = 1
         comps.hour = 0
@@ -264,7 +278,7 @@ final class WidgetTimelineTests: XCTestCase {
         comps.second = 0
         let expectedJan1 = utcCalendar.date(from: comps)!
         XCTAssertEqual(timeline[1].date, expectedJan1,
-                       "Second entry date must be 2025-01-01 00:00:00 UTC")
+                       "Second entry date must be 2027-01-01 00:00:00 UTC")
 
         // Second entry content = Jan 1 Kigo
         XCTAssertEqual(timeline[1].kanji, "初日の出",

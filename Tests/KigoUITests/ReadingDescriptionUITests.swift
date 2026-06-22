@@ -55,8 +55,8 @@ final class ReadingDescriptionUITests: XCTestCase {
         )
         XCTAssertEqual(
             label,
-            "Sweet flag — the blade-like iris leaves used in summer purification rites, placed in baths on Tango no Sekku.",
-            "With KIGO_FAKE_DATE=2026-06-12, kigo.description must match the 06-12 manifest entry exactly"
+            "Sweet flag — the blade-like iris leaves used in summer purification rites, placed in baths on Tango no Sekku. (2026-06-12)",
+            "With KIGO_FAKE_DATE=2026-06-12, kigo.description must match the 06-12 manifest entry exactly (including the ADR 0016 date stamp)"
         )
     }
 }

@@ -102,16 +102,16 @@ public final class ContentStore {
     /// Returns today's `DailyMapEntry` from the in-memory cache, or `nil` if the
     /// manifest has not yet loaded or does not contain an entry for today's day-key.
     ///
-    /// The day-key is derived from `dateProvider.today` using UTC: `"MM-DD"`.
-    /// This implements the bare `dailyMap["MM-DD"]` lookup specified in ADR 0006 (C3
-    /// scope). No Kō/Sekki resolution is performed here — that is C4 scope.
+    /// The day-key is derived from `dateProvider.today` using UTC: the absolute
+    /// `"YYYY-MM-DD"` key (`DayKey.absolute`), matching the Daily Map's absolute-2026
+    /// keys (ADR 0016). No Kō/Sekki resolution is performed here — that is C4 scope.
     ///
     /// This method reads only from the already-cached `.loaded(Manifest)` associated
     /// value and never calls `source.load()`, satisfying the offline-survival guarantee:
     /// once the cache is warm, serving today's entry requires no source access at all.
     public func todayEntry() -> DailyMapEntry? {
         guard case .loaded(let manifest) = state else { return nil }
-        guard let key = DayKey.make(from: dateProvider.today) else { return nil }
+        guard let key = DayKey.absolute(from: dateProvider.today) else { return nil }
         return manifest.dailyMap[key]
     }
 

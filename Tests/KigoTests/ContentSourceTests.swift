@@ -47,11 +47,11 @@ final class ContentSourceTests: XCTestCase {
             "schemaVersion must match the bundled manifest"
         )
 
-        // dailyMap key sets must be identical (366 keys)
+        // dailyMap key sets must be identical (365 keys — every day of 2026, a non-leap year)
         XCTAssertEqual(
             loaded.dailyMap.count,
-            366,
-            "BundledContentSource loaded dailyMap must contain 366 keys"
+            365,
+            "BundledContentSource loaded dailyMap must contain 365 keys"
         )
         XCTAssertEqual(
             Set(loaded.dailyMap.keys),
@@ -86,8 +86,8 @@ final class ContentSourceTests: XCTestCase {
                 "Entry for \(key) has empty kanji"
             )
             XCTAssertFalse(
-                entry.reading.isEmpty,
-                "Entry for \(key) has empty reading"
+                entry.reading.ja.isEmpty,
+                "Entry for \(key) has empty reading.ja"
             )
         }
     }
@@ -113,12 +113,12 @@ final class ContentSourceTests: XCTestCase {
     /// `loadCallCount` must remain exactly 1 after `todayEntry()` is called.
     @MainActor
     func testOfflineSurvival_cacheHitRequiresNoSourceCall() async throws {
-        // Build a minimal manifest with a known "01-01" entry.
+        // Build a minimal manifest with a known "2026-01-01" entry.
         let dailyMap: [String: DailyMapEntry] = [
-            "01-01": DailyMapEntry(
+            "2026-01-01": DailyMapEntry(
                 kanji: "款冬華",
-                reading: "ふきのはなさく",
-                description: "Butterbur blooms.",
+                reading: LocalizedText(ja: "ふきのはなさく"),
+                description: LocalizedText(ja: "Butterbur blooms."),
                 imageId: "img-0101",
                 attribution: Attribution(
                     title: LocalizedText(ja: "季語の風景"),
@@ -129,20 +129,20 @@ final class ContentSourceTests: XCTestCase {
         ]
         let ko = [Ko(
             kanji: "款冬華",
-            reading: "ふきのはなさく",
+            reading: LocalizedText(ja: "ふきのはなさく"),
             gloss: "Butterbur blooms",
             sekkiId: "sekki-01",
             dateRange: DateRange(start: "01-01", end: "01-05"),
             description: LocalizedText(ja: "フキノトウが花を咲かせる。")
         )]
-        let sekki = [Sekki(id: "sekki-01", kanji: "小寒", reading: "しょうかん",
+        let sekki = [Sekki(id: "sekki-01", kanji: "小寒", reading: LocalizedText(ja: "しょうかん"),
                            gloss: LocalizedText(ja: "寒さの始まり"),
                            description: LocalizedText(ja: "寒さが厳しくなる時期。"))]
-        let manifest = Manifest(schemaVersion: "1.0", dailyMap: dailyMap, ko: ko, sekki: sekki)
+        let manifest = Manifest(schemaVersion: "1.0", version: 1, dailyMap: dailyMap, ko: ko, sekki: sekki)
 
         // CountingFakeContentSource: first call returns the manifest; subsequent calls throw.
         let source = CountingFakeContentSource(manifest: manifest)
-        // Pin "today" to 01-01 so todayEntry() looks up the "01-01" key.
+        // Pin "today" to 2026-01-01 so todayEntry() looks up the "2026-01-01" key.
         let jan1 = FixedDateProvider(date: makeUTCDateInContentSourceTests(month: 1, day: 1))
         let store = ContentStore(source: source, dateProvider: jan1)
 
@@ -203,13 +203,14 @@ final class ContentSourceTests: XCTestCase {
 
     // MARK: - Helpers
 
-    /// Creates a UTC `Date` for the given month and day (year is irrelevant for MM-DD lookup).
+    /// Creates a UTC `Date` in 2026 for the given month and day (the year matters: the
+    /// daily map is keyed by absolute `2026-MM-DD` after the ADR 0016 migration).
     /// Named distinctly from the `private` helper in `ContentStoreTests` to avoid ambiguity.
     private func makeUTCDateInContentSourceTests(month: Int, day: Int) -> Date {
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = TimeZone(identifier: "UTC")!
         var comps = DateComponents()
-        comps.year = 2024
+        comps.year = 2026
         comps.month = month
         comps.day = day
         comps.hour = 12

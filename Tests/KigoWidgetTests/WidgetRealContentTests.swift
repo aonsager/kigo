@@ -52,7 +52,7 @@ final class WidgetRealContentTests: XCTestCase {
         let source = BundledContentSource()
         let manifest = try await source.load()
 
-        // Step 2: Pick the first MM-DD key present in the loaded manifest.
+        // Step 2: Pick the first absolute 2026-MM-DD key present in the loaded manifest.
         // Sort for determinism; any key that exists in the manifest is valid.
         let sortedKeys = manifest.dailyMap.keys.sorted()
         guard let pickedKey = sortedKeys.first,
@@ -61,21 +61,22 @@ final class WidgetRealContentTests: XCTestCase {
             return
         }
 
-        // Step 3: Parse MM-DD into month/day integers to construct a Date.
+        // Step 3: Parse the absolute YYYY-MM-DD key into year/month/day integers.
         let parts = pickedKey.split(separator: "-")
-        XCTAssertEqual(parts.count, 2, "MM-DD key must have exactly two components")
-        guard parts.count == 2,
-              let month = Int(parts[0]),
-              let day = Int(parts[1]) else {
-            XCTFail("Could not parse MM-DD key '\(pickedKey)' into month/day integers")
+        XCTAssertEqual(parts.count, 3, "Absolute key must have exactly three components")
+        guard parts.count == 3,
+              let year = Int(parts[0]),
+              let month = Int(parts[1]),
+              let day = Int(parts[2]) else {
+            XCTFail("Could not parse YYYY-MM-DD key '\(pickedKey)' into year/month/day integers")
             return
         }
 
-        // Step 4: Build a UTC Date pinned to that MM-DD (year is irrelevant for lookup).
+        // Step 4: Build a UTC Date pinned to that absolute date (the year is the lookup key now).
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = TimeZone(identifier: "UTC")!
         var comps = DateComponents()
-        comps.year = 2024
+        comps.year = year
         comps.month = month
         comps.day = day
         comps.hour = 12
@@ -96,8 +97,8 @@ final class WidgetRealContentTests: XCTestCase {
                         "Builder must return a non-nil entry for key '\(pickedKey)' present in the real manifest")
         XCTAssertEqual(entry?.kanji, expectedEntry.kanji,
                        "Entry kanji must equal manifest dailyMap[\(pickedKey)].kanji")
-        XCTAssertEqual(entry?.reading, expectedEntry.reading,
-                       "Entry reading must equal manifest dailyMap[\(pickedKey)].reading")
+        XCTAssertEqual(entry?.reading, expectedEntry.reading.ja,
+                       "Entry reading must equal manifest dailyMap[\(pickedKey)].reading.ja")
     }
 
     // MARK: - Screenshot evidence: host-render the real KigoWidgetView
@@ -120,25 +121,26 @@ final class WidgetRealContentTests: XCTestCase {
         let source = BundledContentSource()
         let manifest = try await source.load()
 
-        // Pick "01-01" if present, otherwise the first sorted key — deterministic choice.
-        let targetKey = manifest.dailyMap["01-01"] != nil ? "01-01" : manifest.dailyMap.keys.sorted().first!
+        // Pick "2026-01-01" if present, otherwise the first sorted key — deterministic choice.
+        let targetKey = manifest.dailyMap["2026-01-01"] != nil ? "2026-01-01" : manifest.dailyMap.keys.sorted().first!
         guard let expectedEntry = manifest.dailyMap[targetKey] else {
             XCTFail("No entry for key '\(targetKey)' in real manifest")
             return
         }
 
-        // Build date for the chosen key
+        // Build date for the chosen absolute YYYY-MM-DD key.
         let parts = targetKey.split(separator: "-")
-        guard parts.count == 2,
-              let month = Int(parts[0]),
-              let day = Int(parts[1]) else {
+        guard parts.count == 3,
+              let year = Int(parts[0]),
+              let month = Int(parts[1]),
+              let day = Int(parts[2]) else {
             XCTFail("Could not parse key '\(targetKey)'")
             return
         }
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = TimeZone(identifier: "UTC")!
         var comps = DateComponents()
-        comps.year = 2024
+        comps.year = year
         comps.month = month
         comps.day = day
         comps.hour = 12
@@ -158,7 +160,7 @@ final class WidgetRealContentTests: XCTestCase {
 
         // Verify the entry matches the expected manifest values before rendering
         XCTAssertEqual(widgetEntry.kanji, expectedEntry.kanji)
-        XCTAssertEqual(widgetEntry.reading, expectedEntry.reading)
+        XCTAssertEqual(widgetEntry.reading, expectedEntry.reading.ja)
 
         // Stage 2 (MainActor): Host-render the real KigoWidgetView driven by the real entry.
         // ImageRenderer, KigoWidgetView init, and UIImage.pngData() are all @MainActor.

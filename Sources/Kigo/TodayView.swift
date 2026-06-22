@@ -130,7 +130,7 @@ struct TodayView: View {
                 .shadow(color: KigoTheme.kanjiShadow, radius: 3, x: 0, y: 1)
                 .accessibilityIdentifier("kigo.kanji")
 
-            Text(resolvedDay.kigoEntry.reading)
+            Text(resolvedDay.kigoEntry.reading.ja)
                 .font(KigoFont.zenKaku(.regular, size: 17, relativeTo: .title3))
                 .tracking(7)
                 .padding(.leading, 7) // balance the trailing tracking so the reading stays centered
@@ -138,7 +138,7 @@ struct TodayView: View {
                 .padding(.top, 22)
                 .accessibilityIdentifier("kigo.reading")
 
-            Text(resolvedDay.kigoEntry.description)
+            Text(resolvedDay.kigoEntry.description.ja)
                 .font(KigoFont.zenKaku(.regular, size: 14.5, relativeTo: .body))
                 .lineSpacing(12)
                 .multilineTextAlignment(.center)
@@ -223,7 +223,7 @@ struct TodayView: View {
                         Text(resolvedDay.ko.kanji)
                             .font(KigoFont.mincho(.semibold, size: 19, relativeTo: .headline))
                             .foregroundStyle(KigoTheme.inkKo)
-                        Text(resolvedDay.ko.reading)
+                        Text(resolvedDay.ko.reading.ja)
                             .font(KigoFont.zenKaku(.regular, size: 12.5, relativeTo: .footnote))
                             .foregroundStyle(KigoTheme.inkReading)
                             .accessibilityIdentifier("microseason.ko")
@@ -233,7 +233,7 @@ struct TodayView: View {
                         Text(resolvedDay.sekki.kanji)
                             .font(KigoFont.mincho(.medium, size: 14, relativeTo: .subheadline))
                             .foregroundStyle(KigoTheme.inkSekki)
-                        Text(resolvedDay.sekki.reading)
+                        Text(resolvedDay.sekki.reading.ja)
                             .font(KigoFont.zenKaku(.regular, size: 11.5, relativeTo: .caption))
                             .foregroundStyle(KigoTheme.textSecondary)
                             .accessibilityIdentifier("microseason.sekki")

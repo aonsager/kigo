@@ -37,4 +37,18 @@ public enum DayKey {
         guard let month = comps.month, let day = comps.day else { return nil }
         return String(format: "%02d-%02d", month, day)
     }
+
+    /// Derives the absolute `YYYY-MM-DD` key for `date` using UTC.
+    ///
+    /// This is the daily-map lookup key after the ADR 0016 migration: the Daily Map
+    /// is keyed by absolute 2026 dates, so a remote update (C21) can override a
+    /// specific calendar day of a specific year. The perennial `MM-DD` key from
+    /// `make(from:)` remains the key for the year-independent Kō `dateRange` check.
+    ///
+    /// Returns `nil` if the calendar cannot extract year, month, and day components.
+    public static func absolute(from date: Date) -> String? {
+        let comps = utcCalendar.dateComponents([.year, .month, .day], from: date)
+        guard let year = comps.year, let month = comps.month, let day = comps.day else { return nil }
+        return String(format: "%04d-%02d-%02d", year, month, day)
+    }
 }
