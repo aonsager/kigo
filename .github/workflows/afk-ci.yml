@@ -26,7 +26,6 @@ jobs:
     timeout-minutes: 45
     env:
       SCHEME: Kigo
-      DESTINATION: 'platform=iOS Simulator,name=iPhone 17'
     steps:
       - uses: actions/checkout@v4
 
@@ -36,6 +35,49 @@ jobs:
           latest=$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -1 || true)
           if [ -n "${latest:-}" ]; then sudo xcode-select -s "$latest"; fi
           xcodebuild -version
+
+      - name: Resolve & boot an iOS simulator
+        run: |
+          set -euo pipefail
+          if [ ! -f project.yml ]; then
+            echo "No project.yml yet — pre walking-skeleton. Skipping simulator resolve."
+            exit 0
+          fi
+          # Pin to a CONCRETE simulator UDID resolved at runtime rather than a static
+          # name=iPhone 17 destination. A hardcoded name/OS is brittle: GitHub runner
+          # images vary which devices and iOS runtimes they ship, and an unresolvable
+          # name fails the whole job in ~90s with "Unable to find a device matching..."
+          # (it did once on this repo). Picking the newest available iPhone simulator on
+          # whatever runner we landed on is deterministic across image drift.
+          #
+          # The resolver script is passed via `python3 -c` reading the device list from a
+          # FILE — NOT a `python3 - <<heredoc` piped from simctl, which would make Python
+          # read its program from stdin and collide with the JSON on the same stream.
+          xcrun simctl list devices available -j > "$RUNNER_TEMP/sims.json"
+          UDID=$(python3 -c '
+          import json, re, sys
+          devices = json.load(open(sys.argv[1]))["devices"]
+          best = None  # (version_tuple, name, udid)
+          for runtime, devs in devices.items():
+              m = re.search(r"iOS-(\d+)-(\d+)", runtime)
+              if not m:
+                  continue
+              version = (int(m.group(1)), int(m.group(2)))
+              for d in devs:
+                  if d.get("isAvailable") and "iPhone" in d.get("name", ""):
+                      if best is None or version > best[0]:
+                          best = (version, d["name"], d["udid"])
+          sys.stderr.write(("Resolved: %s (iOS %d.%d)\n" % (best[1], best[0][0], best[0][1])) if best else "none\n")
+          print(best[2] if best else "")
+          ' "$RUNNER_TEMP/sims.json")
+          if [ -z "$UDID" ]; then
+            echo "::error::No available iPhone simulator on this runner"
+            xcrun simctl list devices available
+            exit 1
+          fi
+          echo "Resolved simulator UDID: $UDID"
+          xcrun simctl boot "$UDID" || true
+          echo "DESTINATION=platform=iOS Simulator,id=$UDID" >> "$GITHUB_ENV"
 
       - name: Build and test (or pass if no manifest yet)
         run: |
