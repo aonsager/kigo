@@ -96,8 +96,8 @@ final class TodayScreenUITests: XCTestCase {
         )
         XCTAssertEqual(
             descElement.label,
-            "Sweet flag — the blade-like iris leaves used in summer purification rites, placed in baths on Tango no Sekku.",
-            "kigo.description must match the 06-12 manifest entry"
+            "Sweet flag — the blade-like iris leaves used in summer purification rites, placed in baths on Tango no Sekku. (2026-06-12)",
+            "kigo.description must match the 06-12 manifest entry (including the ADR 0016 date stamp)"
         )
 
         // 4. microseason.ko — くされたるくさほたるとなる

@@ -40,7 +40,7 @@ struct AlmanacSheetView: View {
                         Text(ko.kanji)
                             .font(KigoFont.mincho(.bold, size: 27, relativeTo: .title))
                             .foregroundStyle(KigoTheme.inkKo)
-                        Text(ko.reading)
+                        Text(ko.reading.ja)
                             .font(KigoFont.zenKaku(.regular, size: 14, relativeTo: .subheadline))
                             .foregroundStyle(KigoTheme.inkReading)
                     }
@@ -72,7 +72,7 @@ struct AlmanacSheetView: View {
                         Text(sekki.kanji)
                             .font(KigoFont.mincho(.bold, size: 23, relativeTo: .title2))
                             .foregroundStyle(KigoTheme.inkKo)
-                        Text(sekki.reading)
+                        Text(sekki.reading.ja)
                             .font(KigoFont.zenKaku(.regular, size: 14, relativeTo: .subheadline))
                             .foregroundStyle(KigoTheme.inkReading)
                     }

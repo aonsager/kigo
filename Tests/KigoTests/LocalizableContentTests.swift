@@ -77,7 +77,7 @@ final class LocalizableContentTests: XCTestCase {
         {
           "id": "risshun",
           "kanji": "立春",
-          "reading": "りっしゅん",
+          "reading": {"ja": "りっしゅん"},
           "gloss": {"ja": "春の始まり"},
           "description": {"ja": "太陽が黄経315度に達する日。春の気配が感じられる。"}
         }
@@ -98,7 +98,7 @@ final class LocalizableContentTests: XCTestCase {
         {
           "id": "risshun",
           "kanji": "立春",
-          "reading": "りっしゅん",
+          "reading": {"ja": "りっしゅん"},
           "gloss": {"ja": "春の始まり", "en": "Beginning of spring"},
           "description": {"ja": "太陽が黄経315度に達する日。春の気配が感じられる。", "en": "The day the sun reaches 315° ecliptic longitude. Signs of spring begin to appear."}
         }
@@ -122,7 +122,7 @@ final class LocalizableContentTests: XCTestCase {
         let json = """
         {
           "kanji": "東風解凍",
-          "reading": "はるかぜこおりをとく",
+          "reading": {"ja": "はるかぜこおりをとく"},
           "gloss": "east wind thaws the ice",
           "sekkiId": "risshun",
           "dateRange": {"start": "02-04", "end": "02-08"},
@@ -143,7 +143,7 @@ final class LocalizableContentTests: XCTestCase {
         let json = """
         {
           "kanji": "東風解凍",
-          "reading": "はるかぜこおりをとく",
+          "reading": {"ja": "はるかぜこおりをとく"},
           "gloss": "east wind thaws the ice",
           "sekkiId": "risshun",
           "dateRange": {"start": "02-04", "end": "02-08"},
@@ -166,8 +166,8 @@ final class LocalizableContentTests: XCTestCase {
         let json = """
         {
           "kanji": "菖蒲",
-          "reading": "しょうぶ",
-          "description": "Sweet flag — the blade-like iris leaves used in summer purification rites.",
+          "reading": {"ja": "しょうぶ"},
+          "description": {"ja": "Sweet flag — the blade-like iris leaves used in summer purification rites."},
           "imageId": "ayame-06-12",
           "attribution": {
             "title": {"ja": "菖蒲の写真"},
@@ -198,8 +198,8 @@ final class LocalizableContentTests: XCTestCase {
         let json = """
         {
           "kanji": "菖蒲",
-          "reading": "しょうぶ",
-          "description": "Sweet flag — the blade-like iris leaves used in summer purification rites.",
+          "reading": {"ja": "しょうぶ"},
+          "description": {"ja": "Sweet flag — the blade-like iris leaves used in summer purification rites."},
           "imageId": "ayame-06-12",
           "attribution": {
             "title": {"ja": "菖蒲の写真", "en": "Sweet Flag Photo"},

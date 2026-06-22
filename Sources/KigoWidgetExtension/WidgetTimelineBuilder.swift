@@ -67,7 +67,7 @@ public struct WidgetTimelineBuilder: Sendable {
         return KigoWidgetEntry(
             date: today,
             kanji: resolved.kigoEntry.kanji,
-            reading: resolved.kigoEntry.reading,
+            reading: resolved.kigoEntry.reading.ja,
             imageId: resolved.kigoEntry.imageId,
             showsImage: entitled
         )
@@ -101,7 +101,7 @@ public struct WidgetTimelineBuilder: Sendable {
             firstEntry = KigoWidgetEntry(
                 date: today,
                 kanji: resolved.kigoEntry.kanji,
-                reading: resolved.kigoEntry.reading,
+                reading: resolved.kigoEntry.reading.ja,
                 imageId: resolved.kigoEntry.imageId,
                 showsImage: entitled
             )
@@ -120,7 +120,7 @@ public struct WidgetTimelineBuilder: Sendable {
             secondEntry = KigoWidgetEntry(
                 date: nextMidnight,
                 kanji: resolved.kigoEntry.kanji,
-                reading: resolved.kigoEntry.reading,
+                reading: resolved.kigoEntry.reading.ja,
                 imageId: resolved.kigoEntry.imageId,
                 showsImage: entitled
             )

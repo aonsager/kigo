@@ -12,7 +12,7 @@ import Foundation
 ///
 /// `ResolvedDay` is a value type (struct), Foundation-only, `Sendable`, and `Equatable`.
 public struct ResolvedDay: Sendable, Equatable {
-    /// The Kigo entry for the resolved date, looked up by `MM-DD` day-key.
+    /// The Kigo entry for the resolved date, looked up by absolute `YYYY-MM-DD` day-key.
     public let kigoEntry: DailyMapEntry
 
     /// The microseason (Kō) whose `dateRange` contains the resolved `MM-DD` day-key.
@@ -34,8 +34,9 @@ public struct ResolvedDay: Sendable, Equatable {
 /// trivially thread-safe and requires no initialisation. Callers pass both the
 /// date and the manifest explicitly, keeping the function pure and testable.
 ///
-/// Day-key derivation delegates entirely to `DayKey.make(from:)` — there is one
-/// shared implementation feeding both this resolver and `ContentStore.todayEntry()`.
+/// Day-key derivation uses both shared `DayKey` helpers: the absolute `YYYY-MM-DD`
+/// key (`DayKey.absolute`) for the Daily Map lookup and the perennial `MM-DD` key
+/// (`DayKey.make`) for the Kō `dateRange` containment check (ADR 0016).
 ///
 /// See ADR 0007 for design rationale.
 public enum TodayResolver {
@@ -50,12 +51,16 @@ public enum TodayResolver {
     /// - Parameters:
     ///   - date: The date to resolve (typically from a `DateProvider`).
     ///   - manifest: The loaded `Manifest` to look up.
-    /// - Returns: A `ResolvedDay` carrying both the `DailyMapEntry` and the `Ko`
-    ///   for the date's `MM-DD` key, or `nil` if either lookup fails.
+    /// - Returns: A `ResolvedDay` carrying the `DailyMapEntry` for the date's absolute
+    ///   `YYYY-MM-DD` key and the `Ko` for its perennial `MM-DD` key, or `nil` if either
+    ///   lookup fails.
     public static func resolve(date: Date, manifest: Manifest) -> ResolvedDay? {
-        guard let key = DayKey.make(from: date),
-              let entry = manifest.dailyMap[key],
-              let ko = manifest.ko.first(where: { $0.dateRange.start <= key && key <= $0.dateRange.end }) else {
+        // Daily Map is keyed by absolute 2026 dates (ADR 0016); Kō ranges stay
+        // perennial MM-DD, so each lookup uses its own key derivation.
+        guard let absoluteKey = DayKey.absolute(from: date),
+              let perennialKey = DayKey.make(from: date),
+              let entry = manifest.dailyMap[absoluteKey],
+              let ko = manifest.ko.first(where: { $0.dateRange.start <= perennialKey && perennialKey <= $0.dateRange.end }) else {
             return nil
         }
         guard let sekki = manifest.sekki.first(where: { $0.id == ko.sekkiId }) else {

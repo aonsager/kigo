@@ -23,10 +23,10 @@ final class ContentRootStateTests: XCTestCase {
     /// for the `.today` path to succeed.
     private func makeManifest() -> Manifest {
         let dailyMap: [String: DailyMapEntry] = [
-            "01-01": DailyMapEntry(
+            "2026-01-01": DailyMapEntry(
                 kanji: "款冬華",
-                reading: "ふきのはなさく",
-                description: "Butterbur blooms.",
+                reading: LocalizedText(ja: "ふきのはなさく"),
+                description: LocalizedText(ja: "Butterbur blooms."),
                 imageId: "img-0101",
                 attribution: Attribution(
                     title: LocalizedText(ja: "季語の風景"),
@@ -38,7 +38,7 @@ final class ContentRootStateTests: XCTestCase {
         let ko = [
             Ko(
                 kanji: "款冬華",
-                reading: "ふきのはなさく",
+                reading: LocalizedText(ja: "ふきのはなさく"),
                 gloss: "Butterbur blooms",
                 sekkiId: "sekki-01",
                 dateRange: DateRange(start: "01-01", end: "01-05"),
@@ -47,7 +47,7 @@ final class ContentRootStateTests: XCTestCase {
             // Risshun Ko required by AlmanacResolver to anchor the rotated ordering.
             Ko(
                 kanji: "東風解凍",
-                reading: "はるかぜこおりをとく",
+                reading: LocalizedText(ja: "はるかぜこおりをとく"),
                 gloss: "East wind thaws ice",
                 sekkiId: "sekki-02",
                 dateRange: DateRange(start: "02-04", end: "02-08"),
@@ -55,14 +55,14 @@ final class ContentRootStateTests: XCTestCase {
             )
         ]
         let sekki = [
-            Sekki(id: "sekki-01", kanji: "小寒", reading: "しょうかん",
+            Sekki(id: "sekki-01", kanji: "小寒", reading: LocalizedText(ja: "しょうかん"),
                   gloss: LocalizedText(ja: "寒さの始まり"),
                   description: LocalizedText(ja: "寒さが厳しくなる時期。")),
-            Sekki(id: "sekki-02", kanji: "立春", reading: "りっしゅん",
+            Sekki(id: "sekki-02", kanji: "立春", reading: LocalizedText(ja: "りっしゅん"),
                   gloss: LocalizedText(ja: "春の始まり"),
                   description: LocalizedText(ja: "春が始まる。"))
         ]
-        return Manifest(schemaVersion: "1.0", dailyMap: dailyMap, ko: ko, sekki: sekki)
+        return Manifest(schemaVersion: "1.0", version: 1, dailyMap: dailyMap, ko: ko, sekki: sekki)
     }
 
     // MARK: - AC1 & AC4: loading state → defined non-error placeholder
@@ -195,7 +195,7 @@ final class ContentRootStateTests: XCTestCase {
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = TimeZone(identifier: "UTC")!
         var comps = DateComponents()
-        comps.year = 2024
+        comps.year = 2026
         comps.month = month
         comps.day = day
         comps.hour = 12

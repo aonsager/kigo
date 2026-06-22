@@ -89,10 +89,10 @@ final class AlmanacWiringTests: XCTestCase {
         // Minimal manifest: one daily-map entry and one Ko covering only 01-01–01-05.
         // Date 2026-06-16 has a daily-map entry but no containing Ko — resolver returns nil.
         let dailyMap: [String: DailyMapEntry] = [
-            "06-16": DailyMapEntry(
+            "2026-06-16": DailyMapEntry(
                 kanji: "梅子黄",
-                reading: "うめのみきばむ",
-                description: "Plums turn yellow.",
+                reading: LocalizedText(ja: "うめのみきばむ"),
+                description: LocalizedText(ja: "Plums turn yellow."),
                 imageId: "img-0616",
                 attribution: Attribution(
                     title: LocalizedText(ja: "季語の風景"),
@@ -103,7 +103,7 @@ final class AlmanacWiringTests: XCTestCase {
         ]
         let ko = [Ko(
             kanji: "款冬華",
-            reading: "ふきのはなさく",
+            reading: LocalizedText(ja: "ふきのはなさく"),
             gloss: "Butterbur blooms",
             sekkiId: "sekki-01",
             dateRange: DateRange(start: "01-01", end: "01-05"),  // does NOT cover 06-16
@@ -112,11 +112,11 @@ final class AlmanacWiringTests: XCTestCase {
         let sekki = [Sekki(
             id: "sekki-01",
             kanji: "小寒",
-            reading: "しょうかん",
+            reading: LocalizedText(ja: "しょうかん"),
             gloss: LocalizedText(ja: "寒さの始まり"),
             description: LocalizedText(ja: "寒さが厳しくなる時期。")
         )]
-        let manifest = Manifest(schemaVersion: "1.0", dailyMap: dailyMap, ko: ko, sekki: sekki)
+        let manifest = Manifest(schemaVersion: "1.0", version: 1, dailyMap: dailyMap, ko: ko, sekki: sekki)
         let source = FakeContentSource(manifest: manifest)
         let june16 = FixedDateProvider(date: makeUTCDate(month: 6, day: 16))
         let store = ContentStore(source: source, dateProvider: june16)

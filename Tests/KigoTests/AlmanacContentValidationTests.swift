@@ -67,14 +67,14 @@ final class AlmanacContentValidationTests: XCTestCase {
                           "schemaVersion must be bumped beyond '1.0' after this slice")
     }
 
-    // MARK: - AC1 (slice #100): All 366 Daily Map entries have non-empty attribution
+    // MARK: - AC1 (slice #100): All 365 Daily Map entries have non-empty attribution
 
-    /// BundledContentSource loads all 366 Daily Map entries, each with a non-empty
+    /// BundledContentSource loads all 365 Daily Map entries, each with a non-empty
     /// attribution.title, attribution.credit, and attribution.license (Japanese).
     func testAllDailyMapEntriesHaveNonEmptyAttribution() async throws {
         let manifest = try await loadManifest()
-        XCTAssertEqual(manifest.dailyMap.count, 366,
-                       "Manifest must have exactly 366 Daily Map entries")
+        XCTAssertEqual(manifest.dailyMap.count, 365,
+                       "Manifest must have exactly 365 Daily Map entries (every day of 2026)")
         for (key, entry) in manifest.dailyMap {
             XCTAssertFalse(entry.attribution.title.ja.isEmpty,
                            "Entry \(key) has empty attribution.title.ja")
@@ -99,8 +99,8 @@ final class AlmanacContentValidationTests: XCTestCase {
         // Stage 1 (non-MainActor): Load real manifest and pick today's entry
         let manifest = try await loadManifest()
 
-        // Today is 2026-06-16 per currentDate context. Use that key; fall back to first entry.
-        let todayKey = "06-16"
+        // Today is 2026-06-16 per currentDate context. Use that absolute key; fall back to first entry.
+        let todayKey = "2026-06-16"
         let entry = manifest.dailyMap[todayKey] ?? manifest.dailyMap.values.first
 
         guard let entry else {
@@ -286,7 +286,7 @@ private struct KoCardView: View {
             Text(ko.kanji)
                 .font(.largeTitle)
                 .fontWeight(.bold)
-            Text(ko.reading)
+            Text(ko.reading.ja)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             Text(ko.gloss)
@@ -314,7 +314,7 @@ private struct SekkiCardView: View {
             Text(sekki.kanji)
                 .font(.largeTitle)
                 .fontWeight(.bold)
-            Text(sekki.reading)
+            Text(sekki.reading.ja)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             Text(sekki.gloss.ja)
