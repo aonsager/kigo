@@ -9496,7 +9496,8 @@
     {
       "kanji": "東風解凍",
       "reading": {
-        "ja": "はるかぜこおりをとく"
+        "ja": "はるかぜこおりをとく",
+        "en": "harukazekōriotoku"
       },
       "gloss": "east wind thaws the ice",
       "sekkiId": "risshun",
@@ -9505,13 +9506,15 @@
         "end": "02-08"
       },
       "description": {
-        "ja": "春の東風が川や湖の氷を解かし始める。寒さの中にも春の気配を感じる時期。"
+        "ja": "春の東風が川や湖の氷を解かし始める。寒さの中にも春の気配を感じる時期。",
+        "en": "The spring east wind begins to thaw rivers and lakes."
       }
     },
     {
       "kanji": "黄鶯睍睆",
       "reading": {
-        "ja": "うぐいすなく"
+        "ja": "うぐいすなく",
+        "en": "uguisunaku"
       },
       "gloss": "bush warblers sing in the mountains",
       "sekkiId": "risshun",
@@ -9520,13 +9523,15 @@
         "end": "02-13"
       },
       "description": {
-        "ja": "山でウグイスが鳴き始める。春の訪れを告げる澄んだ声が野山に響く。"
+        "ja": "山でウグイスが鳴き始める。春の訪れを告げる澄んだ声が野山に響く。",
+        "en": "Bush warblers sing their first clear notes from the mountain slopes."
       }
     },
     {
       "kanji": "魚上氷",
       "reading": {
-        "ja": "うおこおりをいずる"
+        "ja": "うおこおりをいずる",
+        "en": "uokōrioizuru"
       },
       "gloss": "fish emerge from under the ice",
       "sekkiId": "risshun",
@@ -9535,13 +9540,15 @@
         "end": "02-18"
       },
       "description": {
-        "ja": "氷の解けた川で魚が水面近くに浮かび上がる。春の訪れを水中でも感じる頃。"
+        "ja": "氷の解けた川で魚が水面近くに浮かび上がる。春の訪れを水中でも感じる頃。",
+        "en": "Fish rise toward the surface as ice melts in the rivers."
       }
     },
     {
       "kanji": "土脉潤起",
       "reading": {
-        "ja": "つちのしょううるおいおこる"
+        "ja": "つちのしょううるおいおこる",
+        "en": "tsuchinoshōuruoiokoru"
       },
       "gloss": "soil moisture stirs and rises",
       "sekkiId": "usui",
@@ -9550,13 +9557,15 @@
         "end": "02-23"
       },
       "description": {
-        "ja": "大地が潤い始め、土の中の水分が動き出す。春雨が大地を柔らかくほぐす時期。"
+        "ja": "大地が潤い始め、土の中の水分が動き出す。春雨が大地を柔らかくほぐす時期。",
+        "en": "Moisture stirs in the soil as warmth slowly returns to the earth."
       }
     },
     {
       "kanji": "霞始靆",
       "reading": {
-        "ja": "かすみはじめてたなびく"
+        "ja": "かすみはじめてたなびく",
+        "en": "kasumihajimetetanabiku"
       },
       "gloss": "mist begins to drift",
       "sekkiId": "usui",
@@ -9565,13 +9574,15 @@
         "end": "02-29"
       },
       "description": {
-        "ja": "春の霞が山や野に漂い始める。空気が湿り気を帯び、春らしい景色が広がる。"
+        "ja": "春の霞が山や野に漂い始める。空気が湿り気を帯び、春らしい景色が広がる。",
+        "en": "Haze drifts gently across the fields at the edge of spring."
       }
     },
     {
       "kanji": "草木萌動",
       "reading": {
-        "ja": "そうもくめばえいずる"
+        "ja": "そうもくめばえいずる",
+        "en": "sōmokumebaeizuru"
       },
       "gloss": "plants and trees begin to bud",
       "sekkiId": "usui",
@@ -9580,13 +9591,15 @@
         "end": "03-05"
       },
       "description": {
-        "ja": "草や木の芽が動き始め、大地に緑の気配が漂う。春の生命力が地上に現れる。"
+        "ja": "草や木の芽が動き始め、大地に緑の気配が漂う。春の生命力が地上に現れる。",
+        "en": "Buds swell on trees and fresh green shoots push through the soil."
       }
     },
     {
       "kanji": "蟄虫啓戸",
       "reading": {
-        "ja": "すごもりのむしとをひらく"
+        "ja": "すごもりのむしとをひらく",
+        "en": "sugomorinomushitōhiraku"
       },
       "gloss": "hibernating insects open their doors",
       "sekkiId": "keichitsu",
@@ -9595,13 +9608,15 @@
         "end": "03-10"
       },
       "description": {
-        "ja": "冬ごもりしていた虫たちが土の戸を開けて這い出す。春の温もりが地中まで届く頃。"
+        "ja": "冬ごもりしていた虫たちが土の戸を開けて這い出す。春の温もりが地中まで届く頃。",
+        "en": "Insects hibernating underground rouse themselves and open their burrows."
       }
     },
     {
       "kanji": "桃始笑",
       "reading": {
-        "ja": "ももはじめてさく"
+        "ja": "ももはじめてさく",
+        "en": "momohajimetesaku"
       },
       "gloss": "peach blossoms first bloom",
       "sekkiId": "keichitsu",
@@ -9610,13 +9625,15 @@
         "end": "03-15"
       },
       "description": {
-        "ja": "桃の花が咲き始める。淡い桃色の花が春の野に明るさをもたらす時期。"
+        "ja": "桃の花が咲き始める。淡い桃色の花が春の野に明るさをもたらす時期。",
+        "en": "Peach trees break into their first delicate blossoms of the season."
       }
     },
     {
       "kanji": "菜虫化蝶",
       "reading": {
-        "ja": "なむしちょうとなる"
+        "ja": "なむしちょうとなる",
+        "en": "namushichōtonaru"
       },
       "gloss": "caterpillars become butterflies",
       "sekkiId": "keichitsu",
@@ -9625,13 +9642,15 @@
         "end": "03-20"
       },
       "description": {
-        "ja": "青虫が蛹から羽化し、蝶となって飛び始める。春の変容を象徴する美しい時期。"
+        "ja": "青虫が蛹から羽化し、蝶となって飛び始める。春の変容を象徴する美しい時期。",
+        "en": "Caterpillars that fed on winter greens emerge as early butterflies."
       }
     },
     {
       "kanji": "雀始巣",
       "reading": {
-        "ja": "すずめはじめてすくう"
+        "ja": "すずめはじめてすくう",
+        "en": "suzumehajimetesukū"
       },
       "gloss": "sparrows begin to nest",
       "sekkiId": "shunbun",
@@ -9640,13 +9659,15 @@
         "end": "03-25"
       },
       "description": {
-        "ja": "雀が巣を作り始める。春分を過ぎ、鳥たちが繁殖の準備を始める頃。"
+        "ja": "雀が巣を作り始める。春分を過ぎ、鳥たちが繁殖の準備を始める頃。",
+        "en": "Sparrows begin gathering straws and twigs to build their nests."
       }
     },
     {
       "kanji": "桜始開",
       "reading": {
-        "ja": "さくらはじめてひらく"
+        "ja": "さくらはじめてひらく",
+        "en": "sakurahajimetehiraku"
       },
       "gloss": "cherry blossoms first open",
       "sekkiId": "shunbun",
@@ -9655,13 +9676,15 @@
         "end": "03-30"
       },
       "description": {
-        "ja": "桜の花が開き始める。日本の春の象徴である桜の季節がいよいよ到来する。"
+        "ja": "桜の花が開き始める。日本の春の象徴である桜の季節がいよいよ到来する。",
+        "en": "The first cherry blossoms open, marking the beloved arrival of spring."
       }
     },
     {
       "kanji": "雷乃発声",
       "reading": {
-        "ja": "かみなりすなわちこえをはっす"
+        "ja": "かみなりすなわちこえをはっす",
+        "en": "kaminarisunawachikoeohassu"
       },
       "gloss": "thunder first rumbles",
       "sekkiId": "shunbun",
@@ -9670,13 +9693,15 @@
         "end": "04-04"
       },
       "description": {
-        "ja": "春の雷が初めて鳴り響く。春の大気が活発になり、恵みの雨をもたらす合図。"
+        "ja": "春の雷が初めて鳴り響く。春の大気が活発になり、恵みの雨をもたらす合図。",
+        "en": "Thunder rolls for the first time after the long winter silence."
       }
     },
     {
       "kanji": "玄鳥至",
       "reading": {
-        "ja": "つばめきたる"
+        "ja": "つばめきたる",
+        "en": "tsubamekitaru"
       },
       "gloss": "swallows arrive",
       "sekkiId": "seimei",
@@ -9685,13 +9710,15 @@
         "end": "04-09"
       },
       "description": {
-        "ja": "ツバメが南から渡ってくる。軒先に巣を作り、夏の終わりまで人の暮らしに寄り添う。"
+        "ja": "ツバメが南から渡ってくる。軒先に巣を作り、夏の終わりまで人の暮らしに寄り添う。",
+        "en": "Swallows return from the south, swooping low over the eaves."
       }
     },
     {
       "kanji": "鴻雁北",
       "reading": {
-        "ja": "こうがんきたへかえる"
+        "ja": "こうがんきたへかえる",
+        "en": "kōgankitahekaeru"
       },
       "gloss": "wild geese fly north",
       "sekkiId": "seimei",
@@ -9700,13 +9727,15 @@
         "end": "04-14"
       },
       "description": {
-        "ja": "雁が北の繁殖地へ帰っていく。冬の間日本に滞在していた渡り鳥との別れの時期。"
+        "ja": "雁が北の繁殖地へ帰っていく。冬の間日本に滞在していた渡り鳥との別れの時期。",
+        "en": "Wild geese lift off and fly northward to their summer breeding grounds."
       }
     },
     {
       "kanji": "虹始見",
       "reading": {
-        "ja": "にじはじめてあらわる"
+        "ja": "にじはじめてあらわる",
+        "en": "nijihajimetearawaru"
       },
       "gloss": "rainbows first appear",
       "sekkiId": "seimei",
@@ -9715,13 +9744,15 @@
         "end": "04-19"
       },
       "description": {
-        "ja": "春の雨上がりに虹が姿を現し始める。清明の空気に七色の橋がかかる美しい季節。"
+        "ja": "春の雨上がりに虹が姿を現し始める。清明の空気に七色の橋がかかる美しい季節。",
+        "en": "The first rainbow of the year arches over the spring rain showers."
       }
     },
     {
       "kanji": "葭始生",
       "reading": {
-        "ja": "あしはじめてしょうず"
+        "ja": "あしはじめてしょうず",
+        "en": "ashihajimeteshōzu"
       },
       "gloss": "reeds begin to sprout",
       "sekkiId": "kokuu",
@@ -9730,13 +9761,15 @@
         "end": "04-24"
       },
       "description": {
-        "ja": "水辺の葦が芽吹き始める。湿地や川沿いに緑の新芽が顔を出す春の情景。"
+        "ja": "水辺の葦が芽吹き始める。湿地や川沿いに緑の新芽が顔を出す春の情景。",
+        "en": "Reeds push fresh green shoots up through the mud at the water's edge."
       }
     },
     {
       "kanji": "霜止出苗",
       "reading": {
-        "ja": "しもやんでなえいずる"
+        "ja": "しもやんでなえいずる",
+        "en": "shimoyandenaeizuru"
       },
       "gloss": "frost stops and seedlings emerge",
       "sekkiId": "kokuu",
@@ -9745,13 +9778,15 @@
         "end": "04-29"
       },
       "description": {
-        "ja": "霜が降りなくなり、田植えの苗が育ち始める。農作業が本格的に始まる時期。"
+        "ja": "霜が降りなくなり、田植えの苗が育ち始める。農作業が本格的に始まる時期。",
+        "en": "Morning frosts cease and seedlings are set out in flooded paddies."
       }
     },
     {
       "kanji": "牡丹華",
       "reading": {
-        "ja": "ぼたんはなさく"
+        "ja": "ぼたんはなさく",
+        "en": "botanhanasaku"
       },
       "gloss": "tree peonies bloom",
       "sekkiId": "kokuu",
@@ -9760,13 +9795,15 @@
         "end": "05-04"
       },
       "description": {
-        "ja": "牡丹の花が咲き誇る。百花の王とも呼ばれる豪華な花が春の庭を彩る。"
+        "ja": "牡丹の花が咲き誇る。百花の王とも呼ばれる豪華な花が春の庭を彩る。",
+        "en": "Tree peonies open their lush, heavy blossoms in the late-spring garden."
       }
     },
     {
       "kanji": "蛙始鳴",
       "reading": {
-        "ja": "かわずはじめてなく"
+        "ja": "かわずはじめてなく",
+        "en": "kawazuhajimetenaku"
       },
       "gloss": "frogs begin to call",
       "sekkiId": "rikka",
@@ -9775,13 +9812,15 @@
         "end": "05-09"
       },
       "description": {
-        "ja": "カエルが田や水辺で鳴き始める。その声が夏の始まりを知らせる水辺の便り。"
+        "ja": "カエルが田や水辺で鳴き始める。その声が夏の始まりを知らせる水辺の便り。",
+        "en": "Frogs begin calling at dusk from the newly flooded rice paddies."
       }
     },
     {
       "kanji": "蚯蚓出",
       "reading": {
-        "ja": "みみずいずる"
+        "ja": "みみずいずる",
+        "en": "mimizuizuru"
       },
       "gloss": "earthworms emerge",
       "sekkiId": "rikka",
@@ -9790,13 +9829,15 @@
         "end": "05-14"
       },
       "description": {
-        "ja": "ミミズが地表に這い出てくる。大地が温まり、土の中の生き物も活動を始める頃。"
+        "ja": "ミミズが地表に這い出てくる。大地が温まり、土の中の生き物も活動を始める頃。",
+        "en": "Earthworms surface through rain-softened soil, enriching the earth."
       }
     },
     {
       "kanji": "竹笋生",
       "reading": {
-        "ja": "たけのこしょうず"
+        "ja": "たけのこしょうず",
+        "en": "takenokoshōzu"
       },
       "gloss": "bamboo shoots sprout",
       "sekkiId": "rikka",
@@ -9805,13 +9846,15 @@
         "end": "05-20"
       },
       "description": {
-        "ja": "竹の子が地面を割って勢いよく伸び出す。成長の速さが初夏の生命力を象徴する。"
+        "ja": "竹の子が地面を割って勢いよく伸び出す。成長の速さが初夏の生命力を象徴する。",
+        "en": "Bamboo shoots surge up overnight, sometimes several centimeters in a day."
       }
     },
     {
       "kanji": "蚕起食桑",
       "reading": {
-        "ja": "かいこおきてくわをはむ"
+        "ja": "かいこおきてくわをはむ",
+        "en": "kaikōkitekuwaohamu"
       },
       "gloss": "silkworms wake and eat mulberry",
       "sekkiId": "shouman",
@@ -9820,13 +9863,15 @@
         "end": "05-25"
       },
       "description": {
-        "ja": "蚕が起き出して桑の葉を盛んに食べ始める。絹の生産が本格化する初夏の農村の光景。"
+        "ja": "蚕が起き出して桑の葉を盛んに食べ始める。絹の生産が本格化する初夏の農村の光景。",
+        "en": "Silkworms hatch from their winter eggs and begin feeding on mulberry leaves."
       }
     },
     {
       "kanji": "紅花栄",
       "reading": {
-        "ja": "べにばなさかう"
+        "ja": "べにばなさかう",
+        "en": "benibanasakau"
       },
       "gloss": "safflowers bloom",
       "sekkiId": "shouman",
@@ -9835,13 +9880,15 @@
         "end": "05-30"
       },
       "description": {
-        "ja": "紅花が咲き誇る。染料や化粧品に使われる鮮やかな橙紅色の花が畑を彩る。"
+        "ja": "紅花が咲き誇る。染料や化粧品に使われる鮮やかな橙紅色の花が畑を彩る。",
+        "en": "Safflowers burst into brilliant orange-red bloom under the early summer sun."
       }
     },
     {
       "kanji": "麦秋至",
       "reading": {
-        "ja": "むぎのときいたる"
+        "ja": "むぎのときいたる",
+        "en": "muginotokiitaru"
       },
       "gloss": "wheat ripens",
       "sekkiId": "shouman",
@@ -9850,13 +9897,15 @@
         "end": "06-05"
       },
       "description": {
-        "ja": "麦が黄金色に実り、刈り入れの時を迎える。初夏の穀物の収穫期が訪れる。"
+        "ja": "麦が黄金色に実り、刈り入れの時を迎える。初夏の穀物の収穫期が訪れる。",
+        "en": "The wheat fields ripen to gold, ready for the early harvest."
       }
     },
     {
       "kanji": "螳螂生",
       "reading": {
-        "ja": "かまきりしょうず"
+        "ja": "かまきりしょうず",
+        "en": "kamakirishōzu"
       },
       "gloss": "praying mantises hatch",
       "sekkiId": "boshu",
@@ -9865,13 +9914,15 @@
         "end": "06-10"
       },
       "description": {
-        "ja": "カマキリが卵から孵化する。草むらで小さな命が一斉に動き始める初夏の情景。"
+        "ja": "カマキリが卵から孵化する。草むらで小さな命が一斉に動き始める初夏の情景。",
+        "en": "Praying mantis eggs hatch and the tiny nymphs scatter into the grasses."
       }
     },
     {
       "kanji": "腐草為螢",
       "reading": {
-        "ja": "くされたるくさほたるとなる"
+        "ja": "くされたるくさほたるとなる",
+        "en": "kusaretarukusahotarutonaru"
       },
       "gloss": "rotten grass becomes fireflies",
       "sekkiId": "boshu",
@@ -9880,13 +9931,15 @@
         "end": "06-15"
       },
       "description": {
-        "ja": "腐った草からホタルが生まれると古人は信じた。田や川沿いに蛍の光が揺れ始める頃。"
+        "ja": "腐った草からホタルが生まれると古人は信じた。田や川沿いに蛍の光が揺れ始める頃。",
+        "en": "Fireflies emerge at twilight, their cold light flickering above the meadows."
       }
     },
     {
       "kanji": "梅子黄",
       "reading": {
-        "ja": "うめのみきばむ"
+        "ja": "うめのみきばむ",
+        "en": "umenomikibamu"
       },
       "gloss": "plums turn yellow",
       "sekkiId": "boshu",
@@ -9895,13 +9948,15 @@
         "end": "06-20"
       },
       "description": {
-        "ja": "梅の実が黄色く熟し始める。梅雨の雨を吸って膨らんだ実が梅酒や梅干しの材料となる。"
+        "ja": "梅の実が黄色く熟し始める。梅雨の雨を吸って膨らんだ実が梅酒や梅干しの材料となる。",
+        "en": "Plums swell and ripen to yellow-green, ready for pickling into umeboshi."
       }
     },
     {
       "kanji": "乃東枯",
       "reading": {
-        "ja": "なつかれくさかるる"
+        "ja": "なつかれくさかるる",
+        "en": "natsukarekusakaruru"
       },
       "gloss": "self-heal withers",
       "sekkiId": "geshi",
@@ -9910,13 +9965,15 @@
         "end": "06-26"
       },
       "description": {
-        "ja": "夏枯草（カコソウ）が枯れる。夏至の頃に枯れ始めるこの草が、季節の転換点を示す。"
+        "ja": "夏枯草（カコソウ）が枯れる。夏至の頃に枯れ始めるこの草が、季節の転換点を示す。",
+        "en": "Self-heal, which bloomed in the cold, withers back as summer deepens."
       }
     },
     {
       "kanji": "菖蒲華",
       "reading": {
-        "ja": "あやめはなさく"
+        "ja": "あやめはなさく",
+        "en": "ayamehanasaku"
       },
       "gloss": "irises bloom",
       "sekkiId": "geshi",
@@ -9925,13 +9982,15 @@
         "end": "07-01"
       },
       "description": {
-        "ja": "アヤメの花が咲く。紫や白の優雅な花が水辺を彩り、初夏の風情を添える。"
+        "ja": "アヤメの花が咲く。紫や白の優雅な花が水辺を彩り、初夏の風情を添える。",
+        "en": "Iris flowers open beside still water, their purple petals vivid in the rain."
       }
     },
     {
       "kanji": "半夏生",
       "reading": {
-        "ja": "はんげしょうず"
+        "ja": "はんげしょうず",
+        "en": "hangeshōzu"
       },
       "gloss": "crow-dipper sprouts",
       "sekkiId": "geshi",
@@ -9940,13 +9999,15 @@
         "end": "07-06"
       },
       "description": {
-        "ja": "半夏（カラスビシャク）が芽を出す。この時期に農作業の一区切りをつける農家の節目。"
+        "ja": "半夏（カラスビシャク）が芽を出す。この時期に農作業の一区切りをつける農家の節目。",
+        "en": "Crow-dipper sprouts as the rainy season peaks; farmers pause fieldwork."
       }
     },
     {
       "kanji": "温風至",
       "reading": {
-        "ja": "あつかぜいたる"
+        "ja": "あつかぜいたる",
+        "en": "atsukazeitaru"
       },
       "gloss": "warm winds arrive",
       "sekkiId": "shousho",
@@ -9955,13 +10016,15 @@
         "end": "07-11"
       },
       "description": {
-        "ja": "温かな南風が吹き始める。梅雨が明け、夏本番の蒸し暑い風が列島を包む頃。"
+        "ja": "温かな南風が吹き始める。梅雨が明け、夏本番の蒸し暑い風が列島を包む頃。",
+        "en": "Warm, humid summer winds begin to blow steadily from the south."
       }
     },
     {
       "kanji": "蓮始開",
       "reading": {
-        "ja": "はすはじめてひらく"
+        "ja": "はすはじめてひらく",
+        "en": "hasuhajimetehiraku"
       },
       "gloss": "lotus flowers begin to open",
       "sekkiId": "shousho",
@@ -9970,13 +10033,15 @@
         "end": "07-16"
       },
       "description": {
-        "ja": "蓮の花が開き始める。早朝に池面に開く清らかな花は、夏の朝の風物詩。"
+        "ja": "蓮の花が開き始める。早朝に池面に開く清らかな花は、夏の朝の風物詩。",
+        "en": "Lotus blossoms unfurl at dawn on calm ponds, closing again by noon."
       }
     },
     {
       "kanji": "鷹乃学習",
       "reading": {
-        "ja": "たかすなわちわざをならう"
+        "ja": "たかすなわちわざをならう",
+        "en": "takasunawachiwazaonarau"
       },
       "gloss": "hawks learn to fly",
       "sekkiId": "shousho",
@@ -9985,13 +10050,15 @@
         "end": "07-22"
       },
       "description": {
-        "ja": "ひなの鷹が飛ぶ技を学ぶ。巣立ちの頃、若い鷹が大空へ羽ばたく練習を始める。"
+        "ja": "ひなの鷹が飛ぶ技を学ぶ。巣立ちの頃、若い鷹が大空へ羽ばたく練習を始める。",
+        "en": "Young hawks practice circling and stooping, learning the art of the hunt."
       }
     },
     {
       "kanji": "桐始結花",
       "reading": {
-        "ja": "きりはじめてはなをむすぶ"
+        "ja": "きりはじめてはなをむすぶ",
+        "en": "kirihajimetehanaomusubu"
       },
       "gloss": "paulownia trees begin to fruit",
       "sekkiId": "taisho",
@@ -10000,13 +10067,15 @@
         "end": "07-27"
       },
       "description": {
-        "ja": "桐の木が実をつけ始める。夏の盛りに桐の花が実となり、秋への準備が始まる。"
+        "ja": "桐の木が実をつけ始める。夏の盛りに桐の花が実となり、秋への準備が始まる。",
+        "en": "Paulownia trees set their first seed pods after the blossoms have fallen."
       }
     },
     {
       "kanji": "土潤溽暑",
       "reading": {
-        "ja": "つちうるおうてむしあつし"
+        "ja": "つちうるおうてむしあつし",
+        "en": "tsuchiuruōtemushiatsushi"
       },
       "gloss": "earth is damp and sweltering",
       "sekkiId": "taisho",
@@ -10015,13 +10084,15 @@
         "end": "08-01"
       },
       "description": {
-        "ja": "大地が湿り気を帯び、蒸し暑さが極まる。夏の熱気と湿気が体に重くのしかかる頃。"
+        "ja": "大地が湿り気を帯び、蒸し暑さが極まる。夏の熱気と湿気が体に重くのしかかる頃。",
+        "en": "The ground is damp and the air heavy with the sultry heat of midsummer."
       }
     },
     {
       "kanji": "大雨時行",
       "reading": {
-        "ja": "たいうときどきふる"
+        "ja": "たいうときどきふる",
+        "en": "taiutokidokifuru"
       },
       "gloss": "heavy rains fall at times",
       "sekkiId": "taisho",
@@ -10030,13 +10101,15 @@
         "end": "08-06"
       },
       "description": {
-        "ja": "時おり激しい夕立が降る。夏の積乱雲が発達し、局地的な大雨をもたらす季節。"
+        "ja": "時おり激しい夕立が降る。夏の積乱雲が発達し、局地的な大雨をもたらす季節。",
+        "en": "Sudden heavy downpours sweep across the land at unpredictable intervals."
       }
     },
     {
       "kanji": "涼風至",
       "reading": {
-        "ja": "すずかぜいたる"
+        "ja": "すずかぜいたる",
+        "en": "suzukazeitaru"
       },
       "gloss": "cool winds arrive",
       "sekkiId": "risshu",
@@ -10045,13 +10118,15 @@
         "end": "08-11"
       },
       "description": {
-        "ja": "涼しい風が吹き始める。暦の上では秋が始まり、夕暮れの風にかすかな秋の気配が漂う。"
+        "ja": "涼しい風が吹き始める。暦の上では秋が始まり、夕暮れの風にかすかな秋の気配が漂う。",
+        "en": "A refreshing cool breeze arrives, hinting at the end of summer's heat."
       }
     },
     {
       "kanji": "寒蝉鳴",
       "reading": {
-        "ja": "ひぐらしなく"
+        "ja": "ひぐらしなく",
+        "en": "higurashinaku"
       },
       "gloss": "evening cicadas begin to sing",
       "sekkiId": "risshu",
@@ -10060,13 +10135,15 @@
         "end": "08-16"
       },
       "description": {
-        "ja": "ヒグラシが夕暮れに鳴き始める。カナカナという哀愁ある声が秋の気配を告げる。"
+        "ja": "ヒグラシが夕暮れに鳴き始める。カナカナという哀愁ある声が秋の気配を告げる。",
+        "en": "Higurashi cicadas begin their melancholy dusk chorus in the hill forests."
       }
     },
     {
       "kanji": "蒙霧升降",
       "reading": {
-        "ja": "ふかきりまとう"
+        "ja": "ふかきりまとう",
+        "en": "fukakirimatō"
       },
       "gloss": "thick mist rises and falls",
       "sekkiId": "risshu",
@@ -10075,13 +10152,15 @@
         "end": "08-22"
       },
       "description": {
-        "ja": "深い霧が立ちこめる。朝夕の気温差が大きくなり、霧が山や川を包む晩夏の情景。"
+        "ja": "深い霧が立ちこめる。朝夕の気温差が大きくなり、霧が山や川を包む晩夏の情景。",
+        "en": "Thick mist rolls in and out, blurring the boundary of mountain and sky."
       }
     },
     {
       "kanji": "綿柎開",
       "reading": {
-        "ja": "わたのはなしべひらく"
+        "ja": "わたのはなしべひらく",
+        "en": "watanohanashibehiraku"
       },
       "gloss": "cotton bolls open",
       "sekkiId": "shosho",
@@ -10090,13 +10169,15 @@
         "end": "08-27"
       },
       "description": {
-        "ja": "綿の実が弾けて白い綿毛を覗かせる。暑さが和らぎ、秋の収穫が近づく頃。"
+        "ja": "綿の実が弾けて白い綿毛を覗かせる。暑さが和らぎ、秋の収穫が近づく頃。",
+        "en": "Cotton bolls split open, revealing tufts of white fiber in the autumn fields."
       }
     },
     {
       "kanji": "天地始粛",
       "reading": {
-        "ja": "てんちはじめてさむし"
+        "ja": "てんちはじめてさむし",
+        "en": "tenchihajimetesamushi"
       },
       "gloss": "heaven and earth begin to cool",
       "sekkiId": "shosho",
@@ -10105,13 +10186,15 @@
         "end": "09-01"
       },
       "description": {
-        "ja": "天地が冷えひきしまり始める。万物が静まり、秋の厳しさへと向かう転換の時期。"
+        "ja": "天地が冷えひきしまり始める。万物が静まり、秋の厳しさへと向かう転換の時期。",
+        "en": "The air turns crisp; heaven and earth take on the stillness of early autumn."
       }
     },
     {
       "kanji": "禾乃登",
       "reading": {
-        "ja": "こくものすなわちみのる"
+        "ja": "こくものすなわちみのる",
+        "en": "kokumonosunawachiminoru"
       },
       "gloss": "grain ripens on the stalk",
       "sekkiId": "shosho",
@@ -10120,13 +10203,15 @@
         "end": "09-07"
       },
       "description": {
-        "ja": "稲穂が実り始める。黄金色に染まる田んぼが、秋の収穫の喜びを予感させる。"
+        "ja": "稲穂が実り始める。黄金色に染まる田んぼが、秋の収穫の喜びを予感させる。",
+        "en": "Rice and grain stand tall and heavy-headed, ripening under the harvest moon."
       }
     },
     {
       "kanji": "草露白",
       "reading": {
-        "ja": "くさのつゆしろし"
+        "ja": "くさのつゆしろし",
+        "en": "kusanotsuyushiroshi"
       },
       "gloss": "white dew appears on grass",
       "sekkiId": "hakuro",
@@ -10135,13 +10220,15 @@
         "end": "09-12"
       },
       "description": {
-        "ja": "草の葉に白い露が宿る。朝の冷気が強まり、露が光を集めて輝く秋の情景。"
+        "ja": "草の葉に白い露が宿る。朝の冷気が強まり、露が光を集めて輝く秋の情景。",
+        "en": "White dew glistens on blades of grass each morning as nights grow cooler."
       }
     },
     {
       "kanji": "鶺鴒鳴",
       "reading": {
-        "ja": "せきれいなく"
+        "ja": "せきれいなく",
+        "en": "sekireinaku"
       },
       "gloss": "wagtails begin to sing",
       "sekkiId": "hakuro",
@@ -10150,13 +10237,15 @@
         "end": "09-17"
       },
       "description": {
-        "ja": "セキレイが鳴き始める。川岸で尾を上下に動かしながら鳴く姿が秋の水辺の風物詩。"
+        "ja": "セキレイが鳴き始める。川岸で尾を上下に動かしながら鳴く姿が秋の水辺の風物詩。",
+        "en": "Wagtails bob along streamsides, their piping calls clear in the autumn air."
       }
     },
     {
       "kanji": "玄鳥去",
       "reading": {
-        "ja": "つばめさる"
+        "ja": "つばめさる",
+        "en": "tsubamesaru"
       },
       "gloss": "swallows depart",
       "sekkiId": "hakuro",
@@ -10165,13 +10254,15 @@
         "end": "09-22"
       },
       "description": {
-        "ja": "ツバメが南へ旅立つ。春に渡ってきたツバメが越冬のため南の地へと去っていく別れの季節。"
+        "ja": "ツバメが南へ旅立つ。春に渡ってきたツバメが越冬のため南の地へと去っていく別れの季節。",
+        "en": "Swallows gather on wires and then depart southward before the cold arrives."
       }
     },
     {
       "kanji": "雷乃収声",
       "reading": {
-        "ja": "かみなりすなわちこえをおさむ"
+        "ja": "かみなりすなわちこえをおさむ",
+        "en": "kaminarisunawachikoeōsamu"
       },
       "gloss": "thunder ceases",
       "sekkiId": "shubun",
@@ -10180,13 +10271,15 @@
         "end": "09-27"
       },
       "description": {
-        "ja": "雷が鳴らなくなる。夏の間活発だった雷が静まり、秋の穏やかな空が広がり始める。"
+        "ja": "雷が鳴らなくなる。夏の間活発だった雷が静まり、秋の穏やかな空が広がり始める。",
+        "en": "The thunder that rang all summer finally falls silent with the autumn chill."
       }
     },
     {
       "kanji": "蟄虫坏戸",
       "reading": {
-        "ja": "むしかくれてとをふさぐ"
+        "ja": "むしかくれてとをふさぐ",
+        "en": "mushikakuretetōfusagu"
       },
       "gloss": "insects seal their doors",
       "sekkiId": "shubun",
@@ -10195,13 +10288,15 @@
         "end": "10-02"
       },
       "description": {
-        "ja": "虫たちが土の中に閉じこもり始める。冬支度の始まりを告げる秋の深まりの頃。"
+        "ja": "虫たちが土の中に閉じこもり始める。冬支度の始まりを告げる秋の深まりの頃。",
+        "en": "Insects begin to seal their burrows shut as they prepare for winter sleep."
       }
     },
     {
       "kanji": "水始涸",
       "reading": {
-        "ja": "みずはじめてかるる"
+        "ja": "みずはじめてかるる",
+        "en": "mizuhajimetekaruru"
       },
       "gloss": "waters begin to dry",
       "sekkiId": "shubun",
@@ -10210,13 +10305,15 @@
         "end": "10-07"
       },
       "description": {
-        "ja": "田の水が干され始める。稲刈りを終えた田んぼが乾き、農の一年が締めくくられる。"
+        "ja": "田の水が干され始める。稲刈りを終えた田んぼが乾き、農の一年が締めくくられる。",
+        "en": "Waters in the paddies and shallows begin to recede and dry as autumn deepens."
       }
     },
     {
       "kanji": "鴻雁来",
       "reading": {
-        "ja": "こうがんきたる"
+        "ja": "こうがんきたる",
+        "en": "kōgankitaru"
       },
       "gloss": "wild geese arrive",
       "sekkiId": "kanro",
@@ -10225,13 +10322,15 @@
         "end": "10-12"
       },
       "description": {
-        "ja": "雁が北から渡ってくる。冬を日本で過ごすために南下してくる渡り鳥の到着を告げる。"
+        "ja": "雁が北から渡ってくる。冬を日本で過ごすために南下してくる渡り鳥の到着を告げる。",
+        "en": "Wild geese arrive from the north, filling the wetlands with their clamor."
       }
     },
     {
       "kanji": "菊花開",
       "reading": {
-        "ja": "きくのはなひらく"
+        "ja": "きくのはなひらく",
+        "en": "kikunohanahiraku"
       },
       "gloss": "chrysanthemums bloom",
       "sekkiId": "kanro",
@@ -10240,13 +10339,15 @@
         "end": "10-17"
       },
       "description": {
-        "ja": "菊の花が咲き始める。秋の花の王者として庭や野山に彩りを添える季節。"
+        "ja": "菊の花が咲き始める。秋の花の王者として庭や野山に彩りを添える季節。",
+        "en": "Chrysanthemums bloom in shades of gold and white, the emblem of autumn."
       }
     },
     {
       "kanji": "蟋蟀在戸",
       "reading": {
-        "ja": "きりぎりすとにあり"
+        "ja": "きりぎりすとにあり",
+        "en": "kirigirisutoniari"
       },
       "gloss": "crickets chirp at the door",
       "sekkiId": "kanro",
@@ -10255,13 +10356,15 @@
         "end": "10-22"
       },
       "description": {
-        "ja": "コオロギが戸口で鳴く。秋の夜長に虫の音が響き、静けさの中に命の気配を感じる頃。"
+        "ja": "コオロギが戸口で鳴く。秋の夜長に虫の音が響き、静けさの中に命の気配を感じる頃。",
+        "en": "Crickets chirp at the doorstep through the long, cooling autumn nights."
       }
     },
     {
       "kanji": "霜始降",
       "reading": {
-        "ja": "しもはじめてふる"
+        "ja": "しもはじめてふる",
+        "en": "shimohajimetefuru"
       },
       "gloss": "frost begins to fall",
       "sekkiId": "soko",
@@ -10270,13 +10373,15 @@
         "end": "10-27"
       },
       "description": {
-        "ja": "初霜が降りる。夜の冷え込みが強まり、朝の地面が白く輝く晩秋の到来を告げる。"
+        "ja": "初霜が降りる。夜の冷え込みが強まり、朝の地面が白く輝く晩秋の到来を告げる。",
+        "en": "The first frost of the season settles overnight on rooftops and fields."
       }
     },
     {
       "kanji": "霎時施",
       "reading": {
-        "ja": "こさめときどきふる"
+        "ja": "こさめときどきふる",
+        "en": "kosametokidokifuru"
       },
       "gloss": "light rains fall intermittently",
       "sekkiId": "soko",
@@ -10285,13 +10390,15 @@
         "end": "11-01"
       },
       "description": {
-        "ja": "小雨が時おり降る。晩秋の冷たい雨が木の葉を落とし、冬への移ろいを促す。"
+        "ja": "小雨が時おり降る。晩秋の冷たい雨が木の葉を落とし、冬への移ろいを促す。",
+        "en": "Brief, fine autumn showers drift through intermittently, barely wetting the ground."
       }
     },
     {
       "kanji": "楓蔦黄",
       "reading": {
-        "ja": "もみじつたきばむ"
+        "ja": "もみじつたきばむ",
+        "en": "momijitsutakibamu"
       },
       "gloss": "maples and ivies turn yellow",
       "sekkiId": "soko",
@@ -10300,13 +10407,15 @@
         "end": "11-06"
       },
       "description": {
-        "ja": "紅葉やツタが黄色く染まる。山や庭が錦に彩られ、秋の深まりを色鮮やかに告げる。"
+        "ja": "紅葉やツタが黄色く染まる。山や庭が錦に彩られ、秋の深まりを色鮮やかに告げる。",
+        "en": "Maple leaves turn crimson and ivy vines flame yellow along stone walls."
       }
     },
     {
       "kanji": "山茶始開",
       "reading": {
-        "ja": "つばきはじめてひらく"
+        "ja": "つばきはじめてひらく",
+        "en": "tsubakihajimetehiraku"
       },
       "gloss": "camellias begin to bloom",
       "sekkiId": "rittou",
@@ -10315,13 +10424,15 @@
         "end": "11-11"
       },
       "description": {
-        "ja": "山茶花（サザンカ）が咲き始める。冬枯れの中で白や赤の花が清楚に咲く初冬の花。"
+        "ja": "山茶花（サザンカ）が咲き始める。冬枯れの中で白や赤の花が清楚に咲く初冬の花。",
+        "en": "Camellia buds open in the garden as other flowers retreat before the cold."
       }
     },
     {
       "kanji": "地始凍",
       "reading": {
-        "ja": "ちはじめてこおる"
+        "ja": "ちはじめてこおる",
+        "en": "chihajimetekōru"
       },
       "gloss": "ground begins to freeze",
       "sekkiId": "rittou",
@@ -10330,13 +10441,15 @@
         "end": "11-16"
       },
       "description": {
-        "ja": "大地が凍り始める。朝の冷え込みで地面が固く締まり、冬の到来を体で感じる頃。"
+        "ja": "大地が凍り始める。朝の冷え込みで地面が固く締まり、冬の到来を体で感じる頃。",
+        "en": "The ground freezes hard for the first time, crunching underfoot at dawn."
       }
     },
     {
       "kanji": "金盞香",
       "reading": {
-        "ja": "きんせんかさく"
+        "ja": "きんせんかさく",
+        "en": "kinsenkasaku"
       },
       "gloss": "narcissus blooms and scents the air",
       "sekkiId": "rittou",
@@ -10345,13 +10458,15 @@
         "end": "11-21"
       },
       "description": {
-        "ja": "水仙が咲き始め、甘い香りを漂わせる。冬の訪れとともに清らかな花が野や庭に咲く。"
+        "ja": "水仙が咲き始め、甘い香りを漂わせる。冬の訪れとともに清らかな花が野や庭に咲く。",
+        "en": "Narcissus blooms perfume the winter garden with their quiet, sweet fragrance."
       }
     },
     {
       "kanji": "虹蔵不見",
       "reading": {
-        "ja": "にじかくれてみえず"
+        "ja": "にじかくれてみえず",
+        "en": "nijikakuretemiezu"
       },
       "gloss": "rainbows hide and are unseen",
       "sekkiId": "shousetsu",
@@ -10360,13 +10475,15 @@
         "end": "11-26"
       },
       "description": {
-        "ja": "虹が見えなくなる。冬の曇り空が広がり、鮮やかな虹の季節が終わりを告げる。"
+        "ja": "虹が見えなくなる。冬の曇り空が広がり、鮮やかな虹の季節が終わりを告げる。",
+        "en": "Rainbows vanish from the sky as winter clouds thicken and sunlight dims."
       }
     },
     {
       "kanji": "朔風払葉",
       "reading": {
-        "ja": "きたかぜこのはをはらう"
+        "ja": "きたかぜこのはをはらう",
+        "en": "kitakazekonohaoharau"
       },
       "gloss": "north wind sweeps the leaves",
       "sekkiId": "shousetsu",
@@ -10375,13 +10492,15 @@
         "end": "12-01"
       },
       "description": {
-        "ja": "北風が木の葉を吹き払う。冷たい季節風が残り葉を落とし、木々が冬の骨格を見せる。"
+        "ja": "北風が木の葉を吹き払う。冷たい季節風が残り葉を落とし、木々が冬の骨格を見せる。",
+        "en": "The north wind tears the last clinging leaves from bare branches."
       }
     },
     {
       "kanji": "橘始黄",
       "reading": {
-        "ja": "たちばなはじめてきばむ"
+        "ja": "たちばなはじめてきばむ",
+        "en": "tachibanahajimetekibamu"
       },
       "gloss": "tachibana citrus begins to yellow",
       "sekkiId": "shousetsu",
@@ -10390,13 +10509,15 @@
         "end": "12-06"
       },
       "description": {
-        "ja": "橘の実が黄色く色づき始める。常緑の葉の中に黄金色の実が輝く冬の風物詩。"
+        "ja": "橘の実が黄色く色づき始める。常緑の葉の中に黄金色の実が輝く冬の風物詩。",
+        "en": "Native tachibana citrus begins to turn yellow on the branch in early winter."
       }
     },
     {
       "kanji": "閉塞成冬",
       "reading": {
-        "ja": "そらさむくふゆとなる"
+        "ja": "そらさむくふゆとなる",
+        "en": "sorasamukufuyutonaru"
       },
       "gloss": "skies close and winter settles",
       "sekkiId": "taisetsu",
@@ -10405,13 +10526,15 @@
         "end": "12-11"
       },
       "description": {
-        "ja": "空が閉じて冬が訪れる。厚い雲が空を覆い、天地の気が塞がれて本格的な冬となる。"
+        "ja": "空が閉じて冬が訪れる。厚い雲が空を覆い、天地の気が塞がれて本格的な冬となる。",
+        "en": "The sky closes in, the earth goes silent, and winter fully settles."
       }
     },
     {
       "kanji": "熊蟄穴",
       "reading": {
-        "ja": "くまあなにこもる"
+        "ja": "くまあなにこもる",
+        "en": "kumaananikomoru"
       },
       "gloss": "bears retreat into their dens",
       "sekkiId": "taisetsu",
@@ -10420,13 +10543,15 @@
         "end": "12-16"
       },
       "description": {
-        "ja": "熊が穴に入って冬ごもりをする。雪深い山中で大きな命が静かに眠りにつく頃。"
+        "ja": "熊が穴に入って冬ごもりをする。雪深い山中で大きな命が静かに眠りにつく頃。",
+        "en": "Bears grow drowsy, find their dens, and retreat into a deep winter sleep."
       }
     },
     {
       "kanji": "鱖魚群",
       "reading": {
-        "ja": "さけのうおむらがる"
+        "ja": "さけのうおむらがる",
+        "en": "sakenōomuragaru"
       },
       "gloss": "salmon gather and swim upstream",
       "sekkiId": "taisetsu",
@@ -10435,13 +10560,15 @@
         "end": "12-21"
       },
       "description": {
-        "ja": "鮭が群れをなして川を遡上する。生まれた川へ戻る鮭の力強い姿が冬の川を彩る。"
+        "ja": "鮭が群れをなして川を遡上する。生まれた川へ戻る鮭の力強い姿が冬の川を彩る。",
+        "en": "Salmon crowd together and push upstream to their spawning grounds."
       }
     },
     {
       "kanji": "乃東生",
       "reading": {
-        "ja": "なつかれくさしょうず"
+        "ja": "なつかれくさしょうず",
+        "en": "natsukarekusashōzu"
       },
       "gloss": "self-heal sprouts anew",
       "sekkiId": "touji",
@@ -10450,13 +10577,15 @@
         "end": "12-26"
       },
       "description": {
-        "ja": "夏枯草が芽吹く。冬至の頃に新たな芽を出すこの草は、陽の復活の象徴とされる。"
+        "ja": "夏枯草が芽吹く。冬至の頃に新たな芽を出すこの草は、陽の復活の象徴とされる。",
+        "en": "Self-heal sprouts anew in the cold earth, one of the few plants of midwinter."
       }
     },
     {
       "kanji": "麋角解",
       "reading": {
-        "ja": "おおしかのつのおつる"
+        "ja": "おおしかのつのおつる",
+        "en": "ōshikanotsunōtsuru"
       },
       "gloss": "elk shed their antlers",
       "sekkiId": "touji",
@@ -10465,13 +10594,15 @@
         "end": "12-31"
       },
       "description": {
-        "ja": "大鹿が角を落とす。一年の終わりに角を脱ぎ、新たな命の周期が始まる静かな時節。"
+        "ja": "大鹿が角を落とす。一年の終わりに角を脱ぎ、新たな命の周期が始まる静かな時節。",
+        "en": "Elk shed their heavy antlers; the bones of the old year fall away."
       }
     },
     {
       "kanji": "雪下出麦",
       "reading": {
-        "ja": "ゆきわたりてむぎいずる"
+        "ja": "ゆきわたりてむぎいずる",
+        "en": "yukiwataritemugiizuru"
       },
       "gloss": "wheat sprouts beneath the snow",
       "sekkiId": "touji",
@@ -10480,13 +10611,15 @@
         "end": "01-04"
       },
       "description": {
-        "ja": "雪の下から麦が芽を出す。寒さの中でも麦は静かに育ち、春の収穫を夢見て根を張る。"
+        "ja": "雪の下から麦が芽を出す。寒さの中でも麦は静かに育ち、春の収穫を夢見て根を張る。",
+        "en": "Wheat shoots push up green through the blanket of snow on the fields."
       }
     },
     {
       "kanji": "芹乃栄",
       "reading": {
-        "ja": "せりすなわちさかう"
+        "ja": "せりすなわちさかう",
+        "en": "serisunawachisakau"
       },
       "gloss": "Japanese parsley flourishes",
       "sekkiId": "shoukan",
@@ -10495,13 +10628,15 @@
         "end": "01-09"
       },
       "description": {
-        "ja": "芹が青々と茂り始める。冷たい水辺で新鮮な緑を宿す芹が七草のひとつとして摘まれる。"
+        "ja": "芹が青々と茂り始める。冷たい水辺で新鮮な緑を宿す芹が七草のひとつとして摘まれる。",
+        "en": "Japanese parsley flourishes in cold, clear streams, crisp and fragrant."
       }
     },
     {
       "kanji": "水泉動",
       "reading": {
-        "ja": "しみずあたたかをふくむ"
+        "ja": "しみずあたたかをふくむ",
+        "en": "shimizuatatakaofukumu"
       },
       "gloss": "springs begin to move under ice",
       "sekkiId": "shoukan",
@@ -10510,13 +10645,15 @@
         "end": "01-14"
       },
       "description": {
-        "ja": "凍った地下の泉が動き始める。最も寒い時期でも地中では水が温もりを蓄えて流れ出す。"
+        "ja": "凍った地下の泉が動き始める。最も寒い時期でも地中では水が温もりを蓄えて流れ出す。",
+        "en": "Underground springs begin to stir and flow, sensing the first warmth below."
       }
     },
     {
       "kanji": "雉始雊",
       "reading": {
-        "ja": "きじはじめてなく"
+        "ja": "きじはじめてなく",
+        "en": "kijihajimetenaku"
       },
       "gloss": "pheasants begin to call",
       "sekkiId": "shoukan",
@@ -10525,13 +10662,15 @@
         "end": "01-19"
       },
       "description": {
-        "ja": "雉が鳴き始める。冬の野に雄の雉が高らかに声を上げ、繁殖の季節が近づく予兆。"
+        "ja": "雉が鳴き始める。冬の野に雄の雉が高らかに声を上げ、繁殖の季節が近づく予兆。",
+        "en": "Male pheasants begin their booming calls across the frosty winter fields."
       }
     },
     {
       "kanji": "款冬華",
       "reading": {
-        "ja": "ふきのはなさく"
+        "ja": "ふきのはなさく",
+        "en": "fukinohanasaku"
       },
       "gloss": "butterbur flowers bloom",
       "sekkiId": "daikan",
@@ -10540,13 +10679,15 @@
         "end": "01-24"
       },
       "description": {
-        "ja": "フキノトウが花を咲かせる。極寒の大地を割って顔を出す春の使者として親しまれる。"
+        "ja": "フキノトウが花を咲かせる。極寒の大地を割って顔を出す春の使者として親しまれる。",
+        "en": "Butterbur sends up its pale flowers before any leaf appears, defying the cold."
       }
     },
     {
       "kanji": "水沢腹堅",
       "reading": {
-        "ja": "さわみずこおりつめる"
+        "ja": "さわみずこおりつめる",
+        "en": "sawamizukōritsumeru"
       },
       "gloss": "ice thickens on streams",
       "sekkiId": "daikan",
@@ -10555,13 +10696,15 @@
         "end": "01-29"
       },
       "description": {
-        "ja": "沢の水が厚く凍り付く。一年で最も寒さが厳しく、氷が地の底まで張り詰める頃。"
+        "ja": "沢の水が厚く凍り付く。一年で最も寒さが厳しく、氷が地の底まで張り詰める頃。",
+        "en": "Ice thickens into solid sheets across ponds and marshes in the deep cold."
       }
     },
     {
       "kanji": "鶏始乳",
       "reading": {
-        "ja": "にわとりはじめてとやにつく"
+        "ja": "にわとりはじめてとやにつく",
+        "en": "niwatorihajimetetoyanitsuku"
       },
       "gloss": "hens begin to lay",
       "sekkiId": "daikan",
@@ -10570,7 +10713,8 @@
         "end": "02-03"
       },
       "description": {
-        "ja": "鶏が卵を産み始める。厳寒の中でも春の近づきを感じ、命が動き出す冬の終わりの証。"
+        "ja": "鶏が卵を産み始める。厳寒の中でも春の近づきを感じ、命が動き出す冬の終わりの証。",
+        "en": "Hens feel the lengthening light and begin to lay eggs again after winter."
       }
     }
   ],
