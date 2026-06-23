@@ -20,6 +20,8 @@ struct AlmanacSheetView: View {
     let ko: Ko
     let sekki: Sekki
 
+    @Environment(\.language) private var language
+
     var body: some View {
         ZStack {
             // ADR 0013: Color.clear sentinel — applies the root identifier only to this layer.
@@ -40,7 +42,7 @@ struct AlmanacSheetView: View {
                         Text(ko.kanji)
                             .font(KigoFont.mincho(.bold, size: 27, relativeTo: .title))
                             .foregroundStyle(KigoTheme.inkKo)
-                        Text(ko.reading.ja)
+                        Text(ko.reading.localized(for: language))
                             .font(KigoFont.zenKaku(.regular, size: 14, relativeTo: .subheadline))
                             .foregroundStyle(KigoTheme.inkReading)
                     }
@@ -52,7 +54,7 @@ struct AlmanacSheetView: View {
                         .accessibilityElement(children: .ignore)
                         .accessibilityLabel("Day \(almanacPositions.dayWithinKo) of \(almanacPositions.koRangeLength) in this microseason")
 
-                    Text(ko.description.ja)
+                    Text(ko.description.localized(for: language))
                         .font(KigoFont.zenKaku(.light, size: 14, relativeTo: .body))
                         .lineSpacing(13)
                         .foregroundStyle(KigoTheme.bodyProse)
@@ -72,13 +74,13 @@ struct AlmanacSheetView: View {
                         Text(sekki.kanji)
                             .font(KigoFont.mincho(.bold, size: 23, relativeTo: .title2))
                             .foregroundStyle(KigoTheme.inkKo)
-                        Text(sekki.reading.ja)
+                        Text(sekki.reading.localized(for: language))
                             .font(KigoFont.zenKaku(.regular, size: 14, relativeTo: .subheadline))
                             .foregroundStyle(KigoTheme.inkReading)
                     }
                     .padding(.top, 13)
 
-                    Text(sekki.gloss.ja)
+                    Text(sekki.gloss.localized(for: language))
                         .font(KigoFont.mincho(.medium, size: 14, relativeTo: .subheadline))
                         .foregroundStyle(KigoTheme.gloss)
                         .padding(.top, 9)
@@ -89,7 +91,7 @@ struct AlmanacSheetView: View {
                         .accessibilityElement(children: .ignore)
                         .accessibilityLabel("Kō \(almanacPositions.koWithinSekki) of \(almanacPositions.koWithinSekkiTotal) in this solar term")
 
-                    Text(sekki.description.ja)
+                    Text(sekki.description.localized(for: language))
                         .font(KigoFont.zenKaku(.light, size: 14, relativeTo: .body))
                         .lineSpacing(13)
                         .foregroundStyle(KigoTheme.bodyProse)
