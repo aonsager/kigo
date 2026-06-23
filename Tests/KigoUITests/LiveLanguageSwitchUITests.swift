@@ -73,6 +73,21 @@ final class LiveLanguageSwitchUITests: XCTestCase {
             .waitForExistence(timeout: 3)
     }
 
+    /// Restores the persisted language preference to Japanese.
+    ///
+    /// This suite intentionally drives the real `UserDefaultsLanguageStore` (no
+    /// `KIGO_FAKE_LANGUAGE`), so toggling to English persists `.english` to the
+    /// simulator's UserDefaults. Tests that finish in the English state call this
+    /// to leave the persisted default Japanese — otherwise later UI suites that
+    /// launch without pinning a language (and assert Japanese content) inherit the
+    /// leaked English preference. Runs as the last step so an earlier assertion
+    /// failure (continueAfterFailure defaults to true) still reaches it.
+    private func restoreJapanese(in app: XCUIApplication) {
+        _ = openSettings(in: app)
+        selectLanguage("Japanese", in: app)
+        dismissSheet(in: app)
+    }
+
     // MARK: - Main test: live language switch
 
     /// Launches with KIGO_FAKE_DATE=2026-06-16 (no fake language), resets to Japanese
@@ -145,6 +160,9 @@ final class LiveLanguageSwitchUITests: XCTestCase {
         attachment.lifetime = .keepAlways
         attachment.name = "today-view-english"
         add(attachment)
+
+        // Leave the persisted preference Japanese so later unpinned suites are clean.
+        restoreJapanese(in: app)
     }
 
     // MARK: - Almanac sheet language switch (Slice #175)
@@ -198,6 +216,12 @@ final class LiveLanguageSwitchUITests: XCTestCase {
         attachment.lifetime = .keepAlways
         attachment.name = "almanac-sheet-english"
         add(attachment)
+
+        // Dismiss the almanac sheet, then leave the persisted preference Japanese
+        // so later unpinned suites are clean.
+        almanac.swipeDown(velocity: .fast)
+        _ = element(in: app, id: "kigo.reading")
+        restoreJapanese(in: app)
     }
 
     /// Verifies that toggling back to Japanese restores CJK prose in the Almanac sheet.
