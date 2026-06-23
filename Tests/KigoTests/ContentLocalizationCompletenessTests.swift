@@ -113,6 +113,36 @@ final class ContentLocalizationCompletenessTests: XCTestCase {
         }
     }
 
+    // MARK: - Kō reading.en
+
+    /// Every kō's reading.en is non-empty and contains no CJK characters (Hepburn romaji).
+    func testAllKoReadingEnIsRomaji() throws {
+        let manifest = try loadManifest()
+        XCTAssertEqual(manifest.ko.count, 72, "Expected 72 kō entries in the manifest")
+        for ko in manifest.ko {
+            guard let readingEn = ko.reading.en else {
+                XCTFail("Kō \(ko.kanji) has nil reading.en")
+                continue
+            }
+            assertNoCJK(readingEn, "reading.en for kō \(ko.kanji)")
+        }
+    }
+
+    // MARK: - Kō description.en
+
+    /// Every kō's description.en is non-empty and contains no CJK characters.
+    func testAllKoDescriptionEnIsEnglish() throws {
+        let manifest = try loadManifest()
+        XCTAssertEqual(manifest.ko.count, 72, "Expected 72 kō entries in the manifest")
+        for ko in manifest.ko {
+            guard let descEn = ko.description.en else {
+                XCTFail("Kō \(ko.kanji) has nil description.en")
+                continue
+            }
+            assertNoCJK(descEn, "description.en for kō \(ko.kanji)")
+        }
+    }
+
     // MARK: - fallback behaviour when only ja is present
 
     /// Construct a DailyMapEntry JSON with only ja values (no en keys), decode it,
