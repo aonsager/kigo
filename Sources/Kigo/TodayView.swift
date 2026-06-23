@@ -43,6 +43,8 @@ struct TodayView: View {
         var id: Self { self }
     }
 
+    @Environment(\.language) private var language
+
     @State private var activeSheet: ActiveSheet?
     @State private var hasAppeared = false
 
@@ -130,7 +132,7 @@ struct TodayView: View {
                 .shadow(color: KigoTheme.kanjiShadow, radius: 3, x: 0, y: 1)
                 .accessibilityIdentifier("kigo.kanji")
 
-            Text(resolvedDay.kigoEntry.reading.ja)
+            Text(resolvedDay.kigoEntry.reading.localized(for: language))
                 .font(KigoFont.zenKaku(.regular, size: 17, relativeTo: .title3))
                 .tracking(7)
                 .padding(.leading, 7) // balance the trailing tracking so the reading stays centered
@@ -138,7 +140,7 @@ struct TodayView: View {
                 .padding(.top, 22)
                 .accessibilityIdentifier("kigo.reading")
 
-            Text(resolvedDay.kigoEntry.description.ja)
+            Text(resolvedDay.kigoEntry.description.localized(for: language))
                 .font(KigoFont.zenKaku(.regular, size: 14.5, relativeTo: .body))
                 .lineSpacing(12)
                 .multilineTextAlignment(.center)

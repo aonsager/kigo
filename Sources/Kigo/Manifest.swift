@@ -19,6 +19,8 @@ public struct LocalizedText: Codable, Sendable, Equatable {
         self.ja = ja
         self.en = en
     }
+
+
 }
 
 // MARK: - Manifest
