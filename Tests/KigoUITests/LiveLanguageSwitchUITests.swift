@@ -42,10 +42,42 @@ final class LiveLanguageSwitchUITests: XCTestCase {
         return el
     }
 
+    // MARK: - Helpers (UI actions)
+
+    private func openSettings(in app: XCUIApplication) -> XCUIElement {
+        let entry = element(in: app, id: "paywall.entry")
+        entry.tap()
+        let sheet = app.descendants(matching: .any)
+            .matching(identifier: "paywall.sheet")
+            .firstMatch
+        XCTAssertTrue(sheet.waitForExistence(timeout: 10), "paywall.sheet must appear")
+        return sheet
+    }
+
+    private func selectLanguage(_ label: String, in app: XCUIApplication) {
+        let seg = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label == '\(label)'"))
+            .firstMatch
+        XCTAssertTrue(seg.waitForExistence(timeout: 5), "'\(label)' segment must exist")
+        seg.tap()
+    }
+
+    private func dismissSheet(in app: XCUIApplication) {
+        let sheet = app.descendants(matching: .any)
+            .matching(identifier: "paywall.sheet")
+            .firstMatch
+        sheet.swipeDown(velocity: .fast)
+        _ = app.descendants(matching: .any)
+            .matching(identifier: "kigo.reading")
+            .firstMatch
+            .waitForExistence(timeout: 3)
+    }
+
     // MARK: - Main test: live language switch
 
-    /// Launches with KIGO_FAKE_DATE=2026-06-16 (no fake language), asserts Japanese,
-    /// toggles to English in Settings, then asserts the reading and description changed.
+    /// Launches with KIGO_FAKE_DATE=2026-06-16 (no fake language), resets to Japanese
+    /// via the Settings picker (so the test is idempotent across simulator re-use),
+    /// asserts the Japanese values, toggles to English, then asserts the change.
     ///
     /// Screenshot evidence:
     ///   XCTAttachment name: "today-view-english"
@@ -54,77 +86,54 @@ final class LiveLanguageSwitchUITests: XCTestCase {
         let app = makeApp()
         app.launch()
 
-        // Wait for the main screen to settle.
-        let kanjiEl = element(in: app, id: "kigo.kanji", timeout: 15)
-        let kanjiValue = kanjiEl.label
+        // Reset to a known Japanese state via the real Settings picker.
+        // The simulator's UserDefaults may hold .english from a previous run;
+        // tapping Japanese here persists .japanese to UserDefaults so the
+        // subsequent assertions reflect the true default behaviour.
+        _ = openSettings(in: app)
+        selectLanguage("Japanese", in: app)
+        dismissSheet(in: app)
 
+        // Record Japanese-state values.
+        let kanjiEl = element(in: app, id: "kigo.kanji")
+        let kanjiValue = kanjiEl.label
         let readingEl = element(in: app, id: "kigo.reading")
         let jaReading = readingEl.label
-
         let descEl = element(in: app, id: "kigo.description")
         let jaDesc = descEl.label
 
-        // AC-ja-launch: reading should be hiragana (つゆ), desc should contain the date.
-        XCTAssertFalse(jaReading.isEmpty, "kigo.reading must not be empty on launch")
+        // AC-ja-launch: reading must be non-empty hiragana; desc must carry the date stamp.
+        XCTAssertFalse(jaReading.isEmpty, "kigo.reading must not be empty in Japanese mode")
         XCTAssertTrue(
             jaDesc.contains("2026-06-16"),
-            "kigo.description must contain '2026-06-16' on Japanese launch; got: '\(jaDesc)'"
+            "kigo.description must contain '2026-06-16' in Japanese mode; got: '\(jaDesc)'"
         )
 
-        // Open Settings via paywall.entry (gear icon).
-        let entry = element(in: app, id: "paywall.entry")
-        entry.tap()
+        // Toggle to English via Settings.
+        _ = openSettings(in: app)
+        selectLanguage("English", in: app)
+        dismissSheet(in: app)
 
-        // Wait for the Settings sheet.
-        let sheet = app.descendants(matching: .any)
-            .matching(identifier: "paywall.sheet")
-            .firstMatch
-        XCTAssertTrue(
-            sheet.waitForExistence(timeout: 10),
-            "paywall.sheet must appear after tapping paywall.entry"
-        )
-
-        // Find and tap the "English" segment.
-        let englishSegment = app.descendants(matching: .any)
-            .matching(NSPredicate(format: "label == 'English'"))
-            .firstMatch
-        XCTAssertTrue(
-            englishSegment.waitForExistence(timeout: 5),
-            "English segment must exist in settings.language picker"
-        )
-        englishSegment.tap()
-
-        // Dismiss the Settings sheet by swiping down.
-        let settingsSheet = app.descendants(matching: .any)
-            .matching(identifier: "paywall.sheet")
-            .firstMatch
-        settingsSheet.swipeDown(velocity: .fast)
-
-        // Wait briefly for the sheet to dismiss and the view to update.
-        _ = app.descendants(matching: .any)
-            .matching(identifier: "kigo.reading")
-            .firstMatch
-            .waitForExistence(timeout: 3)
-
-        // AC-reading-switch: kigo.reading must now show romaji (different from Japanese).
-        let readingEl2 = element(in: app, id: "kigo.reading")
-        let enReading = readingEl2.label
+        // AC-reading-switch: kigo.reading must now show romaji (different string).
+        let enReading = element(in: app, id: "kigo.reading").label
         XCTAssertNotEqual(
             enReading, jaReading,
             "kigo.reading must change after switching to English; before='\(jaReading)' after='\(enReading)'"
         )
 
         // AC-desc-switch: description must still contain the date but differ from Japanese.
-        let descEl2 = element(in: app, id: "kigo.description")
-        let enDesc = descEl2.label
+        let enDesc = element(in: app, id: "kigo.description").label
         XCTAssertTrue(
             enDesc.contains("2026-06-16"),
             "kigo.description after English switch must still contain '2026-06-16'; got: '\(enDesc)'"
         )
+        XCTAssertNotEqual(
+            enDesc, jaDesc,
+            "kigo.description must differ between Japanese and English"
+        )
 
         // AC-kanji-stable: kanji must be unchanged.
-        let kanjiEl2 = element(in: app, id: "kigo.kanji")
-        let kanjiValue2 = kanjiEl2.label
+        let kanjiValue2 = element(in: app, id: "kigo.kanji").label
         XCTAssertEqual(
             kanjiValue2, kanjiValue,
             "kigo.kanji must be identical before and after language toggle"

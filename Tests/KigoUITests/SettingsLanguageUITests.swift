@@ -61,27 +61,57 @@ final class SettingsLanguageUITests: XCTestCase {
 
     // MARK: - AC-ja: Default-launch: paywall.restore shows Japanese restore string
 
-    /// On a default launch (no `KIGO_FAKE_LANGUAGE`), `paywall.restore` must show "復元".
+    /// On a launch without `KIGO_FAKE_LANGUAGE`, `paywall.restore` must show "復元"
+    /// once the real `UserDefaultsLanguageStore` has Japanese as the active preference.
     ///
     /// This exercises the full injection chain:
     ///  1. KigoApp calls `launchLanguageStore(environment:)` — no env var → `UserDefaultsLanguageStore`.
-    ///  2. `UserDefaultsLanguageStore` with no prior write → defaults to `.japanese`.
+    ///  2. The Settings picker writes `.japanese` to the real UserDefaults store.
     ///  3. `ChromeStrings(.japanese).restore` == "復元".
     ///  4. PaywallView renders the restore button with that label.
+    ///
+    /// A setup step explicitly selects Japanese via the picker so the test is
+    /// idempotent across simulator re-use (prior runs may have stored `.english`).
     ///
     /// Screenshot evidence:
     ///   XCTAttachment name: "paywall-restore-japanese"
     func testDefaultLaunchShowsJapaneseRestoreString() {
         let app = XCUIApplication()
         baseEnvironment.forEach { app.launchEnvironment[$0.key] = $0.value }
-        // No KIGO_FAKE_LANGUAGE — exercises the UserDefaultsLanguageStore default path.
+        // No KIGO_FAKE_LANGUAGE — exercises the real UserDefaultsLanguageStore path.
+        app.launch()
 
-        let restoreElement = launchAndOpenPaywall(app: app)
+        // Reset to Japanese via the live picker so the test is idempotent.
+        let resetEntry = app.descendants(matching: .any)
+            .matching(identifier: "paywall.entry").firstMatch
+        XCTAssertTrue(resetEntry.waitForExistence(timeout: 10))
+        resetEntry.tap()
+        let resetSheet = app.descendants(matching: .any)
+            .matching(identifier: "paywall.sheet").firstMatch
+        XCTAssertTrue(resetSheet.waitForExistence(timeout: 10))
+        let jaSegment = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label == 'Japanese'")).firstMatch
+        if jaSegment.waitForExistence(timeout: 5) { jaSegment.tap() }
+        resetSheet.swipeDown(velocity: .fast)
+        _ = app.descendants(matching: .any)
+            .matching(identifier: "kigo.reading").firstMatch.waitForExistence(timeout: 3)
+
+        // Open Settings again and verify the restore label reflects Japanese.
+        let entry = app.descendants(matching: .any)
+            .matching(identifier: "paywall.entry").firstMatch
+        XCTAssertTrue(entry.waitForExistence(timeout: 10))
+        entry.tap()
+        let sheet = app.descendants(matching: .any)
+            .matching(identifier: "paywall.sheet").firstMatch
+        XCTAssertTrue(sheet.waitForExistence(timeout: 10))
+        let restoreElement = app.descendants(matching: .any)
+            .matching(identifier: "paywall.restore").firstMatch
+        XCTAssertTrue(restoreElement.waitForExistence(timeout: 5))
 
         let label = restoreElement.label
         XCTAssertEqual(
             label, "復元",
-            "paywall.restore label must equal '復元' on a default launch; got: '\(label)'"
+            "paywall.restore must equal '復元' after selecting Japanese via UserDefaultsLanguageStore; got: '\(label)'"
         )
 
         let screenshot = XCUIScreen.main.screenshot()

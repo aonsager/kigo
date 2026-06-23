@@ -18,6 +18,9 @@ final class ReadingDescriptionUITests: XCTestCase {
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchEnvironment["KIGO_FAKE_DATE"] = "2026-06-12"
+        // Force Japanese so TodayView's localized(for:) reads .ja values regardless of
+        // UserDefaults state. This test is about date-based content, not language switching.
+        app.launchEnvironment["KIGO_FAKE_LANGUAGE"] = "ja"
         app.launch()
     }
 
