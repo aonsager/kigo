@@ -143,6 +143,51 @@ final class ContentLocalizationCompletenessTests: XCTestCase {
         }
     }
 
+    // MARK: - Sekki reading.en
+
+    /// Every sekki's reading.en is non-empty Hepburn romaji (no CJK characters).
+    func testAllSekkiReadingEnIsRomaji() throws {
+        let manifest = try loadManifest()
+        XCTAssertEqual(manifest.sekki.count, 24, "Expected 24 sekki entries in the manifest")
+        for sekki in manifest.sekki {
+            guard let readingEn = sekki.reading.en else {
+                XCTFail("Sekki \(sekki.kanji) has nil reading.en")
+                continue
+            }
+            assertNoCJK(readingEn, "reading.en for sekki \(sekki.kanji)")
+        }
+    }
+
+    // MARK: - Sekki gloss.en
+
+    /// Every sekki's gloss.en is non-empty and contains no CJK characters.
+    func testAllSekkiGlossEnIsEnglish() throws {
+        let manifest = try loadManifest()
+        XCTAssertEqual(manifest.sekki.count, 24, "Expected 24 sekki entries in the manifest")
+        for sekki in manifest.sekki {
+            guard let glossEn = sekki.gloss.en else {
+                XCTFail("Sekki \(sekki.kanji) has nil gloss.en")
+                continue
+            }
+            assertNoCJK(glossEn, "gloss.en for sekki \(sekki.kanji)")
+        }
+    }
+
+    // MARK: - Sekki description.en
+
+    /// Every sekki's description.en is non-empty and contains no CJK characters.
+    func testAllSekkiDescriptionEnIsEnglish() throws {
+        let manifest = try loadManifest()
+        XCTAssertEqual(manifest.sekki.count, 24, "Expected 24 sekki entries in the manifest")
+        for sekki in manifest.sekki {
+            guard let descEn = sekki.description.en else {
+                XCTFail("Sekki \(sekki.kanji) has nil description.en")
+                continue
+            }
+            assertNoCJK(descEn, "description.en for sekki \(sekki.kanji)")
+        }
+    }
+
     // MARK: - fallback behaviour when only ja is present
 
     /// Construct a DailyMapEntry JSON with only ja values (no en keys), decode it,
