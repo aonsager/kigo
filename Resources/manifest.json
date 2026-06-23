@@ -10723,312 +10723,384 @@
       "id": "risshun",
       "kanji": "立春",
       "reading": {
-        "ja": "りっしゅん"
+        "ja": "りっしゅん",
+        "en": "risshun"
       },
       "gloss": {
-        "ja": "春の始まり"
+        "ja": "春の始まり",
+        "en": "Start of Spring"
       },
       "description": {
-        "ja": "太陽が黄経315度に達する日。春の気配が感じられ始める二十四節気の最初の節気。"
+        "ja": "太陽が黄経315度に達する日。春の気配が感じられ始める二十四節気の最初の節気。",
+        "en": "The first solar term of the year, marking the calendrical beginning of spring. Days gradually lengthen and the air begins to soften, even as cold lingers."
       }
     },
     {
       "id": "usui",
       "kanji": "雨水",
       "reading": {
-        "ja": "うすい"
+        "ja": "うすい",
+        "en": "usui"
       },
       "gloss": {
-        "ja": "雨と雪解け"
+        "ja": "雨と雪解け",
+        "en": "Rain Water"
       },
       "description": {
-        "ja": "太陽が黄経330度に達する日。雪が雨に変わり、氷が溶け始める時期。"
+        "ja": "太陽が黄経330度に達する日。雪が雨に変わり、氷が溶け始める時期。",
+        "en": "Snow and ice give way to rain as temperatures rise. The snowmelt feeds the rivers and the soil begins to absorb moisture in preparation for planting."
       }
     },
     {
       "id": "keichitsu",
       "kanji": "啓蟄",
       "reading": {
-        "ja": "けいちつ"
+        "ja": "けいちつ",
+        "en": "keichitsu"
       },
       "gloss": {
-        "ja": "虫が土から出る"
+        "ja": "虫が土から出る",
+        "en": "Awakening of Insects"
       },
       "description": {
-        "ja": "太陽が黄経345度に達する日。冬ごもりしていた虫が地中から這い出てくる時期。"
+        "ja": "太陽が黄経345度に達する日。冬ごもりしていた虫が地中から這い出てくる時期。",
+        "en": "Underground creatures stirred by the warming earth begin to emerge from their winter burrows. The landscape slowly comes back to life with the first signs of insect activity."
       }
     },
     {
       "id": "shunbun",
       "kanji": "春分",
       "reading": {
-        "ja": "しゅんぶん"
+        "ja": "しゅんぶん",
+        "en": "shunbun"
       },
       "gloss": {
-        "ja": "昼と夜が等しい春の日"
+        "ja": "昼と夜が等しい春の日",
+        "en": "Spring Equinox"
       },
       "description": {
-        "ja": "太陽が黄経0度（春分点）に達する日。昼と夜の長さが等しくなる。"
+        "ja": "太陽が黄経0度（春分点）に達する日。昼と夜の長さが等しくなる。",
+        "en": "Day and night are of equal length as the sun crosses the celestial equator. A holiday of ancestor veneration in Japan, and the midpoint of spring."
       }
     },
     {
       "id": "seimei",
       "kanji": "清明",
       "reading": {
-        "ja": "せいめい"
+        "ja": "せいめい",
+        "en": "seimei"
       },
       "gloss": {
-        "ja": "清らかで明るい"
+        "ja": "清らかで明るい",
+        "en": "Clear and Bright"
       },
       "description": {
-        "ja": "太陽が黄経15度に達する日。万物が清らかで生き生きとする時期。"
+        "ja": "太陽が黄経15度に達する日。万物が清らかで生き生きとする時期。",
+        "en": "The air is fresh and clear, and the natural world is vivid and full of color. Flowers bloom abundantly and birds sing through the bright spring days."
       }
     },
     {
       "id": "kokuu",
       "kanji": "穀雨",
       "reading": {
-        "ja": "こくう"
+        "ja": "こくう",
+        "en": "kokū"
       },
       "gloss": {
-        "ja": "穀物を育てる雨"
+        "ja": "穀物を育てる雨",
+        "en": "Grain Rains"
       },
       "description": {
-        "ja": "太陽が黄経30度に達する日。穀物の成長を助ける春の雨が降る時期。"
+        "ja": "太陽が黄経30度に達する日。穀物の成長を助ける春の雨が降る時期。",
+        "en": "Rains nourish the newly sown grain crops across the fields. This moisture is essential for the seedlings that will grow through the warm season ahead."
       }
     },
     {
       "id": "rikka",
       "kanji": "立夏",
       "reading": {
-        "ja": "りっか"
+        "ja": "りっか",
+        "en": "rikka"
       },
       "gloss": {
-        "ja": "夏の始まり"
+        "ja": "夏の始まり",
+        "en": "Start of Summer"
       },
       "description": {
-        "ja": "太陽が黄経45度に達する日。夏の気配が感じられ始める時期。"
+        "ja": "太陽が黄経45度に達する日。夏の気配が感じられ始める時期。",
+        "en": "The calendrical beginning of summer. The sun's warmth becomes pronounced, and the green of trees and paddies deepens as the growing season fully opens."
       }
     },
     {
       "id": "shouman",
       "kanji": "小満",
       "reading": {
-        "ja": "しょうまん"
+        "ja": "しょうまん",
+        "en": "shōman"
       },
       "gloss": {
-        "ja": "草木が満ちてくる"
+        "ja": "草木が満ちてくる",
+        "en": "Grain Buds"
       },
       "description": {
-        "ja": "太陽が黄経60度に達する日。草木が成長し、万物が満ちてくる時期。"
+        "ja": "太陽が黄経60度に達する日。草木が成長し、万物が満ちてくる時期。",
+        "en": "Crops fill out and begin to ripen under the strengthening sun. The days grow longer and the land is lush with the promise of the coming harvest."
       }
     },
     {
       "id": "boshu",
       "kanji": "芒種",
       "reading": {
-        "ja": "ぼうしゅ"
+        "ja": "ぼうしゅ",
+        "en": "bōshu"
       },
       "gloss": {
-        "ja": "芒のある穀物を蒔く"
+        "ja": "芒のある穀物を蒔く",
+        "en": "Grain in Ear"
       },
       "description": {
-        "ja": "太陽が黄経75度に達する日。稲や麦など芒のある穀物を種まきする時期。"
+        "ja": "太陽が黄経75度に達する日。稲や麦など芒のある穀物を種まきする時期。",
+        "en": "The time to plant rice and barley, whose grain heads bear awns. Farmers are busy in the paddies as the rainy season approaches the Japanese archipelago."
       }
     },
     {
       "id": "geshi",
       "kanji": "夏至",
       "reading": {
-        "ja": "げし"
+        "ja": "げし",
+        "en": "geshi"
       },
       "gloss": {
-        "ja": "昼が最も長い日"
+        "ja": "昼が最も長い日",
+        "en": "Summer Solstice"
       },
       "description": {
-        "ja": "太陽が黄経90度に達する日。北半球で昼の時間が最も長くなる。"
+        "ja": "太陽が黄経90度に達する日。北半球で昼の時間が最も長くなる。",
+        "en": "The longest day of the year; the sun reaches its highest arc in the sky. From this point, days shorten as summer heat continues to intensify."
       }
     },
     {
       "id": "shousho",
       "kanji": "小暑",
       "reading": {
-        "ja": "しょうしょ"
+        "ja": "しょうしょ",
+        "en": "shōsho"
       },
       "gloss": {
-        "ja": "暑さが増してくる"
+        "ja": "暑さが増してくる",
+        "en": "Minor Heat"
       },
       "description": {
-        "ja": "太陽が黄経105度に達する日。本格的な暑さが始まる時期。"
+        "ja": "太陽が黄経105度に達する日。本格的な暑さが始まる時期。",
+        "en": "Temperatures climb and the heat of summer becomes fully felt. Cicadas begin their chorus and the humidity of the Japanese summer settles in."
       }
     },
     {
       "id": "taisho",
       "kanji": "大暑",
       "reading": {
-        "ja": "たいしょ"
+        "ja": "たいしょ",
+        "en": "taisho"
       },
       "gloss": {
-        "ja": "最も暑い時期"
+        "ja": "最も暑い時期",
+        "en": "Major Heat"
       },
       "description": {
-        "ja": "太陽が黄経120度に達する日。一年で最も暑さが厳しい時期。"
+        "ja": "太陽が黄経120度に達する日。一年で最も暑さが厳しい時期。",
+        "en": "The hottest period of the year. Intense heat and humidity dominate, and people seek shade, cool water, and relief from the sweltering midsummer days."
       }
     },
     {
       "id": "risshu",
       "kanji": "立秋",
       "reading": {
-        "ja": "りっしゅう"
+        "ja": "りっしゅう",
+        "en": "risshū"
       },
       "gloss": {
-        "ja": "秋の始まり"
+        "ja": "秋の始まり",
+        "en": "Start of Autumn"
       },
       "description": {
-        "ja": "太陽が黄経135度に達する日。暦の上では秋が始まる。"
+        "ja": "太陽が黄経135度に達する日。暦の上では秋が始まる。",
+        "en": "Though the heat often continues, this marks the calendrical start of autumn. The quality of light shifts subtly, and evenings bring the first hints of coolness."
       }
     },
     {
       "id": "shosho",
       "kanji": "処暑",
       "reading": {
-        "ja": "しょしょ"
+        "ja": "しょしょ",
+        "en": "shosho"
       },
       "gloss": {
-        "ja": "暑さが和らぐ"
+        "ja": "暑さが和らぐ",
+        "en": "End of Heat"
       },
       "description": {
-        "ja": "太陽が黄経150度に達する日。暑さが峠を越えて和らいでくる時期。"
+        "ja": "太陽が黄経150度に達する日。暑さが峠を越えて和らいでくる時期。",
+        "en": "The oppressive summer heat begins to ease as the sun's strength wanes. Mornings and evenings feel noticeably cooler, signaling the approach of true autumn."
       }
     },
     {
       "id": "hakuro",
       "kanji": "白露",
       "reading": {
-        "ja": "はくろ"
+        "ja": "はくろ",
+        "en": "hakuro"
       },
       "gloss": {
-        "ja": "白い露が降りる"
+        "ja": "白い露が降りる",
+        "en": "White Dew"
       },
       "description": {
-        "ja": "太陽が黄経165度に達する日。草木に白い露が宿り始める時期。"
+        "ja": "太陽が黄経165度に達する日。草木に白い露が宿り始める時期。",
+        "en": "Dew glistens white on grasses in the cool of early morning. The air carries the crispness of autumn and the landscape takes on golden hues."
       }
     },
     {
       "id": "shubun",
       "kanji": "秋分",
       "reading": {
-        "ja": "しゅうぶん"
+        "ja": "しゅうぶん",
+        "en": "shūbun"
       },
       "gloss": {
-        "ja": "昼と夜が等しい秋の日"
+        "ja": "昼と夜が等しい秋の日",
+        "en": "Autumn Equinox"
       },
       "description": {
-        "ja": "太陽が黄経180度（秋分点）に達する日。昼と夜の長さが等しくなる。"
+        "ja": "太陽が黄経180度（秋分点）に達する日。昼と夜の長さが等しくなる。",
+        "en": "Day and night are again equal in length as the sun crosses the equator southward. A holiday of ancestor remembrance in Japan, and the midpoint of autumn."
       }
     },
     {
       "id": "kanro",
       "kanji": "寒露",
       "reading": {
-        "ja": "かんろ"
+        "ja": "かんろ",
+        "en": "kanro"
       },
       "gloss": {
-        "ja": "冷たい露が降りる"
+        "ja": "冷たい露が降りる",
+        "en": "Cold Dew"
       },
       "description": {
-        "ja": "太陽が黄経195度に達する日。露が冷たくなり、秋の深まりを感じる時期。"
+        "ja": "太陽が黄経195度に達する日。露が冷たくなり、秋の深まりを感じる時期。",
+        "en": "Dew turns cold and the air carries a definite chill before dawn. Chrysanthemums bloom and migrating birds pass through on their southward journey."
       }
     },
     {
       "id": "soko",
       "kanji": "霜降",
       "reading": {
-        "ja": "そうこう"
+        "ja": "そうこう",
+        "en": "sōkō"
       },
       "gloss": {
-        "ja": "霜が降りる"
+        "ja": "霜が降りる",
+        "en": "Frost's Descent"
       },
       "description": {
-        "ja": "太陽が黄経210度に達する日。霜が降り始め、紅葉が深まる時期。"
+        "ja": "太陽が黄経210度に達する日。霜が降り始め、紅葉が深まる時期。",
+        "en": "The first frosts of the year settle on fields and rooftops overnight. Leaves turn brilliant red and gold before beginning to fall in earnest."
       }
     },
     {
       "id": "rittou",
       "kanji": "立冬",
       "reading": {
-        "ja": "りっとう"
+        "ja": "りっとう",
+        "en": "rittō"
       },
       "gloss": {
-        "ja": "冬の始まり"
+        "ja": "冬の始まり",
+        "en": "Start of Winter"
       },
       "description": {
-        "ja": "太陽が黄経225度に達する日。暦の上では冬が始まる時期。"
+        "ja": "太陽が黄経225度に達する日。暦の上では冬が始まる時期。",
+        "en": "The calendrical beginning of winter. Cold winds arrive and the landscape grows bare. People begin to prepare their homes and wardrobes for the coming cold months."
       }
     },
     {
       "id": "shousetsu",
       "kanji": "小雪",
       "reading": {
-        "ja": "しょうせつ"
+        "ja": "しょうせつ",
+        "en": "shōsetsu"
       },
       "gloss": {
-        "ja": "少し雪が降る"
+        "ja": "少し雪が降る",
+        "en": "Minor Snow"
       },
       "description": {
-        "ja": "太陽が黄経240度に達する日。北国では雪が降り始める時期。"
+        "ja": "太陽が黄経240度に達する日。北国では雪が降り始める時期。",
+        "en": "Light snowfalls dust the mountains and some lowland areas for the first time. The sky is often overcast and the days grow noticeably shorter."
       }
     },
     {
       "id": "taisetsu",
       "kanji": "大雪",
       "reading": {
-        "ja": "たいせつ"
+        "ja": "たいせつ",
+        "en": "taisetsu"
       },
       "gloss": {
-        "ja": "雪が多く降る"
+        "ja": "雪が多く降る",
+        "en": "Major Snow"
       },
       "description": {
-        "ja": "太陽が黄経255度に達する日。本格的な雪の季節が訪れる時期。"
+        "ja": "太陽が黄経255度に達する日。本格的な雪の季節が訪れる時期。",
+        "en": "Heavy snowfalls blanket the land and the mountains are deep with snow. Bears retreat to their dens and the countryside settles into the quiet of winter."
       }
     },
     {
       "id": "touji",
       "kanji": "冬至",
       "reading": {
-        "ja": "とうじ"
+        "ja": "とうじ",
+        "en": "tōji"
       },
       "gloss": {
-        "ja": "昼が最も短い日"
+        "ja": "昼が最も短い日",
+        "en": "Winter Solstice"
       },
       "description": {
-        "ja": "太陽が黄経270度に達する日。北半球で昼の時間が最も短くなる。"
+        "ja": "太陽が黄経270度に達する日。北半球で昼の時間が最も短くなる。",
+        "en": "The shortest day of the year; the sun is at its lowest arc. In Japan, people eat kabocha pumpkin and take yuzu-scented baths to ward off illness."
       }
     },
     {
       "id": "shoukan",
       "kanji": "小寒",
       "reading": {
-        "ja": "しょうかん"
+        "ja": "しょうかん",
+        "en": "shōkan"
       },
       "gloss": {
-        "ja": "寒さが厳しくなる"
+        "ja": "寒さが厳しくなる",
+        "en": "Minor Cold"
       },
       "description": {
-        "ja": "太陽が黄経285度に達する日。寒の入りで、本格的な寒さが始まる時期。"
+        "ja": "太陽が黄経285度に達する日。寒の入りで、本格的な寒さが始まる時期。",
+        "en": "The cold deepens and mornings are bitingly frigid. This marks the beginning of the coldest stretch of the year, leading into Daikan."
       }
     },
     {
       "id": "daikan",
       "kanji": "大寒",
       "reading": {
-        "ja": "だいかん"
+        "ja": "だいかん",
+        "en": "daikan"
       },
       "gloss": {
-        "ja": "最も寒い時期"
+        "ja": "最も寒い時期",
+        "en": "Major Cold"
       },
       "description": {
-        "ja": "太陽が黄経300度に達する日。一年で最も寒さが厳しい時期。"
+        "ja": "太陽が黄経300度に達する日。一年で最も寒さが厳しい時期。",
+        "en": "The coldest period of the year. Ice forms on ponds and rivers and the ground is hard with frost. Traditional arts such as cold-water practice and miso brewing take place during this time."
       }
     }
   ],
