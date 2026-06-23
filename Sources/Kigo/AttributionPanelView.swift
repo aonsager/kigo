@@ -7,13 +7,19 @@ import SwiftUI
 /// 写真 credit line, and a license/source line, over the shared sheet surface, with
 /// a grab indicator and no header/close button (dismiss via grab or backdrop).
 ///
+/// Extended in slice #176 to honour `@Environment(\.language)` — title, credit, and
+/// license now use `localized(for: language)` so the panel updates live after a
+/// Settings language toggle.
+///
 /// Accessibility identifiers (ADR 0013 Color.clear sentinel pattern):
 /// - `info.panel` — root Color.clear layer (ZStack sentinel)
-/// - `info.title` — Text showing attribution.title.ja
-/// - `info.credit` — Text showing attribution.credit.ja
-/// - `info.license` — Text showing attribution.license.ja (additive)
+/// - `info.title` — Text showing attribution.title localized for the active language
+/// - `info.credit` — Text showing attribution.credit localized for the active language
+/// - `info.license` — Text showing attribution.license localized for the active language
 struct AttributionPanelView: View {
     let attribution: Attribution
+
+    @Environment(\.language) private var language
 
     var body: some View {
         ZStack {
@@ -27,19 +33,19 @@ struct AttributionPanelView: View {
                     .padding(.top, 10)
                     .padding(.bottom, 20)
 
-                Text(attribution.title.ja)
+                Text(attribution.title.localized(for: language))
                     .font(KigoFont.mincho(.medium, size: 16, relativeTo: .headline))
                     .foregroundStyle(KigoTheme.inkKanji)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("info.title")
 
-                Text(attribution.credit.ja)
+                Text(attribution.credit.localized(for: language))
                     .font(KigoFont.zenKaku(.regular, size: 13, relativeTo: .footnote))
                     .foregroundStyle(KigoTheme.inkReading)
                     .padding(.top, 8)
                     .accessibilityIdentifier("info.credit")
 
-                Text(attribution.license.ja)
+                Text(attribution.license.localized(for: language))
                     .font(KigoFont.zenKaku(.regular, size: 11.5, relativeTo: .caption))
                     .foregroundStyle(KigoTheme.textTertiary)
                     .padding(.top, 10)
