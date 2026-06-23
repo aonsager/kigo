@@ -146,4 +146,105 @@ final class LiveLanguageSwitchUITests: XCTestCase {
         attachment.name = "today-view-english"
         add(attachment)
     }
+
+    // MARK: - Almanac sheet language switch (Slice #175)
+
+    /// Opens the Almanac sheet after toggling to English and asserts
+    /// that `microseason.koDescription` and `microseason.sekkiDescription`
+    /// contain no hiragana or CJK characters.
+    ///
+    /// Screenshot evidence:
+    ///   XCTAttachment name: "almanac-sheet-english"
+    ///   Lifetime: .keepAlways
+    ///   Test identifier: KigoUITests/LiveLanguageSwitchUITests/testAlmanacSheetEnglishLanguage
+    func testAlmanacSheetEnglishLanguage() {
+        let app = makeApp()
+        app.launch()
+
+        // 1. Toggle to English via Settings.
+        _ = openSettings(in: app)
+        selectLanguage("English", in: app)
+        dismissSheet(in: app)
+
+        // 2. Open the Almanac sheet via microseason.timeline.
+        let timeline = element(in: app, id: "microseason.timeline")
+        timeline.tap()
+
+        // 3. Wait for the almanac sheet to appear.
+        let almanac = app.descendants(matching: .any)
+            .matching(identifier: "microseason.almanac")
+            .firstMatch
+        XCTAssertTrue(almanac.waitForExistence(timeout: 10), "microseason.almanac must appear after tapping microseason.timeline")
+
+        // 4. Assert koDescription contains no hiragana/CJK.
+        let koDesc = element(in: app, id: "microseason.koDescription")
+        let koDescText = koDesc.label
+        XCTAssertFalse(
+            containsCJKOrHiragana(koDescText),
+            "microseason.koDescription must contain no CJK/hiragana in English mode; got: '\(koDescText)'"
+        )
+
+        // 5. Assert sekkiDescription contains no hiragana/CJK.
+        let sekkiDesc = element(in: app, id: "microseason.sekkiDescription")
+        let sekkiDescText = sekkiDesc.label
+        XCTAssertFalse(
+            containsCJKOrHiragana(sekkiDescText),
+            "microseason.sekkiDescription must contain no CJK/hiragana in English mode; got: '\(sekkiDescText)'"
+        )
+
+        // 6. Screenshot evidence — Almanac sheet in English.
+        let screenshot = XCUIScreen.main.screenshot()
+        let attachment = XCTAttachment(screenshot: screenshot)
+        attachment.lifetime = .keepAlways
+        attachment.name = "almanac-sheet-english"
+        add(attachment)
+    }
+
+    /// Verifies that toggling back to Japanese restores CJK prose in the Almanac sheet.
+    func testAlmanacSheetJapaneseRevertAfterEnglish() {
+        let app = makeApp()
+        app.launch()
+
+        // 1. Toggle to English, then back to Japanese.
+        _ = openSettings(in: app)
+        selectLanguage("English", in: app)
+        dismissSheet(in: app)
+
+        _ = openSettings(in: app)
+        selectLanguage("Japanese", in: app)
+        dismissSheet(in: app)
+
+        // 2. Open the Almanac sheet.
+        let timeline = element(in: app, id: "microseason.timeline")
+        timeline.tap()
+        let almanac = app.descendants(matching: .any)
+            .matching(identifier: "microseason.almanac")
+            .firstMatch
+        XCTAssertTrue(almanac.waitForExistence(timeout: 10), "microseason.almanac must appear")
+
+        // 3. Assert koDescription reverts to Japanese (contains hiragana/CJK).
+        let koDesc = element(in: app, id: "microseason.koDescription")
+        XCTAssertTrue(
+            containsCJKOrHiragana(koDesc.label),
+            "microseason.koDescription must revert to CJK/hiragana after switching back to Japanese; got: '\(koDesc.label)'"
+        )
+
+        // 4. Assert sekkiDescription reverts to Japanese.
+        let sekkiDesc = element(in: app, id: "microseason.sekkiDescription")
+        XCTAssertTrue(
+            containsCJKOrHiragana(sekkiDesc.label),
+            "microseason.sekkiDescription must revert to CJK/hiragana after switching back to Japanese; got: '\(sekkiDesc.label)'"
+        )
+    }
+
+    // MARK: - Helpers
+
+    /// Returns true if `string` contains any hiragana (U+3040–U+309F) or
+    /// CJK Unified Ideographs (U+4E00–U+9FFF) characters.
+    private func containsCJKOrHiragana(_ string: String) -> Bool {
+        string.unicodeScalars.contains { scalar in
+            (0x3040...0x309F).contains(scalar.value) ||   // hiragana
+            (0x4E00...0x9FFF).contains(scalar.value)       // CJK unified ideographs
+        }
+    }
 }
