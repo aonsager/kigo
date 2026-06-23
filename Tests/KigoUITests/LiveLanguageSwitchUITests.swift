@@ -237,6 +237,165 @@ final class LiveLanguageSwitchUITests: XCTestCase {
         )
     }
 
+    // MARK: - Slice #176: Attribution panel + full round-trip
+
+    /// Full round-trip test (Slice #176 acceptance criteria):
+    ///
+    ///   1. Launch with KIGO_FAKE_DATE=2026-06-16 in Japanese state.
+    ///   2. Assert kigo.description contains "2026-06-16" and kigo.reading is non-empty.
+    ///   3. Toggle to English; assert kigo.description still has "2026-06-16" but differs,
+    ///      kigo.reading changed to romaji, kigo.kanji unchanged.
+    ///   4. Assert paywall.restore reads "Restore Purchases" (English chrome).
+    ///   5. Open Attribution panel; assert info.title=="Season Kigo", info.credit=="Unknown photographer",
+    ///      info.license=="Public domain".
+    ///   6. Capture screenshot of Attribution panel in English.
+    ///   7. Dismiss panel; toggle back to Japanese; assert kigo.description and kigo.reading
+    ///      are restored to original Japanese values.
+    ///   8. Assert kigo.kanji is identical across all three states.
+    ///
+    /// Screenshot evidence:
+    ///   XCTAttachment name: "attribution-panel-english"
+    ///   Lifetime: .keepAlways
+    func testAttributionPanelEnglishAndFullRoundTrip() {
+        let app = makeApp()
+        app.launch()
+
+        // 0. Reset to Japanese (idempotent — handles leftover English from prior runs).
+        _ = openSettings(in: app)
+        selectLanguage("Japanese", in: app)
+        dismissSheet(in: app)
+
+        // 1. Record initial Japanese values.
+        let kanjiEl    = element(in: app, id: "kigo.kanji")
+        let kanjiValue = kanjiEl.label
+        let jaReading  = element(in: app, id: "kigo.reading").label
+        let jaDesc     = element(in: app, id: "kigo.description").label
+
+        // AC1: Japanese description contains the date stamp.
+        XCTAssertTrue(
+            jaDesc.contains("2026-06-16"),
+            "kigo.description must contain '2026-06-16' in Japanese mode; got: '\(jaDesc)'"
+        )
+        // AC2: Japanese reading is non-empty hiragana.
+        XCTAssertFalse(jaReading.isEmpty, "kigo.reading must not be empty in Japanese mode")
+
+        // 2. Toggle to English.
+        _ = openSettings(in: app)
+        selectLanguage("English", in: app)
+        dismissSheet(in: app)
+
+        // AC3: kigo.description still contains the date but is a different string.
+        let enDesc = element(in: app, id: "kigo.description").label
+        XCTAssertTrue(
+            enDesc.contains("2026-06-16"),
+            "kigo.description after English switch must still contain '2026-06-16'; got: '\(enDesc)'"
+        )
+        XCTAssertNotEqual(
+            enDesc, jaDesc,
+            "kigo.description must differ between Japanese and English; ja='\(jaDesc)' en='\(enDesc)'"
+        )
+
+        // AC4: kigo.reading changed to romaji.
+        let enReading = element(in: app, id: "kigo.reading").label
+        XCTAssertNotEqual(
+            enReading, jaReading,
+            "kigo.reading must change to romaji after English switch; before='\(jaReading)' after='\(enReading)'"
+        )
+
+        // AC5: kigo.kanji unchanged.
+        let kanjiValueEn = element(in: app, id: "kigo.kanji").label
+        XCTAssertEqual(
+            kanjiValueEn, kanjiValue,
+            "kigo.kanji must be identical before and after English toggle; before='\(kanjiValue)' after='\(kanjiValueEn)'"
+        )
+
+        // AC6: paywall.restore reads "Restore Purchases" immediately after toggle (no relaunch).
+        let paywallEntry = element(in: app, id: "paywall.entry")
+        paywallEntry.tap()
+        let paywallSheet = app.descendants(matching: .any)
+            .matching(identifier: "paywall.sheet")
+            .firstMatch
+        XCTAssertTrue(paywallSheet.waitForExistence(timeout: 10), "paywall.sheet must appear")
+
+        let restoreEl = app.descendants(matching: .any)
+            .matching(identifier: "paywall.restore")
+            .firstMatch
+        XCTAssertTrue(restoreEl.waitForExistence(timeout: 5), "paywall.restore must exist")
+        XCTAssertEqual(
+            restoreEl.label, "Restore Purchases",
+            "paywall.restore must read 'Restore Purchases' after English toggle; got '\(restoreEl.label)'"
+        )
+
+        // Dismiss paywall sheet before opening Attribution panel.
+        paywallSheet.swipeDown(velocity: .fast)
+        _ = element(in: app, id: "kigo.reading")
+
+        // AC7: Attribution panel shows English strings.
+        let infoEntry = element(in: app, id: "info.entry")
+        infoEntry.tap()
+
+        let infoPanel = app.descendants(matching: .any)
+            .matching(identifier: "info.panel")
+            .firstMatch
+        XCTAssertTrue(infoPanel.waitForExistence(timeout: 10), "info.panel must appear")
+
+        let titleEl = app.staticTexts["info.title"]
+        XCTAssertTrue(titleEl.waitForExistence(timeout: 5), "info.title must exist in panel")
+        XCTAssertEqual(
+            titleEl.label, "Season Kigo",
+            "info.title must read 'Season Kigo' in English; got '\(titleEl.label)'"
+        )
+
+        let creditEl = app.staticTexts["info.credit"]
+        XCTAssertTrue(creditEl.waitForExistence(timeout: 5), "info.credit must exist in panel")
+        XCTAssertEqual(
+            creditEl.label, "Unknown photographer",
+            "info.credit must read 'Unknown photographer' in English; got '\(creditEl.label)'"
+        )
+
+        let licenseEl = app.staticTexts["info.license"]
+        XCTAssertTrue(licenseEl.waitForExistence(timeout: 5), "info.license must exist in panel")
+        XCTAssertEqual(
+            licenseEl.label, "Public domain",
+            "info.license must read 'Public domain' in English; got '\(licenseEl.label)'"
+        )
+
+        // Screenshot evidence — Attribution panel in English.
+        let screenshot = XCUIScreen.main.screenshot()
+        let attachment = XCTAttachment(screenshot: screenshot)
+        attachment.lifetime = .keepAlways
+        attachment.name = "attribution-panel-english"
+        add(attachment)
+
+        // Dismiss Attribution panel.
+        infoPanel.swipeDown(velocity: .fast)
+        _ = element(in: app, id: "kigo.reading")
+
+        // AC8: Toggle back to Japanese — kigo.description and kigo.reading revert.
+        _ = openSettings(in: app)
+        selectLanguage("Japanese", in: app)
+        dismissSheet(in: app)
+
+        let revertedReading = element(in: app, id: "kigo.reading").label
+        XCTAssertEqual(
+            revertedReading, jaReading,
+            "kigo.reading must revert to Japanese after toggling back; expected '\(jaReading)' got '\(revertedReading)'"
+        )
+
+        let revertedDesc = element(in: app, id: "kigo.description").label
+        XCTAssertEqual(
+            revertedDesc, jaDesc,
+            "kigo.description must revert to Japanese after toggling back; expected '\(jaDesc)' got '\(revertedDesc)'"
+        )
+
+        // AC5 (final): kigo.kanji still unchanged.
+        let kanjiValueReverted = element(in: app, id: "kigo.kanji").label
+        XCTAssertEqual(
+            kanjiValueReverted, kanjiValue,
+            "kigo.kanji must be identical in all three states"
+        )
+    }
+
     // MARK: - Helpers
 
     /// Returns true if `string` contains any hiragana (U+3040–U+309F) or
