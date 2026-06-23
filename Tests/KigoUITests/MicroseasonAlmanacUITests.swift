@@ -22,6 +22,10 @@ final class MicroseasonAlmanacUITests: XCTestCase {
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchEnvironment["KIGO_FAKE_DATE"] = "2026-06-16"
+        // Pin Japanese so this suite is order-independent: LiveLanguageSwitchUITests
+        // (which runs earlier alphabetically) persists .english to UserDefaults via the
+        // real Settings picker, and these assertions expect kanji/hiragana content.
+        app.launchEnvironment["KIGO_FAKE_LANGUAGE"] = "ja"
         app.launch()
     }
 

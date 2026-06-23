@@ -126,10 +126,12 @@ struct RootView: View {
     let appearanceStore: any AppearanceStore
 
     @State private var isPaywallPresented = false
+    @State private var language: LanguagePreference = .japanese
 
     var body: some View {
         ContentView()
             .preferredColorScheme(appearanceStore.preference.colorScheme)
+            .environment(\.language, language)
             .overlay(alignment: .topTrailing) {
                 Button {
                     isPaywallPresented = true
@@ -153,9 +155,13 @@ struct RootView: View {
                         offerDisplay: offerDisplay,
                         purchaser: purchaser
                     ),
+                    language: $language,
                     languageStore: languageStore,
                     appearanceStore: appearanceStore
                 )
+            }
+            .onAppear {
+                language = languageStore.preference
             }
     }
 }

@@ -24,21 +24,22 @@ import SwiftUI
 /// "Japanese"/"English" that the language UI tests assert against.
 struct SettingsView: View {
     let model: PaywallModel
+    @Binding var language: LanguagePreference
     let languageStore: any LanguageStore
     let appearanceStore: any AppearanceStore
 
-    @State private var currentLanguage: LanguagePreference
     @State private var currentAppearance: AppearancePreference
 
     init(
         model: PaywallModel,
+        language: Binding<LanguagePreference>,
         languageStore: any LanguageStore,
         appearanceStore: any AppearanceStore
     ) {
         self.model = model
+        self._language = language
         self.languageStore = languageStore
         self.appearanceStore = appearanceStore
-        _currentLanguage = State(initialValue: languageStore.preference)
         _currentAppearance = State(initialValue: appearanceStore.preference)
     }
 
@@ -58,7 +59,7 @@ struct SettingsView: View {
                         .tracking(4)
                         .foregroundStyle(KigoTheme.textTertiary)
 
-                    Picker("Language", selection: $currentLanguage) {
+                    Picker("Language", selection: $language) {
                         Text("Japanese").tag(LanguagePreference.japanese)
                         Text("English").tag(LanguagePreference.english)
                     }
@@ -94,11 +95,11 @@ struct SettingsView: View {
 
                 PaywallView(
                     model: model,
-                    chromeStrings: ChromeStrings(currentLanguage)
+                    chromeStrings: ChromeStrings(language)
                 )
         }
         .padding(.bottom, 28)
-        .onChange(of: currentLanguage) { _, newValue in
+        .onChange(of: language) { _, newValue in
             languageStore.set(newValue)
         }
         .onChange(of: currentAppearance) { _, newValue in
