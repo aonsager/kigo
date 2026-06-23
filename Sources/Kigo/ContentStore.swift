@@ -58,6 +58,11 @@ public final class ContentStore {
     /// Provides the current date for day-key derivation. Injected for testability.
     private let dateProvider: any DateProvider
 
+    /// Optional remote source for manifest update checks (C21). When non-nil, a
+    /// detached Task fires after local load and replaces the in-memory state only
+    /// when the fetched version is strictly greater than the loaded version.
+    private let remoteSource: (any RemoteManifestSource)?
+
     // Day-key derivation is provided by `DayKey.make(from:)` (DayKey.swift).
     // The UTC calendar is defined there; ContentStore references it through that
     // single shared implementation rather than maintaining its own copy.
@@ -65,6 +70,10 @@ public final class ContentStore {
     /// The task spawned on init (and on reload). Stored so `waitForLoad()` can
     /// await it deterministically in tests without introducing sleep/polling.
     private var loadTask: Task<Void, Never>?
+
+    /// The detached task that performs the remote manifest check. Stored so
+    /// `waitForRemoteUpdate()` can await it deterministically in tests.
+    private var remoteTask: Task<Void, Never>?
 
     // MARK: Init
 
@@ -75,9 +84,17 @@ public final class ContentStore {
     ///   - source: A `ContentSource` implementation (production or test fake).
     ///   - dateProvider: Provider for "today". Defaults to `SystemDateProvider`
     ///     (current system clock). Inject a `FixedDateProvider` in tests.
-    public init(source: any ContentSource, dateProvider: any DateProvider = SystemDateProvider()) {
+    ///   - remoteSource: An optional `RemoteManifestSource` for remote update checks.
+    ///     When provided, a detached Task fires after local load and replaces the
+    ///     in-memory state only when `remote.version > local.version`.
+    public init(
+        source: any ContentSource,
+        dateProvider: any DateProvider = SystemDateProvider(),
+        remoteSource: (any RemoteManifestSource)? = nil
+    ) {
         self.source = source
         self.dateProvider = dateProvider
+        self.remoteSource = remoteSource
         startLoading()
     }
 
@@ -93,6 +110,33 @@ public final class ContentStore {
                 // Encapsulate the source error: no error type escapes to the caller.
                 // The unavailable case carries the error so the UI can surface it.
                 state = .unavailable(error)
+            }
+            // After local load settles, fire the remote check if a source is configured.
+            startRemoteCheck()
+        }
+    }
+
+    /// Fires a detached `Task` that performs the remote manifest check.
+    ///
+    /// The task is captured in `remoteTask` so tests can `await waitForRemoteUpdate()`.
+    /// All errors from `fetchLatest()` are caught silently — the remote check must never
+    /// propagate errors to any caller of the public API.
+    ///
+    /// The in-memory `.loaded` state is replaced only when `remote.version > local.version`.
+    private func startRemoteCheck() {
+        guard let remoteSource else {
+            remoteTask = nil
+            return
+        }
+        remoteTask = Task {
+            do {
+                let remote = try await remoteSource.fetchLatest()
+                // Replace in-memory state only when remote is strictly newer.
+                if case .loaded(let current) = state, remote.version > current.version {
+                    state = .loaded(remote)
+                }
+            } catch {
+                // Silent: remote errors must not surface to any public API caller.
             }
         }
     }
@@ -172,5 +216,14 @@ public final class ContentStore {
     /// In production code, observe `state` reactively via `@Observable` / `.onChange`.
     public func waitForLoad() async {
         await loadTask?.value
+    }
+
+    /// Awaits the in-flight remote manifest check task. Intended for use in tests to
+    /// deterministically wait until the remote update (if any) has completed.
+    ///
+    /// Returns immediately when no `remoteSource` was configured (`remoteTask` is nil).
+    /// In production code, observe `state` reactively via `@Observable` / `.onChange`.
+    public func waitForRemoteUpdate() async {
+        await remoteTask?.value
     }
 }

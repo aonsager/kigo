@@ -54,7 +54,8 @@ import SwiftUI
 struct KigoApp: App {
     @State private var store = ContentStore(
         source: BundledContentSource(),
-        dateProvider: launchDateProvider(environment: ProcessInfo.processInfo.environment)
+        dateProvider: launchDateProvider(environment: ProcessInfo.processInfo.environment),
+        remoteSource: URLSessionRemoteManifestSource()
     )
 
     private let entitlementProvider: EntitlementProvider
