@@ -61,6 +61,10 @@ targets:
         SWIFT_VERSION: "6.0"
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: S25KR8TV8T
+        # App icon (TestFlight/App Store require a 1024px marketing icon) — sourced
+        # from Sources/Kigo/Assets.xcassets/AppIcon.appiconset. Replace AppIcon-1024.png
+        # with the real artwork; the placeholder is a square crop of tsuyu.jpg.
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
 
   KigoWidgetExtension:
     type: app-extension
