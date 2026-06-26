@@ -57,6 +57,10 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigo
         PRODUCT_NAME: Kigo
+        # iPhone-only (family 1). Kigo is a portrait phone app; iPhone-only makes
+        # the single portrait orientation valid without any iPad-multitasking
+        # opt-out. iPad users can still run it in iPhone-compatibility mode.
+        TARGETED_DEVICE_FAMILY: "1"
         INFOPLIST_FILE: Sources/Kigo/Info.plist
         SWIFT_VERSION: "6.0"
         CODE_SIGN_STYLE: Automatic
@@ -129,6 +133,9 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigo.widgets
         PRODUCT_NAME: KigoWidgetExtension
+        # Match the iPhone-only host app (family 1). An embedded extension must not
+        # advertise broader device support than the app that contains it.
+        TARGETED_DEVICE_FAMILY: "1"
         INFOPLIST_FILE: Sources/KigoWidgetExtension/Info.plist
         SWIFT_VERSION: "6.0"
         CODE_SIGN_STYLE: Automatic
