@@ -70,27 +70,31 @@ struct TodayView: View {
             // directly over the photo + veil). A bottom-anchored `.ultraThinMaterial`
             // band, masked to fade from clear at its top into a solid frost over the
             // panel so the Kō/Sekki readings and year timeline stay legible.
-            GeometryReader { proxy in
-                Rectangle()
-                    .fill(.ultraThinMaterial)
-                    .overlay(KigoTheme.frostedTint)
-                    .mask(
-                        LinearGradient(
-                            stops: [
-                                .init(color: .clear, location: 0.0),
-                                .init(color: .black, location: 0.6),
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
+            // Gated with microseasonBlock (C22/2): showing the plate without the
+            // microseason content behind it would leave a blank frosted strip.
+            if isEntitled {
+                GeometryReader { proxy in
+                    Rectangle()
+                        .fill(.ultraThinMaterial)
+                        .overlay(KigoTheme.frostedTint)
+                        .mask(
+                            LinearGradient(
+                                stops: [
+                                    .init(color: .clear, location: 0.0),
+                                    .init(color: .black, location: 0.6),
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
                         )
-                    )
-                    .frame(height: proxy.size.height * 0.42)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                        .frame(height: proxy.size.height * 0.42)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                }
+                .ignoresSafeArea()
+                .allowsHitTesting(false)
+                .accessibilityIdentifier("kigo.scrim")
+                .accessibilityHidden(true)
             }
-            .ignoresSafeArea()
-            .allowsHitTesting(false)
-            .accessibilityIdentifier("kigo.scrim")
-            .accessibilityHidden(true)
 
             // 4 · Centered sumi-ink text column.
             textColumn
@@ -101,9 +105,12 @@ struct TodayView: View {
             infoEntry
 
             // 6 · Bottom microseason block — readings + tappable year timeline.
-            microseasonBlock
-                .frame(maxHeight: .infinity, alignment: .bottom)
-                .opacity(hasAppeared ? 1 : 0)
+            // Gated behind entitlement (C22/2): only rendered for Premium users.
+            if isEntitled {
+                microseasonBlock
+                    .frame(maxHeight: .infinity, alignment: .bottom)
+                    .opacity(hasAppeared ? 1 : 0)
+            }
         }
         .onAppear {
             guard !hasAppeared else { return }

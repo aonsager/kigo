@@ -26,6 +26,8 @@ final class MicroseasonAlmanacUITests: XCTestCase {
         // (which runs earlier alphabetically) persists .english to UserDefaults via the
         // real Settings picker, and these assertions expect kanji/hiragana content.
         app.launchEnvironment["KIGO_FAKE_LANGUAGE"] = "ja"
+        // The almanac is a Premium surface — microseason elements are gated behind entitlement.
+        app.launchEnvironment["KIGO_FAKE_ENTITLEMENT"] = "active"
         app.launch()
     }
 

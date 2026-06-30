@@ -26,7 +26,7 @@ final class DarkModeUITests: XCTestCase {
         app = XCUIApplication()
         app.launchEnvironment["KIGO_FAKE_DATE"] = "2026-06-16"
         app.launchEnvironment["KIGO_FAKE_APPEARANCE"] = "dark"
-        app.launchEnvironment["KIGO_FAKE_ENTITLEMENT"] = "inactive"
+        app.launchEnvironment["KIGO_FAKE_ENTITLEMENT"] = "active"
         app.launch()
     }
 

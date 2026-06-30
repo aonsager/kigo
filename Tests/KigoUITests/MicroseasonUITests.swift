@@ -26,6 +26,8 @@ final class MicroseasonUITests: XCTestCase {
         // (which runs earlier alphabetically) persists .english to UserDefaults via the
         // real Settings picker, and these assertions expect hiragana readings.
         app.launchEnvironment["KIGO_FAKE_LANGUAGE"] = "ja"
+        // Microseason elements are gated behind entitlement (C22/2).
+        app.launchEnvironment["KIGO_FAKE_ENTITLEMENT"] = "active"
         app.launch()
     }
 

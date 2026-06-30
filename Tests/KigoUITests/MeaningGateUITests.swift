@@ -1,21 +1,30 @@
 import XCTest
 
 /// UI tests for slice #190 — Entitlement gate on kigo.description.
+/// Extended in slice #191 — Entitlement gate on microseason block (ko/sekki/timeline).
 ///
 /// Two cases:
 ///   Basic (KIGO_FAKE_ENTITLEMENT=inactive):
 ///     - kigo.image, kigo.kanji, kigo.reading, meaning.upsell are present.
 ///     - kigo.description is absent from the accessibility hierarchy.
+///     - microseason.ko, microseason.sekki, microseason.timeline are absent.
 ///     - Tapping meaning.upsell presents a sheet containing paywall.benefits.
 ///
 ///   Premium (KIGO_FAKE_ENTITLEMENT=active):
 ///     - kigo.description is present with non-empty text.
 ///     - meaning.upsell is absent from the accessibility hierarchy.
+///     - microseason.ko and microseason.sekki are present with non-empty text.
+///     - microseason.timeline is present and tappable.
 ///
 /// Screenshot evidence:
 ///   Test identifier: KigoUITests/MeaningGateUITests/testBasicGateShowsUpsell
 ///   Attachment name: "basic-meaning-gate"
 ///   Lifetime: .keepAlways
+///
+///   Test identifier: KigoUITests/MeaningGateUITests/testPremiumGateShowsDescriptionAndMicroseason
+///   Attachment name: "premium-today-screen"
+///   Lifetime: .keepAlways
+///   (J5 evidence: full understanding layer rendered for Premium user)
 ///
 /// Pinned fixture: KIGO_FAKE_DATE=2026-06-12 (菖蒲)
 final class MeaningGateUITests: XCTestCase {
@@ -79,6 +88,27 @@ final class MeaningGateUITests: XCTestCase {
             "kigo.description must NOT be in the accessibility hierarchy when KIGO_FAKE_ENTITLEMENT=inactive"
         )
 
+        // microseason.ko must NOT be present (C22/2 gate).
+        let koEl = app.staticTexts["microseason.ko"]
+        XCTAssertFalse(
+            koEl.exists,
+            "microseason.ko must NOT be in the accessibility hierarchy when KIGO_FAKE_ENTITLEMENT=inactive"
+        )
+
+        // microseason.sekki must NOT be present (C22/2 gate).
+        let sekkiEl = app.staticTexts["microseason.sekki"]
+        XCTAssertFalse(
+            sekkiEl.exists,
+            "microseason.sekki must NOT be in the accessibility hierarchy when KIGO_FAKE_ENTITLEMENT=inactive"
+        )
+
+        // microseason.timeline must NOT be present (C22/2 gate).
+        let timelineEl = app.buttons["microseason.timeline"]
+        XCTAssertFalse(
+            timelineEl.exists,
+            "microseason.timeline must NOT be in the accessibility hierarchy when KIGO_FAKE_ENTITLEMENT=inactive"
+        )
+
         // Screenshot evidence — Basic case showing meaning.upsell in place of kigo.description.
         let screenshot = XCUIScreen.main.screenshot()
         let attachment = XCTAttachment(screenshot: screenshot)
@@ -112,9 +142,13 @@ final class MeaningGateUITests: XCTestCase {
 
     // MARK: - Premium case (active entitlement)
 
-    /// AC2: Launched with KIGO_FAKE_ENTITLEMENT=active, kigo.description is present
-    /// with non-empty text and meaning.upsell is absent.
-    func testPremiumGateShowsDescription() {
+    /// AC2 + C22/2: Launched with KIGO_FAKE_ENTITLEMENT=active, kigo.description is present
+    /// with non-empty text, meaning.upsell is absent, and microseason elements are present.
+    ///
+    /// Screenshot evidence (J5): full understanding layer rendered calmly for a Premium user.
+    ///   Attachment name: "premium-today-screen"
+    ///   Lifetime: .keepAlways
+    func testPremiumGateShowsDescriptionAndMicroseason() {
         let app = makeApp(entitlement: "active")
         app.launch()
 
@@ -135,5 +169,45 @@ final class MeaningGateUITests: XCTestCase {
             upsellEl.exists,
             "meaning.upsell must NOT be in the accessibility hierarchy when KIGO_FAKE_ENTITLEMENT=active"
         )
+
+        // microseason.ko must be present and non-empty (C22/2).
+        let koEl = app.staticTexts["microseason.ko"]
+        XCTAssertTrue(
+            koEl.waitForExistence(timeout: 10),
+            "microseason.ko must be present when KIGO_FAKE_ENTITLEMENT=active"
+        )
+        XCTAssertFalse(
+            koEl.label.isEmpty,
+            "microseason.ko must have non-empty text in Premium case"
+        )
+
+        // microseason.sekki must be present and non-empty (C22/2).
+        let sekkiEl = app.staticTexts["microseason.sekki"]
+        XCTAssertTrue(
+            sekkiEl.waitForExistence(timeout: 10),
+            "microseason.sekki must be present when KIGO_FAKE_ENTITLEMENT=active"
+        )
+        XCTAssertFalse(
+            sekkiEl.label.isEmpty,
+            "microseason.sekki must have non-empty text in Premium case"
+        )
+
+        // microseason.timeline must be present and tappable (C22/2).
+        let timelineEl = app.buttons["microseason.timeline"]
+        XCTAssertTrue(
+            timelineEl.waitForExistence(timeout: 10),
+            "microseason.timeline must be present when KIGO_FAKE_ENTITLEMENT=active"
+        )
+        XCTAssertTrue(
+            timelineEl.isHittable,
+            "microseason.timeline must be hittable in Premium case"
+        )
+
+        // Screenshot evidence (J5): full understanding layer — description + ko + sekki + timeline.
+        let screenshot = XCUIScreen.main.screenshot()
+        let attachment = XCTAttachment(screenshot: screenshot)
+        attachment.lifetime = .keepAlways
+        attachment.name = "premium-today-screen"
+        add(attachment)
     }
 }
