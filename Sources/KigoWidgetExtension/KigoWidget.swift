@@ -104,6 +104,10 @@ struct KigoWidget: Widget {
         .configurationDisplayName("Kigo")
         .description("Today's seasonal word.")
         .supportedFamilies([.systemSmall, .systemMedium])
+        // Drop WidgetKit's default content margins so the image renders
+        // edge-to-edge with no canvas border; the text VStack keeps its own
+        // `.padding()` for legibility.
+        .contentMarginsDisabled()
     }
 }
 
