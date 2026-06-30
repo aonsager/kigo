@@ -19,13 +19,10 @@ import Foundation
 // the test-runner's local timezone). In production, pass `Calendar.current`.
 // See ADR 0010 for the UTC-vs-local-midnight design decision.
 //
-// Slice #71: Added injected `EntitlementSharedStore` to derive `showsImage` on
-// each built entry. `buildEntry()` and `buildTimeline(calendar:)` are now `async`
-// so they can read `isActive` from the store. The entitlement flag is read once
-// at the top of each build call and applied to all entries in that call.
-// In production the store is a `UserDefaultsEntitlementStore` backed by
-// app-group UserDefaults; tests inject an in-memory actor fake (no StoreKit).
-// See ADR 0011 for the Foundation-only factoring decision.
+// Slice C7: Removed injected `EntitlementSharedStore`; `showsImage` is now
+// unconditionally `true` on every built entry — the image is always revealed.
+// `buildEntry()` and `buildTimeline(calendar:)` are synchronous (no `async`
+// needed without the entitlement store await).
 //
 // Resolution is delegated entirely to `TodayResolver` / `DayKey` — there is
 // no reimplementation of the day-key or Ko/Sekki lookup logic here.
@@ -37,30 +34,26 @@ public struct WidgetTimelineBuilder: Sendable {
 
     private let dateProvider: DateProvider
     private let manifest: Manifest
-    private let entitlementStore: EntitlementSharedStore
 
     public init(
         dateProvider: DateProvider,
-        manifest: Manifest,
-        entitlementStore: EntitlementSharedStore = UserDefaultsEntitlementStore()
+        manifest: Manifest
     ) {
         self.dateProvider = dateProvider
         self.manifest = manifest
-        self.entitlementStore = entitlementStore
     }
 
     /// Builds a single `KigoWidgetEntry` for the current date from the injected
     /// `DateProvider`, resolving against the injected `Manifest`.
     ///
-    /// `showsImage` on the returned entry reflects the current value of the injected
-    /// `EntitlementSharedStore.isActive` — never a hardcoded constant.
+    /// `showsImage` on the returned entry is always `true` — the image is
+    /// unconditionally revealed (no entitlement gate).
     ///
     /// Returns `nil` if the date's day-key is absent from the manifest or if
     /// the Ko/Sekki lookup fails (impossible for a well-formed bundled manifest,
     /// but possible with minimal test manifests).
-    public func buildEntry() async -> KigoWidgetEntry? {
+    public func buildEntry() -> KigoWidgetEntry? {
         let today = dateProvider.today
-        let entitled = await entitlementStore.isActive
         guard let resolved = TodayResolver.resolve(date: today, manifest: manifest) else {
             return nil
         }
@@ -69,7 +62,7 @@ public struct WidgetTimelineBuilder: Sendable {
             kanji: resolved.kigoEntry.kanji,
             reading: resolved.kigoEntry.reading.ja,
             imageId: resolved.kigoEntry.imageId,
-            showsImage: entitled
+            showsImage: true
         )
     }
 
@@ -80,9 +73,8 @@ public struct WidgetTimelineBuilder: Sendable {
     ///   Inject a UTC `Calendar` in tests for full determinism regardless of the
     ///   test-runner's timezone. See ADR 0010.
     ///
-    /// `showsImage` is derived from the injected `EntitlementSharedStore.isActive` and
-    /// applied uniformly to all entries in the timeline (the entitlement flag is read
-    /// once at the start of the build call).
+    /// `showsImage` is always `true` on all entries — the image is unconditionally
+    /// revealed (no entitlement gate).
     ///
     /// Returns an array of exactly 2 `KigoWidgetEntry` values:
     ///   - Index 0: current date entry (same as `buildEntry()`).
@@ -91,9 +83,8 @@ public struct WidgetTimelineBuilder: Sendable {
     /// If either resolution fails (missing manifest entry), the corresponding entry
     /// is included with nil content fields (unresolved placeholder). This preserves
     /// the two-entry contract so WidgetKit always has a rollover timestamp.
-    public func buildTimeline(calendar: Calendar = .current) async -> [KigoWidgetEntry] {
+    public func buildTimeline(calendar: Calendar = .current) -> [KigoWidgetEntry] {
         let today = dateProvider.today
-        let entitled = await entitlementStore.isActive
 
         // Entry 0: current date
         let firstEntry: KigoWidgetEntry
@@ -103,7 +94,7 @@ public struct WidgetTimelineBuilder: Sendable {
                 kanji: resolved.kigoEntry.kanji,
                 reading: resolved.kigoEntry.reading.ja,
                 imageId: resolved.kigoEntry.imageId,
-                showsImage: entitled
+                showsImage: true
             )
         } else {
             firstEntry = KigoWidgetEntry(date: today)
@@ -122,7 +113,7 @@ public struct WidgetTimelineBuilder: Sendable {
                 kanji: resolved.kigoEntry.kanji,
                 reading: resolved.kigoEntry.reading.ja,
                 imageId: resolved.kigoEntry.imageId,
-                showsImage: entitled
+                showsImage: true
             )
         } else {
             secondEntry = KigoWidgetEntry(date: nextMidnight)

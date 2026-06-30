@@ -90,7 +90,7 @@ final class WidgetRealContentTests: XCTestCase {
         // Step 5: Build the widget entry via WidgetTimelineBuilder — real manifest, real date seam.
         let provider = FixedDateProvider(date: pinnedDate)
         let builder = WidgetTimelineBuilder(dateProvider: provider, manifest: manifest)
-        let entry = await builder.buildEntry()
+        let entry = builder.buildEntry()
 
         // Step 6: Assert entry fields match the manifest's dailyMap for the picked key.
         XCTAssertNotNil(entry,
@@ -151,7 +151,7 @@ final class WidgetRealContentTests: XCTestCase {
         // Build entry via real WidgetTimelineBuilder + real manifest
         let provider = FixedDateProvider(date: pinnedDate)
         let builder = WidgetTimelineBuilder(dateProvider: provider, manifest: manifest)
-        let widgetEntry = await builder.buildEntry()
+        let widgetEntry = builder.buildEntry()
 
         guard let widgetEntry else {
             XCTFail("Builder returned nil for key '\(targetKey)' — cannot host-render")

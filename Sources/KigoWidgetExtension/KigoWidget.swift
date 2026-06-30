@@ -76,19 +76,18 @@ struct KigoWidgetProvider: TimelineProvider {
         }
         return WidgetTimelineBuilder(
             dateProvider: SystemDateProvider(),
-            manifest: manifest,
-            entitlementStore: UserDefaultsEntitlementStore()
+            manifest: manifest
         )
     }
 
     private func buildEntry() async -> KigoWidgetEntry? {
         guard let builder = await makeBuilder() else { return nil }
-        return await builder.buildEntry()
+        return builder.buildEntry()
     }
 
     private func buildTimeline() async -> [KigoWidgetEntry] {
         guard let builder = await makeBuilder() else { return [] }
-        return await builder.buildTimeline(calendar: .current)
+        return builder.buildTimeline(calendar: .current)
     }
 }
 

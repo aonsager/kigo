@@ -29,7 +29,7 @@ public struct KigoWidgetEntry: TimelineEntry {
     public let showsImage: Bool
 
     /// Convenience initialiser for the resolved case (all fields present).
-    public init(date: Date, kanji: String, reading: String, imageId: String, showsImage: Bool = false) {
+    public init(date: Date, kanji: String, reading: String, imageId: String, showsImage: Bool = true) {
         self.date = date
         self.kanji = kanji
         self.reading = reading
