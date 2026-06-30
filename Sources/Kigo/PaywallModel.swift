@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import StoreKit
+import WidgetKit
 
 // MARK: - PaywallModel
 
@@ -105,6 +106,10 @@ public final class PaywallModel {
     public func restore() async {
         await provider.restoreEntitlement()
         isActive = await provider.isEntitlementActive()
+        // The entitlement flag now lives in the shared app-group store, but WidgetKit
+        // serves its cached timeline until told to rebuild. Signal a reload so the
+        // widget re-reads the flag and switches to the full (photo) rendering.
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     /// Initiates a subscription purchase for the widget-access product via the
@@ -127,6 +132,10 @@ public final class PaywallModel {
             try await purchaser.purchase(productID)
             await provider.refreshEntitlement()
             isActive = await provider.isEntitlementActive()
+            // The entitlement flag now lives in the shared app-group store, but WidgetKit
+            // serves its cached timeline until told to rebuild. Signal a reload so the
+            // widget re-reads the flag and switches to the full (photo) rendering.
+            WidgetCenter.shared.reloadAllTimelines()
         } catch {
             // Swallow both cancellation and unexpected errors — no crash on any path.
             // isActive is intentionally left unchanged.
