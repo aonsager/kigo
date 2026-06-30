@@ -28,6 +28,8 @@ final class LiveLanguageSwitchUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchEnvironment["KIGO_FAKE_DATE"] = "2026-06-16"
         // No KIGO_FAKE_LANGUAGE — exercises the real UserDefaultsLanguageStore default path.
+        // Slice #190: gate is live — inject active entitlement so kigo.description is visible.
+        app.launchEnvironment["KIGO_FAKE_ENTITLEMENT"] = "active"
         return app
     }
 
