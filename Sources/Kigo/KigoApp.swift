@@ -102,7 +102,8 @@ struct KigoApp: App {
 
 // MARK: - RootView
 
-/// Thin wrapper around `ContentView` that owns the paywall entry and sheet state.
+/// Thin wrapper around `ContentView` that owns the paywall entry, sheet state, and
+/// the single persistent `PaywallModel` instance for the session.
 ///
 /// Placing entry+sheet ownership here (rather than inside `TodayView` or `ContentView`)
 /// keeps `ContentView` free of paywall concerns and gives `RootView` unambiguous access
@@ -119,6 +120,12 @@ struct KigoApp: App {
 ///
 /// Slice #137: `languageStore` is now typed as `any LanguageStore` to accommodate both
 /// `UserDefaultsLanguageStore` (production) and `LockedInMemoryLanguageStore` (fake env path).
+///
+/// Slice #190: `paywallModel` is lifted from an ephemeral sheet-local object to persistent
+/// `@State` here. Two environment values are injected into the view hierarchy:
+/// - `\.isEntitled`: mirrors `paywallModel.isActive` so `TodayView` can gate premium content.
+/// - `\.openPaywall`: a closure that sets `isPaywallPresented = true`, so `TodayView`'s
+///   upsell element can present the paywall without coupling to sheet state.
 struct RootView: View {
     let entitlementProvider: EntitlementProvider
     let offerDisplay: OfferDisplay
@@ -128,11 +135,33 @@ struct RootView: View {
 
     @State private var isPaywallPresented = false
     @State private var language: LanguagePreference = .japanese
+    @State private var paywallModel: PaywallModel
+
+    init(
+        entitlementProvider: EntitlementProvider,
+        offerDisplay: OfferDisplay,
+        purchaser: any SubscriptionPurchaser,
+        languageStore: any LanguageStore,
+        appearanceStore: any AppearanceStore
+    ) {
+        self.entitlementProvider = entitlementProvider
+        self.offerDisplay = offerDisplay
+        self.purchaser = purchaser
+        self.languageStore = languageStore
+        self.appearanceStore = appearanceStore
+        self._paywallModel = State(wrappedValue: PaywallModel(
+            provider: entitlementProvider,
+            offerDisplay: offerDisplay,
+            purchaser: purchaser
+        ))
+    }
 
     var body: some View {
         ContentView()
             .preferredColorScheme(appearanceStore.preference.colorScheme)
             .environment(\.language, language)
+            .environment(\.isEntitled, paywallModel.isActive)
+            .environment(\.openPaywall, OpenPaywallAction { isPaywallPresented = true })
             .overlay(alignment: .topTrailing) {
                 Button {
                     isPaywallPresented = true
@@ -151,11 +180,7 @@ struct RootView: View {
             }
             .bottomSheet(isPresented: $isPaywallPresented) {
                 SettingsView(
-                    model: PaywallModel(
-                        provider: entitlementProvider,
-                        offerDisplay: offerDisplay,
-                        purchaser: purchaser
-                    ),
+                    model: paywallModel,
                     language: $language,
                     languageStore: languageStore,
                     appearanceStore: appearanceStore
@@ -163,6 +188,9 @@ struct RootView: View {
             }
             .onAppear {
                 language = languageStore.preference
+            }
+            .task {
+                await paywallModel.loadState()
             }
     }
 }

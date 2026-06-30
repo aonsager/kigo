@@ -44,6 +44,8 @@ struct TodayView: View {
     }
 
     @Environment(\.language) private var language
+    @Environment(\.isEntitled) private var isEntitled
+    @Environment(\.openPaywall) private var openPaywall
 
     @State private var activeSheet: ActiveSheet?
     @State private var hasAppeared = false
@@ -140,14 +142,31 @@ struct TodayView: View {
                 .padding(.top, 22)
                 .accessibilityIdentifier("kigo.reading")
 
-            Text(resolvedDay.kigoEntry.description.localized(for: language))
-                .font(KigoFont.zenKaku(.regular, size: 14.5, relativeTo: .body))
-                .lineSpacing(12)
-                .multilineTextAlignment(.center)
-                .foregroundStyle(KigoTheme.inkDescription)
-                .frame(maxWidth: 280)
+            if isEntitled {
+                Text(resolvedDay.kigoEntry.description.localized(for: language))
+                    .font(KigoFont.zenKaku(.regular, size: 14.5, relativeTo: .body))
+                    .lineSpacing(12)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(KigoTheme.inkDescription)
+                    .frame(maxWidth: 280)
+                    .padding(.top, 30)
+                    .accessibilityIdentifier("kigo.description")
+            } else {
+                Button {
+                    openPaywall()
+                } label: {
+                    Text("Unlock meaning")
+                        .font(KigoFont.zenKaku(.regular, size: 14.5, relativeTo: .body))
+                        .foregroundStyle(KigoTheme.inkReading)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(.ultraThinMaterial, in: Capsule())
+                        .overlay(Capsule().strokeBorder(KigoTheme.hairline, lineWidth: 1))
+                }
+                .buttonStyle(.plain)
                 .padding(.top, 30)
-                .accessibilityIdentifier("kigo.description")
+                .accessibilityIdentifier("meaning.upsell")
+            }
         }
         .padding(.horizontal, 30)
     }
