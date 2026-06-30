@@ -23,20 +23,30 @@ so the right record is verifiably being read (ADR 0016, reversing the earlier pe
 can be **updated from a versioned remote URL** on app open (ADR 0017) — for now it is
 also generated into the repo and bundled as the seed/fallback.
 
-The app is free. A single auto-renewable subscription ("widget access") lets a
-subscriber put a small version of today's image+Kigo on their home screen as a
-**Widget**. Non-subscribers who add the widget still see the day's Kigo name — just
-not the image, which is the part the subscription reveals.
+The app is free, and the line between free and paid is **encounter vs.
+understanding** (ADR 0019). Everyone *sees* the day's beauty for free — the full-bleed
+image, the Kigo **kanji** and **reading** — both in the app and on a fully free
+home-screen **Widget**, and, if they opt in, a gentle **daily reminder** at 08:00. What
+the subscription unlocks is *understanding*: the Kigo's full **description / significance
+prose**, the **Microseason** display (Kō/Sekki), and the **Almanac** depth. A single
+auto-renewable subscription gates that whole understanding layer.
 
-That subscription is bought **in-app**: a small, unobtrusive **Upgrade entry** in a
-corner of the Today screen opens a **Paywall** sheet. For a **Basic** (free) user
-the Paywall presents the one premium benefit — revealing the image on the home-screen
-Widget — with a prominent buy button, a Restore Purchases button, the price and
-subscription duration, and the App-Store-required Terms of Use and Privacy Policy
-links. Buying it (or restoring) activates the **Entitlement** and unlocks the Widget
-image; a **Premium** user opening the Paywall sees an active/manage state instead.
-The entry stays unobtrusive on purpose — the prominence lives inside the splash, not
-on the calm Today screen (J1).
+The Today screen embodies the gate calmly. A **Basic** (free) user sees the image, kanji
+and reading and — where the description and microseason would sit — one quiet **Meaning
+entry** line (e.g. *"what does 蛍 mean? →"*) that opens the **Paywall**; nothing else
+intrudes on the calm. A **Premium** user sees the description, the microseason line, and
+the tappable timeline (Almanac) instead, with no upsell line.
+
+The subscription is bought **in-app**. Both the Settings gear and the Meaning entry open
+the same **Paywall** sheet. For a **Basic** user it presents the honest **Benefits** —
+unlocking the understanding layer — with a prominent buy button, a Restore Purchases
+button, the price and subscription duration, and the App-Store-required Terms of Use and
+Privacy Policy links. Buying it (or restoring) activates the **Entitlement** and reveals
+the understanding layer; a **Premium** user opening the Paywall sees an active/manage
+state instead. The on-screen upsell stays unobtrusive on purpose — a quiet affordance,
+never a lock badge on the image (J1/J5). The widget exists to *reduce friction to the
+daily encounter*, not as a paid perk, so it is ungated; the reminder serves the same
+purpose and doubles as a daily curiosity hook toward the paid understanding.
 
 Audience: people who want a small daily encounter with the Japanese seasons —
 contemplative, aesthetic, low-friction.
@@ -62,8 +72,9 @@ violate the "only today" calm:
 - **Image Attribution panel** — an **(i)** control (top-left) slides a per-image credit panel
   down from the top.
 - **Settings menu** — the bare **Upgrade entry** becomes a top-right **Settings gear** opening
-  a sheet with three sections: a **Language preference** switcher (JP/EN), the widget
-  subscribe offer (the Paywall, unchanged in substance), and the legal links.
+  a sheet housing: a **Language preference** switcher (JP/EN), an Appearance switcher, the
+  subscribe offer (the Paywall — now gating the **understanding layer**, ADR 0019), a default-off
+  **Daily reminder** toggle, and the legal links.
 
 Pixel-fidelity to the Asagiri mockup is inherently subjective and is reported as a judgment
 claim (J6), **never a termination gate** — what the loop hard-gates is the new *structure,
@@ -78,7 +89,11 @@ serves only these, even if it seems helpful:
   or future Kigo, no archive. This is the core wellness-vs-calendar distinction.
 - **User accounts & sync.** No sign-in, profiles, or cloud sync. Content is identical
   for all users and needs no identity.
-- **Notifications.** No daily push or local reminders in this goal.
+- **Notifications beyond one opt-in daily local reminder.** A single **opt-in** local
+  reminder is now *in scope* (a Settings toggle, default off, fixed 08:00 local — C23/J8/J9,
+  ADR 0019). Out of scope: **push notifications (APNs)**, a **user-configurable time / time
+  picker**, **more than one notification per day**, and any notification fired unprompted (the
+  permission request is only triggered by the user enabling the toggle).
 - **Sharing & onboarding.** No share sheet / social export, no multi-screen
   onboarding or tutorial. The Paywall sheet is the only new screen — it is not an
   onboarding flow and is never shown unprompted (only when the user taps the Upgrade
@@ -87,10 +102,12 @@ serves only these, even if it seems helpful:
   (`…widgets.monthly`). No introductory pricing, free trials, promotional/win-back
   offers, no annual plan, and no second tier. The Paywall presents one straight
   monthly subscription.
-- **Invented premium benefits.** Premium unlocks exactly one capability — the Widget
-  Gate revealing the image. The Paywall must present that honestly; do not advertise
-  features the app does not deliver (e.g. extra content, themes). Expanding what
-  Premium unlocks is a separate goal amendment, not loop work.
+- **Invented premium benefits.** Premium unlocks exactly the **understanding layer** — the
+  Kigo's full description/significance prose, the Microseason (Kō/Sekki) display, and the
+  Almanac depth (ADR 0019). The Paywall must present that honestly; do not advertise features
+  the app does not deliver (e.g. themes, extra days, extra content beyond what the manifest
+  carries). The widget and the daily reminder are **free** and must never be presented as paid
+  benefits. Expanding what Premium unlocks further is a separate goal amendment, not loop work.
 - **In-app subscription management.** No custom manage/cancel/upgrade UI. For a
   Premium user the "manage" affordance is at most a deep link to Apple's
   system-managed subscription screen (the real deep link is off the gating path —
@@ -178,10 +195,28 @@ Standing rules every milestone inherits:
   path** (they hang or need a human/account from the CLI — CLAUDE.md / ADR 0009);
   any such integration test is non-blocking, runs only in the Xcode IDE or a manual
   lane, and is reported as J4 — never as a `C*` evidence step.
+- **Monetization model (ADR 0019):** the gate is **encounter (free) vs understanding (paid)**.
+  Free: the image, the Kigo kanji + reading, the **ungated Widget**, and the opt-in **daily
+  reminder**. Paid (active **Entitlement**): the Kigo description/significance prose, the
+  Microseason (Kō/Sekki) display, and the Almanac depth. The Today screen renders a quiet
+  **Meaning entry** (`meaning.upsell`) for Basic users in place of the understanding layer; it and
+  the Settings gear both open the same `paywall.sheet`. The entitlement/purchase *mechanism* (C6,
+  C10) is unchanged — only what an active entitlement unlocks changed.
+- **Notification seam (ADR 0009 pattern, ADR 0019):** the daily reminder's *scheduling logic*
+  depends on an injectable `NotificationScheduler` protocol; tests inject an in-memory fake
+  (headless, deterministic). The production adapter over `UNUserNotificationCenter`, the
+  permission request, and OS delivery are **off the headless gating path** (J9 — the APNs row of
+  the headless-integration-traps catalog). No real notification is ever requested or awaited in an
+  evidence procedure. The reminder fires once daily at **08:00 local**, default **off**, free for
+  all; UI tests assert the `settings.dailyReminder` toggle's presence and default-off state only —
+  they must **not** tap-enable it (that fires the real permission prompt, which hangs headless).
 - **Identifiers:** bundle id `com.tomeitotameigo.kigo`, app group
   `group.com.tomeitotameigo.kigo`, subscription product
   `com.tomeitotameigo.kigo.widgets.monthly` (loop may refine the app group / product
-  naming, but the bundle id is fixed).
+  naming, but the bundle id is fixed). New revamp accessibility identifiers added by this
+  amendment: `meaning.upsell` (the Today-screen Meaning entry) and `settings.dailyReminder` (the
+  reminder toggle). The widget no longer requires the app group for entitlement sharing (ADR 0019
+  supersedes ADR 0011 in part); removing it is optional cleanup, not gated.
 - **Date semantics:** "today" is the device's local calendar day (CONTEXT.md).
 - **Revamp launch-env injection (extends ADR 0013):** the `KIGO_FAKE_*` convention gains two
   variables so the revamp's appearance- and language-dependent UI is driven deterministically
@@ -325,19 +360,24 @@ Goal state met ⇔ every `C*` procedure below passes on `main`.
 - **Evidence:**
   1. Run the canonical test invocation (Constraints) with `-only-testing:KigoUITests/TodayScreenUITests`
      — expect `** TEST SUCCEEDED **` and exit 0. The UI test launches the app with
-     environment `KIGO_FAKE_DATE=2026-06-12` and asserts, via accessibility
-     identifiers, that the today screen shows: an image element
+     environment `KIGO_FAKE_DATE=2026-06-12` **and `KIGO_FAKE_ENTITLEMENT=active`** (the
+     description and microseason are now part of the Premium understanding layer — ADR 0019/C22 —
+     so this suite verifies the full Today render as a Premium user sees it) and asserts, via
+     accessibility identifiers, that the today screen shows: an image element
      (`id "kigo.image"`), the Kigo kanji static text matching the Manifest's `06-12`
      entry (`id "kigo.kanji"`), a non-empty description (`id "kigo.description"`),
      and the Kō name (`id "microseason.ko"`) with the Sekki (`id "microseason.sekki"`).
 
-### C6: Subscription paywall grants and restores widget-access entitlement
+### C6: Subscription paywall grants and restores the understanding-layer entitlement (amended — ADR 0019)
 
 - **Depends on:** C1
-- **Statement:** A paywall offers one auto-renewable "widget access" subscription;
-  purchasing it makes the Entitlement active, the active state persists and is
-  readable for the widget, and restore re-establishes it; with no purchase the
-  Entitlement is inactive.
+- **Statement:** A paywall offers one auto-renewable subscription (product id
+  `com.tomeitotameigo.kigo.widgets.monthly` — the `.widgets.` segment is a legacy name retained to
+  avoid an App Store Connect product churn; it now unlocks the **understanding layer**, ADR 0019);
+  purchasing it makes the **Entitlement** active, the active state persists and is readable by the
+  app, and restore re-establishes it; with no purchase the Entitlement is inactive. (The
+  entitlement *mechanism* is unchanged from the original design — only what an active entitlement
+  unlocks moved from the widget image to the in-app understanding layer.)
 - **Evidence:**
   1. Run the canonical test invocation (see Constraints) with
      `-only-testing:KigoTests/EntitlementTests` — expect `** TEST SUCCEEDED **` and
@@ -358,36 +398,45 @@ Goal state met ⇔ every `C*` procedure below passes on `main`.
      and excluded from this suite (it hangs under `xcodebuild` CLI — CLAUDE.md / ADR
      0009), so it never gates this criterion.
 
-### C7: Widget renders today's content, gated by entitlement
+### C7: Widget renders today's content, ungated (amended — ADR 0019)
 
-- **Depends on:** C1, C2, C3, C6
+- **Depends on:** C1, C2, C3
 - **Statement:** The widget (systemSmall and systemMedium) builds a timeline whose
-  current entry is today's Kigo, advancing to the next day at local midnight. When
-  the Entitlement is active the entry reveals the image; when inactive it shows the
-  Kigo name (kanji + reading) without the image.
+  current entry is today's Kigo, advancing to the next day at local midnight. The widget is
+  **free and ungated**: every entry reveals the image **and** carries the Kigo kanji + reading,
+  regardless of the Entitlement state. (The gate moved off the widget and onto the in-app
+  understanding layer — the Widget Gate is retired; see C22 and ADR 0019.)
 - **Evidence:**
-  1. Run the canonical test invocation (Constraints) with `-only-testing:KigoWidgetTests/WidgetTimelineTests`
-     — expect `** TEST SUCCEEDED **` and exit 0. With an injected `DateProvider`,
-     shared store, and `ContentSource`, the suite asserts:
+  1. Run the canonical test invocation (Constraints) with
+     `-only-testing:KigoWidgetTests/WidgetUngatedTests` — expect `** TEST SUCCEEDED **`, exit 0,
+     **and** output matching `Executed [1-9][0-9]* test` (nonzero-count guard; this is a **new**
+     suite — until it exists the criterion reads unmet, which is correct, and it cannot false-pass
+     against the old gated `WidgetTimelineTests`). With an injected `DateProvider` and
+     `ContentSource`, the suite asserts:
      - the timeline's first entry corresponds to the injected date's Kigo, and the
        next entry's date is the following local midnight;
-     - for both `systemSmall` and `systemMedium`, an entry built with an **active**
-       entitlement has `showsImage == true` and carries the `imageId`;
-     - an entry built with an **inactive** entitlement has `showsImage == false` and
-       still carries the Kigo kanji + reading.
+     - for both `systemSmall` and `systemMedium`, the built entry has `showsImage == true`
+       and carries the `imageId`, the Kigo kanji, and the reading;
+     - the entry reveals the image **independent of any entitlement state** — building the
+       timeline with no entitlement (or an explicitly inactive one) still yields
+       `showsImage == true` (the widget no longer reads the entitlement).
+  2. The pre-inversion `WidgetTimelineTests` asserted the now-retired gate
+     (`inactive → showsImage == false`); the loop must **update or remove** those gated assertions
+     when it ungates the widget (they otherwise fail CI once `showsImage` is always true — caught
+     as a regression at audit). The rollover-logic assertions migrate into `WidgetUngatedTests`.
 
-### C8: The widget works through the real built artifact (honest integration)
+### C8: The widget works through the real built artifact (honest integration — amended ADR 0019)
 
-- **Depends on:** C3, C6, C7
-- **Statement:** The widget's content and shared-container wiring work through the
-  *real* built artifact, not injected stand-ins: the extension actually carries the
-  content it loads, the real content path resolves today's Kigo, and the app↔widget
-  App Group is configured. This is the gate that catches "logic green, product
-  mis-wired" — the failure where every widget logic test (C7) passed yet the widget
-  rendered blank on a device because `manifest.json` was never bundled into the
-  extension and the App Group was never configured. C7 verifies the timeline *logic*
-  against an injected manifest and shared store; C8 verifies the production *wiring*
-  those injections hide.
+- **Depends on:** C3, C7
+- **Statement:** The widget's content wiring works through the *real* built artifact, not
+  injected stand-ins: the extension actually carries the content it loads, and the real content
+  path resolves today's Kigo. This is the gate that catches "logic green, product mis-wired" —
+  the failure where every widget logic test (C7) passed yet the widget rendered blank on a device
+  because `manifest.json` was never bundled into the extension. C7 verifies the timeline *logic*
+  against an injected manifest; C8 verifies the production *content wiring* those injections hide.
+  (The app↔widget App Group entitlement-sharing assertion is **dropped** — the widget is now
+  ungated and no longer reads the entitlement, so the shared store is no longer on its path; ADR
+  0019 supersedes ADR 0011 in part.)
 - **Evidence:**
   1. Run `xcodegen generate`, then build with the product path pinned:
      ```
@@ -410,34 +459,21 @@ Goal state met ⇔ every `C*` procedure below passes on `main`.
      date's actual `kanji` and `reading` from the bundled manifest — proving the real
      content path resolves end-to-end, so the widget renders today's Kigo rather than the
      redacted placeholder.
-  3. Run `xcodegen generate`, then assert the app↔widget App Group is declared on both
-     targets:
-     ```
-     /usr/libexec/PlistBuddy -c "Print :com.apple.security.application-groups:0" \
-       Sources/Kigo/Kigo.entitlements
-     /usr/libexec/PlistBuddy -c "Print :com.apple.security.application-groups:0" \
-       Sources/KigoWidgetExtension/KigoWidgetExtension.entitlements
-     ```
-     — expect both print `group.com.tomeitotameigo.kigo`. *(Build-configuration wiring
-     check. On-device entitlement **enforcement** needs signing/provisioning to run and
-     is verified by J3, off the headless gating path — see the "requires provisioning to
-     run" row in the headless-integration-traps catalog. This step deterministically
-     catches the App-Group-never-configured regression headlessly: when neither target
-     declares the group, app and widget silently fall back to separate `.standard`
-     stores and the subscriber image never reveals.)*
 
 ### C9: Paywall is reachable from the Today screen and presents the compliant offer
 
 - **Depends on:** C5, C6
-- **Statement:** A small **Upgrade entry** on the Today screen opens the **Paywall**
+- **Statement:** The Settings gear (`paywall.entry`) on the Today screen opens the **Paywall**
   as a sheet, verified through the *real, reachable* live app (not merely that a
   `PaywallView` type exists — it already existed fully unwired). For a **Basic**
-  user the Paywall shows the honest single **Benefits** copy, the price and
-  subscription duration (from the injected offer-display seam), a prominent buy
-  button, a Restore Purchases button, and functional Terms of Use and Privacy Policy
-  links (all required by App Store review). For a **Premium** user it shows an
+  user the Paywall shows the honest **Benefits** copy — the **understanding-layer** unlock
+  (the Kigo description, the Microseason display, and the Almanac depth — ADR 0019), never the
+  widget image — the price and subscription duration (from the injected offer-display seam), a
+  prominent buy button, a Restore Purchases button, and functional Terms of Use and Privacy
+  Policy links (all required by App Store review). For a **Premium** user it shows an
   active/manage state instead of the buy button. This is the gate that catches
-  "paywall built but never wired into the app" — the state this feature started from.
+  "paywall built but never wired into the app" — the state this feature started from. (The same
+  Paywall is also reachable from the Today screen's **Meaning entry** for Basic users — C22.)
 - **Evidence:**
   1. Run the canonical test invocation (Constraints) with
      `-only-testing:KigoUITests/PaywallUITests` — expect `** TEST SUCCEEDED **`,
@@ -468,7 +504,8 @@ Goal state met ⇔ every `C*` procedure below passes on `main`.
 - **Depends on:** C6
 - **Statement:** Invoking the Paywall's buy action runs the `SubscriptionPurchaser`
   seam; on a successful purchase the **Entitlement** is refreshed to active and the
-  reflected `isActive` state flips to `true` (so the **Widget Gate** unlocks), while
+  reflected `isActive` state flips to `true` (so the **Meaning Gate** reveals the understanding
+  layer — ADR 0019), while
   a cancelled or failed purchase leaves the user **Basic** with no crash. The
   purchase→activation *logic* is verified through injected fakes; the real
   `Product.purchase()` sheet is off the gating path (J4 / ADR 0009).
@@ -543,18 +580,21 @@ loop catches it. Do not renumber or rewrite C9/C10.
      entry that **includes** the optional English field(s) and one that **omits** them (both
      succeed and round-trip), pinning the forward-compatibility ADR 0014 requires.
 
-### C13: Today shows the resting timeline and expands the almanac (reachable)
+### C13: Today shows the resting timeline and expands the almanac (reachable — amended ADR 0019)
 
-- **Depends on:** C5, C11, C12
-- **Statement:** The Today screen replaces the floating Microseason line with the resting
-  **Year timeline** and, tapping it, expands the **Almanac** sheet showing the derived
+- **Depends on:** C5, C6, C11, C12
+- **Statement:** For a **Premium** user, the Today screen shows the resting **Year timeline**
+  (Microseason line) and, tapping it, expands the **Almanac** sheet showing the derived
   positions and copy — verified through the *real, reachable* live app (not merely that a
-  view type exists).
+  view type exists). The timeline and Almanac are part of the Premium **understanding layer**
+  (ADR 0019); a Basic user sees the Meaning entry in their place, gated by **C22**.
 - **Evidence:**
   1. Run the canonical test invocation (Constraints) with
      `-only-testing:KigoUITests/MicroseasonAlmanacUITests` — expect `** TEST SUCCEEDED **`,
-     exit 0, and `Executed [1-9][0-9]* test`. Launched with `KIGO_FAKE_DATE=2026-06-16`, the
-     suite asserts via accessibility identifiers:
+     exit 0, and `Executed [1-9][0-9]* test`. Launched with `KIGO_FAKE_DATE=2026-06-16`
+     **and `KIGO_FAKE_ENTITLEMENT=active`** (the microseason line and Almanac are part of the
+     Premium understanding layer — ADR 0019; the Basic-user *absence* of these is gated by C22),
+     the suite asserts via accessibility identifiers:
      - the resting state shows `microseason.sekki` (text contains 芒種), `microseason.ko`
        (text contains 梅子黄), and a tappable `microseason.timeline`;
      - tapping `microseason.timeline` presents `microseason.almanac`;
@@ -609,8 +649,10 @@ loop catches it. Do not renumber or rewrite C9/C10.
 - **Evidence:**
   1. Run the canonical test invocation (Constraints) with
      `-only-testing:KigoUITests/DarkModeUITests` — expect `** TEST SUCCEEDED **`, exit 0,
-     and `Executed [1-9][0-9]* test`. Launched with `KIGO_FAKE_DATE=2026-06-16` and
-     `KIGO_FAKE_APPEARANCE=dark`, the suite asserts the Today screen still shows `kigo.kanji`,
+     and `Executed [1-9][0-9]* test`. Launched with `KIGO_FAKE_DATE=2026-06-16`,
+     `KIGO_FAKE_APPEARANCE=dark`, **and `KIGO_FAKE_ENTITLEMENT=active`** (so the Premium
+     understanding-layer elements `kigo.description`/`microseason.ko` are present to assert — ADR
+     0019), the suite asserts the Today screen still shows `kigo.kanji`,
      `kigo.description`, `microseason.ko`, `info.entry`, and `paywall.entry`; and that tapping
      `paywall.entry` still presents `paywall.sheet` containing a non-empty `paywall.benefits`.
 
@@ -707,7 +749,9 @@ loop catches it. Do not renumber or rewrite C9/C10.
   1. Run the canonical test invocation (Constraints) with
      `-only-testing:KigoUITests/LiveLanguageSwitchUITests` — expect `** TEST SUCCEEDED **`, exit 0,
      and `Executed [1-9][0-9]* test`. Launched with `KIGO_FAKE_DATE=2026-06-16` (default Japanese,
-     no `KIGO_FAKE_LANGUAGE`), the suite asserts via accessibility identifiers:
+     no `KIGO_FAKE_LANGUAGE`) **and `KIGO_FAKE_ENTITLEMENT=active`** (the `kigo.description` and
+     Almanac prose this suite toggles are part of the Premium understanding layer — ADR 0019), the
+     suite asserts via accessibility identifiers:
      - initially `kigo.description` reads its Japanese form (text contains the date `2026-06-16`,
        per C4) and `kigo.reading` shows the hiragana reading;
      - open the Settings menu (`paywall.entry`), select the English option on `settings.language`,
@@ -742,6 +786,62 @@ loop catches it. Do not renumber or rewrite C9/C10.
      apply / fallback logic it feeds is fully gated in step 1. The real end-to-end network fetch is
      J7, off the headless gating path.
 
+### C22: The Meaning Gate splits the Today screen by entitlement (ADR 0019)
+
+- **Depends on:** C5, C6, C9
+- **Statement:** The Today screen gates the **understanding layer** behind the **Entitlement**
+  (ADR 0019), verified through the *real, reachable* live app. A **Basic** user sees the image,
+  the Kigo kanji and reading, and — in place of the description and microseason — a single quiet
+  **Meaning entry** (`meaning.upsell`); the description and microseason are **absent**, and
+  tapping the Meaning entry presents the **Paywall** (`paywall.sheet`). A **Premium** user sees
+  the full `kigo.description`, the `microseason.ko`/`microseason.sekki` line and the tappable
+  `microseason.timeline`, and **no** `meaning.upsell`. This is the gate that catches "the
+  inversion was wired one-sidedly" — meaning shown to Basic, or the upsell shown to Premium.
+- **Evidence:**
+  1. Run the canonical test invocation (Constraints) with
+     `-only-testing:KigoUITests/MeaningGateUITests` — expect `** TEST SUCCEEDED **`, exit 0,
+     **and** output matching `Executed [1-9][0-9]* test` (nonzero-count guard; the suite must
+     contain ≥1 test). Via accessibility identifiers, the suite asserts:
+     - **Basic case** — launched with `KIGO_FAKE_DATE=2026-06-16` and
+       `KIGO_FAKE_ENTITLEMENT=inactive`: the Today screen shows `kigo.image`, `kigo.kanji`,
+       `kigo.reading`, and `meaning.upsell`; it does **not** show `kigo.description`,
+       `microseason.ko`, `microseason.sekki`, or `microseason.timeline`; and tapping
+       `meaning.upsell` presents `paywall.sheet` (containing a non-empty `paywall.benefits`).
+     - **Premium case** — relaunched with `KIGO_FAKE_ENTITLEMENT=active`: the Today screen shows
+       a non-empty `kigo.description`, `microseason.ko`, `microseason.sekki`, and
+       `microseason.timeline`; and does **not** show `meaning.upsell`.
+
+### C23: Daily reminder scheduling logic, behind an injected seam (ADR 0019)
+
+- **Depends on:** C15
+- **Statement:** A default-**off** **Daily reminder** toggle (`settings.dailyReminder`) in the
+  Settings menu drives an injectable `NotificationScheduler` seam: enabling it schedules exactly
+  one repeating daily local notification at **08:00 local** carrying today's Kigo (kanji +
+  reading); disabling it cancels all scheduled requests. The scheduling *logic* is verified
+  headlessly through an in-memory fake; the real `UNUserNotificationCenter` adapter, the
+  permission request, and OS delivery are off the gating path (J9 — the APNs row of the
+  headless-integration-traps catalog), so no real notification is requested or awaited here.
+- **Evidence:**
+  1. Run the canonical test invocation (Constraints) with
+     `-only-testing:KigoTests/NotificationSchedulerTests` — expect `** TEST SUCCEEDED **`, exit 0,
+     **and** output matching `Executed [1-9][0-9]* test`. Driving the reminder model over a
+     **fake** `NotificationScheduler` (no real `UNUserNotificationCenter`) with an injected
+     `DateProvider`/`ContentSource`, the suite asserts:
+     - **enabled:** after the model enables the reminder, the fake records exactly one scheduled
+       request that is **repeating daily** with `hour == 8, minute == 0` (local) and whose content
+       contains the injected date's Kigo kanji and reading;
+     - **disabled:** after the model disables the reminder, the fake holds **zero** scheduled
+       requests;
+     - **persistence:** the enabled/disabled state round-trips through a re-read of the injected
+       preference store; the default (no stored value) is **disabled**.
+  2. Run the canonical test invocation (Constraints) with
+     `-only-testing:KigoUITests/SettingsReminderUITests` — expect `** TEST SUCCEEDED **`, exit 0,
+     **and** output matching `Executed [1-9][0-9]* test`. Launched with `KIGO_FAKE_DATE=2026-06-16`
+     and `KIGO_FAKE_ENTITLEMENT=inactive`, the suite opens the Settings menu via `paywall.entry`
+     and asserts the `settings.dailyReminder` toggle **exists** and is **off** by default. *(The
+     suite must not tap-enable the toggle — enabling fires the real permission prompt, which hangs
+     headless; the real enable→schedule→deliver path is J9, off the gating path.)*
+
 ## Judgment claims
 
 Reported in the milestone report for async human review — never termination gates,
@@ -770,47 +870,47 @@ these are surfaced for awareness only.)
   attribution panel. Note that images, attribution values, and the dummy date-stamped Daily-Map
   copy are intentionally placeholders for now.
 
-### J3: The widget renders correctly on a real home screen
+### J3: The widget renders correctly on a real home screen (amended — ADR 0019)
 
 - **Applies to:** C7, C8
 - **Claim:** Added to a real device's home screen, both widget sizes (systemSmall and
-  systemMedium) show today's Kigo name; a non-subscriber sees the name without the image,
-  and a subscriber sees the image — i.e. the shared entitlement is actually enforced
-  across the app↔widget process boundary and the gating works visually.
-- **Lens:** On a signed device build, add both widget sizes to the home screen; confirm
-  name-only for a free user, and the image revealed after purchase/restore. The
-  home-screen render and real entitlement enforcement both need signing/provisioning and
-  a human eye, so this is reported off the headless gating path — never a termination
-  gate.
+  systemMedium) show today's Kigo image + name for **everyone** — the widget is free and
+  ungated (ADR 0019), so there is no subscriber/non-subscriber distinction to enforce; the real
+  content path resolves today's Kigo across the app↔widget process boundary and renders visually.
+- **Lens:** On a signed device build, add both widget sizes to the home screen; confirm both
+  show today's image + Kigo name regardless of subscription state. The home-screen render needs
+  signing/provisioning and a human eye, so this is reported off the headless gating path — never
+  a termination gate.
 
 ### J4: The real in-app purchase flow works end-to-end
 
 - **Applies to:** C9, C10
 - **Claim:** Through the live App Store path (not the injected fakes), the Paywall's
   buy button presents the real system purchase sheet; completing the purchase
-  activates the **Entitlement** and unlocks the Widget image; the real price and
-  duration load from the StoreKit `Product`; Restore re-establishes the entitlement;
+  activates the **Entitlement** and reveals the in-app **understanding layer** (ADR 0019); the
+  real price and duration load from the StoreKit `Product`; Restore re-establishes the entitlement;
   and the **Premium** manage affordance deep-links to the system-managed
   subscription screen. The placeholder Terms/Privacy URLs have been replaced with the
   real published documents before submission.
 - **Lens:** In the Xcode IDE (Cmd+R / Cmd+U) with a `.storekit` configuration or a
   sandbox account — never the headless CLI — perform a purchase, a restore, and open
-  manage; confirm the Entitlement and Widget Gate respond and the offer metadata is
-  real. Off the headless gating path by construction (ADR 0009): the purchase sheet,
+  manage; confirm the Entitlement and the Meaning Gate (understanding layer) respond and the offer
+  metadata is real. Off the headless gating path by construction (ADR 0009): the purchase sheet,
   real product loading, and manage deep link hang or need a human/account from
   `xcodebuild`, so this is reported for human review, never a termination gate.
 
-### J5: The Paywall and Upgrade entry stay calm and on-brand
+### J5: The Paywall, Settings gear, and Meaning entry stay calm and on-brand (amended — ADR 0019)
 
-- **Applies to:** C9
-- **Claim:** The Upgrade entry is unobtrusive enough to preserve the Today screen's
-  calm nightstand feel (J1) — it reads as a quiet affordance, not an upsell badge —
-  and the Paywall splash itself is tasteful, restrained, and on-brand rather than a
-  pushy storefront.
-- **Lens:** Launch the app; judge whether the Settings gear (the revamp's quiet
-  replacement for the Upgrade entry) intrudes on the Today screen's restraint, then open the
-  Settings menu and judge its typography, spacing, and tone as a calm-seeking, non-developer
-  user would.
+- **Applies to:** C9, C22
+- **Claim:** Both on-screen upsell affordances stay unobtrusive enough to preserve the Today
+  screen's calm nightstand feel (J1) — the Settings gear and, especially, the **Meaning entry**
+  (`meaning.upsell`) that a Basic user sees where the description would be — read as quiet
+  affordances, not upsell badges or lock screens; and the Paywall splash itself is tasteful,
+  restrained, and on-brand rather than a pushy storefront. This is the central aesthetic risk of
+  the inversion (ADR 0019): the Meaning entry must invite curiosity without nagging.
+- **Lens:** Launch the app as a **Basic** user; judge whether the Meaning entry and the Settings
+  gear intrude on the Today screen's restraint, then open the Paywall (from each) and judge its
+  typography, spacing, and tone as a calm-seeking, non-developer user would.
 
 ### J6: The revamp faithfully realizes the Asagiri direction in light and dark
 
@@ -844,3 +944,29 @@ these are surfaced for awareness only.)
   content. The live network fetch is off the headless gating path by construction (ADR 0017 /
   ADR 0001 — no live network in evidence procedures), so it is reported for human review, never a
   termination gate.
+
+### J8: The daily reminder is gentle and on-brand
+
+- **Applies to:** C23
+- **Claim:** The opt-in daily reminder reads as a quiet seasonal nudge, not a retention nag —
+  one notification a day, in the calm Kigo voice, that names today's Kigo and gently invites the
+  curiosity the understanding layer satisfies (e.g. *"蛍 — tap to see why it matters this week"*).
+  It reinforces the calm nightstand feel (J1) rather than pestering.
+- **Lens:** On a build with a real notification, enable the Settings reminder toggle, accept the
+  permission prompt, and read the delivered notification's copy and cadence as a calm-seeking,
+  non-developer user would — does it feel like an invitation or an interruption?
+
+### J9: The real daily reminder is delivered end-to-end
+
+- **Applies to:** C23
+- **Claim:** Through the live OS path (not the injected fake), enabling the Settings reminder
+  toggle requests notification permission, and on grant a real local notification is delivered at
+  08:00 local carrying today's Kigo (kanji + reading); disabling the toggle stops further
+  delivery. With permission denied, the app degrades gracefully (no crash, the toggle reflects the
+  denied state).
+- **Lens:** On a simulator/device with notifications enabled, toggle the reminder on, grant
+  permission, and confirm (e.g. by advancing the clock or inspecting pending requests in the Xcode
+  IDE) that a real request is scheduled and delivered with today's content; toggle off and confirm
+  it is cancelled. The permission prompt and OS delivery hang or need a human/grant from the
+  headless CLI (the APNs row of the headless-integration-traps catalog), so this is reported for
+  human review off the gating path — never a termination gate.
