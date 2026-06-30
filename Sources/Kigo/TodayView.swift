@@ -101,9 +101,12 @@ struct TodayView: View {
             infoEntry
 
             // 6 · Bottom microseason block — readings + tappable year timeline.
-            microseasonBlock
-                .frame(maxHeight: .infinity, alignment: .bottom)
-                .opacity(hasAppeared ? 1 : 0)
+            // Gated behind entitlement (C22/2): only rendered for Premium users.
+            if isEntitled {
+                microseasonBlock
+                    .frame(maxHeight: .infinity, alignment: .bottom)
+                    .opacity(hasAppeared ? 1 : 0)
+            }
         }
         .onAppear {
             guard !hasAppeared else { return }
