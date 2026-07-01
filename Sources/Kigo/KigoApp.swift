@@ -133,7 +133,17 @@ struct RootView: View {
     let languageStore: any LanguageStore
     let appearanceStore: any AppearanceStore
 
-    @State private var isPaywallPresented = false
+    /// The two root-level sheets. They are deliberately distinct surfaces (PRD #189):
+    /// the gear opens *settings* (language, appearance, subscription status + restore);
+    /// the Basic-tier `meaning.upsell` opens the *purchase* sheet (the marketing + buy
+    /// flow). Routed through one `item:` binding so only one is ever presented.
+    private enum RootSheet: Identifiable {
+        case settings
+        case purchase
+        var id: Self { self }
+    }
+
+    @State private var activeSheet: RootSheet?
     @State private var language: LanguagePreference = .japanese
     @State private var paywallModel: PaywallModel
 
@@ -161,10 +171,10 @@ struct RootView: View {
             .preferredColorScheme(appearanceStore.preference.colorScheme)
             .environment(\.language, language)
             .environment(\.isEntitled, paywallModel.isActive)
-            .environment(\.openPaywall, OpenPaywallAction { isPaywallPresented = true })
+            .environment(\.openPaywall, OpenPaywallAction { activeSheet = .purchase })
             .overlay(alignment: .topTrailing) {
                 Button {
-                    isPaywallPresented = true
+                    activeSheet = .settings
                 } label: {
                     Image(systemName: "gearshape")
                         .font(.system(size: 15, weight: .regular))
@@ -178,13 +188,21 @@ struct RootView: View {
                 .padding(.top, 16)
                 .accessibilityIdentifier("paywall.entry")
             }
-            .bottomSheet(isPresented: $isPaywallPresented) {
-                SettingsView(
-                    model: paywallModel,
-                    language: $language,
-                    languageStore: languageStore,
-                    appearanceStore: appearanceStore
-                )
+            .bottomSheet(item: $activeSheet) { sheet in
+                switch sheet {
+                case .settings:
+                    SettingsView(
+                        model: paywallModel,
+                        language: $language,
+                        languageStore: languageStore,
+                        appearanceStore: appearanceStore
+                    )
+                case .purchase:
+                    PaywallView(
+                        model: paywallModel,
+                        chromeStrings: ChromeStrings(language)
+                    )
+                }
             }
             .onAppear {
                 language = languageStore.preference

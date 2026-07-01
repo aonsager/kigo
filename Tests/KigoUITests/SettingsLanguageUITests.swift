@@ -253,36 +253,21 @@ final class SettingsLanguageUITests: XCTestCase {
         add(attachment)
     }
 
-    // MARK: - Slice #138: All paywall identifiers accessible inside the Settings sheet
+    // MARK: - PRD #189: Settings sheet exposes status/restore/legal, NOT the buy flow
 
-    /// All paywall accessibility identifiers must be reachable inside the Settings sheet
-    /// on a default non-premium launch.
-    func testSettingsSheetContainsAllPaywallIdentifiers() {
+    /// The Settings sheet carries the subscription-status surface — restore + legal
+    /// links — on a default non-premium launch, but NOT the marketing/buy flow. The
+    /// buy flow (`paywall.benefits`, `paywall.buy`) lives only in the dedicated
+    /// purchase sheet reached from `meaning.upsell` (PRD #189: purchase is separated
+    /// from Settings).
+    func testSettingsSheetContainsRestoreAndLegalButNotBuy() {
         let app = XCUIApplication()
         baseEnvironment.forEach { app.launchEnvironment[$0.key] = $0.value }
         // KIGO_FAKE_ENTITLEMENT=inactive (set in baseEnvironment) — non-premium.
 
         let _ = launchAndOpenPaywall(app: app)
 
-        // paywall.benefits
-        let benefits = app.descendants(matching: .any)
-            .matching(identifier: "paywall.benefits")
-            .firstMatch
-        XCTAssertTrue(
-            benefits.waitForExistence(timeout: 5),
-            "paywall.benefits must be present in the Settings sheet"
-        )
-
-        // paywall.buy (shown for non-premium)
-        let buy = app.descendants(matching: .any)
-            .matching(identifier: "paywall.buy")
-            .firstMatch
-        XCTAssertTrue(
-            buy.waitForExistence(timeout: 5),
-            "paywall.buy must be present in the Settings sheet for non-premium launch"
-        )
-
-        // paywall.restore
+        // paywall.restore — must be reachable from Settings for every user.
         let restore = app.descendants(matching: .any)
             .matching(identifier: "paywall.restore")
             .firstMatch
@@ -307,6 +292,22 @@ final class SettingsLanguageUITests: XCTestCase {
         XCTAssertTrue(
             privacy.waitForExistence(timeout: 5),
             "paywall.privacy must be present in the Settings sheet"
+        )
+
+        // The buy flow must NOT be in Settings — it lives in the purchase sheet.
+        let benefits = app.descendants(matching: .any)
+            .matching(identifier: "paywall.benefits")
+            .firstMatch
+        XCTAssertFalse(
+            benefits.exists,
+            "paywall.benefits must NOT be in the Settings sheet (PRD #189: purchase is separate)"
+        )
+        let buy = app.descendants(matching: .any)
+            .matching(identifier: "paywall.buy")
+            .firstMatch
+        XCTAssertFalse(
+            buy.exists,
+            "paywall.buy must NOT be in the Settings sheet (PRD #189: purchase is separate)"
         )
     }
 }

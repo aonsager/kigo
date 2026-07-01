@@ -65,36 +65,36 @@ struct TodayView: View {
                 .ignoresSafeArea()
                 .allowsHitTesting(false)
 
-            // 3 · Frosted plate (`kigo.scrim`) — now behind the BOTTOM microseason
-            // panel rather than the central text zone (the kanji column reads
-            // directly over the photo + veil). A bottom-anchored `.ultraThinMaterial`
-            // band, masked to fade from clear at its top into a solid frost over the
-            // panel so the Kō/Sekki readings and year timeline stay legible.
-            // Gated with microseasonBlock (C22/2): showing the plate without the
-            // microseason content behind it would leave a blank frosted strip.
-            if isEntitled {
-                GeometryReader { proxy in
-                    Rectangle()
-                        .fill(.ultraThinMaterial)
-                        .overlay(KigoTheme.frostedTint)
-                        .mask(
-                            LinearGradient(
-                                stops: [
-                                    .init(color: .clear, location: 0.0),
-                                    .init(color: .black, location: 0.6),
-                                ],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
+            // 3 · Frosted plate (`kigo.scrim`) — behind the BOTTOM band rather than
+            // the central text zone (the kanji column reads directly over the photo
+            // + veil). A bottom-anchored `.ultraThinMaterial` band, masked to fade
+            // from clear at its top into a solid frost over the panel so whatever
+            // sits in the band stays legible.
+            //
+            // ALWAYS present, both tiers (C22 fix, PRD #189): the scrim is a free
+            // element. It is never blank — Premium sees the microseason block over
+            // it, Basic sees the upsell block over it (see the bottom band below).
+            GeometryReader { proxy in
+                Rectangle()
+                    .fill(.ultraThinMaterial)
+                    .overlay(KigoTheme.frostedTint)
+                    .mask(
+                        LinearGradient(
+                            stops: [
+                                .init(color: .clear, location: 0.0),
+                                .init(color: .black, location: 0.6),
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
                         )
-                        .frame(height: proxy.size.height * 0.42)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-                }
-                .ignoresSafeArea()
-                .allowsHitTesting(false)
-                .accessibilityIdentifier("kigo.scrim")
-                .accessibilityHidden(true)
+                    )
+                    .frame(height: proxy.size.height * 0.42)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             }
+            .ignoresSafeArea()
+            .allowsHitTesting(false)
+            .accessibilityIdentifier("kigo.scrim")
+            .accessibilityHidden(true)
 
             // 4 · Centered sumi-ink text column.
             textColumn
@@ -104,10 +104,17 @@ struct TodayView: View {
             // 5 · (i) attribution entry — top-left.
             infoEntry
 
-            // 6 · Bottom microseason block — readings + tappable year timeline.
-            // Gated behind entitlement (C22/2): only rendered for Premium users.
+            // 6 · Bottom band, over the scrim. Premium sees the microseason block
+            // (readings + tappable year timeline → almanac). Basic sees the upsell
+            // block (→ purchase sheet) in the same place — so the free scrim always
+            // has content over it and the interaction is symmetric: tap the band,
+            // a sheet rises.
             if isEntitled {
                 microseasonBlock
+                    .frame(maxHeight: .infinity, alignment: .bottom)
+                    .opacity(hasAppeared ? 1 : 0)
+            } else {
+                upsellBlock
                     .frame(maxHeight: .infinity, alignment: .bottom)
                     .opacity(hasAppeared ? 1 : 0)
             }
@@ -149,6 +156,9 @@ struct TodayView: View {
                 .padding(.top, 22)
                 .accessibilityIdentifier("kigo.reading")
 
+            // The meaning (description) is the paid understanding layer — Premium only.
+            // For Basic the encounter stays pure: kanji + reading over the photo, with
+            // the upsell living down in the bottom band (see `upsellBlock`), not here.
             if isEntitled {
                 Text(resolvedDay.kigoEntry.description.localized(for: language))
                     .font(KigoFont.zenKaku(.regular, size: 14.5, relativeTo: .body))
@@ -158,24 +168,45 @@ struct TodayView: View {
                     .frame(maxWidth: 280)
                     .padding(.top, 30)
                     .accessibilityIdentifier("kigo.description")
-            } else {
-                Button {
-                    openPaywall()
-                } label: {
-                    Text("Unlock meaning")
-                        .font(KigoFont.zenKaku(.regular, size: 14.5, relativeTo: .body))
-                        .foregroundStyle(KigoTheme.inkReading)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 10)
-                        .background(.ultraThinMaterial, in: Capsule())
-                        .overlay(Capsule().strokeBorder(KigoTheme.hairline, lineWidth: 1))
-                }
-                .buttonStyle(.plain)
-                .padding(.top, 30)
-                .accessibilityIdentifier("meaning.upsell")
             }
         }
         .padding(.horizontal, 30)
+    }
+
+    // MARK: - Upsell block (Basic — bottom band, over the scrim)
+
+    /// The Basic-tier bottom band: sits exactly where `microseasonBlock` sits for
+    /// Premium, mirroring its rhythm (chevron → serif line → quiet subline). The
+    /// whole band is one tap target carrying `meaning.upsell`; tapping opens the
+    /// purchase sheet via `openPaywall()` — the same gesture that opens the almanac
+    /// for Premium.
+    private var upsellBlock: some View {
+        Button {
+            openPaywall()
+        } label: {
+            VStack(spacing: 10) {
+                Image(systemName: "chevron.up")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(KigoTheme.textTertiary)
+
+                Text("意味をひらく")
+                    .font(KigoFont.mincho(.semibold, size: 19, relativeTo: .headline))
+                    .foregroundStyle(KigoTheme.inkKo)
+
+                Text("Unlock the meaning behind today’s kigo, its microseason, and the year’s turning.")
+                    .font(KigoFont.zenKaku(.regular, size: 12.5, relativeTo: .footnote))
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(3)
+                    .foregroundStyle(KigoTheme.inkReading)
+                    .frame(maxWidth: 260)
+            }
+            .padding(.horizontal, 30)
+            .padding(.bottom, 28)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("meaning.upsell")
+        .accessibilityLabel("Unlock the meaning")
     }
 
     // MARK: - Info entry (top-left)

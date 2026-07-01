@@ -10,8 +10,8 @@ import XCTest
 ///   `paywall.entry` all exist within 10 seconds of launch.
 /// - A screenshot of the Today screen in dark mode is captured and attached as
 ///   an `XCTAttachment` with name `"dark-mode-today-screen"` and lifetime `.keepAlways`.
-/// - Tapping `paywall.entry` presents a sheet containing `paywall.sheet` and
-///   `paywall.benefits` (non-empty label).
+/// - Tapping `paywall.entry` (the gear) presents the Settings sheet containing
+///   `paywall.sheet` and, for this active subscriber, `paywall.manage`.
 ///
 /// Screenshot evidence:
 /// Attachment name: `"dark-mode-today-screen"`
@@ -42,8 +42,8 @@ final class DarkModeUITests: XCTestCase {
     /// Acceptance criteria verified:
     /// AC4: `kigo.kanji`, `kigo.description`, `microseason.ko`, `info.entry`, and
     ///      `paywall.entry` all waitForExistence within 10 s.
-    /// AC5: After tapping `paywall.entry`, `paywall.sheet` waitForExistence within 10 s
-    ///      and `paywall.benefits` exists with a non-empty label.
+    /// AC5: After tapping `paywall.entry` (gear → Settings), `paywall.sheet`
+    ///      waitForExistence within 10 s and `paywall.manage` exists (active subscriber).
     /// Screenshot evidence: `dark-mode-today-screen` (XCTAttachment, lifetime .keepAlways)
     ///   captured BEFORE the paywall tap.
     func testDarkModeStructuralAssertions() {
@@ -88,7 +88,10 @@ final class DarkModeUITests: XCTestCase {
         attachment.name = "dark-mode-today-screen"
         add(attachment)
 
-        // --- AC5: Tap paywall.entry and verify sheet + benefits ---
+        // --- AC5: Tap paywall.entry (gear) and verify the Settings sheet ---
+        // PRD #189: the gear opens Settings, which for a Premium (active) user shows
+        // the subscription-status strip (`paywall.manage`), not the marketing/buy flow
+        // — that moved to the dedicated purchase sheet reached from `meaning.upsell`.
         paywallEntry.tap()
 
         let sheetElement = app.descendants(matching: .any)
@@ -99,16 +102,12 @@ final class DarkModeUITests: XCTestCase {
             "paywall.sheet must appear within 10 s after tapping paywall.entry"
         )
 
-        let benefitsElement = app.descendants(matching: .any)
-            .matching(identifier: "paywall.benefits")
+        let manageElement = app.descendants(matching: .any)
+            .matching(identifier: "paywall.manage")
             .firstMatch
         XCTAssertTrue(
-            benefitsElement.waitForExistence(timeout: 10),
-            "paywall.benefits must exist in the paywall sheet"
-        )
-        XCTAssertFalse(
-            benefitsElement.label.isEmpty,
-            "paywall.benefits label must be non-empty"
+            manageElement.waitForExistence(timeout: 10),
+            "paywall.manage must exist in the Settings sheet for an active subscriber"
         )
     }
 }
