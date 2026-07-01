@@ -165,3 +165,98 @@ operator can eyeball whether the arbiter's calls match what they'd have decided.
 proves miscalibrated, disable is trivial (the exhaustion branch reverts to posting
 `afk-slice-blocked`), and even while enabled a wrong verdict degrades safely to today's
 `BLOCKED`.
+
+## Appendix: arbiter.md (as shipped)
+
+```
+# Slice-decomposition arbiter
+
+Invoked by `afk-slice` step 3 ONLY when the critic budget is exhausted
+(`slice-critic-exhausted`). Purpose: diagnose why the slicer could not produce a
+rule-compliant decomposition after 3 attempts, and decide a resolution — so the
+loop resolves the ~common contradictions autonomously instead of always halting.
+
+## Dispatch
+
+Clean-context subagent, **`model: "opus"`** (pinned — decorrelated from the
+sonnet decomposer/critic; never inherit `AFK_MODEL`). The prompt contains
+*exactly*, artifact-only (no orchestration narrative, no "it went badly" framing):
+
+1. the PRD body (+ `## Fix scope` / `## Decomposition note` if present),
+2. the verbatim `<slicing-rules>` block from SKILL.md step 2,
+3. the critic's prompt (from SKILL.md step 3),
+4. the **full rejection history**: every rejected decomposition and the critic's
+   `violations` for each round.
+
+Followed by this instruction, verbatim:
+
+> You are the arbiter. The slicer failed to produce a rule-compliant decomposition
+> after 3 attempts; the rejected decompositions and the critic's violations for
+> each are above. Diagnose the ROOT CAUSE of the deadlock, then decide a
+> resolution. Classify the root cause as exactly one of:
+> - `critic-false-positive`: the critic mis-applied a rule; the last decomposition
+>   (or a specific one above) is actually rule-compliant. Growing an already-merged
+>   type one behavior-per-slice, each with its own tests, is a VALID vertical
+>   sequence — never a horizontal split.
+> - `unsatisfiable-constraint`: a real constraint conflict makes any multi-slice
+>   decomposition non-independently-verifiable (e.g. a required intermediate state
+>   cannot compile or pass tests), OR an operator/PRD constraint directly
+>   contradicts the slicing rules. The correct resolution is to relax the
+>   least-important constraint — most often, ship one atomic slice rather than
+>   force an artificial split.
+> - `goal-criterion-defect`: the deadlock traces to the milestone's acceptance
+>   criterion itself being underspecified or not machine-checkable, so no
+>   decomposition can produce checkable acceptance criteria.
+> - `other`: none of the above.
+>
+> Then choose a verdict:
+> - `override-critic`: emit, in `directive`, the specific rule-compliant slice
+>   list (as JSON) that should be published. Use ONLY when a decomposition above
+>   genuinely satisfies the rules.
+> - `relax-to-resolution`: emit, in `directive`, a single concrete binding
+>   decomposition directive the decomposer must follow on one final attempt (e.g.
+>   "ship as ONE atomic slice with these acceptance criteria: …"; or "drop the
+>   walking-skeleton-first constraint for this PRD because …").
+> - `escalate-human`: emit, in `directive`, a concrete PROPOSED resolution for a
+>   human to approve in one edit (a proposed criterion rewrite, or a proposed
+>   directive). You MUST choose this when `diagnosis = goal-criterion-defect`
+>   (you may propose a `docs/GOAL.md` rewrite but MUST NOT apply it), and whenever
+>   your confidence is low.
+>
+> Return ONLY this JSON:
+> `{"diagnosis": "...", "verdict": "...", "directive": "...", "confidence": "high|medium|low", "rationale": "..."}`
+
+## Verdict contract & invariants
+
+(Verbatim from the plan's shared-interface section.)
+
+- `diagnosis = goal-criterion-defect` ⟹ `verdict = escalate-human`.
+- `confidence = low` ⟹ `verdict = escalate-human`.
+- The arbiter never writes files; it only returns the JSON.
+
+## How afk-slice applies the verdict
+
+Post the resolution to the PRD as a comment (this is the durable signal the loop
+re-derives from):
+
+`**afk-arbiter** <verdict> (<diagnosis>, confidence <c>): <one-line directive summary>`
+`<!-- afk-arbiter-resolution -->`
+…followed by the full `directive` and `rationale`.
+
+Then:
+- **override-critic** → publish the `directive` slice list directly (skip a further
+  critic round — the arbiter, a stronger decorrelated model, has overruled it).
+- **relax-to-resolution** → run **exactly one** more `decompose + critic` pass with
+  `directive` supplied as a binding constraint. Critic passes → publish. Critic
+  still rejects → **real BLOCKED** (the arbiter was wrong; a human is needed).
+- **escalate-human** → write `.afk/BLOCKED` with forensics that include the
+  arbiter's `directive` (the proposed resolution) so the human approves/edits one
+  thing rather than diagnosing from scratch.
+
+**One-shot guard:** if the PRD already carries an `<!-- afk-arbiter-resolution -->`
+marker and slicing has failed again, do NOT invoke the arbiter a second time →
+**real BLOCKED**.
+
+Record a journal line on every invocation:
+`ARBITER | #<prd> | <verdict> | <diagnosis>`
+```
