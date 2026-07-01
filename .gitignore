@@ -9,3 +9,6 @@ build/
 TestResults*
 *.xcresult
 xcodebuild.log
+# Python bytecode cache from the loop-analysis scripts (scripts/afk-retro.py etc.)
+__pycache__/
+*.pyc
