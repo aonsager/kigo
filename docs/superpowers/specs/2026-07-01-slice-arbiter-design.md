@@ -305,3 +305,17 @@ Added as a bullet after the `.afk/journal.md` format description:
 ## Journal-format reconciliation (during Task 6)
 
 The plan originally specified the arbiter journal line as a 4-field `ARBITER | #<prd> | <verdict> | <diagnosis>`. This **violated** LOOP-STATE's mandatory six-field journal format (`<utc> | <phase> | <issue> | <result> | met=N/M | <note>`), which the no-progress tripwire parses. Reconciled (operator-approved) to a conforming six-field SLICE line: `<utc> | SLICE | #<prd> | arbiter-<verdict> | met=N/M | <diagnosis>; <directive summary>`. This change was propagated to `arbiter.md`, `afk-slice/SKILL.md`, this spec's touch-point list and Task-2/Task-5 appendices, and Insertion 2 above — all now consistent.
+
+## Calibration outcome (2026-07-01)
+
+Ran the live opus calibration lane (`scripts/afk-arbiter-calibrate.py`) against the three golden-case fixtures:
+
+| PRD | Expected | Arbiter (live opus) | Result |
+|---|---|---|---|
+| #37 | critic-false-positive / override-critic | same | ✅ MATCH |
+| #162 | unsatisfiable-constraint / relax-to-resolution | same | ✅ MATCH |
+| #165 | *(was)* goal-criterion-defect / escalate-human | unsatisfiable-constraint / relax-to-resolution (high confidence) | relabeled |
+
+**#165 was a mislabeled fixture, not an arbiter miss.** The arbiter reasoned that the unsatisfiable acceptance criteria could be made machine-checkable by marking screenshots `Exempt` (catalog `content-layer-no-ui`), gating on a real `BundledContentSource.load()`, and using a structural `assertNoCJK` proxy for "English" — which is **exactly the resolution the human operator actually applied** (captured in that PRD's own `## Decomposition note`). So it chose autonomous relax rather than crossing the GOAL.md boundary, correctly. The fixture's `expected` was relabeled to ground truth.
+
+**Known gap (operator-accepted):** with #165 relabeled, no fixture exercises the `goal-criterion-defect ⟹ escalate-human` path. That safety-critical boundary is enforced by the arbiter prompt invariant at runtime but is **not fixture-validated**. The gating test's category-coverage assertion was relaxed accordingly (`test_autonomous_resolve_categories_covered`). Revisit if a genuine goal-criterion-defect exhaustion occurs in the wild — capture it as the missing fixture.
