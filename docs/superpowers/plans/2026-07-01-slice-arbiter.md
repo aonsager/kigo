@@ -2,6 +2,8 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+> **⚠️ Superseded detail (implemented 2026-07-01):** this plan shows the arbiter journal line as the 4-field `ARBITER | #<prd> | <verdict> | <diagnosis>`. That form violated LOOP-STATE's mandatory six-field journal format and was reconciled during implementation to `<utc> | SLICE | #<prd> | arbiter-<verdict> | met=N/M | <diagnosis>; <directive summary>`. The shipped skill files and the design spec's "Journal-format reconciliation" note are authoritative; treat the 4-field occurrences below as historical.
+
 **Goal:** On `slice-critic-exhausted`, dispatch a clean-context opus **arbiter** that diagnoses the contradiction and either resolves it autonomously (override the critic / relax to an atomic slice) with one bounded retry, or halts with a concrete proposed resolution — instead of always halting for a human.
 
 **Architecture:** Reactive on exhaustion only. The existing `decompose → critic → re-decompose (≤2)` loop is unchanged and acts as the detector; its recurring standing violation is the arbiter's evidence. The arbiter is an opus subagent with an artifact-only prompt returning a JSON verdict. Its resolution is posted as a new GitHub-visible signal (`**afk-arbiter**` + `<!-- afk-arbiter-resolution -->`) that slots into the loop's *existing* resolution-signal + one-shot-guard machinery in `afk-step` LOOP-STATE §3.
