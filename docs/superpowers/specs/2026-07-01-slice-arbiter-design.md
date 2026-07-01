@@ -166,6 +166,30 @@ proves miscalibrated, disable is trivial (the exhaustion branch reverts to posti
 `afk-slice-blocked`), and even while enabled a wrong verdict degrades safely to today's
 `BLOCKED`.
 
+## Appendix: Task 5 — afk-slice step-3 exhaustion-branch edit
+
+**File modified:** `~/.claude/skills/afk-slice/SKILL.md` (global, not git-tracked; backup at `SKILL.md.bak-2026-07-01`)
+**Bullet location:** Step 3, "still failing after the budget" branch
+
+### Before
+
+```
+- **still failing after the budget** → do not publish. A known-bad decomposition never reaches GitHub. Post `**afk-slice-blocked**: critic rejected <N> decompositions — <standing violations>` on the PRD and return a summary line `afk-step` records as a halt (`result=slice-critic-exhausted`). This is the slicing analogue of the loop's "self-heal within budget, then halt" policy.
+```
+
+### After
+
+```
+- **still failing after the budget** → do not publish; a known-bad decomposition never reaches GitHub. **First check the one-shot guard:** if this PRD already carries an `<!-- afk-arbiter-resolution -->` marker (the arbiter already ran and its resolution still failed the critic), do NOT arbitrate again — post `**afk-slice-blocked**: arbiter resolution exhausted — <standing violations>` and return a `result=slice-critic-exhausted` halt line. **Otherwise, dispatch the arbiter** per [`references/arbiter.md`](references/arbiter.md): it diagnoses the deadlock and returns a verdict. Apply the verdict exactly as that file's "How afk-slice applies the verdict" section specifies — `override-critic` publishes the arbiter's slice list; `relax-to-resolution` gets ONE more decompose+critic pass under the arbiter's binding directive (still failing → real halt); `escalate-human` writes the halt with the arbiter's proposed resolution in the forensics. Post the `**afk-arbiter**` + `<!-- afk-arbiter-resolution -->` comment and record `ARBITER | #<prd> | <verdict> | <diagnosis>` in the journal in all cases. Publishing after `override-critic`/successful `relax` proceeds to step 4.
+```
+
+### What changed
+
+- Old: hard halt unconditionally on budget exhaustion (post `afk-slice-blocked`, record `slice-critic-exhausted`).
+- New: check the one-shot guard first (if `<!-- afk-arbiter-resolution -->` marker already present → real BLOCKED), otherwise dispatch the arbiter per `references/arbiter.md`, apply its verdict (`override-critic` / `relax-to-resolution` / `escalate-human`), post the `**afk-arbiter**` + `<!-- afk-arbiter-resolution -->` comment, and record a `ARBITER | …` journal line in all cases.
+
+---
+
 ## Appendix: arbiter.md (as shipped)
 
 ```
