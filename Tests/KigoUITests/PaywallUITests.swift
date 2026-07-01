@@ -481,6 +481,80 @@ final class PaywallUITests: XCTestCase {
         )
     }
 
+    // MARK: - Slice #195: paywall.benefits copy describes the understanding layer, not the widget image
+
+    /// Slice #195 (PRD #189): The `paywall.benefits` element must read as the
+    /// *understanding-layer* offering, not the old widget-image reveal. This closes the
+    /// gap that no test machine-checked the literal text content — prior tests only
+    /// asserted the identifier's presence and non-emptiness.
+    ///
+    /// Acceptance criteria verified:
+    ///   AC (a): the label MUST NOT contain stale widget-image language (the word "widget").
+    ///   AC (b): the label MUST contain understanding-layer language describing the offering
+    ///           (a reference to meaning, kigo, or microseason).
+    ///
+    /// Launched under the real app path with `KIGO_FAKE_ENTITLEMENT=inactive` and the
+    /// purchase sheet opened from the Basic-tier `meaning.upsell` band (PRD #189).
+    ///
+    /// Screenshot evidence: captured after the benefits copy is read, attached as
+    /// `slice-195-paywall-benefits-copy` with lifetime `.keepAlways`.
+    /// Full test identifier: KigoUITests/PaywallUITests/testPaywallBenefitsCopyDescribesUnderstandingLayer
+    func testPaywallBenefitsCopyDescribesUnderstandingLayer() {
+        // setUp already launches with KIGO_FAKE_ENTITLEMENT=inactive.
+        // Open the purchase sheet via the Basic-tier meaning.upsell band (PRD #189).
+        let entry = app.buttons["meaning.upsell"]
+        XCTAssertTrue(
+            entry.waitForExistence(timeout: 10),
+            "meaning.upsell must exist before tapping"
+        )
+        entry.tap()
+
+        // Assert the sheet container is present.
+        let sheetElement = app.descendants(matching: .any)
+            .matching(identifier: "paywall.sheet")
+            .firstMatch
+        XCTAssertTrue(
+            sheetElement.waitForExistence(timeout: 10),
+            "paywall.sheet must appear after tapping the upsell"
+        )
+
+        // Read the ACTUAL label/text content of paywall.benefits (not merely its presence).
+        let benefits = app.descendants(matching: .any)
+            .matching(identifier: "paywall.benefits")
+            .firstMatch
+        XCTAssertTrue(
+            benefits.waitForExistence(timeout: 5),
+            "paywall.benefits element must exist in the paywall sheet"
+        )
+        let copy = benefits.label
+        XCTAssertFalse(
+            copy.isEmpty,
+            "paywall.benefits label must be non-empty; got empty string"
+        )
+
+        // Screenshot evidence — captured with the benefits copy visible in the sheet.
+        let screenshot = XCUIScreen.main.screenshot()
+        let attachment = XCTAttachment(screenshot: screenshot)
+        attachment.lifetime = .keepAlways
+        attachment.name = "slice-195-paywall-benefits-copy"
+        add(attachment)
+
+        // AC (a): must NOT contain stale widget-image language.
+        let lowered = copy.lowercased()
+        XCTAssertFalse(
+            lowered.contains("widget"),
+            "paywall.benefits copy must not contain stale widget-image language; got: '\(copy)'"
+        )
+
+        // AC (b): must contain understanding-layer language describing the offering.
+        let understandingTerms = ["meaning", "kigo", "microseason"]
+        XCTAssertTrue(
+            understandingTerms.contains(where: { lowered.contains($0) }),
+            "paywall.benefits copy must describe the understanding-layer offering "
+                + "(reference meaning, kigo, or microseason); got: '\(copy)'"
+        )
+    }
+
     // MARK: - AC3 (slice #86): paywall.price and paywall.duration elements
 
     /// AC3: Opening the Paywall with `KIGO_FAKE_PRICE=¥300` must show an element
