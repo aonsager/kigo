@@ -130,8 +130,9 @@ resolve without waking the operator; a wrong arbiter call degrades to exactly to
    guard against re-arbitration.
 3. **Arbiter prompt**: a new sub-procedure in `afk-slice` (or a small `references/` file),
    defined verbatim like the critic prompt.
-4. **Journal line**: `ARBITER | #<prd> | <verdict> | <diagnosis>` on every invocation, for
-   post-hoc calibration review.
+4. **Journal line**: a six-field SLICE line (per LOOP-STATE's mandatory journal format)
+   `<utc> | SLICE | #<prd> | arbiter-<verdict> | met=N/M | <diagnosis>; <directive summary>`
+   on every invocation, for post-hoc calibration review.
 
 ## Verification
 
@@ -180,13 +181,13 @@ proves miscalibrated, disable is trivial (the exhaustion branch reverts to posti
 ### After
 
 ```
-- **still failing after the budget** → do not publish; a known-bad decomposition never reaches GitHub. **First check the one-shot guard:** if this PRD already carries an `<!-- afk-arbiter-resolution -->` marker (the arbiter already ran and its resolution still failed the critic), do NOT arbitrate again — post `**afk-slice-blocked**: arbiter resolution exhausted — <standing violations>` and return a `result=slice-critic-exhausted` halt line. **Otherwise, dispatch the arbiter** per [`references/arbiter.md`](references/arbiter.md): it diagnoses the deadlock and returns a verdict. Apply the verdict exactly as that file's "How afk-slice applies the verdict" section specifies — `override-critic` publishes the arbiter's slice list; `relax-to-resolution` gets ONE more decompose+critic pass under the arbiter's binding directive (still failing → real halt); `escalate-human` writes the halt with the arbiter's proposed resolution in the forensics. Post the `**afk-arbiter**` + `<!-- afk-arbiter-resolution -->` comment and record `ARBITER | #<prd> | <verdict> | <diagnosis>` in the journal in all cases. Publishing after `override-critic`/successful `relax` proceeds to step 4.
+- **still failing after the budget** → do not publish; a known-bad decomposition never reaches GitHub. **First check the one-shot guard:** if this PRD already carries an `<!-- afk-arbiter-resolution -->` marker (the arbiter already ran and its resolution still failed the critic), do NOT arbitrate again — post `**afk-slice-blocked**: arbiter resolution exhausted — <standing violations>` and return a `result=slice-critic-exhausted` halt line. **Otherwise, dispatch the arbiter** per [`references/arbiter.md`](references/arbiter.md): it diagnoses the deadlock and returns a verdict. Apply the verdict exactly as that file's "How afk-slice applies the verdict" section specifies — `override-critic` publishes the arbiter's slice list; `relax-to-resolution` gets ONE more decompose+critic pass under the arbiter's binding directive (still failing → real halt); `escalate-human` writes the halt with the arbiter's proposed resolution in the forensics. Post the `**afk-arbiter**` + `<!-- afk-arbiter-resolution -->` comment and record a six-field SLICE journal line with `result=arbiter-<verdict>` and `<diagnosis>; <directive summary>` in the note field in all cases. Publishing after `override-critic`/successful `relax` proceeds to step 4.
 ```
 
 ### What changed
 
 - Old: hard halt unconditionally on budget exhaustion (post `afk-slice-blocked`, record `slice-critic-exhausted`).
-- New: check the one-shot guard first (if `<!-- afk-arbiter-resolution -->` marker already present → real BLOCKED), otherwise dispatch the arbiter per `references/arbiter.md`, apply its verdict (`override-critic` / `relax-to-resolution` / `escalate-human`), post the `**afk-arbiter**` + `<!-- afk-arbiter-resolution -->` comment, and record a `ARBITER | …` journal line in all cases.
+- New: check the one-shot guard first (if `<!-- afk-arbiter-resolution -->` marker already present → real BLOCKED), otherwise dispatch the arbiter per `references/arbiter.md`, apply its verdict (`override-critic` / `relax-to-resolution` / `escalate-human`), post the `**afk-arbiter**` + `<!-- afk-arbiter-resolution -->` comment, and record a six-field SLICE journal line (`result=arbiter-<verdict>`) in all cases.
 
 ---
 
@@ -281,6 +282,26 @@ Then:
 marker and slicing has failed again, do NOT invoke the arbiter a second time →
 **real BLOCKED**.
 
-Record a journal line on every invocation:
-`ARBITER | #<prd> | <verdict> | <diagnosis>`
+Record a journal line on every invocation, in LOOP-STATE's mandatory six-field
+format (result token `arbiter-<verdict>`; diagnosis + directive summary in the
+note field):
+`<utc> | SLICE | #<prd> | arbiter-<verdict> | met=N/M | <diagnosis>; <directive summary>`
 ```
+
+## Appendix: Task 6 (as shipped) — afk-step LOOP-STATE.md signal registration
+
+Two insertions into `~/.claude/skills/afk-step/LOOP-STATE.md` (global file; `.bak-2026-07-01` is the rollback).
+
+### Insertion 1 — recognized resolution signal (§3 prior-slice-exhaustion guard)
+Appended after option (c) of the recognized-resolution-signal list:
+
+> Additionally, an **arbiter resolution** — an `**afk-arbiter**` comment carrying `<\!-- afk-arbiter-resolution -->`, posted autonomously by `afk-slice`'s arbiter (see afk-slice step 3) — is a recognized resolution signal: it permits exactly ONE SLICE re-entry to apply the arbiter's directive. But if that re-entry also exhausts (an `afk-arbiter-resolution` marker is present AND a newer `afk-slice-blocked` comment exists), the arbiter has already had its one shot → **BLOCKED** (do not arbitrate or re-slice again). Unlike a skill-file change, this signal IS visible in GitHub state, so the loop may act on it without operator intervention.
+
+### Insertion 2 — record vocabulary (Local markers section)
+Added as a bullet after the `.afk/journal.md` format description:
+
+> - **Arbiter record** — when `afk-slice`'s arbiter fires on a `slice-critic-exhausted` deadlock (see afk-slice step 3), it appends a normal six-field SLICE line whose `result` token is `arbiter-<verdict>` (e.g. `arbiter-relax-to-resolution`, `arbiter-override-critic`, `arbiter-escalate-human`) and whose note field is `<diagnosis>; <directive summary>` — for post-hoc calibration review. It is an ordinary journal line, not a new format.
+
+## Journal-format reconciliation (during Task 6)
+
+The plan originally specified the arbiter journal line as a 4-field `ARBITER | #<prd> | <verdict> | <diagnosis>`. This **violated** LOOP-STATE's mandatory six-field journal format (`<utc> | <phase> | <issue> | <result> | met=N/M | <note>`), which the no-progress tripwire parses. Reconciled (operator-approved) to a conforming six-field SLICE line: `<utc> | SLICE | #<prd> | arbiter-<verdict> | met=N/M | <diagnosis>; <directive summary>`. This change was propagated to `arbiter.md`, `afk-slice/SKILL.md`, this spec's touch-point list and Task-2/Task-5 appendices, and Insertion 2 above — all now consistent.
