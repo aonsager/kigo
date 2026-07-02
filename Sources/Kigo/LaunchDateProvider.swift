@@ -66,9 +66,11 @@ private func parseYYYYMMDD(_ string: String) -> Date? {
 
     // Verify round-trip: the derived MM-DD key must match the input month/day.
     // This catches Calendar silent overflow for values that pass range checks
-    // but are still invalid (e.g. Feb 30 rolls into March).
+    // but are still invalid (e.g. Feb 30 rolls into March). The round-trip must
+    // re-derive in UTC to match the UTC-parsed date above — `DayKey.make` now
+    // defaults to the local zone (ADR 0020), so pass UTC explicitly here.
     guard let date,
-          let derived = DayKey.make(from: date),
+          let derived = DayKey.make(from: date, timeZone: DayKey.utcCalendar.timeZone),
           derived == String(format: "%02d-%02d", month, day) else {
         return nil
     }

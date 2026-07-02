@@ -131,10 +131,14 @@ public enum AlmanacResolver {
     /// - Parameters:
     ///   - date: The date to resolve (typically from a `DateProvider`).
     ///   - manifest: The loaded `Manifest` to look up.
+    ///   - timeZone: The zone in which to bucket `date` into a calendar day
+    ///     (default: the device's local zone). See ADR 0020. Internal day-within-Kō
+    ///     arithmetic stays UTC — it operates on perennial `MM-DD` reference dates,
+    ///     independent of the user's zone.
     /// - Returns: An `AlmanacPositions` carrying the Kō year-position, or `nil` if
     ///   the derived key falls outside all Kō ranges.
-    public static func resolve(date: Date, manifest: Manifest) -> AlmanacPositions? {
-        guard let key = DayKey.make(from: date) else { return nil }
+    public static func resolve(date: Date, manifest: Manifest, timeZone: TimeZone = .current) -> AlmanacPositions? {
+        guard let key = DayKey.make(from: date, timeZone: timeZone) else { return nil }
 
         // Find the current Kō using the same containment expression as TodayResolver.
         guard let currentKo = manifest.ko.first(where: {

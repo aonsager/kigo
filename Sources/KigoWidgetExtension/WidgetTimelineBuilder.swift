@@ -86,9 +86,11 @@ public struct WidgetTimelineBuilder: Sendable {
     public func buildTimeline(calendar: Calendar = .current) -> [KigoWidgetEntry] {
         let today = dateProvider.today
 
-        // Entry 0: current date
+        // Entry 0: current date. Derive the day-key in the same timezone the
+        // rollover boundary is computed in, so the displayed day and the refresh
+        // boundary agree (ADR 0020).
         let firstEntry: KigoWidgetEntry
-        if let resolved = TodayResolver.resolve(date: today, manifest: manifest) {
+        if let resolved = TodayResolver.resolve(date: today, manifest: manifest, timeZone: calendar.timeZone) {
             firstEntry = KigoWidgetEntry(
                 date: today,
                 kanji: resolved.kigoEntry.kanji,
@@ -107,7 +109,7 @@ public struct WidgetTimelineBuilder: Sendable {
         let nextMidnight = calendar.startOfDay(for: tomorrowDate)
 
         let secondEntry: KigoWidgetEntry
-        if let resolved = TodayResolver.resolve(date: nextMidnight, manifest: manifest) {
+        if let resolved = TodayResolver.resolve(date: nextMidnight, manifest: manifest, timeZone: calendar.timeZone) {
             secondEntry = KigoWidgetEntry(
                 date: nextMidnight,
                 kanji: resolved.kigoEntry.kanji,

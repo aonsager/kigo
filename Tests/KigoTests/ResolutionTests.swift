@@ -323,4 +323,50 @@ final class ResolutionTests: XCTestCase {
         XCTAssertEqual(resolved.sekki.kanji, "芒種", "06-06 Sekki kanji must be 芒種")
         XCTAssertEqual(resolved.sekki.reading.ja, "ぼうしゅ", "06-06 Sekki reading.ja must be ぼうしゅ")
     }
+
+    // MARK: - Local timezone day derivation (ADR 0020)
+
+    /// An instant that is one calendar day in a local zone but the *previous* day in
+    /// UTC. 2026-07-02 15:30 UTC is 2026-07-03 00:30 JST (UTC+9).
+    private func lateNightJSTInstant() -> Date {
+        var utc = Calendar(identifier: .gregorian)
+        utc.timeZone = TimeZone(identifier: "UTC")!
+        return utc.date(from: DateComponents(
+            year: 2026, month: 7, day: 2, hour: 15, minute: 30))!
+    }
+
+    /// ADR 0020: `DayKey` derives the calendar day in the supplied timezone. The same
+    /// instant yields the *local* day in JST and the *previous* day in UTC — this is the
+    /// off-by-one a JST user saw when production derived "today" in UTC.
+    func testDayKeyDerivesDayInProvidedTimeZone() {
+        let instant = lateNightJSTInstant()
+        let jst = TimeZone(identifier: "Asia/Tokyo")!
+        let utc = TimeZone(identifier: "UTC")!
+
+        XCTAssertEqual(DayKey.make(from: instant, timeZone: jst), "07-03",
+                       "JST local day is July 3")
+        XCTAssertEqual(DayKey.absolute(from: instant, timeZone: jst), "2026-07-03",
+                       "JST local absolute day is 2026-07-03")
+        XCTAssertEqual(DayKey.make(from: instant, timeZone: utc), "07-02",
+                       "The same instant is still July 2 in UTC")
+        XCTAssertEqual(DayKey.absolute(from: instant, timeZone: utc), "2026-07-02",
+                       "The same instant is still 2026-07-02 in UTC")
+    }
+
+    /// The resolver honors the injected timezone, so a JST user just past local midnight
+    /// resolves to their local day's Kigo, not the UTC-lagged previous day.
+    func testResolverUsesProvidedTimeZone() throws {
+        let manifest = try loadBundledManifest()
+        let instant = lateNightJSTInstant()
+        let jst = TimeZone(identifier: "Asia/Tokyo")!
+
+        let resolvedJST = TodayResolver.resolve(date: instant, manifest: manifest, timeZone: jst)
+        XCTAssertEqual(resolvedJST?.kigoEntry, manifest.dailyMap["2026-07-03"],
+                       "JST resolution must return the July 3 entry")
+
+        let resolvedUTC = TodayResolver.resolve(
+            date: instant, manifest: manifest, timeZone: TimeZone(identifier: "UTC")!)
+        XCTAssertEqual(resolvedUTC?.kigoEntry, manifest.dailyMap["2026-07-02"],
+                       "UTC resolution returns the lagged July 2 entry")
+    }
 }

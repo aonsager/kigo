@@ -51,14 +51,16 @@ public enum TodayResolver {
     /// - Parameters:
     ///   - date: The date to resolve (typically from a `DateProvider`).
     ///   - manifest: The loaded `Manifest` to look up.
+    ///   - timeZone: The zone in which to bucket `date` into a calendar day
+    ///     (default: the device's local zone). See ADR 0020.
     /// - Returns: A `ResolvedDay` carrying the `DailyMapEntry` for the date's absolute
     ///   `YYYY-MM-DD` key and the `Ko` for its perennial `MM-DD` key, or `nil` if either
     ///   lookup fails.
-    public static func resolve(date: Date, manifest: Manifest) -> ResolvedDay? {
+    public static func resolve(date: Date, manifest: Manifest, timeZone: TimeZone = .current) -> ResolvedDay? {
         // Daily Map is keyed by absolute 2026 dates (ADR 0016); Kō ranges stay
         // perennial MM-DD, so each lookup uses its own key derivation.
-        guard let absoluteKey = DayKey.absolute(from: date),
-              let perennialKey = DayKey.make(from: date),
+        guard let absoluteKey = DayKey.absolute(from: date, timeZone: timeZone),
+              let perennialKey = DayKey.make(from: date, timeZone: timeZone),
               let entry = manifest.dailyMap[absoluteKey],
               let ko = manifest.ko.first(where: { $0.dateRange.start <= perennialKey && perennialKey <= $0.dateRange.end }) else {
             return nil
