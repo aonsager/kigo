@@ -88,6 +88,7 @@ iter=0; consec_fail=0; consec_timeout=0; total_cost="0"; last_summary="(none yet
 while :; do
   if [ -f .afk/DONE ];    then notify "DONE"    "$(head -c 180 .afk/DONE)";    break; fi
   if [ -f .afk/BLOCKED ]; then notify "BLOCKED" "$(head -c 180 .afk/BLOCKED)"; break; fi
+  if [ -f .afk/STOP ];    then rm -f .afk/STOP; notify "STOPPED" "requested via afk-dash"; break; fi
 
   iter=$((iter + 1))
   log "iteration $iter starting (total \$$total_cost so far)"
