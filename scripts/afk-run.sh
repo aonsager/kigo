@@ -57,6 +57,32 @@ notify() {  # $1 = headline, $2 = detail
   return 0
 }
 
+# reap_sim_debris — reclaim simulator resources leaked by prior iterations'
+# xcodebuild runs. Iterations are strictly sequential, so nothing is using the
+# simulator between them and this is always safe to run here. Two tiers:
+#   1. Every iteration: graceful `simctl shutdown all` + prune dead device
+#      definitions. Cheap, frees booted-sim RAM, and does NOT force a cold
+#      CoreSimulatorService respawn.
+#   2. Only when the per-device daemons have actually piled up (a full loop can
+#      leak ~80): a hard `killall` of CoreSimulatorService. This is gated behind
+#      a threshold on purpose — a cold respawn can itself trigger the
+#      simdiskimaged cold-enumeration bug (see CLAUDE.md / MEMORY), so we don't
+#      pay that risk on every pass, only when accumulation warrants it. The next
+#      iteration's xcodebuild re-warms the service (the skills/builder agent
+#      handle a cold boot). simdiskimaged itself is root-owned and left alone —
+#      the loop must never sudo.
+reap_sim_debris() {
+  command -v xcrun >/dev/null 2>&1 || return 0
+  xcrun simctl shutdown all       >/dev/null 2>&1 || true
+  xcrun simctl delete unavailable >/dev/null 2>&1 || true
+  local n
+  n="$(pgrep -f 'CoreSimulator' 2>/dev/null | wc -l | tr -d ' ')"
+  if [ "${n:-0}" -gt 30 ]; then
+    log "sim cleanup: ${n} CoreSimulator processes accumulated — hard service reset"
+    killall -9 com.apple.CoreSimulator.CoreSimulatorService 2>/dev/null || true
+  fi
+}
+
 iter=0; consec_fail=0; consec_timeout=0; total_cost="0"; last_summary="(none yet)"
 
 while :; do
@@ -65,6 +91,7 @@ while :; do
 
   iter=$((iter + 1))
   log "iteration $iter starting (total \$$total_cost so far)"
+  reap_sim_debris   # clean stale simulator daemons between iterations (safe: sequential)
   extra=()
   [ -n "${AFK_MODEL:-}" ] && extra+=(--model "$AFK_MODEL")
   [ "${AFK_BYPASS:-0}" = "1" ] && extra+=(--dangerously-skip-permissions)
