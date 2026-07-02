@@ -112,11 +112,12 @@ final class PaywallUITests: XCTestCase {
         app.launchEnvironment["KIGO_FAKE_PRICE"] = "¥300"
         app.launch()
 
-        // Open the paywall sheet via the upgrade entry.
-        let entry = app.buttons["paywall.entry"]
+        // Open the purchase sheet via the Basic-tier meaning.upsell band (PRD #189:
+        // the marketing/buy flow moved out of Settings into this dedicated sheet).
+        let entry = app.buttons["meaning.upsell"]
         XCTAssertTrue(
             entry.waitForExistence(timeout: 10),
-            "paywall.entry must exist before tapping"
+            "meaning.upsell must exist before tapping"
         )
         entry.tap()
 
@@ -126,7 +127,7 @@ final class PaywallUITests: XCTestCase {
             .firstMatch
         XCTAssertTrue(
             sheetElement.waitForExistence(timeout: 10),
-            "paywall.sheet must appear after tapping Upgrade"
+            "paywall.sheet must appear after tapping the upsell"
         )
 
         // --- AC: paywall.benefits is present and non-empty ---
@@ -322,13 +323,12 @@ final class PaywallUITests: XCTestCase {
     /// Slice #89 regression: When `KIGO_FAKE_ENTITLEMENT=inactive`, the Paywall sheet
     /// must still show `paywall.buy` and must NOT show `paywall.manage`.
     func testBasicPaywallDoesNotShowManage() {
-        // setUp already launches with KIGO_FAKE_ENTITLEMENT=inactive
-        let entry = app.descendants(matching: .any)
-            .matching(identifier: "paywall.entry")
-            .firstMatch
+        // setUp already launches with KIGO_FAKE_ENTITLEMENT=inactive.
+        // Open the purchase sheet via the Basic-tier meaning.upsell band (PRD #189).
+        let entry = app.buttons["meaning.upsell"]
         XCTAssertTrue(
             entry.waitForExistence(timeout: 10),
-            "paywall.entry must exist"
+            "meaning.upsell must exist"
         )
         entry.tap()
 
@@ -359,6 +359,44 @@ final class PaywallUITests: XCTestCase {
         )
     }
 
+    // MARK: - PRD #189: purchase is separated from Settings
+
+    /// The Settings sheet (opened by the gear, `paywall.entry`) must NOT contain the
+    /// buy flow — `paywall.buy` lives only in the dedicated purchase sheet reached from
+    /// `meaning.upsell`. Settings still exposes `paywall.sheet` + `paywall.restore`.
+    func testSettingsSheetHasNoBuyButton() {
+        // setUp launches with KIGO_FAKE_ENTITLEMENT=inactive.
+        let gear = app.buttons["paywall.entry"]
+        XCTAssertTrue(gear.waitForExistence(timeout: 10), "paywall.entry (gear) must exist")
+        gear.tap()
+
+        let sheetElement = app.descendants(matching: .any)
+            .matching(identifier: "paywall.sheet")
+            .firstMatch
+        XCTAssertTrue(
+            sheetElement.waitForExistence(timeout: 10),
+            "paywall.sheet must appear after tapping the gear"
+        )
+
+        // Restore must be reachable from Settings for every user (Apple requirement).
+        let restore = app.descendants(matching: .any)
+            .matching(identifier: "paywall.restore")
+            .firstMatch
+        XCTAssertTrue(
+            restore.waitForExistence(timeout: 5),
+            "paywall.restore must exist in the Settings sheet"
+        )
+
+        // But the buy flow must NOT be here — it lives in the purchase sheet.
+        let buyElement = app.descendants(matching: .any)
+            .matching(identifier: "paywall.buy")
+            .firstMatch
+        XCTAssertFalse(
+            buyElement.exists,
+            "paywall.buy must NOT appear in the Settings sheet (PRD #189: purchase is separate)"
+        )
+    }
+
     // MARK: - AC (slice #117): Wire Subscribe button → paywall.manage appears after simulated buy
 
     /// Slice #117: With `KIGO_FAKE_PURCHASER=succeed`, tapping `paywall.buy` must cause
@@ -384,13 +422,12 @@ final class PaywallUITests: XCTestCase {
         app.launchEnvironment["KIGO_FAKE_PURCHASER"] = "succeed"
         app.launch()
 
-        // Open the paywall sheet via the upgrade entry.
-        let entry = app.descendants(matching: .any)
-            .matching(identifier: "paywall.entry")
-            .firstMatch
+        // Open the purchase sheet via the Basic-tier meaning.upsell band (PRD #189:
+        // the buy flow lives in the dedicated purchase sheet, not Settings).
+        let entry = app.buttons["meaning.upsell"]
         XCTAssertTrue(
             entry.waitForExistence(timeout: 10),
-            "paywall.entry must exist to open the paywall sheet"
+            "meaning.upsell must exist to open the purchase sheet"
         )
         entry.tap()
 
@@ -400,7 +437,7 @@ final class PaywallUITests: XCTestCase {
             .firstMatch
         XCTAssertTrue(
             sheetElement.waitForExistence(timeout: 10),
-            "paywall.sheet must appear after tapping paywall.entry"
+            "paywall.sheet must appear after tapping the upsell"
         )
 
         // Assert paywall.buy is present before tapping.
@@ -444,6 +481,80 @@ final class PaywallUITests: XCTestCase {
         )
     }
 
+    // MARK: - Slice #195: paywall.benefits copy describes the understanding layer, not the widget image
+
+    /// Slice #195 (PRD #189): The `paywall.benefits` element must read as the
+    /// *understanding-layer* offering, not the old widget-image reveal. This closes the
+    /// gap that no test machine-checked the literal text content — prior tests only
+    /// asserted the identifier's presence and non-emptiness.
+    ///
+    /// Acceptance criteria verified:
+    ///   AC (a): the label MUST NOT contain stale widget-image language (the word "widget").
+    ///   AC (b): the label MUST contain understanding-layer language describing the offering
+    ///           (a reference to meaning, kigo, or microseason).
+    ///
+    /// Launched under the real app path with `KIGO_FAKE_ENTITLEMENT=inactive` and the
+    /// purchase sheet opened from the Basic-tier `meaning.upsell` band (PRD #189).
+    ///
+    /// Screenshot evidence: captured after the benefits copy is read, attached as
+    /// `slice-195-paywall-benefits-copy` with lifetime `.keepAlways`.
+    /// Full test identifier: KigoUITests/PaywallUITests/testPaywallBenefitsCopyDescribesUnderstandingLayer
+    func testPaywallBenefitsCopyDescribesUnderstandingLayer() {
+        // setUp already launches with KIGO_FAKE_ENTITLEMENT=inactive.
+        // Open the purchase sheet via the Basic-tier meaning.upsell band (PRD #189).
+        let entry = app.buttons["meaning.upsell"]
+        XCTAssertTrue(
+            entry.waitForExistence(timeout: 10),
+            "meaning.upsell must exist before tapping"
+        )
+        entry.tap()
+
+        // Assert the sheet container is present.
+        let sheetElement = app.descendants(matching: .any)
+            .matching(identifier: "paywall.sheet")
+            .firstMatch
+        XCTAssertTrue(
+            sheetElement.waitForExistence(timeout: 10),
+            "paywall.sheet must appear after tapping the upsell"
+        )
+
+        // Read the ACTUAL label/text content of paywall.benefits (not merely its presence).
+        let benefits = app.descendants(matching: .any)
+            .matching(identifier: "paywall.benefits")
+            .firstMatch
+        XCTAssertTrue(
+            benefits.waitForExistence(timeout: 5),
+            "paywall.benefits element must exist in the paywall sheet"
+        )
+        let copy = benefits.label
+        XCTAssertFalse(
+            copy.isEmpty,
+            "paywall.benefits label must be non-empty; got empty string"
+        )
+
+        // Screenshot evidence — captured with the benefits copy visible in the sheet.
+        let screenshot = XCUIScreen.main.screenshot()
+        let attachment = XCTAttachment(screenshot: screenshot)
+        attachment.lifetime = .keepAlways
+        attachment.name = "slice-195-paywall-benefits-copy"
+        add(attachment)
+
+        // AC (a): must NOT contain stale widget-image language.
+        let lowered = copy.lowercased()
+        XCTAssertFalse(
+            lowered.contains("widget"),
+            "paywall.benefits copy must not contain stale widget-image language; got: '\(copy)'"
+        )
+
+        // AC (b): must contain understanding-layer language describing the offering.
+        let understandingTerms = ["meaning", "kigo", "microseason"]
+        XCTAssertTrue(
+            understandingTerms.contains(where: { lowered.contains($0) }),
+            "paywall.benefits copy must describe the understanding-layer offering "
+                + "(reference meaning, kigo, or microseason); got: '\(copy)'"
+        )
+    }
+
     // MARK: - AC3 (slice #86): paywall.price and paywall.duration elements
 
     /// AC3: Opening the Paywall with `KIGO_FAKE_PRICE=¥300` must show an element
@@ -463,11 +574,12 @@ final class PaywallUITests: XCTestCase {
         app.launchEnvironment["KIGO_FAKE_PRICE"] = "¥300"
         app.launch()
 
-        // Tap the Upgrade entry to open the paywall sheet.
-        let entry = app.buttons["paywall.entry"]
+        // Open the purchase sheet via the Basic-tier meaning.upsell band (PRD #189:
+        // price/offer live in the dedicated purchase sheet, not Settings).
+        let entry = app.buttons["meaning.upsell"]
         XCTAssertTrue(
             entry.waitForExistence(timeout: 10),
-            "paywall.entry must exist before tapping"
+            "meaning.upsell must exist before tapping"
         )
         entry.tap()
 
@@ -477,7 +589,7 @@ final class PaywallUITests: XCTestCase {
             .firstMatch
         XCTAssertTrue(
             sheetElement.waitForExistence(timeout: 10),
-            "paywall.sheet must appear after tapping Upgrade"
+            "paywall.sheet must appear after tapping the upsell"
         )
 
         // Assert paywall.price element exists and contains the injected price string.

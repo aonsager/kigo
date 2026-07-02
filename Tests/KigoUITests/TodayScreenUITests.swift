@@ -27,6 +27,8 @@ final class TodayScreenUITests: XCTestCase {
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchEnvironment["KIGO_FAKE_DATE"] = "2026-06-12"
+        // Slice #190: gate is live — inject active entitlement so kigo.description is visible.
+        app.launchEnvironment["KIGO_FAKE_ENTITLEMENT"] = "active"
         app.launch()
     }
 

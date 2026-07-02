@@ -102,7 +102,8 @@ struct KigoApp: App {
 
 // MARK: - RootView
 
-/// Thin wrapper around `ContentView` that owns the paywall entry and sheet state.
+/// Thin wrapper around `ContentView` that owns the paywall entry, sheet state, and
+/// the single persistent `PaywallModel` instance for the session.
 ///
 /// Placing entry+sheet ownership here (rather than inside `TodayView` or `ContentView`)
 /// keeps `ContentView` free of paywall concerns and gives `RootView` unambiguous access
@@ -119,6 +120,12 @@ struct KigoApp: App {
 ///
 /// Slice #137: `languageStore` is now typed as `any LanguageStore` to accommodate both
 /// `UserDefaultsLanguageStore` (production) and `LockedInMemoryLanguageStore` (fake env path).
+///
+/// Slice #190: `paywallModel` is lifted from an ephemeral sheet-local object to persistent
+/// `@State` here. Two environment values are injected into the view hierarchy:
+/// - `\.isEntitled`: mirrors `paywallModel.isActive` so `TodayView` can gate premium content.
+/// - `\.openPaywall`: a closure that sets `isPaywallPresented = true`, so `TodayView`'s
+///   upsell element can present the paywall without coupling to sheet state.
 struct RootView: View {
     let entitlementProvider: EntitlementProvider
     let offerDisplay: OfferDisplay
@@ -126,16 +133,48 @@ struct RootView: View {
     let languageStore: any LanguageStore
     let appearanceStore: any AppearanceStore
 
-    @State private var isPaywallPresented = false
+    /// The two root-level sheets. They are deliberately distinct surfaces (PRD #189):
+    /// the gear opens *settings* (language, appearance, subscription status + restore);
+    /// the Basic-tier `meaning.upsell` opens the *purchase* sheet (the marketing + buy
+    /// flow). Routed through one `item:` binding so only one is ever presented.
+    private enum RootSheet: Identifiable {
+        case settings
+        case purchase
+        var id: Self { self }
+    }
+
+    @State private var activeSheet: RootSheet?
     @State private var language: LanguagePreference = .japanese
+    @State private var paywallModel: PaywallModel
+
+    init(
+        entitlementProvider: EntitlementProvider,
+        offerDisplay: OfferDisplay,
+        purchaser: any SubscriptionPurchaser,
+        languageStore: any LanguageStore,
+        appearanceStore: any AppearanceStore
+    ) {
+        self.entitlementProvider = entitlementProvider
+        self.offerDisplay = offerDisplay
+        self.purchaser = purchaser
+        self.languageStore = languageStore
+        self.appearanceStore = appearanceStore
+        self._paywallModel = State(wrappedValue: PaywallModel(
+            provider: entitlementProvider,
+            offerDisplay: offerDisplay,
+            purchaser: purchaser
+        ))
+    }
 
     var body: some View {
         ContentView()
             .preferredColorScheme(appearanceStore.preference.colorScheme)
             .environment(\.language, language)
+            .environment(\.isEntitled, paywallModel.isActive)
+            .environment(\.openPaywall, OpenPaywallAction { activeSheet = .purchase })
             .overlay(alignment: .topTrailing) {
                 Button {
-                    isPaywallPresented = true
+                    activeSheet = .settings
                 } label: {
                     Image(systemName: "gearshape")
                         .font(.system(size: 15, weight: .regular))
@@ -149,20 +188,27 @@ struct RootView: View {
                 .padding(.top, 16)
                 .accessibilityIdentifier("paywall.entry")
             }
-            .bottomSheet(isPresented: $isPaywallPresented) {
-                SettingsView(
-                    model: PaywallModel(
-                        provider: entitlementProvider,
-                        offerDisplay: offerDisplay,
-                        purchaser: purchaser
-                    ),
-                    language: $language,
-                    languageStore: languageStore,
-                    appearanceStore: appearanceStore
-                )
+            .bottomSheet(item: $activeSheet) { sheet in
+                switch sheet {
+                case .settings:
+                    SettingsView(
+                        model: paywallModel,
+                        language: $language,
+                        languageStore: languageStore,
+                        appearanceStore: appearanceStore
+                    )
+                case .purchase:
+                    PaywallView(
+                        model: paywallModel,
+                        chromeStrings: ChromeStrings(language)
+                    )
+                }
             }
             .onAppear {
                 language = languageStore.preference
+            }
+            .task {
+                await paywallModel.loadState()
             }
     }
 }

@@ -21,6 +21,8 @@ final class ReadingDescriptionUITests: XCTestCase {
         // Force Japanese so TodayView's localized(for:) reads .ja values regardless of
         // UserDefaults state. This test is about date-based content, not language switching.
         app.launchEnvironment["KIGO_FAKE_LANGUAGE"] = "ja"
+        // Slice #190: gate is live — inject active entitlement so kigo.description is visible.
+        app.launchEnvironment["KIGO_FAKE_ENTITLEMENT"] = "active"
         app.launch()
     }
 

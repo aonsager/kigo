@@ -42,9 +42,9 @@ public struct PaywallView: View {
                 .accessibilityHidden(false)
 
             VStack(alignment: .leading, spacing: 0) {
-                // Section header: "Kigo Widgets" label + price aligned right.
+                // Section header: "Understanding" label + price aligned right.
                 HStack(alignment: .firstTextBaseline) {
-                    Text("Kigo Widgets")
+                    Text("Understanding")
                         .font(KigoFont.zenKaku(.medium, size: 10.5, relativeTo: .caption2))
                         .tracking(4)
                         .textCase(.uppercase)
@@ -70,7 +70,7 @@ public struct PaywallView: View {
                     .padding(.top, 4)
 
                 // Single honest benefit.
-                Text("Reveal the seasonal illustration on your home screen widget.")
+                Text("Read the meaning behind each day’s kigo, its microseason, and the year’s turning.")
                     .font(KigoFont.zenKaku(.light, size: 14, relativeTo: .body))
                     .lineSpacing(8)
                     .foregroundStyle(KigoTheme.inkReading)
@@ -78,8 +78,8 @@ public struct PaywallView: View {
                     .padding(.top, 12)
                     .accessibilityIdentifier("paywall.benefits")
 
-                // Before → after preview: plain word card → image-revealed card.
-                MiniWidgetPreview()
+                // Before → after preview: bare encounter → meaning revealed.
+                MeaningPreview()
                     .padding(.top, 18)
 
                 if model.isActive {
@@ -147,14 +147,16 @@ public struct PaywallView: View {
     }
 }
 
-// MARK: - MiniWidgetPreview
+// MARK: - MeaningPreview
 
-/// The "non-subscribed → subscribed" widget illustration: a plain word-only card,
-/// an arrow, then an image-revealed card. Decorative (no accessibility identifiers).
-private struct MiniWidgetPreview: View {
+/// The "encounter → understanding" illustration: a bare word-only card (what every
+/// Basic user already sees for free), an arrow, then a card whose meaning has been
+/// revealed. Decorative (no accessibility identifiers). Reframed from the old
+/// widget-image preview (PRD #189: the widget image is free; understanding is paid).
+private struct MeaningPreview: View {
     var body: some View {
         HStack(spacing: 12) {
-            // Basic: paper card, word only.
+            // Basic: the bare encounter — kanji only.
             VStack(spacing: 5) {
                 Text("季")
                     .font(KigoFont.mincho(.semibold, size: 22, relativeTo: .title2))
@@ -172,25 +174,26 @@ private struct MiniWidgetPreview: View {
                 .font(.system(size: 13, weight: .regular))
                 .foregroundStyle(KigoTheme.textTertiary)
 
-            // Premium: image-revealed card.
-            ZStack(alignment: .bottomLeading) {
-                LinearGradient(
-                    colors: [Color(red: 0.54, green: 0.58, blue: 0.52), Color(red: 0.31, green: 0.35, blue: 0.30)],
-                    startPoint: .topLeading, endPoint: .bottomTrailing
-                )
-                LinearGradient(
-                    colors: [.clear, .black.opacity(0.45)],
-                    startPoint: .center, endPoint: .bottom
-                )
+            // Premium: the same word, meaning revealed — kanji over a few lines of prose.
+            VStack(spacing: 5) {
                 Text("季")
-                    .font(KigoFont.mincho(.semibold, size: 18, relativeTo: .title3))
-                    .foregroundStyle(.white)
-                    .padding(8)
+                    .font(KigoFont.mincho(.semibold, size: 20, relativeTo: .title2))
+                    .foregroundStyle(KigoTheme.inkKanji)
+                VStack(spacing: 3) {
+                    ForEach([CGFloat(1.0), 0.82, 0.9], id: \.self) { scale in
+                        RoundedRectangle(cornerRadius: 1.5)
+                            .fill(KigoTheme.inkReading.opacity(0.55))
+                            .frame(height: 3)
+                            .scaleEffect(x: scale, anchor: .center)
+                    }
+                }
+                .frame(width: 44)
             }
             .frame(width: 74, height: 74)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .background(KigoTheme.canvas, in: RoundedRectangle(cornerRadius: 16))
+            .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(KigoTheme.hairline, lineWidth: 1))
 
-            Text("Subscribe to reveal the image.")
+            Text("Subscribe to read the meaning.")
                 .font(KigoFont.zenKaku(.light, size: 11.5, relativeTo: .caption))
                 .lineSpacing(3)
                 .foregroundStyle(KigoTheme.textSecondary)
