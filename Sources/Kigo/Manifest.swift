@@ -43,6 +43,28 @@ public struct Manifest: Codable, Sendable, Equatable {
     /// remote-update logic (C21) can compare a fetched manifest against the bundled
     /// one without the production adapter needing to know the field exists.
     public let version: Int
+    /// Base URL for remote day imagery (ADR 0022). A day's image URL is derived as
+    /// `imageBaseURL + "/" + imageId + ".jpg"` (see `KigoImageSource`) — optional so
+    /// manifests without it (including today's bundled dummy manifest) still decode
+    /// unchanged and resolve to the gradient placeholder (ADR 0014 forward-compat,
+    /// same pattern as `LocalizedText.en`; no schemaVersion bump implied).
+    public let imageBaseURL: String?
+
+    public init(
+        schemaVersion: String,
+        version: Int,
+        imageBaseURL: String? = nil,
+        dailyMap: [String: DailyMapEntry],
+        ko: [Ko],
+        sekki: [Sekki]
+    ) {
+        self.schemaVersion = schemaVersion
+        self.version = version
+        self.imageBaseURL = imageBaseURL
+        self.dailyMap = dailyMap
+        self.ko = ko
+        self.sekki = sekki
+    }
     /// Absolute mapping from `2026-MM-DD` date keys to Kigo entries — one per day of
     /// 2026 (ADR 0016). Lookup uses `DayKey.absolute(from:)`; the perennial `MM-DD`
     /// keys live only in the Kō `dateRange` containment check.
