@@ -1,0 +1,1931 @@
+{
+  "schemaVersion": "2.0",
+  "version": 2,
+  "dailyMap": {
+    "2026-01-07": {
+      "kanji": "七草",
+      "reading": {
+        "ja": "ななくさ",
+        "en": "nanakusa"
+      },
+      "description": {
+        "ja": "正月に疲れた胃を休めるため、七種の若菜を刻んで粥に炊き込み、無病息災を願って食べる。",
+        "en": "On the seventh morning of the new year, seven young greens are simmered into rice porridge — a quiet way to rest the stomach after the holiday's feasting and wish for a healthy year ahead."
+      },
+      "imageId": "kigo-01-07",
+      "attribution": {
+        "title": {
+          "ja": "七草",
+          "en": "Seven Herbs of Spring"
+        },
+        "credit": {
+          "ja": "撮影者不明",
+          "en": "Unknown photographer"
+        },
+        "license": {
+          "ja": "パブリックドメイン",
+          "en": "Public domain"
+        }
+      }
+    },
+    "2026-02-14": {
+      "kanji": "梅",
+      "reading": {
+        "ja": "うめ",
+        "en": "ume"
+      },
+      "description": {
+        "ja": "まだ冷たい風の中、他の花に先駆けて咲く梅の花は、かすかな香りで春の訪れを告げる。",
+        "en": "Before any other blossom dares to open, plum flowers push through the last cold winds, their faint fragrance the season's first quiet announcement of spring."
+      },
+      "imageId": "kigo-02-14",
+      "attribution": {
+        "title": {
+          "ja": "梅",
+          "en": "Plum Blossom"
+        },
+        "credit": {
+          "ja": "撮影者不明",
+          "en": "Unknown photographer"
+        },
+        "license": {
+          "ja": "パブリックドメイン",
+          "en": "Public domain"
+        }
+      }
+    },
+    "2026-03-21": {
+      "kanji": "桜",
+      "reading": {
+        "ja": "さくら",
+        "en": "sakura"
+      },
+      "description": {
+        "ja": "川沿いの土手が薄紅色に染まり、人々が足を止めて枝を見上げる、一年でもっとも短い盛りの季節。",
+        "en": "The riverbank turns pale pink almost overnight, and for a few short days everyone slows their walk to look up at the branches."
+      },
+      "imageId": "kigo-03-21",
+      "attribution": {
+        "title": {
+          "ja": "桜",
+          "en": "Cherry Blossom"
+        },
+        "credit": {
+          "ja": "撮影者不明",
+          "en": "Unknown photographer"
+        },
+        "license": {
+          "ja": "パブリックドメイン",
+          "en": "Public domain"
+        }
+      }
+    },
+    "2026-04-29": {
+      "kanji": "花吹雪",
+      "reading": {
+        "ja": "はなふぶき",
+        "en": "hanafubuki"
+      },
+      "description": {
+        "ja": "満開を過ぎた桜が風に散り、空を薄紅色の吹雪のように舞い落ちる、花見の終わりを告げる光景。",
+        "en": "Past their peak, cherry petals let go all at once, swirling through the air like a soft pink snowstorm — the quiet signal that the season of blossom-viewing is closing."
+      },
+      "imageId": "kigo-04-29",
+      "attribution": {
+        "title": {
+          "ja": "花吹雪",
+          "en": "Cherry Blossom Snow"
+        },
+        "credit": {
+          "ja": "撮影者不明",
+          "en": "Unknown photographer"
+        },
+        "license": {
+          "ja": "パブリックドメイン",
+          "en": "Public domain"
+        }
+      }
+    },
+    "2026-05-05": {
+      "kanji": "鯉のぼり",
+      "reading": {
+        "ja": "こいのぼり",
+        "en": "koinobori"
+      },
+      "description": {
+        "ja": "五月の空に大小の鯉のぼりが泳ぎ、子どもの健やかな成長を願う家々の屋根の上ではためく。",
+        "en": "Cloth carp of every size swim through the May sky, strung above rooftops in a wish for each child's strength and long life."
+      },
+      "imageId": "kigo-05-05",
+      "attribution": {
+        "title": {
+          "ja": "鯉のぼり",
+          "en": "Carp Streamers"
+        },
+        "credit": {
+          "ja": "撮影者不明",
+          "en": "Unknown photographer"
+        },
+        "license": {
+          "ja": "パブリックドメイン",
+          "en": "Public domain"
+        }
+      }
+    },
+    "2026-06-10": {
+      "kanji": "紫陽花",
+      "reading": {
+        "ja": "あじさい",
+        "en": "ajisai"
+      },
+      "description": {
+        "ja": "梅雨の湿った空気の中、紫陽花は雨粒を受けながら少しずつ色を変え、灰色の景色に静かな彩りを添える。",
+        "en": "Through the damp hush of the rainy season, hydrangea blossoms slowly shift color under the falling rain, a quiet patch of blue and violet against the grey."
+      },
+      "imageId": "kigo-06-10",
+      "attribution": {
+        "title": {
+          "ja": "紫陽花",
+          "en": "Hydrangea"
+        },
+        "credit": {
+          "ja": "撮影者不明",
+          "en": "Unknown photographer"
+        },
+        "license": {
+          "ja": "パブリックドメイン",
+          "en": "Public domain"
+        }
+      }
+    },
+    "2026-07-07": {
+      "kanji": "七夕",
+      "reading": {
+        "ja": "たなばた",
+        "en": "tanabata"
+      },
+      "description": {
+        "ja": "短冊に願いごとを書いて笹の葉に結び、年に一度だけ天の川で会えるという織姫と彦星の伝説を偲ぶ夜。",
+        "en": "Wishes written on strips of paper hang from bamboo branches tonight, in memory of the two star-crossed lovers said to cross the Milky Way just once a year."
+      },
+      "imageId": "kigo-07-07",
+      "attribution": {
+        "title": {
+          "ja": "七夕",
+          "en": "Star Festival"
+        },
+        "credit": {
+          "ja": "撮影者不明",
+          "en": "Unknown photographer"
+        },
+        "license": {
+          "ja": "パブリックドメイン",
+          "en": "Public domain"
+        }
+      }
+    },
+    "2026-08-15": {
+      "kanji": "花火",
+      "reading": {
+        "ja": "はなび",
+        "en": "hanabi"
+      },
+      "description": {
+        "ja": "川辺に人々が集まり、闇を切り裂いて広がる大輪の花火に歓声をあげる、夏の夜の恒例行事。",
+        "en": "Crowds gather along the riverbank as huge blooms of light tear open the night sky — the season's ritual way of sending summer off with a shout."
+      },
+      "imageId": "kigo-08-15",
+      "attribution": {
+        "title": {
+          "ja": "花火",
+          "en": "Fireworks"
+        },
+        "credit": {
+          "ja": "撮影者不明",
+          "en": "Unknown photographer"
+        },
+        "license": {
+          "ja": "パブリックドメイン",
+          "en": "Public domain"
+        }
+      }
+    },
+    "2026-09-15": {
+      "kanji": "十五夜",
+      "reading": {
+        "ja": "じゅうごや",
+        "en": "jūgoya"
+      },
+      "description": {
+        "ja": "澄んだ秋の空に浮かぶ満月を愛で、すすきと月見団子を供えて実りの季節に感謝する夜。",
+        "en": "Under a full moon hung clear in the autumn sky, people set out pampas grass and small round dumplings, a quiet thanks for the season's harvest."
+      },
+      "imageId": "kigo-09-15",
+      "attribution": {
+        "title": {
+          "ja": "十五夜",
+          "en": "Mid-Autumn Moon"
+        },
+        "credit": {
+          "ja": "撮影者不明",
+          "en": "Unknown photographer"
+        },
+        "license": {
+          "ja": "パブリックドメイン",
+          "en": "Public domain"
+        }
+      }
+    },
+    "2026-10-20": {
+      "kanji": "紅葉",
+      "reading": {
+        "ja": "もみじ",
+        "en": "momiji"
+      },
+      "description": {
+        "ja": "山々の緑が赤や黄色に染まり、風が吹くたびに色づいた葉がひらひらと舞い落ちる。",
+        "en": "The green of the mountains turns to red and gold, and every gust sends another handful of colored leaves spinning to the ground."
+      },
+      "imageId": "kigo-10-20",
+      "attribution": {
+        "title": {
+          "ja": "紅葉",
+          "en": "Autumn Leaves"
+        },
+        "credit": {
+          "ja": "撮影者不明",
+          "en": "Unknown photographer"
+        },
+        "license": {
+          "ja": "パブリックドメイン",
+          "en": "Public domain"
+        }
+      }
+    },
+    "2026-11-23": {
+      "kanji": "木枯らし",
+      "reading": {
+        "ja": "こがらし",
+        "en": "kogarashi"
+      },
+      "description": {
+        "ja": "冷たく乾いた北風が最後の枯れ葉を吹き払い、いよいよ冬が近いことを肌で知らせる。",
+        "en": "A dry, cold wind strips the last brown leaves from the branches, the first clear signal on the skin that winter is close."
+      },
+      "imageId": "kigo-11-23",
+      "attribution": {
+        "title": {
+          "ja": "木枯らし",
+          "en": "First Winter Wind"
+        },
+        "credit": {
+          "ja": "撮影者不明",
+          "en": "Unknown photographer"
+        },
+        "license": {
+          "ja": "パブリックドメイン",
+          "en": "Public domain"
+        }
+      }
+    },
+    "2026-12-31": {
+      "kanji": "大晦日",
+      "reading": {
+        "ja": "おおみそか",
+        "en": "ōmisoka"
+      },
+      "description": {
+        "ja": "一年の汚れを払うように家々を掃き清め、除夜の鐘を聞きながら年越し蕎麦をすする、静かな年の瀬。",
+        "en": "Homes are swept clean as if brushing off the whole year's dust, and families sip long soba noodles while temple bells count down the year, one slow toll at a time."
+      },
+      "imageId": "kigo-12-31",
+      "attribution": {
+        "title": {
+          "ja": "大晦日",
+          "en": "New Year's Eve"
+        },
+        "credit": {
+          "ja": "撮影者不明",
+          "en": "Unknown photographer"
+        },
+        "license": {
+          "ja": "パブリックドメイン",
+          "en": "Public domain"
+        }
+      }
+    }
+  },
+  "ko": [
+    {
+      "kanji": "東風解凍",
+      "reading": {
+        "ja": "はるかぜこおりをとく",
+        "en": "harukazekōriotoku"
+      },
+      "gloss": "east wind thaws the ice",
+      "sekkiId": "risshun",
+      "dateRange": {
+        "start": "02-04",
+        "end": "02-08"
+      },
+      "description": {
+        "ja": "春の東風が川や湖の氷を解かし始める。寒さの中にも春の気配を感じる時期。",
+        "en": "The spring east wind begins to thaw rivers and lakes."
+      }
+    },
+    {
+      "kanji": "黄鶯睍睆",
+      "reading": {
+        "ja": "うぐいすなく",
+        "en": "uguisunaku"
+      },
+      "gloss": "bush warblers sing in the mountains",
+      "sekkiId": "risshun",
+      "dateRange": {
+        "start": "02-09",
+        "end": "02-13"
+      },
+      "description": {
+        "ja": "山でウグイスが鳴き始める。春の訪れを告げる澄んだ声が野山に響く。",
+        "en": "Bush warblers sing their first clear notes from the mountain slopes."
+      }
+    },
+    {
+      "kanji": "魚上氷",
+      "reading": {
+        "ja": "うおこおりをいずる",
+        "en": "uokōrioizuru"
+      },
+      "gloss": "fish emerge from under the ice",
+      "sekkiId": "risshun",
+      "dateRange": {
+        "start": "02-14",
+        "end": "02-18"
+      },
+      "description": {
+        "ja": "氷の解けた川で魚が水面近くに浮かび上がる。春の訪れを水中でも感じる頃。",
+        "en": "Fish rise toward the surface as ice melts in the rivers."
+      }
+    },
+    {
+      "kanji": "土脉潤起",
+      "reading": {
+        "ja": "つちのしょううるおいおこる",
+        "en": "tsuchinoshōuruoiokoru"
+      },
+      "gloss": "soil moisture stirs and rises",
+      "sekkiId": "usui",
+      "dateRange": {
+        "start": "02-19",
+        "end": "02-23"
+      },
+      "description": {
+        "ja": "大地が潤い始め、土の中の水分が動き出す。春雨が大地を柔らかくほぐす時期。",
+        "en": "Moisture stirs in the soil as warmth slowly returns to the earth."
+      }
+    },
+    {
+      "kanji": "霞始靆",
+      "reading": {
+        "ja": "かすみはじめてたなびく",
+        "en": "kasumihajimetetanabiku"
+      },
+      "gloss": "mist begins to drift",
+      "sekkiId": "usui",
+      "dateRange": {
+        "start": "02-24",
+        "end": "02-29"
+      },
+      "description": {
+        "ja": "春の霞が山や野に漂い始める。空気が湿り気を帯び、春らしい景色が広がる。",
+        "en": "Haze drifts gently across the fields at the edge of spring."
+      }
+    },
+    {
+      "kanji": "草木萌動",
+      "reading": {
+        "ja": "そうもくめばえいずる",
+        "en": "sōmokumebaeizuru"
+      },
+      "gloss": "plants and trees begin to bud",
+      "sekkiId": "usui",
+      "dateRange": {
+        "start": "03-01",
+        "end": "03-05"
+      },
+      "description": {
+        "ja": "草や木の芽が動き始め、大地に緑の気配が漂う。春の生命力が地上に現れる。",
+        "en": "Buds swell on trees and fresh green shoots push through the soil."
+      }
+    },
+    {
+      "kanji": "蟄虫啓戸",
+      "reading": {
+        "ja": "すごもりのむしとをひらく",
+        "en": "sugomorinomushitōhiraku"
+      },
+      "gloss": "hibernating insects open their doors",
+      "sekkiId": "keichitsu",
+      "dateRange": {
+        "start": "03-06",
+        "end": "03-10"
+      },
+      "description": {
+        "ja": "冬ごもりしていた虫たちが土の戸を開けて這い出す。春の温もりが地中まで届く頃。",
+        "en": "Insects hibernating underground rouse themselves and open their burrows."
+      }
+    },
+    {
+      "kanji": "桃始笑",
+      "reading": {
+        "ja": "ももはじめてさく",
+        "en": "momohajimetesaku"
+      },
+      "gloss": "peach blossoms first bloom",
+      "sekkiId": "keichitsu",
+      "dateRange": {
+        "start": "03-11",
+        "end": "03-15"
+      },
+      "description": {
+        "ja": "桃の花が咲き始める。淡い桃色の花が春の野に明るさをもたらす時期。",
+        "en": "Peach trees break into their first delicate blossoms of the season."
+      }
+    },
+    {
+      "kanji": "菜虫化蝶",
+      "reading": {
+        "ja": "なむしちょうとなる",
+        "en": "namushichōtonaru"
+      },
+      "gloss": "caterpillars become butterflies",
+      "sekkiId": "keichitsu",
+      "dateRange": {
+        "start": "03-16",
+        "end": "03-20"
+      },
+      "description": {
+        "ja": "青虫が蛹から羽化し、蝶となって飛び始める。春の変容を象徴する美しい時期。",
+        "en": "Caterpillars that fed on winter greens emerge as early butterflies."
+      }
+    },
+    {
+      "kanji": "雀始巣",
+      "reading": {
+        "ja": "すずめはじめてすくう",
+        "en": "suzumehajimetesukū"
+      },
+      "gloss": "sparrows begin to nest",
+      "sekkiId": "shunbun",
+      "dateRange": {
+        "start": "03-21",
+        "end": "03-25"
+      },
+      "description": {
+        "ja": "雀が巣を作り始める。春分を過ぎ、鳥たちが繁殖の準備を始める頃。",
+        "en": "Sparrows begin gathering straws and twigs to build their nests."
+      }
+    },
+    {
+      "kanji": "桜始開",
+      "reading": {
+        "ja": "さくらはじめてひらく",
+        "en": "sakurahajimetehiraku"
+      },
+      "gloss": "cherry blossoms first open",
+      "sekkiId": "shunbun",
+      "dateRange": {
+        "start": "03-26",
+        "end": "03-30"
+      },
+      "description": {
+        "ja": "桜の花が開き始める。日本の春の象徴である桜の季節がいよいよ到来する。",
+        "en": "The first cherry blossoms open, marking the beloved arrival of spring."
+      }
+    },
+    {
+      "kanji": "雷乃発声",
+      "reading": {
+        "ja": "かみなりすなわちこえをはっす",
+        "en": "kaminarisunawachikoeohassu"
+      },
+      "gloss": "thunder first rumbles",
+      "sekkiId": "shunbun",
+      "dateRange": {
+        "start": "03-31",
+        "end": "04-04"
+      },
+      "description": {
+        "ja": "春の雷が初めて鳴り響く。春の大気が活発になり、恵みの雨をもたらす合図。",
+        "en": "Thunder rolls for the first time after the long winter silence."
+      }
+    },
+    {
+      "kanji": "玄鳥至",
+      "reading": {
+        "ja": "つばめきたる",
+        "en": "tsubamekitaru"
+      },
+      "gloss": "swallows arrive",
+      "sekkiId": "seimei",
+      "dateRange": {
+        "start": "04-05",
+        "end": "04-09"
+      },
+      "description": {
+        "ja": "ツバメが南から渡ってくる。軒先に巣を作り、夏の終わりまで人の暮らしに寄り添う。",
+        "en": "Swallows return from the south, swooping low over the eaves."
+      }
+    },
+    {
+      "kanji": "鴻雁北",
+      "reading": {
+        "ja": "こうがんきたへかえる",
+        "en": "kōgankitahekaeru"
+      },
+      "gloss": "wild geese fly north",
+      "sekkiId": "seimei",
+      "dateRange": {
+        "start": "04-10",
+        "end": "04-14"
+      },
+      "description": {
+        "ja": "雁が北の繁殖地へ帰っていく。冬の間日本に滞在していた渡り鳥との別れの時期。",
+        "en": "Wild geese lift off and fly northward to their summer breeding grounds."
+      }
+    },
+    {
+      "kanji": "虹始見",
+      "reading": {
+        "ja": "にじはじめてあらわる",
+        "en": "nijihajimetearawaru"
+      },
+      "gloss": "rainbows first appear",
+      "sekkiId": "seimei",
+      "dateRange": {
+        "start": "04-15",
+        "end": "04-19"
+      },
+      "description": {
+        "ja": "春の雨上がりに虹が姿を現し始める。清明の空気に七色の橋がかかる美しい季節。",
+        "en": "The first rainbow of the year arches over the spring rain showers."
+      }
+    },
+    {
+      "kanji": "葭始生",
+      "reading": {
+        "ja": "あしはじめてしょうず",
+        "en": "ashihajimeteshōzu"
+      },
+      "gloss": "reeds begin to sprout",
+      "sekkiId": "kokuu",
+      "dateRange": {
+        "start": "04-20",
+        "end": "04-24"
+      },
+      "description": {
+        "ja": "水辺の葦が芽吹き始める。湿地や川沿いに緑の新芽が顔を出す春の情景。",
+        "en": "Reeds push fresh green shoots up through the mud at the water's edge."
+      }
+    },
+    {
+      "kanji": "霜止出苗",
+      "reading": {
+        "ja": "しもやんでなえいずる",
+        "en": "shimoyandenaeizuru"
+      },
+      "gloss": "frost stops and seedlings emerge",
+      "sekkiId": "kokuu",
+      "dateRange": {
+        "start": "04-25",
+        "end": "04-29"
+      },
+      "description": {
+        "ja": "霜が降りなくなり、田植えの苗が育ち始める。農作業が本格的に始まる時期。",
+        "en": "Morning frosts cease and seedlings are set out in flooded paddies."
+      }
+    },
+    {
+      "kanji": "牡丹華",
+      "reading": {
+        "ja": "ぼたんはなさく",
+        "en": "botanhanasaku"
+      },
+      "gloss": "tree peonies bloom",
+      "sekkiId": "kokuu",
+      "dateRange": {
+        "start": "04-30",
+        "end": "05-04"
+      },
+      "description": {
+        "ja": "牡丹の花が咲き誇る。百花の王とも呼ばれる豪華な花が春の庭を彩る。",
+        "en": "Tree peonies open their lush, heavy blossoms in the late-spring garden."
+      }
+    },
+    {
+      "kanji": "蛙始鳴",
+      "reading": {
+        "ja": "かわずはじめてなく",
+        "en": "kawazuhajimetenaku"
+      },
+      "gloss": "frogs begin to call",
+      "sekkiId": "rikka",
+      "dateRange": {
+        "start": "05-05",
+        "end": "05-09"
+      },
+      "description": {
+        "ja": "カエルが田や水辺で鳴き始める。その声が夏の始まりを知らせる水辺の便り。",
+        "en": "Frogs begin calling at dusk from the newly flooded rice paddies."
+      }
+    },
+    {
+      "kanji": "蚯蚓出",
+      "reading": {
+        "ja": "みみずいずる",
+        "en": "mimizuizuru"
+      },
+      "gloss": "earthworms emerge",
+      "sekkiId": "rikka",
+      "dateRange": {
+        "start": "05-10",
+        "end": "05-14"
+      },
+      "description": {
+        "ja": "ミミズが地表に這い出てくる。大地が温まり、土の中の生き物も活動を始める頃。",
+        "en": "Earthworms surface through rain-softened soil, enriching the earth."
+      }
+    },
+    {
+      "kanji": "竹笋生",
+      "reading": {
+        "ja": "たけのこしょうず",
+        "en": "takenokoshōzu"
+      },
+      "gloss": "bamboo shoots sprout",
+      "sekkiId": "rikka",
+      "dateRange": {
+        "start": "05-15",
+        "end": "05-20"
+      },
+      "description": {
+        "ja": "竹の子が地面を割って勢いよく伸び出す。成長の速さが初夏の生命力を象徴する。",
+        "en": "Bamboo shoots surge up overnight, sometimes several centimeters in a day."
+      }
+    },
+    {
+      "kanji": "蚕起食桑",
+      "reading": {
+        "ja": "かいこおきてくわをはむ",
+        "en": "kaikōkitekuwaohamu"
+      },
+      "gloss": "silkworms wake and eat mulberry",
+      "sekkiId": "shouman",
+      "dateRange": {
+        "start": "05-21",
+        "end": "05-25"
+      },
+      "description": {
+        "ja": "蚕が起き出して桑の葉を盛んに食べ始める。絹の生産が本格化する初夏の農村の光景。",
+        "en": "Silkworms hatch from their winter eggs and begin feeding on mulberry leaves."
+      }
+    },
+    {
+      "kanji": "紅花栄",
+      "reading": {
+        "ja": "べにばなさかう",
+        "en": "benibanasakau"
+      },
+      "gloss": "safflowers bloom",
+      "sekkiId": "shouman",
+      "dateRange": {
+        "start": "05-26",
+        "end": "05-30"
+      },
+      "description": {
+        "ja": "紅花が咲き誇る。染料や化粧品に使われる鮮やかな橙紅色の花が畑を彩る。",
+        "en": "Safflowers burst into brilliant orange-red bloom under the early summer sun."
+      }
+    },
+    {
+      "kanji": "麦秋至",
+      "reading": {
+        "ja": "むぎのときいたる",
+        "en": "muginotokiitaru"
+      },
+      "gloss": "wheat ripens",
+      "sekkiId": "shouman",
+      "dateRange": {
+        "start": "05-31",
+        "end": "06-05"
+      },
+      "description": {
+        "ja": "麦が黄金色に実り、刈り入れの時を迎える。初夏の穀物の収穫期が訪れる。",
+        "en": "The wheat fields ripen to gold, ready for the early harvest."
+      }
+    },
+    {
+      "kanji": "螳螂生",
+      "reading": {
+        "ja": "かまきりしょうず",
+        "en": "kamakirishōzu"
+      },
+      "gloss": "praying mantises hatch",
+      "sekkiId": "boshu",
+      "dateRange": {
+        "start": "06-06",
+        "end": "06-10"
+      },
+      "description": {
+        "ja": "カマキリが卵から孵化する。草むらで小さな命が一斉に動き始める初夏の情景。",
+        "en": "Praying mantis eggs hatch and the tiny nymphs scatter into the grasses."
+      }
+    },
+    {
+      "kanji": "腐草為螢",
+      "reading": {
+        "ja": "くされたるくさほたるとなる",
+        "en": "kusaretarukusahotarutonaru"
+      },
+      "gloss": "rotten grass becomes fireflies",
+      "sekkiId": "boshu",
+      "dateRange": {
+        "start": "06-11",
+        "end": "06-15"
+      },
+      "description": {
+        "ja": "腐った草からホタルが生まれると古人は信じた。田や川沿いに蛍の光が揺れ始める頃。",
+        "en": "Fireflies emerge at twilight, their cold light flickering above the meadows."
+      }
+    },
+    {
+      "kanji": "梅子黄",
+      "reading": {
+        "ja": "うめのみきばむ",
+        "en": "umenomikibamu"
+      },
+      "gloss": "plums turn yellow",
+      "sekkiId": "boshu",
+      "dateRange": {
+        "start": "06-16",
+        "end": "06-20"
+      },
+      "description": {
+        "ja": "梅の実が黄色く熟し始める。梅雨の雨を吸って膨らんだ実が梅酒や梅干しの材料となる。",
+        "en": "Plums swell and ripen to yellow-green, ready for pickling into umeboshi."
+      }
+    },
+    {
+      "kanji": "乃東枯",
+      "reading": {
+        "ja": "なつかれくさかるる",
+        "en": "natsukarekusakaruru"
+      },
+      "gloss": "self-heal withers",
+      "sekkiId": "geshi",
+      "dateRange": {
+        "start": "06-21",
+        "end": "06-26"
+      },
+      "description": {
+        "ja": "夏枯草（カコソウ）が枯れる。夏至の頃に枯れ始めるこの草が、季節の転換点を示す。",
+        "en": "Self-heal, which bloomed in the cold, withers back as summer deepens."
+      }
+    },
+    {
+      "kanji": "菖蒲華",
+      "reading": {
+        "ja": "あやめはなさく",
+        "en": "ayamehanasaku"
+      },
+      "gloss": "irises bloom",
+      "sekkiId": "geshi",
+      "dateRange": {
+        "start": "06-27",
+        "end": "07-01"
+      },
+      "description": {
+        "ja": "アヤメの花が咲く。紫や白の優雅な花が水辺を彩り、初夏の風情を添える。",
+        "en": "Iris flowers open beside still water, their purple petals vivid in the rain."
+      }
+    },
+    {
+      "kanji": "半夏生",
+      "reading": {
+        "ja": "はんげしょうず",
+        "en": "hangeshōzu"
+      },
+      "gloss": "crow-dipper sprouts",
+      "sekkiId": "geshi",
+      "dateRange": {
+        "start": "07-02",
+        "end": "07-06"
+      },
+      "description": {
+        "ja": "半夏（カラスビシャク）が芽を出す。この時期に農作業の一区切りをつける農家の節目。",
+        "en": "Crow-dipper sprouts as the rainy season peaks; farmers pause fieldwork."
+      }
+    },
+    {
+      "kanji": "温風至",
+      "reading": {
+        "ja": "あつかぜいたる",
+        "en": "atsukazeitaru"
+      },
+      "gloss": "warm winds arrive",
+      "sekkiId": "shousho",
+      "dateRange": {
+        "start": "07-07",
+        "end": "07-11"
+      },
+      "description": {
+        "ja": "温かな南風が吹き始める。梅雨が明け、夏本番の蒸し暑い風が列島を包む頃。",
+        "en": "Warm, humid summer winds begin to blow steadily from the south."
+      }
+    },
+    {
+      "kanji": "蓮始開",
+      "reading": {
+        "ja": "はすはじめてひらく",
+        "en": "hasuhajimetehiraku"
+      },
+      "gloss": "lotus flowers begin to open",
+      "sekkiId": "shousho",
+      "dateRange": {
+        "start": "07-12",
+        "end": "07-16"
+      },
+      "description": {
+        "ja": "蓮の花が開き始める。早朝に池面に開く清らかな花は、夏の朝の風物詩。",
+        "en": "Lotus blossoms unfurl at dawn on calm ponds, closing again by noon."
+      }
+    },
+    {
+      "kanji": "鷹乃学習",
+      "reading": {
+        "ja": "たかすなわちわざをならう",
+        "en": "takasunawachiwazaonarau"
+      },
+      "gloss": "hawks learn to fly",
+      "sekkiId": "shousho",
+      "dateRange": {
+        "start": "07-17",
+        "end": "07-22"
+      },
+      "description": {
+        "ja": "ひなの鷹が飛ぶ技を学ぶ。巣立ちの頃、若い鷹が大空へ羽ばたく練習を始める。",
+        "en": "Young hawks practice circling and stooping, learning the art of the hunt."
+      }
+    },
+    {
+      "kanji": "桐始結花",
+      "reading": {
+        "ja": "きりはじめてはなをむすぶ",
+        "en": "kirihajimetehanaomusubu"
+      },
+      "gloss": "paulownia trees begin to fruit",
+      "sekkiId": "taisho",
+      "dateRange": {
+        "start": "07-23",
+        "end": "07-27"
+      },
+      "description": {
+        "ja": "桐の木が実をつけ始める。夏の盛りに桐の花が実となり、秋への準備が始まる。",
+        "en": "Paulownia trees set their first seed pods after the blossoms have fallen."
+      }
+    },
+    {
+      "kanji": "土潤溽暑",
+      "reading": {
+        "ja": "つちうるおうてむしあつし",
+        "en": "tsuchiuruōtemushiatsushi"
+      },
+      "gloss": "earth is damp and sweltering",
+      "sekkiId": "taisho",
+      "dateRange": {
+        "start": "07-28",
+        "end": "08-01"
+      },
+      "description": {
+        "ja": "大地が湿り気を帯び、蒸し暑さが極まる。夏の熱気と湿気が体に重くのしかかる頃。",
+        "en": "The ground is damp and the air heavy with the sultry heat of midsummer."
+      }
+    },
+    {
+      "kanji": "大雨時行",
+      "reading": {
+        "ja": "たいうときどきふる",
+        "en": "taiutokidokifuru"
+      },
+      "gloss": "heavy rains fall at times",
+      "sekkiId": "taisho",
+      "dateRange": {
+        "start": "08-02",
+        "end": "08-06"
+      },
+      "description": {
+        "ja": "時おり激しい夕立が降る。夏の積乱雲が発達し、局地的な大雨をもたらす季節。",
+        "en": "Sudden heavy downpours sweep across the land at unpredictable intervals."
+      }
+    },
+    {
+      "kanji": "涼風至",
+      "reading": {
+        "ja": "すずかぜいたる",
+        "en": "suzukazeitaru"
+      },
+      "gloss": "cool winds arrive",
+      "sekkiId": "risshu",
+      "dateRange": {
+        "start": "08-07",
+        "end": "08-11"
+      },
+      "description": {
+        "ja": "涼しい風が吹き始める。暦の上では秋が始まり、夕暮れの風にかすかな秋の気配が漂う。",
+        "en": "A refreshing cool breeze arrives, hinting at the end of summer's heat."
+      }
+    },
+    {
+      "kanji": "寒蝉鳴",
+      "reading": {
+        "ja": "ひぐらしなく",
+        "en": "higurashinaku"
+      },
+      "gloss": "evening cicadas begin to sing",
+      "sekkiId": "risshu",
+      "dateRange": {
+        "start": "08-12",
+        "end": "08-16"
+      },
+      "description": {
+        "ja": "ヒグラシが夕暮れに鳴き始める。カナカナという哀愁ある声が秋の気配を告げる。",
+        "en": "Higurashi cicadas begin their melancholy dusk chorus in the hill forests."
+      }
+    },
+    {
+      "kanji": "蒙霧升降",
+      "reading": {
+        "ja": "ふかきりまとう",
+        "en": "fukakirimatō"
+      },
+      "gloss": "thick mist rises and falls",
+      "sekkiId": "risshu",
+      "dateRange": {
+        "start": "08-17",
+        "end": "08-22"
+      },
+      "description": {
+        "ja": "深い霧が立ちこめる。朝夕の気温差が大きくなり、霧が山や川を包む晩夏の情景。",
+        "en": "Thick mist rolls in and out, blurring the boundary of mountain and sky."
+      }
+    },
+    {
+      "kanji": "綿柎開",
+      "reading": {
+        "ja": "わたのはなしべひらく",
+        "en": "watanohanashibehiraku"
+      },
+      "gloss": "cotton bolls open",
+      "sekkiId": "shosho",
+      "dateRange": {
+        "start": "08-23",
+        "end": "08-27"
+      },
+      "description": {
+        "ja": "綿の実が弾けて白い綿毛を覗かせる。暑さが和らぎ、秋の収穫が近づく頃。",
+        "en": "Cotton bolls split open, revealing tufts of white fiber in the autumn fields."
+      }
+    },
+    {
+      "kanji": "天地始粛",
+      "reading": {
+        "ja": "てんちはじめてさむし",
+        "en": "tenchihajimetesamushi"
+      },
+      "gloss": "heaven and earth begin to cool",
+      "sekkiId": "shosho",
+      "dateRange": {
+        "start": "08-28",
+        "end": "09-01"
+      },
+      "description": {
+        "ja": "天地が冷えひきしまり始める。万物が静まり、秋の厳しさへと向かう転換の時期。",
+        "en": "The air turns crisp; heaven and earth take on the stillness of early autumn."
+      }
+    },
+    {
+      "kanji": "禾乃登",
+      "reading": {
+        "ja": "こくものすなわちみのる",
+        "en": "kokumonosunawachiminoru"
+      },
+      "gloss": "grain ripens on the stalk",
+      "sekkiId": "shosho",
+      "dateRange": {
+        "start": "09-02",
+        "end": "09-07"
+      },
+      "description": {
+        "ja": "稲穂が実り始める。黄金色に染まる田んぼが、秋の収穫の喜びを予感させる。",
+        "en": "Rice and grain stand tall and heavy-headed, ripening under the harvest moon."
+      }
+    },
+    {
+      "kanji": "草露白",
+      "reading": {
+        "ja": "くさのつゆしろし",
+        "en": "kusanotsuyushiroshi"
+      },
+      "gloss": "white dew appears on grass",
+      "sekkiId": "hakuro",
+      "dateRange": {
+        "start": "09-08",
+        "end": "09-12"
+      },
+      "description": {
+        "ja": "草の葉に白い露が宿る。朝の冷気が強まり、露が光を集めて輝く秋の情景。",
+        "en": "White dew glistens on blades of grass each morning as nights grow cooler."
+      }
+    },
+    {
+      "kanji": "鶺鴒鳴",
+      "reading": {
+        "ja": "せきれいなく",
+        "en": "sekireinaku"
+      },
+      "gloss": "wagtails begin to sing",
+      "sekkiId": "hakuro",
+      "dateRange": {
+        "start": "09-13",
+        "end": "09-17"
+      },
+      "description": {
+        "ja": "セキレイが鳴き始める。川岸で尾を上下に動かしながら鳴く姿が秋の水辺の風物詩。",
+        "en": "Wagtails bob along streamsides, their piping calls clear in the autumn air."
+      }
+    },
+    {
+      "kanji": "玄鳥去",
+      "reading": {
+        "ja": "つばめさる",
+        "en": "tsubamesaru"
+      },
+      "gloss": "swallows depart",
+      "sekkiId": "hakuro",
+      "dateRange": {
+        "start": "09-18",
+        "end": "09-22"
+      },
+      "description": {
+        "ja": "ツバメが南へ旅立つ。春に渡ってきたツバメが越冬のため南の地へと去っていく別れの季節。",
+        "en": "Swallows gather on wires and then depart southward before the cold arrives."
+      }
+    },
+    {
+      "kanji": "雷乃収声",
+      "reading": {
+        "ja": "かみなりすなわちこえをおさむ",
+        "en": "kaminarisunawachikoeōsamu"
+      },
+      "gloss": "thunder ceases",
+      "sekkiId": "shubun",
+      "dateRange": {
+        "start": "09-23",
+        "end": "09-27"
+      },
+      "description": {
+        "ja": "雷が鳴らなくなる。夏の間活発だった雷が静まり、秋の穏やかな空が広がり始める。",
+        "en": "The thunder that rang all summer finally falls silent with the autumn chill."
+      }
+    },
+    {
+      "kanji": "蟄虫坏戸",
+      "reading": {
+        "ja": "むしかくれてとをふさぐ",
+        "en": "mushikakuretetōfusagu"
+      },
+      "gloss": "insects seal their doors",
+      "sekkiId": "shubun",
+      "dateRange": {
+        "start": "09-28",
+        "end": "10-02"
+      },
+      "description": {
+        "ja": "虫たちが土の中に閉じこもり始める。冬支度の始まりを告げる秋の深まりの頃。",
+        "en": "Insects begin to seal their burrows shut as they prepare for winter sleep."
+      }
+    },
+    {
+      "kanji": "水始涸",
+      "reading": {
+        "ja": "みずはじめてかるる",
+        "en": "mizuhajimetekaruru"
+      },
+      "gloss": "waters begin to dry",
+      "sekkiId": "shubun",
+      "dateRange": {
+        "start": "10-03",
+        "end": "10-07"
+      },
+      "description": {
+        "ja": "田の水が干され始める。稲刈りを終えた田んぼが乾き、農の一年が締めくくられる。",
+        "en": "Waters in the paddies and shallows begin to recede and dry as autumn deepens."
+      }
+    },
+    {
+      "kanji": "鴻雁来",
+      "reading": {
+        "ja": "こうがんきたる",
+        "en": "kōgankitaru"
+      },
+      "gloss": "wild geese arrive",
+      "sekkiId": "kanro",
+      "dateRange": {
+        "start": "10-08",
+        "end": "10-12"
+      },
+      "description": {
+        "ja": "雁が北から渡ってくる。冬を日本で過ごすために南下してくる渡り鳥の到着を告げる。",
+        "en": "Wild geese arrive from the north, filling the wetlands with their clamor."
+      }
+    },
+    {
+      "kanji": "菊花開",
+      "reading": {
+        "ja": "きくのはなひらく",
+        "en": "kikunohanahiraku"
+      },
+      "gloss": "chrysanthemums bloom",
+      "sekkiId": "kanro",
+      "dateRange": {
+        "start": "10-13",
+        "end": "10-17"
+      },
+      "description": {
+        "ja": "菊の花が咲き始める。秋の花の王者として庭や野山に彩りを添える季節。",
+        "en": "Chrysanthemums bloom in shades of gold and white, the emblem of autumn."
+      }
+    },
+    {
+      "kanji": "蟋蟀在戸",
+      "reading": {
+        "ja": "きりぎりすとにあり",
+        "en": "kirigirisutoniari"
+      },
+      "gloss": "crickets chirp at the door",
+      "sekkiId": "kanro",
+      "dateRange": {
+        "start": "10-18",
+        "end": "10-22"
+      },
+      "description": {
+        "ja": "コオロギが戸口で鳴く。秋の夜長に虫の音が響き、静けさの中に命の気配を感じる頃。",
+        "en": "Crickets chirp at the doorstep through the long, cooling autumn nights."
+      }
+    },
+    {
+      "kanji": "霜始降",
+      "reading": {
+        "ja": "しもはじめてふる",
+        "en": "shimohajimetefuru"
+      },
+      "gloss": "frost begins to fall",
+      "sekkiId": "soko",
+      "dateRange": {
+        "start": "10-23",
+        "end": "10-27"
+      },
+      "description": {
+        "ja": "初霜が降りる。夜の冷え込みが強まり、朝の地面が白く輝く晩秋の到来を告げる。",
+        "en": "The first frost of the season settles overnight on rooftops and fields."
+      }
+    },
+    {
+      "kanji": "霎時施",
+      "reading": {
+        "ja": "こさめときどきふる",
+        "en": "kosametokidokifuru"
+      },
+      "gloss": "light rains fall intermittently",
+      "sekkiId": "soko",
+      "dateRange": {
+        "start": "10-28",
+        "end": "11-01"
+      },
+      "description": {
+        "ja": "小雨が時おり降る。晩秋の冷たい雨が木の葉を落とし、冬への移ろいを促す。",
+        "en": "Brief, fine autumn showers drift through intermittently, barely wetting the ground."
+      }
+    },
+    {
+      "kanji": "楓蔦黄",
+      "reading": {
+        "ja": "もみじつたきばむ",
+        "en": "momijitsutakibamu"
+      },
+      "gloss": "maples and ivies turn yellow",
+      "sekkiId": "soko",
+      "dateRange": {
+        "start": "11-02",
+        "end": "11-06"
+      },
+      "description": {
+        "ja": "紅葉やツタが黄色く染まる。山や庭が錦に彩られ、秋の深まりを色鮮やかに告げる。",
+        "en": "Maple leaves turn crimson and ivy vines flame yellow along stone walls."
+      }
+    },
+    {
+      "kanji": "山茶始開",
+      "reading": {
+        "ja": "つばきはじめてひらく",
+        "en": "tsubakihajimetehiraku"
+      },
+      "gloss": "camellias begin to bloom",
+      "sekkiId": "rittou",
+      "dateRange": {
+        "start": "11-07",
+        "end": "11-11"
+      },
+      "description": {
+        "ja": "山茶花（サザンカ）が咲き始める。冬枯れの中で白や赤の花が清楚に咲く初冬の花。",
+        "en": "Camellia buds open in the garden as other flowers retreat before the cold."
+      }
+    },
+    {
+      "kanji": "地始凍",
+      "reading": {
+        "ja": "ちはじめてこおる",
+        "en": "chihajimetekōru"
+      },
+      "gloss": "ground begins to freeze",
+      "sekkiId": "rittou",
+      "dateRange": {
+        "start": "11-12",
+        "end": "11-16"
+      },
+      "description": {
+        "ja": "大地が凍り始める。朝の冷え込みで地面が固く締まり、冬の到来を体で感じる頃。",
+        "en": "The ground freezes hard for the first time, crunching underfoot at dawn."
+      }
+    },
+    {
+      "kanji": "金盞香",
+      "reading": {
+        "ja": "きんせんかさく",
+        "en": "kinsenkasaku"
+      },
+      "gloss": "narcissus blooms and scents the air",
+      "sekkiId": "rittou",
+      "dateRange": {
+        "start": "11-17",
+        "end": "11-21"
+      },
+      "description": {
+        "ja": "水仙が咲き始め、甘い香りを漂わせる。冬の訪れとともに清らかな花が野や庭に咲く。",
+        "en": "Narcissus blooms perfume the winter garden with their quiet, sweet fragrance."
+      }
+    },
+    {
+      "kanji": "虹蔵不見",
+      "reading": {
+        "ja": "にじかくれてみえず",
+        "en": "nijikakuretemiezu"
+      },
+      "gloss": "rainbows hide and are unseen",
+      "sekkiId": "shousetsu",
+      "dateRange": {
+        "start": "11-22",
+        "end": "11-26"
+      },
+      "description": {
+        "ja": "虹が見えなくなる。冬の曇り空が広がり、鮮やかな虹の季節が終わりを告げる。",
+        "en": "Rainbows vanish from the sky as winter clouds thicken and sunlight dims."
+      }
+    },
+    {
+      "kanji": "朔風払葉",
+      "reading": {
+        "ja": "きたかぜこのはをはらう",
+        "en": "kitakazekonohaoharau"
+      },
+      "gloss": "north wind sweeps the leaves",
+      "sekkiId": "shousetsu",
+      "dateRange": {
+        "start": "11-27",
+        "end": "12-01"
+      },
+      "description": {
+        "ja": "北風が木の葉を吹き払う。冷たい季節風が残り葉を落とし、木々が冬の骨格を見せる。",
+        "en": "The north wind tears the last clinging leaves from bare branches."
+      }
+    },
+    {
+      "kanji": "橘始黄",
+      "reading": {
+        "ja": "たちばなはじめてきばむ",
+        "en": "tachibanahajimetekibamu"
+      },
+      "gloss": "tachibana citrus begins to yellow",
+      "sekkiId": "shousetsu",
+      "dateRange": {
+        "start": "12-02",
+        "end": "12-06"
+      },
+      "description": {
+        "ja": "橘の実が黄色く色づき始める。常緑の葉の中に黄金色の実が輝く冬の風物詩。",
+        "en": "Native tachibana citrus begins to turn yellow on the branch in early winter."
+      }
+    },
+    {
+      "kanji": "閉塞成冬",
+      "reading": {
+        "ja": "そらさむくふゆとなる",
+        "en": "sorasamukufuyutonaru"
+      },
+      "gloss": "skies close and winter settles",
+      "sekkiId": "taisetsu",
+      "dateRange": {
+        "start": "12-07",
+        "end": "12-11"
+      },
+      "description": {
+        "ja": "空が閉じて冬が訪れる。厚い雲が空を覆い、天地の気が塞がれて本格的な冬となる。",
+        "en": "The sky closes in, the earth goes silent, and winter fully settles."
+      }
+    },
+    {
+      "kanji": "熊蟄穴",
+      "reading": {
+        "ja": "くまあなにこもる",
+        "en": "kumaananikomoru"
+      },
+      "gloss": "bears retreat into their dens",
+      "sekkiId": "taisetsu",
+      "dateRange": {
+        "start": "12-12",
+        "end": "12-16"
+      },
+      "description": {
+        "ja": "熊が穴に入って冬ごもりをする。雪深い山中で大きな命が静かに眠りにつく頃。",
+        "en": "Bears grow drowsy, find their dens, and retreat into a deep winter sleep."
+      }
+    },
+    {
+      "kanji": "鱖魚群",
+      "reading": {
+        "ja": "さけのうおむらがる",
+        "en": "sakenōomuragaru"
+      },
+      "gloss": "salmon gather and swim upstream",
+      "sekkiId": "taisetsu",
+      "dateRange": {
+        "start": "12-17",
+        "end": "12-21"
+      },
+      "description": {
+        "ja": "鮭が群れをなして川を遡上する。生まれた川へ戻る鮭の力強い姿が冬の川を彩る。",
+        "en": "Salmon crowd together and push upstream to their spawning grounds."
+      }
+    },
+    {
+      "kanji": "乃東生",
+      "reading": {
+        "ja": "なつかれくさしょうず",
+        "en": "natsukarekusashōzu"
+      },
+      "gloss": "self-heal sprouts anew",
+      "sekkiId": "touji",
+      "dateRange": {
+        "start": "12-22",
+        "end": "12-26"
+      },
+      "description": {
+        "ja": "夏枯草が芽吹く。冬至の頃に新たな芽を出すこの草は、陽の復活の象徴とされる。",
+        "en": "Self-heal sprouts anew in the cold earth, one of the few plants of midwinter."
+      }
+    },
+    {
+      "kanji": "麋角解",
+      "reading": {
+        "ja": "おおしかのつのおつる",
+        "en": "ōshikanotsunōtsuru"
+      },
+      "gloss": "elk shed their antlers",
+      "sekkiId": "touji",
+      "dateRange": {
+        "start": "12-27",
+        "end": "12-31"
+      },
+      "description": {
+        "ja": "大鹿が角を落とす。一年の終わりに角を脱ぎ、新たな命の周期が始まる静かな時節。",
+        "en": "Elk shed their heavy antlers; the bones of the old year fall away."
+      }
+    },
+    {
+      "kanji": "雪下出麦",
+      "reading": {
+        "ja": "ゆきわたりてむぎいずる",
+        "en": "yukiwataritemugiizuru"
+      },
+      "gloss": "wheat sprouts beneath the snow",
+      "sekkiId": "touji",
+      "dateRange": {
+        "start": "01-01",
+        "end": "01-04"
+      },
+      "description": {
+        "ja": "雪の下から麦が芽を出す。寒さの中でも麦は静かに育ち、春の収穫を夢見て根を張る。",
+        "en": "Wheat shoots push up green through the blanket of snow on the fields."
+      }
+    },
+    {
+      "kanji": "芹乃栄",
+      "reading": {
+        "ja": "せりすなわちさかう",
+        "en": "serisunawachisakau"
+      },
+      "gloss": "Japanese parsley flourishes",
+      "sekkiId": "shoukan",
+      "dateRange": {
+        "start": "01-05",
+        "end": "01-09"
+      },
+      "description": {
+        "ja": "芹が青々と茂り始める。冷たい水辺で新鮮な緑を宿す芹が七草のひとつとして摘まれる。",
+        "en": "Japanese parsley flourishes in cold, clear streams, crisp and fragrant."
+      }
+    },
+    {
+      "kanji": "水泉動",
+      "reading": {
+        "ja": "しみずあたたかをふくむ",
+        "en": "shimizuatatakaofukumu"
+      },
+      "gloss": "springs begin to move under ice",
+      "sekkiId": "shoukan",
+      "dateRange": {
+        "start": "01-10",
+        "end": "01-14"
+      },
+      "description": {
+        "ja": "凍った地下の泉が動き始める。最も寒い時期でも地中では水が温もりを蓄えて流れ出す。",
+        "en": "Underground springs begin to stir and flow, sensing the first warmth below."
+      }
+    },
+    {
+      "kanji": "雉始雊",
+      "reading": {
+        "ja": "きじはじめてなく",
+        "en": "kijihajimetenaku"
+      },
+      "gloss": "pheasants begin to call",
+      "sekkiId": "shoukan",
+      "dateRange": {
+        "start": "01-15",
+        "end": "01-19"
+      },
+      "description": {
+        "ja": "雉が鳴き始める。冬の野に雄の雉が高らかに声を上げ、繁殖の季節が近づく予兆。",
+        "en": "Male pheasants begin their booming calls across the frosty winter fields."
+      }
+    },
+    {
+      "kanji": "款冬華",
+      "reading": {
+        "ja": "ふきのはなさく",
+        "en": "fukinohanasaku"
+      },
+      "gloss": "butterbur flowers bloom",
+      "sekkiId": "daikan",
+      "dateRange": {
+        "start": "01-20",
+        "end": "01-24"
+      },
+      "description": {
+        "ja": "フキノトウが花を咲かせる。極寒の大地を割って顔を出す春の使者として親しまれる。",
+        "en": "Butterbur sends up its pale flowers before any leaf appears, defying the cold."
+      }
+    },
+    {
+      "kanji": "水沢腹堅",
+      "reading": {
+        "ja": "さわみずこおりつめる",
+        "en": "sawamizukōritsumeru"
+      },
+      "gloss": "ice thickens on streams",
+      "sekkiId": "daikan",
+      "dateRange": {
+        "start": "01-25",
+        "end": "01-29"
+      },
+      "description": {
+        "ja": "沢の水が厚く凍り付く。一年で最も寒さが厳しく、氷が地の底まで張り詰める頃。",
+        "en": "Ice thickens into solid sheets across ponds and marshes in the deep cold."
+      }
+    },
+    {
+      "kanji": "鶏始乳",
+      "reading": {
+        "ja": "にわとりはじめてとやにつく",
+        "en": "niwatorihajimetetoyanitsuku"
+      },
+      "gloss": "hens begin to lay",
+      "sekkiId": "daikan",
+      "dateRange": {
+        "start": "01-30",
+        "end": "02-03"
+      },
+      "description": {
+        "ja": "鶏が卵を産み始める。厳寒の中でも春の近づきを感じ、命が動き出す冬の終わりの証。",
+        "en": "Hens feel the lengthening light and begin to lay eggs again after winter."
+      }
+    }
+  ],
+  "sekki": [
+    {
+      "id": "risshun",
+      "kanji": "立春",
+      "reading": {
+        "ja": "りっしゅん",
+        "en": "risshun"
+      },
+      "gloss": {
+        "ja": "春の始まり",
+        "en": "Start of Spring"
+      },
+      "description": {
+        "ja": "太陽が黄経315度に達する日。春の気配が感じられ始める二十四節気の最初の節気。",
+        "en": "The first solar term of the year, marking the calendrical beginning of spring. Days gradually lengthen and the air begins to soften, even as cold lingers."
+      }
+    },
+    {
+      "id": "usui",
+      "kanji": "雨水",
+      "reading": {
+        "ja": "うすい",
+        "en": "usui"
+      },
+      "gloss": {
+        "ja": "雨と雪解け",
+        "en": "Rain Water"
+      },
+      "description": {
+        "ja": "太陽が黄経330度に達する日。雪が雨に変わり、氷が溶け始める時期。",
+        "en": "Snow and ice give way to rain as temperatures rise. The snowmelt feeds the rivers and the soil begins to absorb moisture in preparation for planting."
+      }
+    },
+    {
+      "id": "keichitsu",
+      "kanji": "啓蟄",
+      "reading": {
+        "ja": "けいちつ",
+        "en": "keichitsu"
+      },
+      "gloss": {
+        "ja": "虫が土から出る",
+        "en": "Awakening of Insects"
+      },
+      "description": {
+        "ja": "太陽が黄経345度に達する日。冬ごもりしていた虫が地中から這い出てくる時期。",
+        "en": "Underground creatures stirred by the warming earth begin to emerge from their winter burrows. The landscape slowly comes back to life with the first signs of insect activity."
+      }
+    },
+    {
+      "id": "shunbun",
+      "kanji": "春分",
+      "reading": {
+        "ja": "しゅんぶん",
+        "en": "shunbun"
+      },
+      "gloss": {
+        "ja": "昼と夜が等しい春の日",
+        "en": "Spring Equinox"
+      },
+      "description": {
+        "ja": "太陽が黄経0度（春分点）に達する日。昼と夜の長さが等しくなる。",
+        "en": "Day and night are of equal length as the sun crosses the celestial equator. A holiday of ancestor veneration in Japan, and the midpoint of spring."
+      }
+    },
+    {
+      "id": "seimei",
+      "kanji": "清明",
+      "reading": {
+        "ja": "せいめい",
+        "en": "seimei"
+      },
+      "gloss": {
+        "ja": "清らかで明るい",
+        "en": "Clear and Bright"
+      },
+      "description": {
+        "ja": "太陽が黄経15度に達する日。万物が清らかで生き生きとする時期。",
+        "en": "The air is fresh and clear, and the natural world is vivid and full of color. Flowers bloom abundantly and birds sing through the bright spring days."
+      }
+    },
+    {
+      "id": "kokuu",
+      "kanji": "穀雨",
+      "reading": {
+        "ja": "こくう",
+        "en": "kokū"
+      },
+      "gloss": {
+        "ja": "穀物を育てる雨",
+        "en": "Grain Rains"
+      },
+      "description": {
+        "ja": "太陽が黄経30度に達する日。穀物の成長を助ける春の雨が降る時期。",
+        "en": "Rains nourish the newly sown grain crops across the fields. This moisture is essential for the seedlings that will grow through the warm season ahead."
+      }
+    },
+    {
+      "id": "rikka",
+      "kanji": "立夏",
+      "reading": {
+        "ja": "りっか",
+        "en": "rikka"
+      },
+      "gloss": {
+        "ja": "夏の始まり",
+        "en": "Start of Summer"
+      },
+      "description": {
+        "ja": "太陽が黄経45度に達する日。夏の気配が感じられ始める時期。",
+        "en": "The calendrical beginning of summer. The sun's warmth becomes pronounced, and the green of trees and paddies deepens as the growing season fully opens."
+      }
+    },
+    {
+      "id": "shouman",
+      "kanji": "小満",
+      "reading": {
+        "ja": "しょうまん",
+        "en": "shōman"
+      },
+      "gloss": {
+        "ja": "草木が満ちてくる",
+        "en": "Grain Buds"
+      },
+      "description": {
+        "ja": "太陽が黄経60度に達する日。草木が成長し、万物が満ちてくる時期。",
+        "en": "Crops fill out and begin to ripen under the strengthening sun. The days grow longer and the land is lush with the promise of the coming harvest."
+      }
+    },
+    {
+      "id": "boshu",
+      "kanji": "芒種",
+      "reading": {
+        "ja": "ぼうしゅ",
+        "en": "bōshu"
+      },
+      "gloss": {
+        "ja": "芒のある穀物を蒔く",
+        "en": "Grain in Ear"
+      },
+      "description": {
+        "ja": "太陽が黄経75度に達する日。稲や麦など芒のある穀物を種まきする時期。",
+        "en": "The time to plant rice and barley, whose grain heads bear awns. Farmers are busy in the paddies as the rainy season approaches the Japanese archipelago."
+      }
+    },
+    {
+      "id": "geshi",
+      "kanji": "夏至",
+      "reading": {
+        "ja": "げし",
+        "en": "geshi"
+      },
+      "gloss": {
+        "ja": "昼が最も長い日",
+        "en": "Summer Solstice"
+      },
+      "description": {
+        "ja": "太陽が黄経90度に達する日。北半球で昼の時間が最も長くなる。",
+        "en": "The longest day of the year; the sun reaches its highest arc in the sky. From this point, days shorten as summer heat continues to intensify."
+      }
+    },
+    {
+      "id": "shousho",
+      "kanji": "小暑",
+      "reading": {
+        "ja": "しょうしょ",
+        "en": "shōsho"
+      },
+      "gloss": {
+        "ja": "暑さが増してくる",
+        "en": "Minor Heat"
+      },
+      "description": {
+        "ja": "太陽が黄経105度に達する日。本格的な暑さが始まる時期。",
+        "en": "Temperatures climb and the heat of summer becomes fully felt. Cicadas begin their chorus and the humidity of the Japanese summer settles in."
+      }
+    },
+    {
+      "id": "taisho",
+      "kanji": "大暑",
+      "reading": {
+        "ja": "たいしょ",
+        "en": "taisho"
+      },
+      "gloss": {
+        "ja": "最も暑い時期",
+        "en": "Major Heat"
+      },
+      "description": {
+        "ja": "太陽が黄経120度に達する日。一年で最も暑さが厳しい時期。",
+        "en": "The hottest period of the year. Intense heat and humidity dominate, and people seek shade, cool water, and relief from the sweltering midsummer days."
+      }
+    },
+    {
+      "id": "risshu",
+      "kanji": "立秋",
+      "reading": {
+        "ja": "りっしゅう",
+        "en": "risshū"
+      },
+      "gloss": {
+        "ja": "秋の始まり",
+        "en": "Start of Autumn"
+      },
+      "description": {
+        "ja": "太陽が黄経135度に達する日。暦の上では秋が始まる。",
+        "en": "Though the heat often continues, this marks the calendrical start of autumn. The quality of light shifts subtly, and evenings bring the first hints of coolness."
+      }
+    },
+    {
+      "id": "shosho",
+      "kanji": "処暑",
+      "reading": {
+        "ja": "しょしょ",
+        "en": "shosho"
+      },
+      "gloss": {
+        "ja": "暑さが和らぐ",
+        "en": "End of Heat"
+      },
+      "description": {
+        "ja": "太陽が黄経150度に達する日。暑さが峠を越えて和らいでくる時期。",
+        "en": "The oppressive summer heat begins to ease as the sun's strength wanes. Mornings and evenings feel noticeably cooler, signaling the approach of true autumn."
+      }
+    },
+    {
+      "id": "hakuro",
+      "kanji": "白露",
+      "reading": {
+        "ja": "はくろ",
+        "en": "hakuro"
+      },
+      "gloss": {
+        "ja": "白い露が降りる",
+        "en": "White Dew"
+      },
+      "description": {
+        "ja": "太陽が黄経165度に達する日。草木に白い露が宿り始める時期。",
+        "en": "Dew glistens white on grasses in the cool of early morning. The air carries the crispness of autumn and the landscape takes on golden hues."
+      }
+    },
+    {
+      "id": "shubun",
+      "kanji": "秋分",
+      "reading": {
+        "ja": "しゅうぶん",
+        "en": "shūbun"
+      },
+      "gloss": {
+        "ja": "昼と夜が等しい秋の日",
+        "en": "Autumn Equinox"
+      },
+      "description": {
+        "ja": "太陽が黄経180度（秋分点）に達する日。昼と夜の長さが等しくなる。",
+        "en": "Day and night are again equal in length as the sun crosses the equator southward. A holiday of ancestor remembrance in Japan, and the midpoint of autumn."
+      }
+    },
+    {
+      "id": "kanro",
+      "kanji": "寒露",
+      "reading": {
+        "ja": "かんろ",
+        "en": "kanro"
+      },
+      "gloss": {
+        "ja": "冷たい露が降りる",
+        "en": "Cold Dew"
+      },
+      "description": {
+        "ja": "太陽が黄経195度に達する日。露が冷たくなり、秋の深まりを感じる時期。",
+        "en": "Dew turns cold and the air carries a definite chill before dawn. Chrysanthemums bloom and migrating birds pass through on their southward journey."
+      }
+    },
+    {
+      "id": "soko",
+      "kanji": "霜降",
+      "reading": {
+        "ja": "そうこう",
+        "en": "sōkō"
+      },
+      "gloss": {
+        "ja": "霜が降りる",
+        "en": "Frost's Descent"
+      },
+      "description": {
+        "ja": "太陽が黄経210度に達する日。霜が降り始め、紅葉が深まる時期。",
+        "en": "The first frosts of the year settle on fields and rooftops overnight. Leaves turn brilliant red and gold before beginning to fall in earnest."
+      }
+    },
+    {
+      "id": "rittou",
+      "kanji": "立冬",
+      "reading": {
+        "ja": "りっとう",
+        "en": "rittō"
+      },
+      "gloss": {
+        "ja": "冬の始まり",
+        "en": "Start of Winter"
+      },
+      "description": {
+        "ja": "太陽が黄経225度に達する日。暦の上では冬が始まる時期。",
+        "en": "The calendrical beginning of winter. Cold winds arrive and the landscape grows bare. People begin to prepare their homes and wardrobes for the coming cold months."
+      }
+    },
+    {
+      "id": "shousetsu",
+      "kanji": "小雪",
+      "reading": {
+        "ja": "しょうせつ",
+        "en": "shōsetsu"
+      },
+      "gloss": {
+        "ja": "少し雪が降る",
+        "en": "Minor Snow"
+      },
+      "description": {
+        "ja": "太陽が黄経240度に達する日。北国では雪が降り始める時期。",
+        "en": "Light snowfalls dust the mountains and some lowland areas for the first time. The sky is often overcast and the days grow noticeably shorter."
+      }
+    },
+    {
+      "id": "taisetsu",
+      "kanji": "大雪",
+      "reading": {
+        "ja": "たいせつ",
+        "en": "taisetsu"
+      },
+      "gloss": {
+        "ja": "雪が多く降る",
+        "en": "Major Snow"
+      },
+      "description": {
+        "ja": "太陽が黄経255度に達する日。本格的な雪の季節が訪れる時期。",
+        "en": "Heavy snowfalls blanket the land and the mountains are deep with snow. Bears retreat to their dens and the countryside settles into the quiet of winter."
+      }
+    },
+    {
+      "id": "touji",
+      "kanji": "冬至",
+      "reading": {
+        "ja": "とうじ",
+        "en": "tōji"
+      },
+      "gloss": {
+        "ja": "昼が最も短い日",
+        "en": "Winter Solstice"
+      },
+      "description": {
+        "ja": "太陽が黄経270度に達する日。北半球で昼の時間が最も短くなる。",
+        "en": "The shortest day of the year; the sun is at its lowest arc. In Japan, people eat kabocha pumpkin and take yuzu-scented baths to ward off illness."
+      }
+    },
+    {
+      "id": "shoukan",
+      "kanji": "小寒",
+      "reading": {
+        "ja": "しょうかん",
+        "en": "shōkan"
+      },
+      "gloss": {
+        "ja": "寒さが厳しくなる",
+        "en": "Minor Cold"
+      },
+      "description": {
+        "ja": "太陽が黄経285度に達する日。寒の入りで、本格的な寒さが始まる時期。",
+        "en": "The cold deepens and mornings are bitingly frigid. This marks the beginning of the coldest stretch of the year, leading into Daikan."
+      }
+    },
+    {
+      "id": "daikan",
+      "kanji": "大寒",
+      "reading": {
+        "ja": "だいかん",
+        "en": "daikan"
+      },
+      "gloss": {
+        "ja": "最も寒い時期",
+        "en": "Major Cold"
+      },
+      "description": {
+        "ja": "太陽が黄経300度に達する日。一年で最も寒さが厳しい時期。",
+        "en": "The coldest period of the year. Ice forms on ponds and rivers and the ground is hard with frost. Traditional arts such as cold-water practice and miso brewing take place during this time."
+      }
+    }
+  ],
+  "imageBaseURL": "https://placeholder.kigo.example/images"
+}
