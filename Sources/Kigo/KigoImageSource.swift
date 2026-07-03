@@ -169,6 +169,7 @@ public struct KigoImageSource: Sendable {
 /// that lands in a later milestone (C26). Verified offline in
 /// `KigoImageSourceAdapterTests` via a stubbed `URLProtocol` registered on the
 /// adapter's own `URLSession`, so no real network call occurs in the suite.
+/// Slice #214 adds the non-2xx status-code rejection below.
 public struct URLSessionKigoImageTransport: KigoImageTransport {
 
     /// Thrown when the response's HTTP status code falls outside the 2xx
