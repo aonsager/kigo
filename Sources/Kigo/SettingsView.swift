@@ -27,20 +27,25 @@ struct SettingsView: View {
     @Binding var language: LanguagePreference
     let languageStore: any LanguageStore
     let appearanceStore: any AppearanceStore
+    let reminderStore: any ReminderStore
 
     @State private var currentAppearance: AppearancePreference
+    @State private var isReminderEnabled: Bool
 
     init(
         model: PaywallModel,
         language: Binding<LanguagePreference>,
         languageStore: any LanguageStore,
-        appearanceStore: any AppearanceStore
+        appearanceStore: any AppearanceStore,
+        reminderStore: any ReminderStore
     ) {
         self.model = model
         self._language = language
         self.languageStore = languageStore
         self.appearanceStore = appearanceStore
+        self.reminderStore = reminderStore
         _currentAppearance = State(initialValue: appearanceStore.preference)
+        _isReminderEnabled = State(initialValue: reminderStore.isEnabled)
     }
 
     var body: some View {
@@ -93,6 +98,25 @@ struct SettingsView: View {
                 .padding(.horizontal, 28)
                 .padding(.top, 22)
 
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(chrome.reminderSectionLabel)
+                        .font(KigoFont.zenKaku(.medium, size: 10.5, relativeTo: .caption2))
+                        .tracking(4)
+                        .foregroundStyle(KigoTheme.textTertiary)
+
+                    // Slice #219 (ADR 0019, C23): persistence + UI only. Enabling this
+                    // toggle does not yet schedule anything — the NotificationScheduler
+                    // seam that turns it into a real 08:00 local notification is slice #220.
+                    Toggle(chrome.dailyReminderToggleLabel, isOn: $isReminderEnabled)
+                        .font(KigoFont.zenKaku(.medium, size: 15, relativeTo: .body))
+                        .foregroundStyle(KigoTheme.inkKanji)
+                        .tint(KigoTheme.accent)
+                        .accessibilityIdentifier("settings.dailyReminder")
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 28)
+                .padding(.top, 22)
+
                 Divider()
                     .overlay(KigoTheme.hairline)
                     .padding(.horizontal, 28)
@@ -109,6 +133,9 @@ struct SettingsView: View {
         }
         .onChange(of: currentAppearance) { _, newValue in
             appearanceStore.set(newValue)
+        }
+        .onChange(of: isReminderEnabled) { _, newValue in
+            reminderStore.set(newValue)
         }
     }
 }
