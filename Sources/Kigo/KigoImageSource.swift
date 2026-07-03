@@ -171,6 +171,17 @@ public struct KigoImageSource: Sendable {
 /// adapter's own `URLSession`, so no real network call occurs in the suite.
 public struct URLSessionKigoImageTransport: KigoImageTransport {
 
+    /// Thrown when the response's HTTP status code falls outside the 2xx
+    /// range (#214). A 404/500/etc. still carries a response body (an HTML
+    /// error page, a JSON error envelope, ...) that `URLSession` happily hands
+    /// back as "successful" data — without this check that body would be
+    /// treated as fetched image bytes. `KigoImageSource` catches any thrown
+    /// error and resolves to `nil`, so this composes with the existing
+    /// fallback path identically to a lower-level transport failure.
+    public enum TransportError: Error, Equatable {
+        case nonSuccessStatusCode(Int)
+    }
+
     private let session: URLSession
 
     /// - Parameter session: The `URLSession` to issue requests through.
@@ -181,7 +192,11 @@ public struct URLSessionKigoImageTransport: KigoImageTransport {
     }
 
     public func fetchData(from url: URL) async throws -> Data {
-        let (data, _) = try await session.data(from: url)
+        let (data, response) = try await session.data(from: url)
+        if let httpResponse = response as? HTTPURLResponse,
+           !(200..<300).contains(httpResponse.statusCode) {
+            throw TransportError.nonSuccessStatusCode(httpResponse.statusCode)
+        }
         return data
     }
 }
