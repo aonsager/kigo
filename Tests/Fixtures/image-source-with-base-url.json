@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "version": 1,
+  "imageBaseURL": "https://images.kigo.example/photos",
+  "dailyMap": {
+    "2026-01-01": {
+      "kanji": "初日の出",
+      "reading": { "ja": "はつひので" },
+      "description": { "ja": "元日の朝に昇る太陽。" },
+      "imageId": "kigo-01-01",
+      "attribution": {
+        "title": { "ja": "初日の出" },
+        "credit": { "ja": "撮影者不明" },
+        "license": { "ja": "パブリックドメイン" }
+      }
+    }
+  },
+  "ko": [
+    {
+      "kanji": "款冬華",
+      "reading": { "ja": "ふきのはなさく" },
+      "gloss": "Butterbur blooms",
+      "sekkiId": "sekki-01",
+      "dateRange": { "start": "01-01", "end": "01-05" },
+      "description": { "ja": "フキノトウが花を咲かせる。" }
+    }
+  ],
+  "sekki": [
+    {
+      "id": "sekki-01",
+      "kanji": "小寒",
+      "reading": { "ja": "しょうかん" },
+      "gloss": { "ja": "寒さの始まり" },
+      "description": { "ja": "寒さが厳しくなる時期。" }
+    }
+  ]
+}
