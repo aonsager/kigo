@@ -143,3 +143,32 @@ public struct KigoImageSource: Sendable {
         }
     }
 }
+
+// MARK: - URLSessionKigoImageTransport
+
+/// Production `KigoImageTransport` implementation that fetches raw image bytes
+/// via `URLSession`. Thin enough to be correct by inspection (no logic beyond
+/// the fetch) — mirrors `URLSessionRemoteManifestSource`'s role for
+/// `RemoteManifestSource` (see `RemoteManifestSource.swift`).
+///
+/// Slice #208. Not wired into `KigoImageSource`'s production configuration,
+/// `TodayView`, or any launch-env/`KIGO_FAKE_IMAGE` resolver in this slice —
+/// that lands in a later milestone (C26). Verified offline in
+/// `KigoImageSourceAdapterTests` via a stubbed `URLProtocol` registered on the
+/// adapter's own `URLSession`, so no real network call occurs in the suite.
+public struct URLSessionKigoImageTransport: KigoImageTransport {
+
+    private let session: URLSession
+
+    /// - Parameter session: The `URLSession` to issue requests through.
+    ///   Defaults to `.shared` for production use; tests inject a session
+    ///   configured with a stubbed `URLProtocol` to stay fully offline.
+    public init(session: URLSession = .shared) {
+        self.session = session
+    }
+
+    public func fetchData(from url: URL) async throws -> Data {
+        let (data, _) = try await session.data(from: url)
+        return data
+    }
+}
