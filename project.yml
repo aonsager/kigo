@@ -157,6 +157,13 @@ targets:
       # (same pattern as Resources/manifest.json elsewhere in this file).
       - path: Tests/Fixtures/assembled-worked-example-manifest.json
         buildPhase: resources
+      # Slice #205 (C25 slice 1, ADR 0022): committed Manifest fixtures proving
+      # imageBaseURL decodes both present and absent, for KigoImageSourceTests.
+      # Same pattern as assembled-worked-example-manifest.json above.
+      - path: Tests/Fixtures/image-source-with-base-url.json
+        buildPhase: resources
+      - path: Tests/Fixtures/image-source-without-base-url.json
+        buildPhase: resources
     dependencies:
       - target: Kigo
     settings:
