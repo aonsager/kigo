@@ -16,6 +16,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 ASSEMBLE_PY = REPO_ROOT / "scripts" / "content" / "assemble.py"
 WORKED_EXAMPLE_CSV = REPO_ROOT / "content" / "kigo-2026.example.csv"
 BUNDLED_MANIFEST = REPO_ROOT / "Resources" / "manifest.json"
+FIXTURES_DIR = REPO_ROOT / "scripts" / "content" / "fixtures"
+CONTENT_README = REPO_ROOT / "content" / "README.md"
 
 # Running this file directly (python3 scripts/content/test_pipeline.py) already
 # puts its own directory on sys.path[0]; this insert makes that explicit and
@@ -183,6 +185,85 @@ def test_cli_writes_nothing_and_exits_nonzero_on_malformed_csv():
         assert not out_path.exists(), "a malformed CSV must never produce an output file"
 
 
+def _assert_fixture_rejected(fixture_name: str, *, pre_existing_out_content: str | None = None) -> None:
+    """Runs the real `assemble.py` CLI (subprocess, not a mock) over the
+    committed malformed-row fixture `scripts/content/fixtures/<fixture_name>`
+    and asserts, against the filesystem, that it exits nonzero and writes no
+    output. If `pre_existing_out_content` is given, --out is pre-seeded with
+    it first and must come out byte-for-byte untouched (a failing run must
+    never modify prior output either)."""
+    with tempfile.TemporaryDirectory() as tmp:
+        manifest_path = Path(tmp) / "base-manifest.json"
+        manifest_path.write_text(json.dumps(_FAKE_BASE_MANIFEST), encoding="utf-8")
+        out_path = Path(tmp) / "assembled.json"
+        if pre_existing_out_content is not None:
+            out_path.write_text(pre_existing_out_content, encoding="utf-8")
+
+        result = _run_assemble_cli(
+            csv_path=FIXTURES_DIR / fixture_name, out_path=out_path, manifest_path=manifest_path,
+        )
+
+        assert result.returncode != 0, f"{fixture_name}: expected a nonzero exit, got stderr: {result.stderr}"
+        if pre_existing_out_content is None:
+            assert not out_path.exists(), f"{fixture_name}: a rejected row must never produce an output file"
+        else:
+            assert out_path.read_text(encoding="utf-8") == pre_existing_out_content, (
+                f"{fixture_name}: a rejected run must leave prior output untouched"
+            )
+
+
+def test_cli_rejects_leftover_date_stamp_fixture_and_writes_nothing():
+    # Residual on-path validator gate (#200): a row can be structurally
+    # complete (every column non-empty) yet still carry the dummy-data
+    # `(YYYY-MM-DD)` instrumentation left over from the old date-stamped
+    # descriptions (ADR 0022) — the validator, not the CSV parser, must catch
+    # this. Real invocation over a committed fixture CSV, not a mock.
+    _assert_fixture_rejected("leftover_date_stamp.csv")
+
+
+def test_cli_rejects_missing_description_en_fixture_and_writes_nothing():
+    _assert_fixture_rejected("missing_description_en.csv")
+
+
+def test_cli_rejects_missing_reading_ja_fixture_and_writes_nothing():
+    _assert_fixture_rejected("missing_reading_ja.csv")
+
+
+def test_cli_rejects_missing_attribution_field_fixture_and_writes_nothing():
+    _assert_fixture_rejected("missing_attribution_field.csv")
+
+
+def test_cli_rejects_empty_image_id_fixture_and_writes_nothing():
+    _assert_fixture_rejected("empty_image_id.csv")
+
+
+def test_cli_rejects_malformed_image_base_url_and_writes_nothing():
+    # The derived-URL check protects against a mistyped --image-base-url even
+    # when every row is otherwise well-formed: a well-formed row plus a
+    # scheme-less base URL must still be refused before anything is written.
+    with tempfile.TemporaryDirectory() as tmp:
+        manifest_path = Path(tmp) / "base-manifest.json"
+        manifest_path.write_text(json.dumps(_FAKE_BASE_MANIFEST), encoding="utf-8")
+        out_path = Path(tmp) / "assembled.json"
+        csv_path = _write_sample_csv(tmp)
+
+        result = subprocess.run(
+            [sys.executable, str(ASSEMBLE_PY),
+             "--csv", str(csv_path), "--out", str(out_path), "--manifest", str(manifest_path),
+             "--image-base-url", "not-a-well-formed-url"],
+            capture_output=True, text=True,
+        )
+
+        assert result.returncode != 0, result.stdout + result.stderr
+        assert not out_path.exists(), "a malformed image base URL must never produce an output file"
+
+
+def test_cli_rejects_fixture_and_leaves_prior_output_untouched():
+    # "writes nothing, leaving any prior output untouched" (#200 AC) — a
+    # rejected run must not delete or overwrite whatever already sat at --out.
+    _assert_fixture_rejected("leftover_date_stamp.csv", pre_existing_out_content='{"prior": "output"}')
+
+
 def test_worked_example_assembles_into_a_valid_localized_manifest():
     # The acceptance-level round trip (mirrors docs/GOAL.md's C24 evidence):
     # assemble the real worked-example CSV against the real bundled manifest.
@@ -225,6 +306,34 @@ def test_cli_end_to_end_over_worked_example_is_idempotent_and_leaves_bundled_man
         assert out1.read_bytes() == out2.read_bytes(), "assembling the same CSV twice must be byte-identical"
 
     assert BUNDLED_MANIFEST.read_bytes() == bundled_before, "the bundled manifest must never be modified"
+
+
+def test_readme_documents_the_required_sections():
+    # Documentation completeness is checked by inspecting the committed
+    # content/README.md on disk for the required named sections (#200 AC).
+    assert CONTENT_README.exists(), "content/README.md must exist"
+    text = CONTENT_README.read_text(encoding="utf-8")
+
+    for heading in (
+        "CSV column contract",
+        "Regenerating the manifest",
+        "LLM-fill workflow",
+        "Before the image-delivery step",
+    ):
+        assert heading in text, f"content/README.md missing required section: {heading!r}"
+
+    for column in csv_parser.REQUIRED_COLUMNS:
+        assert column in text, f"content/README.md missing CSV column '{column}' from the contract"
+
+    assert "assemble.py" in text and "--csv" in text and "--out" in text, (
+        "content/README.md must name the one-command regeneration invocation"
+    )
+    assert re.search(r"stock.photo.*API key|API key.*stock.photo", text, re.IGNORECASE), (
+        "content/README.md must name the stock-photo API key as a human-supplied input"
+    )
+    assert re.search(r"static image host", text, re.IGNORECASE), (
+        "content/README.md must name the static image host as a human-supplied input"
+    )
 
 
 if __name__ == "__main__":
