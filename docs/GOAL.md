@@ -115,12 +115,21 @@ serves only these, even if it seems helpful:
 - **Real legal copy & hosting.** Terms of Use and Privacy Policy are placeholder
   `https` URL constants for now (their presence and well-formedness are gated;
   authoring and hosting the real documents are out of scope — see C9 / ADR 0013).
-- **A content backend / server.** No server, API, or CMS is built or deployed. The app
-  *consumes* a versioned manifest from a placeholder remote `https` URL (the client side —
-  C21/ADR 0017), but **authoring and hosting** that endpoint is out of scope; content is
-  generated into the repo behind the `ContentSource` seam and bundled as the seed/fallback.
-- **Sourcing real photography/art.** Images are tasteful placeholders for now
-  (see ADR 0001 / J2); curating real imagery is not part of this goal.
+- **A dynamic content backend / server / CMS.** No server, API, or CMS is built or
+  deployed. The app *consumes* a versioned manifest from a placeholder remote `https` URL
+  (the client side — C21/ADR 0017). **In scope now (ADR 0022):** a deterministic offline
+  `scripts/content/` **assembly pipeline** that regenerates the bundled manifest from a
+  reviewed source CSV, plus a **static object host** serving the re-hosted images at stable
+  URLs (`imageBaseURL`). Still **out of scope:** any *dynamic* server / API / CMS that
+  generates or serves content at request time, and standing up the versioned-manifest
+  *endpoint* itself (the manifest stays generated into the repo and bundled as seed/fallback).
+- **Sourcing real photography/art — now partially in scope (ADR 0022).** Real
+  **royalty-free stock images** (one per kigo, delivered by remote URL + on-device cache)
+  are in scope, but the actual **image fetching + re-hosting is a human-run pipeline step**
+  needing a stock-API key and the static host (the loop scripts and scaffolds it, and flags
+  exactly what the human must supply — it never fetches/hosts on the gating path). Real image
+  *quality/fit* is J2; the real end-to-end network load is J10. The loop gates only the
+  machinery, the delivery seam, and a small worked example.
 - **Pre-iOS-26 support.** Deployment target is iOS 26 (see ADR 0002).
 - **Region/number/date locale formatting.** Full JP⇄EN **content** localization is now
   **in scope** — English prose for every Kigo/Kō/Sekki description and gloss, English
@@ -131,10 +140,19 @@ serves only these, even if it seems helpful:
 - **Browsing the year via the Almanac.** The Microseason Almanac shows only *today's*
   position in the year (counters + gauges + this kō/sekki's copy). It must never become a
   way to scrub to other days, kō, or sekki — that would breach the Today-only fence above.
-- **Real photography & real attribution values.** Images remain tasteful placeholders (as
-  before); the new **Image Attribution** strings are likewise placeholders. Their schema
-  presence/well-formedness is gated (C12/C14); sourcing real images and real credits is out
-  of scope (J2/J6).
+- **Real photography & real attribution values — now partially in scope (ADR 0022).** Real
+  images and their real **Image Attribution** (photographer/source/license, captured by the
+  pipeline from the stock provider) are in scope, produced by the human-run image pipeline
+  step above. What stays out of scope: the loop fetching/hosting them itself, and any
+  guarantee of *quality/fit* (J2). Schema presence/well-formedness remains gated (C12/C14);
+  the full **365-entry real corpus** is filled by a human in a later active session (the loop
+  ships the pipeline + scaffolding + a small worked example, gated by C24).
+- **The bundled manifest being the full real corpus.** The loop's gated deliverable is the
+  **machinery + a small worked example** (~8–12 real, localized rows — C24), not all 365 real
+  entries. Filling the complete corpus (and running the image pipeline with a real key/host)
+  is a **human** step done out-of-band with an LLM in an active session; its landing is judged
+  under J2, never gated. Do not plan a milestone that tries to headlessly generate or fetch the
+  full corpus.
 - **In-app subscription management UI (restated).** Folding the subscribe offer into the
   **Settings menu** does not add manage/cancel UI; it is still one product, one honest
   benefit, with at most a deep link to Apple's system screen (J4).
@@ -256,6 +274,23 @@ Standing rules every milestone inherits:
   store the Today screen, Almanac, Attribution panel, and chrome all read; changing it re-renders
   every visible string **without relaunch** (C20). `KIGO_FAKE_LANGUAGE=ja|en` still pins only the
   *initial* value (ADR 0013); the live toggle is exercised through the Settings switcher.
+- **Content-assembly pipeline + real image delivery (ADR 0022):** the bundled
+  `Resources/manifest.json` is produced only by a deterministic, offline `scripts/content/`
+  **assembly pipeline** from a reviewed source CSV (`content/kigo-2026.csv`) — never hand-edited.
+  The loop's gated deliverable is the **machinery + a small worked example** (~8–12 real,
+  localized rows); the full 365-entry real corpus and the real image fetch/re-host are
+  **human-run, out-of-band** steps (stock-API key + static host are human-supplied inputs the
+  pipeline documents and flags). Real images are delivered by **remote URL + on-device cache**:
+  the manifest gains an **optional** top-level `imageBaseURL` (ADR 0014 forward-compat — absent
+  ⇒ the app shows the gradient placeholder, no regression), and the app derives an image URL as
+  `imageBaseURL + "/" + imageId + ".jpg"`. Image loading is behind an injectable
+  **`KigoImageSource`** seam (production: `URLSession` + on-disk LRU cache; tests: in-memory
+  fake) — the real network fetch is **off the gating path** (J10, the "real network calls" row
+  of the headless-integration-traps catalog, mirroring RemoteManifestSource/J7). The revamp
+  launch-env convention gains **`KIGO_FAKE_IMAGE=loaded|none`** (extends ADR 0013) so the Today
+  screen's real-image-vs-placeholder render is driven deterministically under headless UI test.
+  The **widget stays on the gradient placeholder** (real widget photos would reintroduce the
+  app-group dependency ADR 0019 removed — deferred, out of scope here).
 
 ## Criteria
 
@@ -341,9 +376,13 @@ Goal state met ⇔ every `C*` procedure below passes on `main`.
      — expect `** TEST SUCCEEDED **`, exit 0, and `Executed [1-9][0-9]* test`. The suite injects a
      `DateProvider` and asserts, for a fixed set of 2026 dates spanning all four seasons (including
      a Kō boundary day):
-     - the resolved Kigo equals the Daily Map entry for that **`2026-MM-DD`** key, **and** the
-       resolved entry's `description.ja` and `description.en` each contain that ISO date string
-       (the date-stamp instrumentation — proves the correct per-day record is read);
+     - the resolved Kigo **equals the Daily Map entry loaded from the manifest for that
+       `2026-MM-DD` key** — every field (`kanji`, `reading`, `description`, `imageId`) matches
+       that key's entry and differs from an adjacent day's entry, proving the correct per-day
+       record is read by content, not position. *(This replaces the earlier
+       `(2026-MM-DD)`-in-description date-stamp check, which real content strips — ADR 0022;
+       content-equality is the durable per-day-correctness signal and holds for dummy and real
+       data alike.)*
      - the resolved Kō is the one whose **perennial `MM-DD`** range contains the date, and its
        `sekkiId` resolves to the expected Sekki;
      - a **leap day** (e.g. `2024-02-29`, injected) resolves to a defined Kō without crashing
@@ -752,11 +791,15 @@ loop catches it. Do not renumber or rewrite C9/C10.
      no `KIGO_FAKE_LANGUAGE`) **and `KIGO_FAKE_ENTITLEMENT=active`** (the `kigo.description` and
      Almanac prose this suite toggles are part of the Premium understanding layer — ADR 0019), the
      suite asserts via accessibility identifiers:
-     - initially `kigo.description` reads its Japanese form (text contains the date `2026-06-16`,
-       per C4) and `kigo.reading` shows the hiragana reading;
+     - initially `kigo.description` reads its **Japanese** form — its text equals the `06-16`
+       entry's `description.ja` from the manifest (non-empty) — and `kigo.reading` shows the
+       hiragana reading; capture both strings;
      - open the Settings menu (`paywall.entry`), select the English option on `settings.language`,
-       dismiss — then **without relaunching**, `kigo.description` now reads its English form and
-       `kigo.reading` shows romaji, while `kigo.kanji` is unchanged;
+       dismiss — then **without relaunching**, `kigo.description`'s text has **changed** and now
+       equals that entry's `description.en`, and `kigo.reading` shows romaji, while `kigo.kanji`
+       is unchanged. *(This replaces the earlier `text contains 2026-06-16` check — real content
+       carries no date stamp, ADR 0022; the durable live-switch signal is that the description
+       text changes ja→en and matches the manifest's localized values.)*
      - a known chrome string (e.g. `paywall.restore`) is in English after the toggle;
      - toggling back to Japanese restores the Japanese strings (the switch is reversible and live).
 
@@ -842,6 +885,114 @@ loop catches it. Do not renumber or rewrite C9/C10.
      suite must not tap-enable the toggle — enabling fires the real permission prompt, which hangs
      headless; the real enable→schedule→deliver path is J9, off the gating path.)*
 
+### C24: Content-assembly pipeline assembles a valid localized manifest from a source CSV (ADR 0022)
+
+- **Depends on:** C2, C19
+- **Statement:** A deterministic, **offline** `scripts/content/` pipeline regenerates a
+  schema-valid, fully-localized manifest from a reviewed **source CSV** — the only way
+  `Resources/manifest.json` is produced (never hand-edited). Shipped alongside it: the
+  source-CSV format, validation tooling, a documented **LLM-fill workflow** a human runs in a
+  later active session to fill all 365 rows, and a committed **worked example**
+  (`content/kigo-2026.example.csv`, ≥8 real, localized rows) as both the gate fixture and the
+  human's template. This is the loop's gated deliverable; filling the full 365-entry corpus and
+  fetching/hosting real images are human-run steps (their quality is J2, real load is J10).
+- **Evidence:**
+  1. **Assembly round-trip + row shape (external, deterministic, offline).** Assemble the
+     worked example to a temp manifest, then validate its Daily-Map rows:
+     ```
+     python3 scripts/content/assemble.py --csv content/kigo-2026.example.csv --out "$TMPDIR/wm.json"
+     python3 - "$TMPDIR/wm.json" <<'PY'
+     import json, re, sys
+     m = json.load(open(sys.argv[1]))
+     assert isinstance(m.get('imageBaseURL'), str) and m['imageBaseURL'].startswith('https://'), 'imageBaseURL must be an https string'
+     assert isinstance(m.get('version'), int) and 'schemaVersion' in m, 'version/schemaVersion required'
+     dm = m['dailyMap']; assert len(dm) >= 8, 'worked example needs >=8 rows'
+     for k, e in dm.items():
+         assert re.fullmatch(r'2026-\d{2}-\d{2}', k), k
+         assert e['kanji'] and e['imageId'], k
+         blob = e['description']['ja'] + e['description']['en']
+         assert not re.search(r'\(20\d\d-\d\d-\d\d\)', blob), f'{k}: dummy date-stamp instrumentation must be stripped'
+         for f in ('reading', 'description'):
+             assert e[f].get('ja') and e[f].get('en'), f'{k}.{f} needs ja+en'
+         for f in ('title', 'credit', 'license'):
+             assert e['attribution'][f].get('ja') and e['attribution'][f].get('en'), f'{k}.attr.{f} needs ja+en'
+     assert len(m.get('ko', [])) == 72 and len(m.get('sekki', [])) == 24, 'Ko/Sekki copied through intact'
+     print('OK'); sys.exit(0)
+     PY
+     ```
+     — expect `OK` and exit 0. Then assemble a **second** time to a different path and assert
+     byte-identical output (idempotency):
+     `python3 scripts/content/assemble.py --csv content/kigo-2026.example.csv --out "$TMPDIR/wm2.json" && cmp "$TMPDIR/wm.json" "$TMPDIR/wm2.json"`
+     — expect exit 0. *(Fails today: `scripts/content/` and the example CSV do not exist yet —
+     reads unmet until the pipeline ships.)*
+  2. Run the pipeline's own self-contained test script — `python3 scripts/content/test_pipeline.py`
+     — expect exit 0 and a final `ALL PASS` line preceded by **≥1** `PASS <test_name>` line
+     (nonzero-count guard; a missing script or zero tests reads unmet, which is correct until the
+     pipeline ships). *(Stdlib only — no `pytest`/network dependency, matching the repo's existing
+     `scripts/test_arbiter_fixtures.py` convention; `pytest` is not installed in the loop
+     environment, so an oracle depending on it would be malformed.)* The script covers, over
+     in-repo fixtures with no network: CSV→manifest field mapping, the localized-shape +
+     no-instrumentation validator, the `imageBaseURL + "/" + imageId + ".jpg"` URL derivation,
+     and rejection of a malformed row (missing reading/en, or a leftover date-stamp) with a
+     nonzero exit.
+
+### C25: KigoImageSource remote-image seam, cache, and fallback logic (ADR 0022)
+
+- **Depends on:** C2
+- **Statement:** Image loading is behind an injectable **`KigoImageSource`** seam. Given the
+  manifest's optional `imageBaseURL` and an entry's `imageId`, the seam derives the image URL,
+  serves from an on-disk cache on hit, downloads on miss, and yields **nil** (⇒ the caller shows
+  the gradient placeholder) on any failure or when `imageBaseURL` is absent — all verified
+  headlessly through an injected fake (no `URLSession`, no network). The real network fetch is
+  **off the gating path** (J10 — the "real network calls" trap row, mirroring C21/J7).
+- **Evidence:**
+  1. Run the canonical test invocation (Constraints) with
+     `-only-testing:KigoTests/KigoImageSourceTests` — expect `** TEST SUCCEEDED **`, exit 0,
+     **and** output matching `Executed [1-9][0-9]* test`. With an injected **fake transport**
+     (records requests, returns canned bytes, no network) and a temp cache directory, the suite
+     asserts:
+     - **URL derivation:** for `imageBaseURL = "https://cdn.example/img"` and
+       `imageId = "kigo-06-12"`, the seam requests `https://cdn.example/img/kigo-06-12.jpg`;
+     - **cache miss then hit:** the first `image(for:)` fetches once (the fake records exactly one
+       request) and writes bytes to the cache dir; a second call for the same id returns from
+       cache with **no** further request;
+     - **failure:** when the transport throws or returns non-image bytes, `image(for:)` returns
+       `nil` and throws nothing;
+     - **absent base URL:** with a manifest decoded **without** `imageBaseURL` (nil), the seam
+       returns `nil` without attempting a fetch (graceful degradation to placeholder), and the
+       Manifest decodes both **with** and **without** `imageBaseURL` (ADR 0014 forward-compat);
+     - **eviction:** after the cache exceeds its configured size cap, the least-recently-used
+       cached file is removed.
+  2. **Residual on-path wiring (real adapter, offline).** Run the canonical test invocation with
+     `-only-testing:KigoTests/KigoImageSourceAdapterTests` — expect `** TEST SUCCEEDED **`, exit
+     0, and `Executed [1-9][0-9]* test`. Using a **stubbed `URLProtocol`** registered on the
+     adapter's session (returns canned image bytes offline — no real network), the suite asserts
+     the **production** `URLSession`-backed adapter builds the well-formed `https` URL from
+     `imageBaseURL + imageId` and returns the decoded image **without throwing**. *(Built-wiring
+     check the fake hides; the live-CDN fetch is J10, off the gating path — ADR 0022 / ADR 0017.)*
+
+### C26: Today screen renders the remote image with graceful placeholder fallback (ADR 0022)
+
+- **Depends on:** C5, C25
+- **Statement:** The Today screen displays the day's **real remote image** when the
+  `KigoImageSource` yields one, and falls back to the **gradient placeholder** when it yields nil
+  (loading / offline / no `imageBaseURL`) — verified through the *real, reachable* live app via
+  the `KIGO_FAKE_IMAGE` injection (ADR 0022/0013), with no blank or crashed render. The widget is
+  unchanged (gradient — out of scope here).
+- **Evidence:**
+  1. Run the canonical test invocation (Constraints) with
+     `-only-testing:KigoUITests/RemoteImageUITests` — expect `** TEST SUCCEEDED **`, exit 0,
+     **and** output matching `Executed [1-9][0-9]* test` (nonzero-count guard; new suite). Via
+     accessibility identifiers:
+     - **loaded case** — launched with `KIGO_FAKE_DATE=2026-06-12` and `KIGO_FAKE_IMAGE=loaded`
+       (injects a fake `KigoImageSource` returning a known image): the Today screen shows
+       `kigo.image` and exposes the **remote-image** layer `kigo.image.remote`;
+     - **fallback case** — relaunched with `KIGO_FAKE_IMAGE=none` (fake returns nil): the Today
+       screen still shows `kigo.image` (no blank), exposes the **placeholder** layer
+       `kigo.image.placeholder`, and does **not** expose `kigo.image.remote`;
+     - in **both** cases the app stays responsive — a known control (`paywall.entry`) is present
+       and hittable (no crash on either path).
+
 ## Judgment claims
 
 Reported in the milestone report for async human review — never termination gates,
@@ -858,17 +1009,22 @@ these are surfaced for awareness only.)
 
 ### J2: The Kigo content and imagery are evocative and accurate
 
-- **Applies to:** C2, C5, C12, C13, C14, C19
-- **Claim:** The generated Kigo descriptions are accurate and evocative; the new per-Kō and
-  per-Sekki almanac descriptions/glosses are accurate, in the right quiet voice, and give
-  real "where am I in the year" context; the **English translations and romaji readings** are
-  accurate and natural; the (currently placeholder) images and their (placeholder) attribution
-  suit each Kigo and season. (The Daily-Map descriptions are currently instrumented dummy data
-  carrying a date stamp — quality of the final curated corpus is judged when it lands.)
+- **Applies to:** C2, C5, C12, C13, C14, C19, C24
+- **Claim:** The Kigo words, hiragana readings, and EN/JP descriptions are accurate, evocative,
+  and correctly placed in season; the per-Kō and per-Sekki almanac descriptions/glosses are
+  accurate, in the right quiet voice, and give real "where am I in the year" context; the
+  **English translations and romaji readings** are accurate and natural; and the **real
+  royalty-free images** and their **real attribution** (photographer/source/license) suit each
+  Kigo and season. Under ADR 0022 the corpus lands in stages: the loop ships the assembly
+  pipeline + a small **worked example** (real rows — judged here now), while the **full
+  365-entry corpus and the real images are filled/fetched by a human out-of-band** (stock-API
+  key + static host) in a later active session; until that fill lands, the bundled Daily-Map
+  stays instrumented dummy data over gradient placeholders. Quality of each batch is judged as
+  it lands — never gated.
 - **Lens:** Read a sample of Daily Map entries and almanac kō/sekki descriptions across
-  seasons in **both languages** for accuracy and tone; view the rendered images and the
-  attribution panel. Note that images, attribution values, and the dummy date-stamped Daily-Map
-  copy are intentionally placeholders for now.
+  seasons in **both languages** for accuracy and tone (the worked example now; the full corpus
+  when filled); view the rendered images and the attribution panel once the human image
+  pipeline has run. Note which parts are still dummy/placeholder pending the human fill.
 
 ### J3: The widget renders correctly on a real home screen (amended — ADR 0019)
 
@@ -970,3 +1126,20 @@ these are surfaced for awareness only.)
   it is cancelled. The permission prompt and OS delivery hang or need a human/grant from the
   headless CLI (the APNs row of the headless-integration-traps catalog), so this is reported for
   human review off the gating path — never a termination gate.
+
+### J10: Real per-day images load from the CDN end-to-end (ADR 0022)
+
+- **Applies to:** C25, C26
+- **Claim:** Pointed at the real static image host (`imageBaseURL`), the app on the Today screen
+  downloads each day's real royalty-free image over the network, caches it, and renders it
+  full-bleed in place of the gradient placeholder; on a real network failure (offline, 404,
+  corrupt body) it silently falls back to the gradient placeholder with no user-visible error or
+  crash, and a cached image thereafter renders offline. The placeholder `imageBaseURL` has been
+  replaced with the real published host, and the human image pipeline has populated it, before
+  submission.
+- **Lens:** With real images hosted at the configured `imageBaseURL`, launch the app on a
+  device/simulator with live networking and confirm today's real photo appears and persists;
+  then disable networking (or point at a bad host) and confirm the app still shows the gradient
+  placeholder (or a previously cached image) with no error. The live network fetch is off the
+  headless gating path by construction (ADR 0022 / ADR 0001 — no live network in evidence
+  procedures), so it is reported for human review, never a termination gate.

@@ -34,7 +34,18 @@ _Avoid_: "sync" (no two-way state; content is pull-only), "backend" (no server i
 The frozen shape of the served content — a `manifest.json` (Daily Map + 72 Kō + 24 Sekki) plus per-Kigo image slots. Fixed now; the network endpoint that serves it is out of scope.
 
 **Manifest**:
-The single content document conforming to the Contract: the full Daily Map, the 72 Kō, and the 24 Sekki, with a `schemaVersion` (shape) and a monotonic integer **`version`** (content freshness, used by the remote-update comparison — ADR 0016/0017).
+The single content document conforming to the Contract: the full Daily Map, the 72 Kō, and the 24 Sekki, with a `schemaVersion` (shape) and a monotonic integer **`version`** (content freshness, used by the remote-update comparison — ADR 0016/0017), plus an optional top-level **`imageBaseURL`** (ADR 0022).
+
+**Content-assembly pipeline**:
+The deterministic, offline `scripts/content/` tooling that regenerates the bundled `Resources/manifest.json` from a reviewed **source CSV** (`content/kigo-2026.csv`) — the manifest is always regenerated, never hand-edited (ADR 0022). The loop ships the pipeline + validation + a documented LLM-fill workflow + a **worked example**; the full 365-entry corpus and the real image fetch/re-host are **human-run, out-of-band** steps.
+_Avoid_: "CMS", "backend" (no dynamic server; it is offline build tooling).
+
+**Worked example**:
+The small committed slice of real, localized corpus (`content/kigo-2026.example.csv`, ≥8 rows) that is both the pipeline's gate fixture (C24) and the template a human extends when filling the full year in a later active session.
+
+**imageBaseURL / KigoImageSource**:
+Real per-day images are delivered by **remote URL + on-device cache** (ADR 0022). The Manifest's optional `imageBaseURL` + an entry's `imageId` derive the image URL (`imageBaseURL + "/" + imageId + ".jpg"`; absent ⇒ gradient placeholder). **`KigoImageSource`** is the injectable seam that loads it (production: `URLSession` + on-disk LRU cache; tests: in-memory fake) — the real network fetch is off the gating path (J10), mirroring **RemoteManifestSource** (J7). The **Widget** stays on the gradient placeholder.
+_Avoid_: bundling images; a per-entry image URL (the base-URL + imageId convention is canonical).
 
 **Entitlement**:
 A user's active subscription state, derived from StoreKit. Active ⇒ the in-app **understanding
