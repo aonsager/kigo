@@ -1,5 +1,22 @@
 import XCTest
+import UIKit
 @testable import Kigo
+
+/// Renders a tiny real, decodable image and encodes it as PNG data. Mirrors the
+/// identically-named helper in `KigoImageSourceTests.swift` (#213): composed
+/// through `KigoImageSource`, this adapter's "canned bytes" must also survive
+/// the decode-validation gate, not just be arbitrary bytes.
+private func makeValidImageData() -> Data {
+    let renderer = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1))
+    let image = renderer.image { context in
+        UIColor.red.setFill()
+        context.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
+    }
+    guard let data = image.pngData() else {
+        fatalError("Failed to encode fixture image as PNG — this is a test-fixture bug, not app behavior")
+    }
+    return data
+}
 
 // MARK: - StubURLProtocol
 
@@ -128,7 +145,7 @@ final class KigoImageSourceAdapterTests: XCTestCase {
     func testAdapterIssuesRequestToDerivedURLAndReturnsDecodedBytesOnSuccess() async throws {
         let manifest = try loadFixture(named: "image-source-with-base-url")
         let entry = try XCTUnwrap(manifest.dailyMap["2026-01-01"])
-        let cannedBytes = Data([0xDE, 0xAD, 0xBE, 0xEF])
+        let cannedBytes = makeValidImageData()
 
         StubURLProtocol.stub { _ in (cannedBytes, nil, nil) }
 

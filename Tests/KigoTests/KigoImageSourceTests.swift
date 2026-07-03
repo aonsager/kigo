@@ -1,5 +1,33 @@
 import XCTest
+import UIKit
 @testable import Kigo
+
+// MARK: - Valid image fixtures (Slice #213: decode-validation gate)
+
+/// Renders a tiny real, decodable image and encodes it as PNG data — used across
+/// this suite so the "canned bytes" fixtures for happy-path caching tests are
+/// genuine images that survive `KigoImageSource`'s decode-validation gate (#213),
+/// rather than arbitrary byte blobs that would now be rejected.
+private func makeValidImageData(color: UIColor = .red) -> Data {
+    let renderer = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1))
+    let image = renderer.image { context in
+        color.setFill()
+        context.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
+    }
+    guard let data = image.pngData() else {
+        fatalError("Failed to encode fixture image as PNG — this is a test-fixture bug, not app behavior")
+    }
+    return data
+}
+
+/// Pairs a fixed real image `Data` with its exact byte count for the LRU
+/// eviction tests below: cap math (`byteCount * 2 + 50`, etc.) needs a precise,
+/// stable size, while every fetched "file" must still be a genuine decodable
+/// image so it survives `KigoImageSource`'s decode-validation gate (#213).
+private func makeSizedImageFixture() -> (transport: FakeSizedKigoImageTransport, byteCount: Int) {
+    let imageData = makeValidImageData()
+    return (FakeSizedKigoImageTransport(imageData: imageData), imageData.count)
+}
 
 // MARK: - FakeKigoImageTransport
 
@@ -31,22 +59,23 @@ final class FakeKigoImageTransport: KigoImageTransport, @unchecked Sendable {
 
 // MARK: - FakeSizedKigoImageTransport (Slice #207: eviction tests)
 
-/// Fake transport for eviction tests: returns a fixed-size, URL-derived byte
-/// buffer for every request (so cache-footprint math is exact) and records
-/// every request, so a re-fetch after eviction is provable (request count for
-/// a given URL going from 1 to 2).
+/// Fake transport for eviction tests: returns the same fixed, real decodable
+/// image `Data` (so it survives the #213 decode-validation gate) for every
+/// request — the exact same instance each time, so cache-footprint math stays
+/// exact (every written file is byte-for-byte the same size). Records every
+/// request, so a re-fetch after eviction is provable (request count for a
+/// given URL going from 1 to 2).
 final class FakeSizedKigoImageTransport: KigoImageTransport, @unchecked Sendable {
-    private let byteCount: Int
+    let imageData: Data
     private(set) var requestedURLs: [URL] = []
 
-    init(byteCount: Int) {
-        self.byteCount = byteCount
+    init(imageData: Data) {
+        self.imageData = imageData
     }
 
     func fetchData(from url: URL) async throws -> Data {
         requestedURLs.append(url)
-        let fillByte = UInt8(truncatingIfNeeded: url.absoluteString.hashValue)
-        return Data(repeating: fillByte, count: byteCount)
+        return imageData
     }
 
     func requestCount(for url: URL) -> Int {
@@ -131,7 +160,7 @@ final class KigoImageSourceTests: XCTestCase {
     func testResolvingImageIssuesExactlyOneRequestAndReturnsCannedBytes() async throws {
         let manifest = try loadFixture(named: "image-source-with-base-url")
         let entry = try XCTUnwrap(manifest.dailyMap["2026-01-01"])
-        let cannedBytes = Data([0xDE, 0xAD, 0xBE, 0xEF])
+        let cannedBytes = makeValidImageData()
         let transport = FakeKigoImageTransport(.succeed(cannedBytes))
         let source = KigoImageSource(transport: transport, cacheDirectory: makeTempCacheDirectory())
 
@@ -165,11 +194,63 @@ final class KigoImageSourceTests: XCTestCase {
         let manifest = try loadFixture(named: "image-source-with-base-url")
         let entry = try XCTUnwrap(manifest.dailyMap["2026-01-01"])
         let transport = FakeKigoImageTransport(.fail(FakeError.transportFailure))
-        let source = KigoImageSource(transport: transport, cacheDirectory: makeTempCacheDirectory())
+        let cacheDirectory = makeTempCacheDirectory()
 
-        let result = await source.image(manifest: manifest, imageId: entry.imageId)
+        await assertCacheMissFailureLeavesNoTrace(
+            transport: transport,
+            manifest: manifest,
+            imageId: entry.imageId,
+            cacheDirectory: cacheDirectory,
+            failureDescription: "Transport failure"
+        )
+    }
 
-        XCTAssertNil(result, "Transport failure must resolve to nil, not throw")
+    // MARK: - Slice #213 AC2-4: non-image bytes are rejected before caching or returning them
+
+    /// A fake transport that "succeeds" but hands back bytes that don't decode as
+    /// an image must be treated exactly like an outright transport throw: nil
+    /// result, nothing written to the cache directory. Uses the same
+    /// `assertCacheMissFailureLeavesNoTrace` helper as the transport-throw test
+    /// above so the two failure causes are proven to be indistinguishable from the
+    /// caller's perspective (#213 AC4), not just separately nil.
+    func testNonImageBytesResolveToNilAndLeaveNoCacheFile() async throws {
+        let manifest = try loadFixture(named: "image-source-with-base-url")
+        let entry = try XCTUnwrap(manifest.dailyMap["2026-01-01"])
+        let nonImageBytes = Data([0x00, 0x01, 0x02, 0x03]) // not a valid image header of any kind
+        let transport = FakeKigoImageTransport(.succeed(nonImageBytes))
+        let cacheDirectory = makeTempCacheDirectory()
+
+        await assertCacheMissFailureLeavesNoTrace(
+            transport: transport,
+            manifest: manifest,
+            imageId: entry.imageId,
+            cacheDirectory: cacheDirectory,
+            failureDescription: "Non-image bytes"
+        )
+    }
+
+    /// Shared assertion (#213 AC1-4): whatever causes a cache-miss fetch to fail —
+    /// a transport throw or bytes that don't decode as an image — must resolve to
+    /// `nil` and must not leave any file behind in the cache directory for
+    /// `imageId`, so callers see one uniform failure path regardless of cause.
+    private func assertCacheMissFailureLeavesNoTrace(
+        transport: KigoImageTransport,
+        manifest: Manifest,
+        imageId: String,
+        cacheDirectory: URL,
+        failureDescription: String
+    ) async {
+        let source = KigoImageSource(transport: transport, cacheDirectory: cacheDirectory)
+
+        let result = await source.image(manifest: manifest, imageId: imageId)
+
+        XCTAssertNil(result, "\(failureDescription) must resolve to nil, not throw or return unvalidated bytes")
+
+        let cacheFileURL = cacheDirectory.appendingPathComponent("\(imageId).jpg")
+        XCTAssertFalse(
+            FileManager.default.fileExists(atPath: cacheFileURL.path),
+            "\(failureDescription) must not write any file to the cache directory"
+        )
     }
 
     // MARK: - Slice #206 AC1-3: cache miss writes to disk; cache hit serves from disk with no re-fetch
@@ -177,7 +258,7 @@ final class KigoImageSourceTests: XCTestCase {
     func testCacheMissWritesToDiskThenCacheHitServesFromDiskWithoutRefetch() async throws {
         let manifest = try loadFixture(named: "image-source-with-base-url")
         let entry = try XCTUnwrap(manifest.dailyMap["2026-01-01"])
-        let cannedBytes = Data([0xCA, 0xFE, 0xBA, 0xBE])
+        let cannedBytes = makeValidImageData()
         let transport = FakeKigoImageTransport(.succeed(cannedBytes))
         let cacheDirectory = makeTempCacheDirectory()
         let source = KigoImageSource(transport: transport, cacheDirectory: cacheDirectory)
@@ -206,8 +287,8 @@ final class KigoImageSourceTests: XCTestCase {
         let manifest = try loadFixture(named: "image-source-with-base-url")
         let firstImageId = "kigo-01-01"
         let secondImageId = "kigo-01-02"
-        let firstBytes = Data([0x01, 0x02, 0x03])
-        let secondBytes = Data([0xAA, 0xBB, 0xCC, 0xDD])
+        let firstBytes = makeValidImageData(color: .red)
+        let secondBytes = makeValidImageData(color: .blue)
         let cacheDirectory = makeTempCacheDirectory()
 
         let firstTransport = FakeKigoImageTransport(.succeed(firstBytes))
@@ -240,8 +321,7 @@ final class KigoImageSourceTests: XCTestCase {
     /// more-recently-written files survive.
     func testExceedingCacheCapEvictsLeastRecentlyUsedFile() async throws {
         let manifest = try loadFixture(named: "image-source-with-base-url")
-        let byteCount = 100
-        let transport = FakeSizedKigoImageTransport(byteCount: byteCount)
+        let (transport, byteCount) = makeSizedImageFixture()
         let cacheDirectory = makeTempCacheDirectory()
         let source = KigoImageSource(
             transport: transport,
@@ -283,8 +363,7 @@ final class KigoImageSourceTests: XCTestCase {
     /// write order.
     func testTouchedEntrySurvivesEvictionOverOlderUntouchedEntry() async throws {
         let manifest = try loadFixture(named: "image-source-with-base-url")
-        let byteCount = 100
-        let transport = FakeSizedKigoImageTransport(byteCount: byteCount)
+        let (transport, byteCount) = makeSizedImageFixture()
         let cacheDirectory = makeTempCacheDirectory()
         let source = KigoImageSource(
             transport: transport,
@@ -328,8 +407,7 @@ final class KigoImageSourceTests: XCTestCase {
     func testResolvingEvictedEntryIssuesFreshTransportRequest() async throws {
         let manifest = try loadFixture(named: "image-source-with-base-url")
         let base = try XCTUnwrap(manifest.imageBaseURL)
-        let byteCount = 100
-        let transport = FakeSizedKigoImageTransport(byteCount: byteCount)
+        let (transport, byteCount) = makeSizedImageFixture()
         let cacheDirectory = makeTempCacheDirectory()
         let source = KigoImageSource(
             transport: transport,
@@ -370,9 +448,8 @@ final class KigoImageSourceTests: XCTestCase {
     /// just after a single one.
     func testCacheFootprintStaysAtOrUnderCapAfterRepeatedEvictions() async throws {
         let manifest = try loadFixture(named: "image-source-with-base-url")
-        let byteCount = 100
+        let (transport, byteCount) = makeSizedImageFixture()
         let cap = byteCount * 2 + 50
-        let transport = FakeSizedKigoImageTransport(byteCount: byteCount)
         let cacheDirectory = makeTempCacheDirectory()
         let source = KigoImageSource(transport: transport, cacheDirectory: cacheDirectory, maxCacheBytes: cap)
 

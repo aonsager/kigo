@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 // MARK: - KigoImageTransport
 
@@ -31,6 +32,9 @@ public protocol KigoImageTransport: Sendable {
 /// Slice #206 added the on-disk cache (miss fetches once, hit serves from disk
 /// with no re-fetch). Slice #207 adds the size cap and LRU eviction below. The
 /// production URLSession-backed transport is NOT built here — see slice #208.
+/// Slice #213 adds the decode-validation gate: a cache-miss fetch that "succeeds"
+/// at the transport level but hands back bytes that don't decode as an image is
+/// treated exactly like a transport throw (nil, nothing written to the cache).
 public struct KigoImageSource: Sendable {
 
     private let transport: KigoImageTransport
@@ -59,9 +63,11 @@ public struct KigoImageSource: Sendable {
     /// Returns `nil` immediately (no fetch attempted) if `manifest.imageBaseURL`
     /// is `nil`. Otherwise checks the on-disk cache first: a hit returns the
     /// cached bytes with no transport call. A miss derives the URL, fetches
-    /// through the injected transport, writes the result to the cache directory
-    /// for next time, and returns the fetched bytes — or `nil` if the fetch
-    /// throws for any reason (nothing is written to the cache on failure).
+    /// through the injected transport, confirms the bytes decode as a valid image
+    /// (#213), writes the result to the cache directory for next time, and returns
+    /// the fetched bytes — or `nil` if the fetch throws for any reason, or if the
+    /// fetched bytes fail to decode as an image (nothing is written to the cache
+    /// in either failure case).
     public func image(manifest: Manifest, imageId: String) async -> Data? {
         guard let base = manifest.imageBaseURL else { return nil }
         guard let url = URL(string: "\(base)/\(imageId).jpg") else { return nil }
@@ -74,6 +80,13 @@ public struct KigoImageSource: Sendable {
 
         do {
             let data = try await transport.fetchData(from: url)
+            // Slice #213: a cache-miss fetch that "succeeds" at the transport level
+            // can still hand back bytes that aren't a real image (a broken CDN
+            // response, truncated transfer, HTML error page, etc.). Validate by
+            // decoding before writing anything to disk or returning to the caller —
+            // an undecodable payload must fail exactly like a transport throw below
+            // (nil, nothing cached), not surface as a "successful" fetch of garbage.
+            guard UIImage(data: data) != nil else { return nil }
             writeToCache(data, at: cacheFileURL)
             enforceCacheCapIfNeeded()
             return data
