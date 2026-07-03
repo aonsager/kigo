@@ -29,6 +29,31 @@ final class FakeKigoImageTransport: KigoImageTransport, @unchecked Sendable {
     }
 }
 
+// MARK: - FakeSizedKigoImageTransport (Slice #207: eviction tests)
+
+/// Fake transport for eviction tests: returns a fixed-size, URL-derived byte
+/// buffer for every request (so cache-footprint math is exact) and records
+/// every request, so a re-fetch after eviction is provable (request count for
+/// a given URL going from 1 to 2).
+final class FakeSizedKigoImageTransport: KigoImageTransport, @unchecked Sendable {
+    private let byteCount: Int
+    private(set) var requestedURLs: [URL] = []
+
+    init(byteCount: Int) {
+        self.byteCount = byteCount
+    }
+
+    func fetchData(from url: URL) async throws -> Data {
+        requestedURLs.append(url)
+        let fillByte = UInt8(truncatingIfNeeded: url.absoluteString.hashValue)
+        return Data(repeating: fillByte, count: byteCount)
+    }
+
+    func requestCount(for url: URL) -> Int {
+        requestedURLs.filter { $0 == url }.count
+    }
+}
+
 // MARK: - KigoImageSourceTests
 
 /// Slice #205 (C25 slice 1, ADR 0022): the KigoImageSource walking skeleton —
@@ -204,5 +229,170 @@ final class KigoImageSourceTests: XCTestCase {
         let secondOnDisk = try Data(contentsOf: secondFileURL)
         XCTAssertEqual(firstOnDisk, firstBytes, "First day's cache file must hold its own bytes")
         XCTAssertEqual(secondOnDisk, secondBytes, "Second day's cache file must hold its own bytes, independent of the first")
+    }
+
+    // MARK: - Slice #207 AC1: exceeding the configured cap evicts the least-recently-used file
+
+    /// Resolves three distinct days' images against a cap sized to fit two
+    /// entries but not three. Reads the temp cache directory's *actual*
+    /// contents from disk afterward (not KigoImageSource's in-memory state) to
+    /// confirm the oldest (least-recently-used) file was deleted while the two
+    /// more-recently-written files survive.
+    func testExceedingCacheCapEvictsLeastRecentlyUsedFile() async throws {
+        let manifest = try loadFixture(named: "image-source-with-base-url")
+        let byteCount = 100
+        let transport = FakeSizedKigoImageTransport(byteCount: byteCount)
+        let cacheDirectory = makeTempCacheDirectory()
+        let source = KigoImageSource(
+            transport: transport,
+            cacheDirectory: cacheDirectory,
+            maxCacheBytes: byteCount * 2 + 50
+        )
+
+        _ = await source.image(manifest: manifest, imageId: "kigo-day-1")
+        try await Task.sleep(nanoseconds: 20_000_000)
+        _ = await source.image(manifest: manifest, imageId: "kigo-day-2")
+        try await Task.sleep(nanoseconds: 20_000_000)
+        _ = await source.image(manifest: manifest, imageId: "kigo-day-3")
+
+        let file1 = cacheDirectory.appendingPathComponent("kigo-day-1.jpg")
+        let file2 = cacheDirectory.appendingPathComponent("kigo-day-2.jpg")
+        let file3 = cacheDirectory.appendingPathComponent("kigo-day-3.jpg")
+
+        XCTAssertFalse(
+            FileManager.default.fileExists(atPath: file1.path),
+            "Least-recently-used cache file must be removed from disk once the cap is exceeded"
+        )
+        XCTAssertTrue(
+            FileManager.default.fileExists(atPath: file2.path),
+            "More-recently-used cache file must survive eviction"
+        )
+        XCTAssertTrue(
+            FileManager.default.fileExists(atPath: file3.path),
+            "Most-recently-written cache file must survive eviction"
+        )
+    }
+
+    // MARK: - Slice #207 AC2: touching (re-resolving) a cached entry protects it from eviction
+
+    /// day-1 is written first, then day-2. day-1 is then re-resolved (a cache
+    /// hit, which must count as a touch), then day-3 is written, tripping
+    /// eviction. Only one entry needs evicting to get back under the cap: since
+    /// day-1 was touched most recently, day-2 (older, untouched) must be the one
+    /// removed — proving the LRU order is driven by access recency, not just
+    /// write order.
+    func testTouchedEntrySurvivesEvictionOverOlderUntouchedEntry() async throws {
+        let manifest = try loadFixture(named: "image-source-with-base-url")
+        let byteCount = 100
+        let transport = FakeSizedKigoImageTransport(byteCount: byteCount)
+        let cacheDirectory = makeTempCacheDirectory()
+        let source = KigoImageSource(
+            transport: transport,
+            cacheDirectory: cacheDirectory,
+            maxCacheBytes: byteCount * 2 + 50
+        )
+
+        _ = await source.image(manifest: manifest, imageId: "kigo-day-1")
+        try await Task.sleep(nanoseconds: 20_000_000)
+        _ = await source.image(manifest: manifest, imageId: "kigo-day-2")
+        try await Task.sleep(nanoseconds: 20_000_000)
+        _ = await source.image(manifest: manifest, imageId: "kigo-day-1") // touch: cache hit, now MRU
+        try await Task.sleep(nanoseconds: 20_000_000)
+        _ = await source.image(manifest: manifest, imageId: "kigo-day-3") // trips eviction
+
+        let file1 = cacheDirectory.appendingPathComponent("kigo-day-1.jpg")
+        let file2 = cacheDirectory.appendingPathComponent("kigo-day-2.jpg")
+        let file3 = cacheDirectory.appendingPathComponent("kigo-day-3.jpg")
+
+        XCTAssertTrue(
+            FileManager.default.fileExists(atPath: file1.path),
+            "Touched entry must survive eviction as most-recently-used"
+        )
+        XCTAssertFalse(
+            FileManager.default.fileExists(atPath: file2.path),
+            "Older, untouched entry must be the one evicted"
+        )
+        XCTAssertTrue(
+            FileManager.default.fileExists(atPath: file3.path),
+            "Most-recently-written cache file must survive eviction"
+        )
+    }
+
+    // MARK: - Slice #207 AC3: resolving an evicted day re-fetches through the transport
+
+    /// After day-1's cache file is evicted (by writing day-2 then day-3 against
+    /// a two-entry cap), re-resolving day-1 must not silently return stale or
+    /// missing data — it must issue a fresh transport request and get real
+    /// bytes back, proving the eviction was a genuine cache miss and not a
+    /// dead end.
+    func testResolvingEvictedEntryIssuesFreshTransportRequest() async throws {
+        let manifest = try loadFixture(named: "image-source-with-base-url")
+        let base = try XCTUnwrap(manifest.imageBaseURL)
+        let byteCount = 100
+        let transport = FakeSizedKigoImageTransport(byteCount: byteCount)
+        let cacheDirectory = makeTempCacheDirectory()
+        let source = KigoImageSource(
+            transport: transport,
+            cacheDirectory: cacheDirectory,
+            maxCacheBytes: byteCount * 2 + 50
+        )
+        let day1URL = try XCTUnwrap(URL(string: "\(base)/kigo-day-1.jpg"))
+
+        _ = await source.image(manifest: manifest, imageId: "kigo-day-1")
+        try await Task.sleep(nanoseconds: 20_000_000)
+        _ = await source.image(manifest: manifest, imageId: "kigo-day-2")
+        try await Task.sleep(nanoseconds: 20_000_000)
+        _ = await source.image(manifest: manifest, imageId: "kigo-day-3") // evicts day-1
+
+        let file1 = cacheDirectory.appendingPathComponent("kigo-day-1.jpg")
+        XCTAssertFalse(FileManager.default.fileExists(atPath: file1.path), "Sanity: day-1 must have been evicted")
+        XCTAssertEqual(transport.requestCount(for: day1URL), 1, "Sanity: day-1 fetched exactly once so far")
+
+        let refetched = await source.image(manifest: manifest, imageId: "kigo-day-1")
+
+        XCTAssertEqual(
+            transport.requestCount(for: day1URL), 2,
+            "Resolving an evicted entry must issue a fresh transport request"
+        )
+        XCTAssertNotNil(refetched, "Re-fetch after eviction must return data, not nil")
+        XCTAssertTrue(
+            FileManager.default.fileExists(atPath: file1.path),
+            "Re-fetch after eviction must repopulate the on-disk cache"
+        )
+    }
+
+    // MARK: - Slice #207 AC4: repeated evictions keep the on-disk footprint at or under the cap
+
+    /// Resolves ten distinct days against a cap sized for two entries, forcing
+    /// several eviction passes in a row. Afterward, reads the temp cache
+    /// directory's real file sizes from disk (not in-memory bookkeeping) and
+    /// sums them, confirming the invariant holds after repeated evictions, not
+    /// just after a single one.
+    func testCacheFootprintStaysAtOrUnderCapAfterRepeatedEvictions() async throws {
+        let manifest = try loadFixture(named: "image-source-with-base-url")
+        let byteCount = 100
+        let cap = byteCount * 2 + 50
+        let transport = FakeSizedKigoImageTransport(byteCount: byteCount)
+        let cacheDirectory = makeTempCacheDirectory()
+        let source = KigoImageSource(transport: transport, cacheDirectory: cacheDirectory, maxCacheBytes: cap)
+
+        for day in 1...10 {
+            _ = await source.image(manifest: manifest, imageId: "kigo-day-\(day)")
+            try await Task.sleep(nanoseconds: 20_000_000)
+        }
+
+        let contents = try FileManager.default.contentsOfDirectory(
+            at: cacheDirectory,
+            includingPropertiesForKeys: [.fileSizeKey]
+        )
+        let totalSize = try contents.reduce(0) { total, url -> Int in
+            let values = try url.resourceValues(forKeys: [.fileSizeKey])
+            return total + (values.fileSize ?? 0)
+        }
+
+        XCTAssertLessThanOrEqual(
+            totalSize, cap,
+            "On-disk cache footprint must stay at or under the configured cap after repeated evictions"
+        )
     }
 }
