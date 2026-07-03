@@ -178,4 +178,44 @@ final class KigoImageSourceAdapterTests: XCTestCase {
         XCTAssertNil(result, "A transport-level failure must resolve to nil, matching the non-throwing/nil-on-failure contract")
         XCTAssertEqual(StubURLProtocol.requestedURLs.count, 1, "Sanity: the stubbed request must actually have been attempted")
     }
+
+    // MARK: - #214 AC2: a non-2xx HTTP response must cause fetchData(from:) to throw directly.
+
+    func testFetchDataThrowsOnNon2xxStatusCode() async throws {
+        let url = try XCTUnwrap(URL(string: "https://images.kigo.example/photos/kigo-01-01.jpg"))
+        StubURLProtocol.stub { request in
+            let response = HTTPURLResponse(url: request.url ?? url, statusCode: 404, httpVersion: nil, headerFields: nil)
+            return (Data("not found".utf8), response, nil)
+        }
+
+        let transport = URLSessionKigoImageTransport(session: makeStubbedSession())
+
+        do {
+            _ = try await transport.fetchData(from: url)
+            XCTFail("fetchData(from:) must throw when the HTTP response status code is outside the 2xx range")
+        } catch {
+            // Expected: any thrown error satisfies the seam's `throws` contract.
+        }
+    }
+
+    // MARK: - #214 AC3: that same non-2xx stub, composed through KigoImageSource, resolves to nil
+    // via the identical fallback path already used for outright transport errors.
+
+    func testAdapterNon2xxResponseComposedWithKigoImageSourceYieldsNil() async throws {
+        let manifest = try loadFixture(named: "image-source-with-base-url")
+        let entry = try XCTUnwrap(manifest.dailyMap["2026-01-01"])
+
+        StubURLProtocol.stub { request in
+            let response = HTTPURLResponse(url: request.url!, statusCode: 500, httpVersion: nil, headerFields: nil)
+            return (Data("internal server error".utf8), response, nil)
+        }
+
+        let transport = URLSessionKigoImageTransport(session: makeStubbedSession())
+        let source = KigoImageSource(transport: transport, cacheDirectory: makeTempCacheDirectory())
+
+        let result = await source.image(manifest: manifest, imageId: entry.imageId)
+
+        XCTAssertNil(result, "A non-2xx HTTP response must resolve to nil, matching the non-throwing/nil-on-failure contract")
+        XCTAssertEqual(StubURLProtocol.requestedURLs.count, 1, "Sanity: the stubbed request must actually have been attempted")
+    }
 }
