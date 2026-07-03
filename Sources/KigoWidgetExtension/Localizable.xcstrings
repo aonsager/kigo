@@ -1,0 +1,18 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Today's seasonal word." : {
+      "comment" : "Widget gallery description shown when adding the Kigo widget. Localised by device locale (the widget gallery is a system surface that cannot see the in-app language toggle).",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今日の季語。"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

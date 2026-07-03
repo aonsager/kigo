@@ -13,7 +13,11 @@ import Foundation
 /// - `KIGO_FAKE_LANGUAGE=en` → a locked `InMemoryLanguageStore` pinned to `.english`.
 ///   `set(_:)` calls are silently ignored so tests cannot accidentally mutate the value.
 /// - `KIGO_FAKE_LANGUAGE=ja` → a locked `InMemoryLanguageStore` pinned to `.japanese`.
-/// - absent or unrecognised  → `UserDefaultsLanguageStore` (production, persisted).
+/// - absent or unrecognised  → `UserDefaultsLanguageStore` (production, persisted),
+///   seeded — when the user has not yet chosen a language — from the OS preferred
+///   languages via `initialLanguagePreference(preferredLanguages:)` (falling back to
+///   English). A preference the user has actually set persists and always wins over
+///   the OS-derived seed.
 ///
 /// - Parameter environment: The launch-environment dictionary, typically
 ///   `ProcessInfo.processInfo.environment` at the app root.
@@ -27,8 +31,41 @@ public func launchLanguageStore(environment: [String: String]) -> any LanguageSt
     case "ja":
         return LockedInMemoryLanguageStore(preference: .japanese)
     default:
-        return UserDefaultsLanguageStore(suiteName: "com.tomeitotameigo.kigo")
+        let osDefault = initialLanguagePreference(preferredLanguages: Locale.preferredLanguages)
+        return UserDefaultsLanguageStore(suiteName: "com.tomeitotameigo.kigo", systemDefault: osDefault)
     }
+}
+
+// MARK: - initialLanguagePreference
+
+/// Derives the language a *fresh install* should start in from the OS's ordered list
+/// of preferred languages, **falling back to English** when the OS expresses no
+/// supported preference.
+///
+/// The app supports two languages (`ja`, `en`). We walk the OS list in priority order
+/// and return the first supported match — Japanese if the user prefers Japanese,
+/// English if they prefer English — exactly mirroring how iOS itself picks an app's
+/// language from `Locale.preferredLanguages` against its supported set. Any language
+/// the app does not support (e.g. `fr`) is skipped; if nothing matches, English is the
+/// fallback.
+///
+/// Pure over its input (mirrors `launchDateProvider` / `launchOfferDisplay`) so it is
+/// unit-tested deterministically without depending on the test host's locale.
+///
+/// - Parameter preferredLanguages: BCP-47 language identifiers in priority order,
+///   typically `Locale.preferredLanguages`.
+/// - Returns: `.japanese` if Japanese is the top supported preference, otherwise `.english`.
+public func initialLanguagePreference(preferredLanguages: [String]) -> LanguagePreference {
+    for identifier in preferredLanguages {
+        let code = identifier.lowercased()
+        if code == "ja" || code.hasPrefix("ja-") || code.hasPrefix("ja_") {
+            return .japanese
+        }
+        if code == "en" || code.hasPrefix("en-") || code.hasPrefix("en_") {
+            return .english
+        }
+    }
+    return .english
 }
 
 // MARK: - LockedInMemoryLanguageStore

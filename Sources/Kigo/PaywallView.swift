@@ -44,7 +44,7 @@ public struct PaywallView: View {
             VStack(alignment: .leading, spacing: 0) {
                 // Section header: "Understanding" label + price aligned right.
                 HStack(alignment: .firstTextBaseline) {
-                    Text("Understanding")
+                    Text(chromeStrings.understandingLabel)
                         .font(KigoFont.zenKaku(.medium, size: 10.5, relativeTo: .caption2))
                         .tracking(4)
                         .textCase(.uppercase)
@@ -70,7 +70,7 @@ public struct PaywallView: View {
                     .padding(.top, 4)
 
                 // Single honest benefit.
-                Text("Read the meaning behind each day’s kigo, its microseason, and the year’s turning.")
+                Text(chromeStrings.understandingBenefit)
                     .font(KigoFont.zenKaku(.light, size: 14, relativeTo: .body))
                     .lineSpacing(8)
                     .foregroundStyle(KigoTheme.inkReading)
@@ -79,12 +79,12 @@ public struct PaywallView: View {
                     .accessibilityIdentifier("paywall.benefits")
 
                 // Before → after preview: bare encounter → meaning revealed.
-                MeaningPreview()
+                MeaningPreview(subscribePrompt: chromeStrings.meaningPreviewSubscribe)
                     .padding(.top, 18)
 
                 if model.isActive {
                     // Premium / manage surface — shown instead of the buy button.
-                    Label("Subscription active", systemImage: "checkmark.seal.fill")
+                    Label(chromeStrings.subscriptionActive, systemImage: "checkmark.seal.fill")
                         .font(KigoFont.zenKaku(.medium, size: 15, relativeTo: .body))
                         .foregroundStyle(KigoTheme.premium)
                         .frame(maxWidth: .infinity)
@@ -97,7 +97,7 @@ public struct PaywallView: View {
                     Button {
                         Task { await model.buy() }
                     } label: {
-                        Text("Subscribe")
+                        Text(chromeStrings.subscribe)
                             .font(KigoFont.zenKaku(.medium, size: 15, relativeTo: .body))
                             .foregroundStyle(Color(red: 0.97, green: 0.95, blue: 0.92))
                             .frame(maxWidth: .infinity)
@@ -126,14 +126,14 @@ public struct PaywallView: View {
                 // Legal links — placeholder URLs (ADR 0013 / J4).
                 HStack(spacing: 16) {
                     Spacer()
-                    Link("Terms of Use", destination: PaywallConfig.termsOfUseURL)
+                    Link(chromeStrings.termsOfUse, destination: PaywallConfig.termsOfUseURL)
                         .font(KigoFont.zenKaku(.regular, size: 12, relativeTo: .caption))
                         .foregroundStyle(KigoTheme.textTertiary)
                         .accessibilityIdentifier("paywall.terms")
 
                     Text("·").foregroundStyle(KigoTheme.textTertiary)
 
-                    Link("Privacy Policy", destination: PaywallConfig.privacyPolicyURL)
+                    Link(chromeStrings.privacyPolicy, destination: PaywallConfig.privacyPolicyURL)
                         .font(KigoFont.zenKaku(.regular, size: 12, relativeTo: .caption))
                         .foregroundStyle(KigoTheme.textTertiary)
                         .accessibilityIdentifier("paywall.privacy")
@@ -153,7 +153,14 @@ public struct PaywallView: View {
 /// Basic user already sees for free), an arrow, then a card whose meaning has been
 /// revealed. Decorative (no accessibility identifiers). Reframed from the old
 /// widget-image preview (PRD #189: the widget image is free; understanding is paid).
+///
+/// The two mock cards deliberately keep their placeholder kanji (季 / きご): they are
+/// a decorative illustration of *what a kigo entry looks like*, not readable UI copy —
+/// the same reason the real kigo kanji is never translated. Only the `subscribePrompt`
+/// caption is localised chrome.
 private struct MeaningPreview: View {
+    let subscribePrompt: String
+
     var body: some View {
         HStack(spacing: 12) {
             // Basic: the bare encounter — kanji only.
@@ -193,7 +200,7 @@ private struct MeaningPreview: View {
             .background(KigoTheme.canvas, in: RoundedRectangle(cornerRadius: 16))
             .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(KigoTheme.hairline, lineWidth: 1))
 
-            Text("Subscribe to read the meaning.")
+            Text(subscribePrompt)
                 .font(KigoFont.zenKaku(.light, size: 11.5, relativeTo: .caption))
                 .lineSpacing(3)
                 .foregroundStyle(KigoTheme.textSecondary)

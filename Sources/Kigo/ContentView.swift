@@ -31,13 +31,16 @@ struct ContentView: View {
 /// accent progress ring over the quiet surface with 読み込み中… set in Mincho,
 /// per `Kigo Revamp.dc.html` §2.
 struct LoadingPlaceholderView: View {
+    @Environment(\.language) private var language
+
     var body: some View {
+        let chrome = ChromeStrings(language)
         ZStack {
             KigoTheme.quietSurface.ignoresSafeArea()
 
             VStack(spacing: 32) {
                 KigoSpinner()
-                Text("読み込み中…")
+                Text(chrome.loading)
                     .font(KigoFont.mincho(.regular, size: 16, relativeTo: .body))
                     .tracking(2)
                     .foregroundStyle(KigoTheme.inkSekki)
@@ -45,7 +48,7 @@ struct LoadingPlaceholderView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .accessibilityIdentifier("loadingPlaceholder")
-        .accessibilityLabel("Loading content")
+        .accessibilityLabel(chrome.a11yLoading)
     }
 }
 
@@ -72,7 +75,10 @@ private struct KigoSpinner: View {
 /// Does not crash, does not show a raw error message. **Asagiri revamp**: a thin
 /// leaf line-icon over the quiet surface with a calm Mincho message, per §3.
 struct UnavailablePlaceholderView: View {
+    @Environment(\.language) private var language
+
     var body: some View {
+        let chrome = ChromeStrings(language)
         ZStack {
             KigoTheme.quietSurface.ignoresSafeArea()
 
@@ -80,7 +86,7 @@ struct UnavailablePlaceholderView: View {
                 Image(systemName: "leaf")
                     .font(.system(size: 44, weight: .light))
                     .foregroundStyle(KigoTheme.textTertiary)
-                Text("コンテンツは現在利用できません")
+                Text(chrome.contentUnavailable)
                     .font(KigoFont.mincho(.regular, size: 15, relativeTo: .body))
                     .lineSpacing(7)
                     .multilineTextAlignment(.center)
@@ -90,6 +96,6 @@ struct UnavailablePlaceholderView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .accessibilityIdentifier("unavailablePlaceholder")
-        .accessibilityLabel("Content unavailable")
+        .accessibilityLabel(chrome.a11yContentUnavailable)
     }
 }

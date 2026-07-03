@@ -144,7 +144,7 @@ struct RootView: View {
     }
 
     @State private var activeSheet: RootSheet?
-    @State private var language: LanguagePreference = .japanese
+    @State private var language: LanguagePreference
     @State private var paywallModel: PaywallModel
 
     init(
@@ -159,6 +159,10 @@ struct RootView: View {
         self.purchaser = purchaser
         self.languageStore = languageStore
         self.appearanceStore = appearanceStore
+        // Seed the active language from the store's resolved preference (persisted
+        // value, else the OS-derived initial language) so the first frame already
+        // renders in the correct language — no Japanese flash for an English-OS user.
+        self._language = State(initialValue: languageStore.preference)
         self._paywallModel = State(wrappedValue: PaywallModel(
             provider: entitlementProvider,
             offerDisplay: offerDisplay,

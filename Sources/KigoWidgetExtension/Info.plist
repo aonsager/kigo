@@ -4,6 +4,16 @@
 <dict>
     <key>CFBundleIdentifier</key>
     <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <!-- The widget gallery (configurationDisplayName/description) is a system
+         surface localised by device locale via Localizable.xcstrings; advertise
+         both localisations so the Japanese values resolve on ja-locale devices. -->
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>en</string>
+        <string>ja</string>
+    </array>
     <key>CFBundleDisplayName</key>
     <string>$(PRODUCT_NAME)</string>
     <key>CFBundleName</key>

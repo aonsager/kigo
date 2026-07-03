@@ -47,6 +47,9 @@ struct TodayView: View {
     @Environment(\.isEntitled) private var isEntitled
     @Environment(\.openPaywall) private var openPaywall
 
+    /// Localised UI-chrome strings for the active language.
+    private var chrome: ChromeStrings { ChromeStrings(language) }
+
     @State private var activeSheet: ActiveSheet?
     @State private var hasAppeared = false
 
@@ -56,7 +59,8 @@ struct TodayView: View {
                 .ignoresSafeArea()
 
             // 1 · Full-bleed placeholder image — derived deterministically from imageId.
-            KigoPlaceholderView(imageId: resolvedDay.kigoEntry.imageId)
+            KigoPlaceholderView(imageId: resolvedDay.kigoEntry.imageId,
+                                accessibilityLabelText: chrome.a11yBackgroundImage)
                 .opacity(hasAppeared ? 1 : 0)
                 .scaleEffect(hasAppeared ? 1 : 1.05)
 
@@ -189,11 +193,11 @@ struct TodayView: View {
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(KigoTheme.textTertiary)
 
-                Text("意味をひらく")
+                Text(chrome.upsellTitle)
                     .font(KigoFont.mincho(.semibold, size: 19, relativeTo: .headline))
                     .foregroundStyle(KigoTheme.inkKo)
 
-                Text("Unlock the meaning behind today’s kigo, its microseason, and the year’s turning.")
+                Text(chrome.upsellBody)
                     .font(KigoFont.zenKaku(.regular, size: 12.5, relativeTo: .footnote))
                     .multilineTextAlignment(.center)
                     .lineSpacing(3)
@@ -206,7 +210,7 @@ struct TodayView: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("meaning.upsell")
-        .accessibilityLabel("Unlock the meaning")
+        .accessibilityLabel(chrome.a11yUnlockMeaning)
     }
 
     // MARK: - Info entry (top-left)
@@ -226,7 +230,7 @@ struct TodayView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("info.entry")
-                .accessibilityLabel("Image attribution")
+                .accessibilityLabel(chrome.a11yImageAttribution)
                 .padding(.leading, 22)
                 .padding(.top, 16)
 
@@ -261,7 +265,7 @@ struct TodayView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("microseason.timeline")
-                .accessibilityLabel("Microseason timeline: Kō \(almanacPositions.koYearPosition) of \(almanacPositions.koYearTotal)")
+                .accessibilityLabel(chrome.a11yMicroseasonTimeline(ko: almanacPositions.koYearPosition, of: almanacPositions.koYearTotal))
             }
             .padding(.bottom, 28)
     }
@@ -308,7 +312,7 @@ struct TodayView: View {
                     .frame(height: 18)
 
                     HStack {
-                        Text("春"); Spacer(); Text("夏"); Spacer(); Text("秋"); Spacer(); Text("冬")
+                        Text(chrome.seasonSpring); Spacer(); Text(chrome.seasonSummer); Spacer(); Text(chrome.seasonAutumn); Spacer(); Text(chrome.seasonWinter)
                     }
                     .font(KigoFont.zenKaku(.regular, size: 10, relativeTo: .caption2))
                     .tracking(2)

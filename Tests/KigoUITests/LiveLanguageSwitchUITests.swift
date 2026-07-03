@@ -86,7 +86,7 @@ final class LiveLanguageSwitchUITests: XCTestCase {
     /// failure (continueAfterFailure defaults to true) still reaches it.
     private func restoreJapanese(in app: XCUIApplication) {
         _ = openSettings(in: app)
-        selectLanguage("Japanese", in: app)
+        selectLanguage("日本語", in: app)
         dismissSheet(in: app)
     }
 
@@ -108,7 +108,7 @@ final class LiveLanguageSwitchUITests: XCTestCase {
         // tapping Japanese here persists .japanese to UserDefaults so the
         // subsequent assertions reflect the true default behaviour.
         _ = openSettings(in: app)
-        selectLanguage("Japanese", in: app)
+        selectLanguage("日本語", in: app)
         dismissSheet(in: app)
 
         // Record Japanese-state values.
@@ -237,7 +237,7 @@ final class LiveLanguageSwitchUITests: XCTestCase {
         dismissSheet(in: app)
 
         _ = openSettings(in: app)
-        selectLanguage("Japanese", in: app)
+        selectLanguage("日本語", in: app)
         dismissSheet(in: app)
 
         // 2. Open the Almanac sheet.
@@ -288,7 +288,7 @@ final class LiveLanguageSwitchUITests: XCTestCase {
 
         // 0. Reset to Japanese (idempotent — handles leftover English from prior runs).
         _ = openSettings(in: app)
-        selectLanguage("Japanese", in: app)
+        selectLanguage("日本語", in: app)
         dismissSheet(in: app)
 
         // 1. Record initial Japanese values.
@@ -399,7 +399,7 @@ final class LiveLanguageSwitchUITests: XCTestCase {
 
         // AC8: Toggle back to Japanese — kigo.description and kigo.reading revert.
         _ = openSettings(in: app)
-        selectLanguage("Japanese", in: app)
+        selectLanguage("日本語", in: app)
         dismissSheet(in: app)
 
         let revertedReading = element(in: app, id: "kigo.reading").label

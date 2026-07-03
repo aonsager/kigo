@@ -29,6 +29,10 @@ final class TodayScreenUITests: XCTestCase {
         app.launchEnvironment["KIGO_FAKE_DATE"] = "2026-06-12"
         // Slice #190: gate is live — inject active entitlement so kigo.description is visible.
         app.launchEnvironment["KIGO_FAKE_ENTITLEMENT"] = "active"
+        // Pin Japanese: this suite asserts exact hiragana readings (microseason.ko/sekki),
+        // so it must not depend on the simulator's OS locale now that the first-launch
+        // language is OS-derived (English fallback). Mirrors MicroseasonUITests.
+        app.launchEnvironment["KIGO_FAKE_LANGUAGE"] = "ja"
         app.launch()
     }
 

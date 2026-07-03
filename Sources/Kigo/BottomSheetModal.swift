@@ -88,6 +88,8 @@ private struct BottomSheetOverlay<SheetContent: View>: View {
     @Binding var isPresented: Bool
     @ViewBuilder let content: () -> SheetContent
 
+    @Environment(\.language) private var language
+
     /// Live downward drag offset applied to the card (never negative — the card
     /// does not rubber-band upward).
     @State private var dragOffset: CGFloat = 0
@@ -115,7 +117,7 @@ private struct BottomSheetOverlay<SheetContent: View>: View {
                         .contentShape(Rectangle())
                         .accessibilityIdentifier("modal.backdrop")
                         .accessibilityAddTraits(.isButton)
-                        .accessibilityLabel("Dismiss")
+                        .accessibilityLabel(ChromeStrings(language).a11yDismiss)
                         .gesture(
                             DragGesture(minimumDistance: 0)
                                 .onEnded { value in

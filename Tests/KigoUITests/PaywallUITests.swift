@@ -34,6 +34,12 @@ final class PaywallUITests: XCTestCase {
         app = XCUIApplication()
         app.launchEnvironment["KIGO_FAKE_DATE"] = "2026-06-12"
         app.launchEnvironment["KIGO_FAKE_ENTITLEMENT"] = "inactive"
+        // Pin English: this suite asserts the paywall copy in English (e.g. the
+        // understanding-layer benefit keywords). The paywall benefit is now localised
+        // (was hardcoded English), and the first-launch language is OS-derived, so the
+        // suite must pin its language rather than depend on the simulator locale or a
+        // preference leaked from an earlier suite.
+        app.launchEnvironment["KIGO_FAKE_LANGUAGE"] = "en"
         app.launch()
     }
 

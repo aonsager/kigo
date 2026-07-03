@@ -44,24 +44,29 @@ struct SettingsView: View {
     }
 
     var body: some View {
+        let chrome = ChromeStrings(language)
         VStack(spacing: 0) {
                 GrabHandle()
                     .padding(.top, 10)
                     .padding(.bottom, 18)
 
-                Text("設定")
+                Text(chrome.settingsTitle)
                     .font(KigoFont.mincho(.bold, size: 21, relativeTo: .title2))
                     .foregroundStyle(KigoTheme.inkKanji)
 
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("言語")
+                    Text(chrome.languageSectionLabel)
                         .font(KigoFont.zenKaku(.medium, size: 10.5, relativeTo: .caption2))
                         .tracking(4)
                         .foregroundStyle(KigoTheme.textTertiary)
 
-                    Picker("Language", selection: $language) {
-                        Text("Japanese").tag(LanguagePreference.japanese)
-                        Text("English").tag(LanguagePreference.english)
+                    // Exception to the localisation rule: each language option is
+                    // labelled with its own endonym (`selfName`), constant across
+                    // the active UI language — the platform convention for a
+                    // language picker. See LanguagePreference.selfName.
+                    Picker(chrome.languageSectionLabel, selection: $language) {
+                        Text(LanguagePreference.japanese.selfName).tag(LanguagePreference.japanese)
+                        Text(LanguagePreference.english.selfName).tag(LanguagePreference.english)
                     }
                     .pickerStyle(.segmented)
                     .accessibilityIdentifier("settings.language")
@@ -71,15 +76,15 @@ struct SettingsView: View {
                 .padding(.top, 26)
 
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("表示")
+                    Text(chrome.appearanceSectionLabel)
                         .font(KigoFont.zenKaku(.medium, size: 10.5, relativeTo: .caption2))
                         .tracking(4)
                         .foregroundStyle(KigoTheme.textTertiary)
 
-                    Picker("Appearance", selection: $currentAppearance) {
-                        Text("System").tag(AppearancePreference.system)
-                        Text("Light").tag(AppearancePreference.light)
-                        Text("Dark").tag(AppearancePreference.dark)
+                    Picker(chrome.appearanceSectionLabel, selection: $currentAppearance) {
+                        Text(chrome.appearanceSystem).tag(AppearancePreference.system)
+                        Text(chrome.appearanceLight).tag(AppearancePreference.light)
+                        Text(chrome.appearanceDark).tag(AppearancePreference.dark)
                     }
                     .pickerStyle(.segmented)
                     .accessibilityIdentifier("settings.appearance")
@@ -129,19 +134,19 @@ private struct SubscriptionStrip: View {
                 .accessibilityHidden(false)
 
             VStack(alignment: .leading, spacing: 12) {
-                Text("購読")
+                Text(chromeStrings.subscriptionSectionLabel)
                     .font(KigoFont.zenKaku(.medium, size: 10.5, relativeTo: .caption2))
                     .tracking(4)
                     .foregroundStyle(KigoTheme.textTertiary)
 
                 if model.isActive {
-                    Label("Subscription active", systemImage: "checkmark.seal.fill")
+                    Label(chromeStrings.subscriptionActive, systemImage: "checkmark.seal.fill")
                         .font(KigoFont.zenKaku(.medium, size: 15, relativeTo: .body))
                         .foregroundStyle(KigoTheme.premium)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .accessibilityIdentifier("paywall.manage")
                 } else {
-                    Text("Understanding is a one-time unlock, offered from today’s kigo.")
+                    Text(chromeStrings.understandingSettingsNote)
                         .font(KigoFont.zenKaku(.light, size: 13, relativeTo: .footnote))
                         .lineSpacing(4)
                         .foregroundStyle(KigoTheme.textSecondary)
@@ -158,10 +163,10 @@ private struct SubscriptionStrip: View {
                 .accessibilityIdentifier("paywall.restore")
 
                 HStack(spacing: 16) {
-                    Link("Terms of Use", destination: PaywallConfig.termsOfUseURL)
+                    Link(chromeStrings.termsOfUse, destination: PaywallConfig.termsOfUseURL)
                         .accessibilityIdentifier("paywall.terms")
                     Text("·").foregroundStyle(KigoTheme.textTertiary)
-                    Link("Privacy Policy", destination: PaywallConfig.privacyPolicyURL)
+                    Link(chromeStrings.privacyPolicy, destination: PaywallConfig.privacyPolicyURL)
                         .accessibilityIdentifier("paywall.privacy")
                 }
                 .font(KigoFont.zenKaku(.regular, size: 12, relativeTo: .caption))

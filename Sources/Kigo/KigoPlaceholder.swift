@@ -93,6 +93,16 @@ public enum KigoPlaceholder {
 struct KigoPlaceholderView: View {
     let imageId: String
 
+    /// VoiceOver label for the decorative background image.
+    ///
+    /// This view is shared with the widget extension, which does **not** compile
+    /// `LanguagePreference.swift` (no `ChromeStrings`, no `\.language`) and always
+    /// renders Japanese — so the label is injected as a plain string rather than
+    /// resolved from the environment here. The default is the Japanese label used
+    /// by the widget; the app injects `ChromeStrings(language).a11yBackgroundImage`
+    /// so the Today screen's label follows the in-app language toggle.
+    var accessibilityLabelText: String = "季語の背景画像"
+
     var body: some View {
         GeometryReader { geo in
             ZStack {
@@ -116,7 +126,7 @@ struct KigoPlaceholderView: View {
                 // leaf sidesteps the overflow entirely.
                 Color.clear
                     .accessibilityIdentifier("kigo.image")
-                    .accessibilityLabel("Kigo background image")
+                    .accessibilityLabel(accessibilityLabelText)
                     .accessibilityAddTraits(.isImage)
             }
         }

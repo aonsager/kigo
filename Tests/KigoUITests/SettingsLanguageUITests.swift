@@ -89,8 +89,10 @@ final class SettingsLanguageUITests: XCTestCase {
         let resetSheet = app.descendants(matching: .any)
             .matching(identifier: "paywall.sheet").firstMatch
         XCTAssertTrue(resetSheet.waitForExistence(timeout: 10))
+        // The language options are self-named (endonyms): the Japanese option
+        // reads "日本語", never a localised "Japanese".
         let jaSegment = app.descendants(matching: .any)
-            .matching(NSPredicate(format: "label == 'Japanese'")).firstMatch
+            .matching(NSPredicate(format: "label == '日本語'")).firstMatch
         if jaSegment.waitForExistence(timeout: 5) { jaSegment.tap() }
         resetSheet.swipeDown(velocity: .fast)
         _ = app.descendants(matching: .any)
@@ -219,13 +221,15 @@ final class SettingsLanguageUITests: XCTestCase {
             "settings.language element must exist in the Settings sheet"
         )
 
-        // Both "Japanese" and "English" segments must be present.
+        // Both language segments must be present. The options are self-named
+        // (endonyms): the Japanese option reads "日本語", the English "English" —
+        // constant regardless of the active UI language.
         let japaneseOption = app.descendants(matching: .any)
-            .matching(NSPredicate(format: "label == 'Japanese'"))
+            .matching(NSPredicate(format: "label == '日本語'"))
             .firstMatch
         XCTAssertTrue(
             japaneseOption.waitForExistence(timeout: 5),
-            "Japanese segment must exist in settings.language picker"
+            "日本語 segment must exist in settings.language picker"
         )
 
         let englishOption = app.descendants(matching: .any)

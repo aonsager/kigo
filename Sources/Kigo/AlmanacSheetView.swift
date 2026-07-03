@@ -22,6 +22,9 @@ struct AlmanacSheetView: View {
 
     @Environment(\.language) private var language
 
+    /// Localised UI-chrome strings for the active language.
+    private var chrome: ChromeStrings { ChromeStrings(language) }
+
     var body: some View {
         ZStack {
             // ADR 0013: Color.clear sentinel — applies the root identifier only to this layer.
@@ -35,7 +38,7 @@ struct AlmanacSheetView: View {
                         .padding(.bottom, 22)
 
                     // MARK: 候 — Kō section
-                    sectionLabel("候", counter: "\(almanacPositions.koYearPosition) / \(almanacPositions.koYearTotal)",
+                    sectionLabel(chrome.almanacKoHeader, counter: "\(almanacPositions.koYearPosition) / \(almanacPositions.koYearTotal)",
                                  counterID: "microseason.koPosition")
 
                     HStack(alignment: .firstTextBaseline, spacing: 13) {
@@ -52,7 +55,7 @@ struct AlmanacSheetView: View {
                         .padding(.top, 16)
                         .accessibilityIdentifier("microseason.dayGauge")
                         .accessibilityElement(children: .ignore)
-                        .accessibilityLabel("Day \(almanacPositions.dayWithinKo) of \(almanacPositions.koRangeLength) in this microseason")
+                        .accessibilityLabel(chrome.a11yDayInMicroseason(day: almanacPositions.dayWithinKo, of: almanacPositions.koRangeLength))
 
                     Text(ko.description.localized(for: language))
                         .font(KigoFont.zenKaku(.light, size: 14, relativeTo: .body))
@@ -67,7 +70,7 @@ struct AlmanacSheetView: View {
                         .padding(.vertical, 22)
 
                     // MARK: 節気 — Sekki section
-                    sectionLabel("節気", counter: "\(almanacPositions.sekkiYearPosition) / \(almanacPositions.sekkiYearTotal)",
+                    sectionLabel(chrome.almanacSekkiHeader, counter: "\(almanacPositions.sekkiYearPosition) / \(almanacPositions.sekkiYearTotal)",
                                  counterID: "microseason.sekkiPosition")
 
                     HStack(alignment: .firstTextBaseline, spacing: 13) {
@@ -89,7 +92,7 @@ struct AlmanacSheetView: View {
                         .padding(.top, 16)
                         .accessibilityIdentifier("microseason.sekkiGauge")
                         .accessibilityElement(children: .ignore)
-                        .accessibilityLabel("Kō \(almanacPositions.koWithinSekki) of \(almanacPositions.koWithinSekkiTotal) in this solar term")
+                        .accessibilityLabel(chrome.a11yKoInSolarTerm(ko: almanacPositions.koWithinSekki, of: almanacPositions.koWithinSekkiTotal))
 
                     Text(sekki.description.localized(for: language))
                         .font(KigoFont.zenKaku(.light, size: 14, relativeTo: .body))
