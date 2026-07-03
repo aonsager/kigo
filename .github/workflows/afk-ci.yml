@@ -91,20 +91,68 @@ jobs:
             brew install xcodegen
           fi
           xcodegen generate
-          set -o pipefail
-          # Fail fast on a hang: an inner 20-min cap (perl alarm — macOS runners
-          # have no coreutils `timeout`) so a wedged test or simulator does not burn
-          # the full 45-min job at 10x macOS minutes; XCTest execution-time
-          # allowances force an individual stuck test to fail with a diagnostic at
-          # 120s instead of hanging. See CLAUDE.md "Build & test" for the rationale.
-          perl -e 'alarm shift; exec @ARGV' 1200 \
-            xcodebuild test \
-              -scheme "$SCHEME" \
-              -destination "$DESTINATION" \
-              -resultBundlePath TestResults \
-              -test-timeouts-enabled YES \
-              -default-test-execution-time-allowance 120 \
-              -maximum-test-execution-time-allowance 300 \
-              CODE_SIGNING_ALLOWED=NO \
-              | tee xcodebuild.log
-          grep -q '\*\* TEST SUCCEEDED \*\*' xcodebuild.log
+
+          # --- No-progress watchdog (replaces the old fixed 1200s perl-alarm cap) ---
+          #
+          # A fixed wall-clock cap on the whole `xcodebuild test` invocation
+          # conflates two concerns — catching a HANG vs. bounding a healthy
+          # suite's runtime — so a legitimately-growing UI suite eventually trips
+          # a gate meant for hangs (this is what wedged PR #203: every test
+          # passed, the suite just ran past 1200s). Separate the concerns:
+          #   * a single test wedges  -> -default-test-execution-time-allowance 120
+          #   * whole runner/sim wedge, no progress at all -> THIS watchdog
+          #   * ultimate backstop     -> the job's `timeout-minutes: 45`
+          # The watchdog kills xcodebuild only after SILENCE_LIMIT seconds with no
+          # new log output. Healthy runs print constantly (per-test lines, plus
+          # `t = N.Ns` polling lines ~1/s during element waits), so it never fires
+          # on a slow-but-progressing suite — only on a true hang, and it fires
+          # FASTER than 1200s did when something is genuinely stuck. See CLAUDE.md
+          # "Why the flags" for the full rationale.
+          SILENCE_LIMIT=300   # 5 min of total silence == stuck (tune toward 180 if desired)
+
+          : > xcodebuild.log            # create + timestamp the log up front
+
+          # Own process group (set -m) so we can kill the whole xcodebuild/sim tree
+          # (macOS has no `setsid`). Best-effort — the runner is ephemeral, so what
+          # matters is that the step exits non-zero promptly on a hang.
+          set -m
+          xcodebuild test \
+            -scheme "$SCHEME" \
+            -destination "$DESTINATION" \
+            -resultBundlePath TestResults \
+            -test-timeouts-enabled YES \
+            -default-test-execution-time-allowance 120 \
+            -maximum-test-execution-time-allowance 300 \
+            CODE_SIGNING_ALLOWED=NO \
+            > xcodebuild.log 2>&1 &
+          XCB_PID=$!
+          set +m
+
+          tail -f xcodebuild.log & TAIL_PID=$!   # live output to the CI console
+
+          # Poll the log's mtime; if it stops advancing, xcodebuild is stuck.
+          killed_by_watchdog=0
+          while kill -0 "$XCB_PID" 2>/dev/null; do
+            sleep 15
+            last=$(stat -f %m xcodebuild.log 2>/dev/null || echo 0)   # BSD/macOS stat
+            now=$(date +%s)
+            if [ "$((now - last))" -ge "$SILENCE_LIMIT" ]; then
+              echo "::error::No test output for ${SILENCE_LIMIT}s — treating as a hang; killing xcodebuild."
+              kill -TERM -"$XCB_PID" 2>/dev/null || kill -TERM "$XCB_PID" 2>/dev/null
+              sleep 10
+              kill -KILL -"$XCB_PID" 2>/dev/null || kill -KILL "$XCB_PID" 2>/dev/null
+              killed_by_watchdog=1
+              break
+            fi
+          done
+
+          # `if wait` so a non-zero test exit doesn't abort under `set -e` before
+          # we can report it.
+          if wait "$XCB_PID"; then XCB_STATUS=0; else XCB_STATUS=$?; fi
+          kill "$TAIL_PID" 2>/dev/null || true
+
+          if [ "$killed_by_watchdog" -eq 1 ]; then
+            echo "afk-ci failed: xcodebuild hung (no progress for ${SILENCE_LIMIT}s)."
+            exit 1
+          fi
+          [ "$XCB_STATUS" -eq 0 ] && grep -q '\*\* TEST SUCCEEDED \*\*' xcodebuild.log

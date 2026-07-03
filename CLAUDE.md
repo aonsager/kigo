@@ -68,11 +68,30 @@ diagnostic. The flags convert that into a legible failure:
 
 - `-test-timeouts-enabled YES` + `-default-test-execution-time-allowance 120`
   fails any individual test that runs longer than 120s, with a stack trace.
-- the `perl alarm` wrapper bounds everything *outside* a single test (xcodegen,
-  simulator boot, linking) so even those fail fast.
+- the `perl alarm` wrapper above bounds everything *outside* a single test
+  (xcodegen, simulator boot, linking) so even those fail fast. The `720` cap is
+  sized for a **single-suite** local run; do **not** reuse it for the full suite.
 
-If you find yourself waiting minutes for a test command with no output, it is
-hanging — kill it and treat it as a failure; do not wait it out.
+**The full suite is not capped by a fixed total time — and deliberately so.**
+A fixed wall-clock cap conflates two different concerns: catching a *hang* vs.
+bounding a *healthy* suite's runtime. As the app grows deep, sheet-based flows
+(localization, language switch, meaning gate…) each gets end-to-end UI coverage,
+and the UI suite legitimately grows — every test pays a ~5-9s app-relaunch tax
+plus real interaction time. Tie the hang gate to total time and a healthy suite
+eventually trips it: that is exactly what wedged PR #203 (every test *passed*;
+the suite merely ran past the old 1200s CI cap, and the alarm firing mid-teardown
+of a passing test looked like a hang). So `.github/workflows/afk-ci.yml` uses a
+**no-progress watchdog** instead: it kills `xcodebuild` only after 300s of *total
+silence* in the log (a genuine wedge — healthy runs print `t = N.Ns` polling
+lines ~1/s). Concerns cleanly separated: per-test hangs → the 120s allowance;
+runner/sim wedge → the watchdog; ultimate backstop → the job's `timeout-minutes`.
+If you run the **whole** suite in-session (e.g. the auditor), prefer the same
+silence-based signal over a tight `perl alarm` — the full suite will outgrow any
+fixed number.
+
+If you find yourself waiting minutes for a test command with **no output**, it is
+hanging — kill it and treat it as a failure; do not wait it out. (Steady output
+that is merely *slow* is a big suite, not a hang — let it run.)
 
 ## Test-output gotchas
 
