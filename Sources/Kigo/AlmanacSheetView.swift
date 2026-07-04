@@ -1,3 +1,4 @@
+import KigoCore
 import SwiftUI
 
 /// The almanac sheet presented when the user taps `microseason.timeline` on the Today screen.

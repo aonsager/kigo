@@ -1,3 +1,4 @@
+import KigoCore
 import WidgetKit
 
 // MARK: - KigoWidgetEntry

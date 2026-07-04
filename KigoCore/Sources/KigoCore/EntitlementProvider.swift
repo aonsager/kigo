@@ -1,11 +1,4 @@
-import StoreKit
 import Foundation
-
-// MARK: - EntitlementSharedStore (now in EntitlementSharedStore.swift)
-// `EntitlementSharedStore` protocol and `UserDefaultsEntitlementStore` have been
-// factored into Sources/Kigo/EntitlementSharedStore.swift (slice #71) so that the
-// widget extension and KigoWidgetTests can reach them without importing StoreKit.
-// They are in the same Swift module (Kigo) so no import is needed here.
 
 // MARK: - EntitlementTransactionSource
 
@@ -14,29 +7,13 @@ import Foundation
 /// logic verifiable headlessly — tests fill it with an in-memory fake, so the
 /// active/inactive derivation is exercised with no `SKTestSession`/`storekitd`
 /// (which hangs under `xcodebuild` from the CLI — see ADR 0009 and CLAUDE.md).
+///
+/// The production conformance (`StoreKitTransactionSource`, over StoreKit 2's
+/// `Transaction.currentEntitlements`) lives in the app target — this package is
+/// StoreKit-free so its tests run host-side.
 public protocol EntitlementTransactionSource: Sendable {
     /// Product IDs for which the user currently holds a verified entitlement.
     func activeProductIDs() async -> Set<String>
-}
-
-// MARK: - StoreKitTransactionSource (production)
-
-/// Production source: derives entitled product IDs from StoreKit 2's authoritative
-/// `Transaction.currentEntitlements`. Deliberately thin — a pass-through that is
-/// correct by inspection — because it cannot be exercised on the headless test path
-/// (real StoreKit purchases hang under the `xcodebuild` CLI). Its behavior is covered,
-/// if at all, by a non-blocking `SKTestSession` integration test run in the Xcode IDE.
-public struct StoreKitTransactionSource: EntitlementTransactionSource {
-    public init() {}
-
-    public func activeProductIDs() async -> Set<String> {
-        var ids: Set<String> = []
-        for await result in Transaction.currentEntitlements {
-            guard case .verified(let transaction) = result else { continue }
-            ids.insert(transaction.productID)
-        }
-        return ids
-    }
 }
 
 // MARK: - EntitlementProvider
@@ -49,6 +26,9 @@ public struct StoreKitTransactionSource: EntitlementTransactionSource {
 /// calls `refreshEntitlement()` to re-derive and persist it. Both seams are injected
 /// so the logic is testable headlessly with no `SKTestSession`/`storekitd` (ADR 0009).
 /// `Sendable` — it holds only immutable, Sendable references.
+///
+/// The zero-argument production form (`EntitlementProvider()`, live StoreKit
+/// source) is an app-target extension next to `StoreKitTransactionSource`.
 public struct EntitlementProvider: Sendable {
 
     /// The product ID for the widget-access monthly subscription.
@@ -60,10 +40,10 @@ public struct EntitlementProvider: Sendable {
     private let source: EntitlementTransactionSource
     private let store: EntitlementSharedStore
 
-    /// Production callers get the live StoreKit source and app-group UserDefaults store
-    /// by default; tests inject fakes for both.
+    /// Tests inject fakes for both seams; production callers use the app-side
+    /// zero-argument convenience (live StoreKit source, app-group store).
     public init(
-        source: EntitlementTransactionSource = StoreKitTransactionSource(),
+        source: EntitlementTransactionSource,
         store: EntitlementSharedStore = UserDefaultsEntitlementStore()
     ) {
         self.source = source

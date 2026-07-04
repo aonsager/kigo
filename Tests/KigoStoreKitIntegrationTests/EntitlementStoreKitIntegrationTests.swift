@@ -1,4 +1,5 @@
 import XCTest
+import KigoCore
 import StoreKit
 import StoreKitTest
 @testable import Kigo

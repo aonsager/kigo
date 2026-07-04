@@ -12,6 +12,15 @@ settings:
     SWIFT_VERSION: "6.0"
     IPHONEOS_DEPLOYMENT_TARGET: "26.0"
 
+# KigoCore: simulator-free domain logic as a local SPM package (see
+# docs/kigocore-migration-plan.md). Its tests run host-side via
+# `scripts/xctimeout 300 swift test --package-path KigoCore` — the fast lane.
+# Targets depend on the package instead of file-sharing Foundation-only files
+# out of Sources/Kigo.
+packages:
+  KigoCore:
+    path: KigoCore
+
 targets:
   Kigo:
     type: application
@@ -44,6 +53,7 @@ targets:
     dependencies:
       - target: KigoWidgetExtension
         embed: true
+      - package: KigoCore
     entitlements:
       # App Group so the main app and the widget extension share the same
       # UserDefaults suite (group.com.tomeitotameigo.kigo). Without this the
@@ -76,16 +86,8 @@ targets:
     deploymentTarget: "26.0"
     sources:
       - path: Sources/KigoWidgetExtension
-      # Shared Foundation-only types reused by the widget extension (AC4: no hand-edits to xcodeproj).
-      # These files are listed individually to avoid pulling in SwiftUI files from Sources/Kigo.
-      - path: Sources/Kigo/Manifest.swift
-      - path: Sources/Kigo/DayKey.swift
-      - path: Sources/Kigo/DateProvider.swift
-      - path: Sources/Kigo/TodayResolution.swift
-      - path: Sources/Kigo/ContentSource.swift
-      # Slice #71: EntitlementSharedStore protocol + UserDefaultsEntitlementStore — Foundation-only
-      # (no StoreKit) so the widget extension can read the active flag from the app-group store.
-      - path: Sources/Kigo/EntitlementSharedStore.swift
+      # Shared Foundation-only types (content domain, EntitlementSharedStore) now
+      # come from the KigoCore package dependency — see docs/kigocore-migration-plan.md.
       # Slice #73: KigoPlaceholderView (SwiftUI, no StoreKit) — deterministic gradient placeholder
       # reused by KigoWidgetView for the image layer (ADR 0001 / J2).
       - path: Sources/Kigo/KigoPlaceholder.swift
@@ -129,6 +131,8 @@ targets:
       properties:
         com.apple.security.application-groups:
           - group.com.tomeitotameigo.kigo
+    dependencies:
+      - package: KigoCore
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigo.widgets
@@ -166,6 +170,10 @@ targets:
         buildPhase: resources
     dependencies:
       - target: Kigo
+      - package: KigoCore
+      # Shared ContentSource fakes used by both lanes (see KigoCore/Package.swift).
+      - package: KigoCore
+        product: KigoCoreTestSupport
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigoTests
@@ -198,14 +206,8 @@ targets:
       - path: Sources/KigoWidgetExtension/WidgetTimelineBuilder.swift
       # Slice #73: KigoWidgetView extracted to its own file so it can be compiled into KigoWidgetTests.
       - path: Sources/KigoWidgetExtension/KigoWidgetView.swift
-      # Shared Foundation-only types from the Kigo app target
-      - path: Sources/Kigo/Manifest.swift
-      - path: Sources/Kigo/DayKey.swift
-      - path: Sources/Kigo/DateProvider.swift
-      - path: Sources/Kigo/TodayResolution.swift
-      - path: Sources/Kigo/ContentSource.swift
-      # Slice #71: EntitlementSharedStore protocol — Foundation-only (no StoreKit).
-      - path: Sources/Kigo/EntitlementSharedStore.swift
+      # Shared Foundation-only types (content domain, EntitlementSharedStore) now
+      # come from the KigoCore package dependency.
       # Slice #73: KigoPlaceholderView (SwiftUI) for image rendering in KigoWidgetView.
       - path: Sources/Kigo/KigoPlaceholder.swift
       # Asagiri revamp: KigoFont + KigoTheme used by KigoWidgetView.
@@ -239,6 +241,7 @@ targets:
         buildPhase: resources
     dependencies:
       - sdk: WidgetKit.framework
+      - package: KigoCore
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigoWidgetTests
@@ -265,6 +268,7 @@ targets:
         buildPhase: resources
     dependencies:
       - target: Kigo
+      - package: KigoCore
       - sdk: StoreKitTest.framework
     settings:
       base:

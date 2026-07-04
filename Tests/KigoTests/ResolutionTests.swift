@@ -1,3 +1,4 @@
+@testable import KigoCore
 import XCTest
 @testable import Kigo
 
@@ -98,36 +99,9 @@ final class ResolutionTests: XCTestCase {
         }
     }
 
-    // MARK: - AC3: Day-key derivation (compile-time + format)
-
-    /// `DayKey.make` produces the perennial `MM-DD` key used for Kō range containment.
-    func testDayKeyMakeProducesCorrectFormat() {
-        let june13 = makeUTCDate(month: 6, day: 13)
-        let key = DayKey.make(from: june13)
-        XCTAssertEqual(key, "06-13", "DayKey.make should format date as MM-DD in UTC")
-    }
-
-    /// `DayKey.absolute` produces the `YYYY-MM-DD` key used for the daily-map lookup.
-    func testDayKeyAbsoluteProducesYYYYMMDD() {
-        let june13 = makeUTCDate(month: 6, day: 13)
-        let key = DayKey.absolute(from: june13)
-        XCTAssertEqual(key, "2026-06-13", "DayKey.absolute should format date as YYYY-MM-DD in UTC")
-    }
-
-    func testDayKeyMakeLeapDay() {
-        // Feb 29 in 2024 (a leap year) — DayKey.make is year-independent (perennial MM-DD).
-        var cal = Calendar(identifier: .gregorian)
-        cal.timeZone = TimeZone(identifier: "UTC")!
-        var comps = DateComponents()
-        comps.year = 2024
-        comps.month = 2
-        comps.day = 29
-        comps.hour = 12
-        let leapDay = cal.date(from: comps)!
-
-        let key = DayKey.make(from: leapDay)
-        XCTAssertEqual(key, "02-29", "DayKey.make should handle leap day correctly")
-    }
+    // MARK: - AC3: Day-key derivation
+    // DayKey's own format/timezone tests moved to KigoCore/Tests/KigoCoreTests/
+    // DayKeyTests.swift (host-side fast lane) when DayKey moved into KigoCore.
 
     // MARK: - AC4: Resolver is pure / Foundation-only (enforced by no SwiftUI import above)
 
@@ -335,23 +309,7 @@ final class ResolutionTests: XCTestCase {
             year: 2026, month: 7, day: 2, hour: 15, minute: 30))!
     }
 
-    /// ADR 0020: `DayKey` derives the calendar day in the supplied timezone. The same
-    /// instant yields the *local* day in JST and the *previous* day in UTC — this is the
-    /// off-by-one a JST user saw when production derived "today" in UTC.
-    func testDayKeyDerivesDayInProvidedTimeZone() {
-        let instant = lateNightJSTInstant()
-        let jst = TimeZone(identifier: "Asia/Tokyo")!
-        let utc = TimeZone(identifier: "UTC")!
-
-        XCTAssertEqual(DayKey.make(from: instant, timeZone: jst), "07-03",
-                       "JST local day is July 3")
-        XCTAssertEqual(DayKey.absolute(from: instant, timeZone: jst), "2026-07-03",
-                       "JST local absolute day is 2026-07-03")
-        XCTAssertEqual(DayKey.make(from: instant, timeZone: utc), "07-02",
-                       "The same instant is still July 2 in UTC")
-        XCTAssertEqual(DayKey.absolute(from: instant, timeZone: utc), "2026-07-02",
-                       "The same instant is still 2026-07-02 in UTC")
-    }
+    // (testDayKeyDerivesDayInProvidedTimeZone moved to KigoCoreTests/DayKeyTests.)
 
     /// The resolver honors the injected timezone, so a JST user just past local midnight
     /// resolves to their local day's Kigo, not the UTC-lagged previous day.

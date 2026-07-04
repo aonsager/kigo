@@ -30,17 +30,28 @@ public protocol ContentSource: Sendable {
 /// which is the same bundle that `ManifestValidationTests` uses.
 public struct BundledContentSource: ContentSource {
 
-    public init() {}
+    /// Explicit bundle override for callers whose manifest.json does not live
+    /// in a bundle this module can discover on its own. Needed since the move
+    /// into KigoCore: `Bundle(for:)` on a class in this module no longer
+    /// resolves to the *client's* bundle, and `Bundle.main` only covers
+    /// processes whose main bundle carries the manifest (the app and the
+    /// widget appex — but NOT a hostless .xctest bundle like KigoWidgetTests,
+    /// which must inject `Bundle(for: Self.self)`).
+    private let bundle: Bundle?
+
+    public init(bundle: Bundle? = nil) {
+        self.bundle = bundle
+    }
 
     public func load() async throws -> Manifest {
-        // Use Bundle(for:) via a private class anchor so that the lookup works
-        // correctly both in the production app (Bundle.main) and in any future
-        // test context where the bundle hierarchy may differ.
-        // For the current project the test host IS the Kigo app, so Bundle.main
-        // resolves the resource; the class anchor is a future-safe fallback.
-        let bundle = Bundle(for: _BundleAnchor.self)
+        // Lookup order: injected client bundle → this module's bundle (via a
+        // private class anchor) → the process main bundle. In the production
+        // app and widget-extension processes Bundle.main carries manifest.json,
+        // so the zero-argument form keeps working there.
+        let anchorBundle = Bundle(for: _BundleAnchor.self)
 
-        guard let url = bundle.url(forResource: "manifest", withExtension: "json")
+        guard let url = bundle?.url(forResource: "manifest", withExtension: "json")
+                     ?? anchorBundle.url(forResource: "manifest", withExtension: "json")
                      ?? Bundle.main.url(forResource: "manifest", withExtension: "json") else {
             throw BundledContentSourceError.resourceNotFound("manifest.json not found in bundle")
         }

@@ -1,3 +1,5 @@
+@testable import KigoCore
+import KigoCoreTestSupport
 import XCTest
 @testable import Kigo
 

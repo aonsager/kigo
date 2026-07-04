@@ -1,5 +1,5 @@
 import XCTest
-@testable import Kigo
+@testable import KigoCore
 
 // MARK: - LaunchDateProviderTests
 

@@ -1,3 +1,4 @@
+@testable import KigoCore
 import XCTest
 
 // MARK: - WidgetTimelineTests

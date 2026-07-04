@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# xctimeout — bounded-time runner for build/test commands (macOS has no
+# coreutils `timeout`; this wraps the `perl alarm` idiom).
+#
+# Usage: scripts/xctimeout <seconds> <command> [args...]
+#
+# Exists for one reason beyond convenience: the Bash sandbox exclusion in
+# .claude/settings.json matches on the command string, so a raw
+# `perl -e 'alarm …' xcodebuild …` runs SANDBOXED (top-level executable is
+# perl, `xcodebuild *` never matches) and a sandboxed xcodebuild fails with
+# the CoreSimulator wedge signature (SimError 409/410 — see CLAUDE.md).
+# Excluding `scripts/xctimeout *` instead of `perl *` keeps the exclusion
+# narrow: this script refuses to wrap anything but the build/test toolchain,
+# so the unsandboxed surface stays exactly the commands that need it.
+set -u
+
+if [ $# -lt 2 ]; then
+  echo "usage: scripts/xctimeout <seconds> <xcodebuild|xcrun|swift|xcodegen> [args...]" >&2
+  exit 64
+fi
+
+secs="$1"; shift
+case "$secs" in
+  ''|*[!0-9]*) echo "xctimeout: first arg must be a timeout in seconds, got '$secs'" >&2; exit 64 ;;
+esac
+
+case "$(basename "$1")" in
+  xcodebuild|xcrun|swift|xcodegen) ;;
+  *) echo "xctimeout: refusing to wrap '$1' — allowed: xcodebuild, xcrun, swift, xcodegen" >&2; exit 64 ;;
+esac
+
+exec perl -e 'alarm shift; exec @ARGV' "$secs" "$@"

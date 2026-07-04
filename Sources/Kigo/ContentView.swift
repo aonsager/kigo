@@ -1,3 +1,4 @@
+import KigoCore
 import SwiftUI
 
 /// Root content view — switches on `ContentStore.screenState` to drive the

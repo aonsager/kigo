@@ -1,3 +1,4 @@
+import KigoCore
 import SwiftUI
 
 /// App entry point for slice #56 (fake-date override).

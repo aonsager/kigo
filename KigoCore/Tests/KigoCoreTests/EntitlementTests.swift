@@ -1,5 +1,5 @@
 import XCTest
-@testable import Kigo
+@testable import KigoCore
 
 /// Tests for `EntitlementProvider` — the seam that derives subscription entitlement
 /// state from a StoreKit transaction source.

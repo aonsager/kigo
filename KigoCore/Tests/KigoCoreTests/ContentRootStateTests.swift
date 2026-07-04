@@ -1,5 +1,6 @@
 import XCTest
-@testable import Kigo
+@testable import KigoCore
+import KigoCoreTestSupport
 
 // MARK: - ContentRootStateTests
 //

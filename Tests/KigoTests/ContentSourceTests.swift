@@ -1,16 +1,7 @@
+@testable import KigoCore
+import KigoCoreTestSupport
 import XCTest
 @testable import Kigo
-
-// MARK: - FailingContentSource
-
-/// A test-only in-process fake `ContentSource` that always throws on `load()`.
-/// Used to verify the cold-start guarantee: an empty cache + failing source
-/// must never surface a thrown error to the caller; the store resolves to
-/// `.unavailable` instead.
-struct FailingContentSource: ContentSource {
-    struct LoadFailure: Error {}
-    func load() async throws -> Manifest { throw LoadFailure() }
-}
 
 final class ContentSourceTests: XCTestCase {
 

@@ -1,3 +1,5 @@
+@testable import KigoCore
+import KigoCoreTestSupport
 import XCTest
 import SwiftUI
 @testable import Kigo
