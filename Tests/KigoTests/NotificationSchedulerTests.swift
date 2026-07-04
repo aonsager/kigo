@@ -1,4 +1,6 @@
 import XCTest
+import KigoCore
+import KigoCoreTestSupport
 @testable import Kigo
 
 // MARK: - NotificationSchedulerTests
