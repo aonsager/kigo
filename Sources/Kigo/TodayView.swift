@@ -1,5 +1,6 @@
 import KigoCore
 import SwiftUI
+import UIKit
 
 /// Today screen — renders the Kigo kanji, hiragana reading, prose description,
 /// and the current Microseason (Kō and Sekki) for the resolved date.
@@ -31,9 +32,27 @@ import SwiftUI
 /// Accessibility contract preserved exactly: `microseason.ko` / `microseason.sekki`
 /// carry the hiragana readings as standalone static texts (not nested inside the
 /// timeline `Button`, which would merge them), so the pinned-text UI assertions hold.
+///
+/// Slice #228 (PRD #227, C26, ADR 0022): calls the real `KigoImageSource` seam via
+/// `.task`, resolving `manifest`/`resolvedDay.kigoEntry.imageId` through the
+/// `imageSource` injected from the app root (see `launchImageSource` /
+/// `LaunchImageSource.swift`). Whenever resolution is `nil` (both the
+/// `KIGO_FAKE_IMAGE=none` fake and, today, the production path — no bundled
+/// `imageBaseURL` yet), the existing gradient placeholder renders unchanged and
+/// `kigo.image.placeholder` becomes present alongside `kigo.image`.
+///
+/// Slice #229: when resolution is non-nil (the `KIGO_FAKE_IMAGE=loaded` fake, paired
+/// with `ContentView`'s `imageBaseURLOverride`), the resolved bytes are decoded via
+/// `UIImage(data:)` and rendered full-bleed by `KigoPlaceholderView`'s `remoteImage`
+/// parameter — the exact same frame/scaling/`kigo.image` sentinel the placeholder uses,
+/// just with the fetched photo on top. `kigo.image.remote` becomes present alongside
+/// `kigo.image`, and `kigo.image.placeholder` is absent — the two markers are mutually
+/// exclusive.
 struct TodayView: View {
     let resolvedDay: ResolvedDay
     let almanacPositions: AlmanacPositions
+    let manifest: Manifest
+    let imageSource: KigoImageSource
 
     /// Identifies which sheet is currently active. Conforms to `Identifiable` so
     /// it can drive the single `.sheet(item:)` modifier.
@@ -53,17 +72,47 @@ struct TodayView: View {
 
     @State private var activeSheet: ActiveSheet?
     @State private var hasAppeared = false
+    /// The `KigoImageSource` seam's last resolution result (slice #228). `nil` means
+    /// "show the placeholder"; non-nil (slice #229) means "render this photo full-bleed".
+    @State private var remoteImageData: Data?
+
+    /// `remoteImageData` decoded into a `UIImage` (slice #229), or `nil` when there is
+    /// no resolved data yet. `KigoImageSource.image(manifest:imageId:)` only ever
+    /// returns bytes that already passed its own `UIImage(data:) != nil` decode gate
+    /// (#213), so this decode is expected to succeed whenever `remoteImageData` is set.
+    private var resolvedRemoteImage: UIImage? {
+        remoteImageData.flatMap { UIImage(data: $0) }
+    }
 
     var body: some View {
         ZStack {
             KigoTheme.canvas
                 .ignoresSafeArea()
 
-            // 1 · Full-bleed placeholder image — derived deterministically from imageId.
+            // 1 · Full-bleed image layer — the fetched remote photo when the
+            // `KigoImageSource` seam has resolved bytes (slice #229), else the
+            // deterministic placeholder. `kigo.image` (the full-bleed accessibility
+            // sentinel) is always present via `KigoPlaceholderView` regardless of which
+            // visual renders beneath it — see its doc comment.
             KigoPlaceholderView(imageId: resolvedDay.kigoEntry.imageId,
-                                accessibilityLabelText: chrome.a11yBackgroundImage)
+                                accessibilityLabelText: chrome.a11yBackgroundImage,
+                                remoteImage: resolvedRemoteImage)
                 .opacity(hasAppeared ? 1 : 0)
                 .scaleEffect(hasAppeared ? 1 : 1.05)
+
+            // 1b · Placeholder/remote-path markers (slice #228/#229, ADR 0022): mutually
+            // exclusive, present alongside `kigo.image`, proving which path the seam
+            // resolved to — `kigo.image.remote` when real bytes rendered,
+            // `kigo.image.placeholder` when the gradient/bundled placeholder did.
+            if resolvedRemoteImage != nil {
+                Color.clear
+                    .accessibilityIdentifier("kigo.image.remote")
+                    .accessibilityHidden(true)
+            } else {
+                Color.clear
+                    .accessibilityIdentifier("kigo.image.placeholder")
+                    .accessibilityHidden(true)
+            }
 
             // 2 · Legibility veil — vertical gradient, denser at top and bottom.
             KigoTheme.legibilityVeil
@@ -127,6 +176,13 @@ struct TodayView: View {
         .onAppear {
             guard !hasAppeared else { return }
             withAnimation(KigoTheme.Motion.imageReveal) { hasAppeared = true }
+        }
+        .task(id: resolvedDay.kigoEntry.imageId) {
+            // Slice #228: the real seam call. Both the `KIGO_FAKE_IMAGE=none` fake and
+            // the production `URLSessionKigoImageTransport` path (no bundled
+            // `imageBaseURL` yet) resolve `nil` today — the placeholder stays exactly as
+            // before; slice #229 renders the bytes when resolution is non-nil.
+            remoteImageData = await imageSource.image(manifest: manifest, imageId: resolvedDay.kigoEntry.imageId)
         }
         .bottomSheet(item: $activeSheet) { sheet in
             switch sheet {

@@ -91,6 +91,12 @@ public enum KigoPlaceholder {
 ///
 /// Carries the accessibility identifier `kigo.image` so UI tests can locate it
 /// as a full-bleed image element.
+///
+/// Slice #229 (ADR 0022): `remoteImage`, when non-nil, takes priority over the bundled
+/// photo/gradient — this is how `TodayView` renders the real fetched `KigoImageSource`
+/// bytes using the exact same full-bleed frame/scaling/`kigo.image` sentinel as the
+/// placeholder. Defaults to `nil` so the widget extension's call site (which never
+/// passes it) is unaffected — the widget stays on its own gradient placeholder (ADR 0022).
 struct KigoPlaceholderView: View {
     let imageId: String
 
@@ -103,6 +109,11 @@ struct KigoPlaceholderView: View {
     /// by the widget; the app injects `ChromeStrings(language).a11yBackgroundImage`
     /// so the Today screen's label follows the in-app language toggle.
     var accessibilityLabelText: String = "季語の背景画像"
+
+    /// Decoded remote image bytes (slice #229), rendered full-bleed in place of the
+    /// bundled photo/gradient when non-nil. `nil` (the default) preserves today's
+    /// behavior unchanged.
+    var remoteImage: UIImage? = nil
 
     var body: some View {
         GeometryReader { geo in
@@ -124,7 +135,9 @@ struct KigoPlaceholderView: View {
                 // on the image (or a container unioning it), that broke
                 // `TodayLayoutUITests.testImageFullBleed`, which measures the
                 // `kigo.image` frame against the window width. A dedicated clear
-                // leaf sidesteps the overflow entirely.
+                // leaf sidesteps the overflow entirely. Always present regardless
+                // of which `background` renders (bundled photo, gradient, or the
+                // slice #229 remote image) — `kigo.image` is the stable contract.
                 Color.clear
                     .accessibilityIdentifier("kigo.image")
                     .accessibilityLabel(accessibilityLabelText)
@@ -136,7 +149,11 @@ struct KigoPlaceholderView: View {
 
     @ViewBuilder
     private var background: some View {
-        if let uiImage = KigoPlaceholder.backgroundImage() {
+        if let remoteImage {
+            Image(uiImage: remoteImage)
+                .resizable()
+                .scaledToFill()
+        } else if let uiImage = KigoPlaceholder.backgroundImage() {
             Image(uiImage: uiImage)
                 .resizable()
                 .scaledToFill()
