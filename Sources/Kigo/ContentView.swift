@@ -9,13 +9,21 @@ import SwiftUI
 /// - `.today(ResolvedDay, AlmanacPositions)` — renders `TodayView` (warm bundled path, AC3).
 /// - `.loadingPlaceholder` — renders `LoadingPlaceholderView` (AC1).
 /// - `.unavailablePlaceholder` — renders `UnavailablePlaceholderView` (AC2).
+///
+/// Slice #228: also threads the resolved `manifest` (extracted from `store.state`, which
+/// `ContentStore.screenState` guarantees is `.loaded` whenever it returns `.today`) and the
+/// app-root-resolved `imageSource` into `TodayView`, so it can call the real `KigoImageSource`
+/// seam rather than a locally-fabricated one.
 struct ContentView: View {
     @Environment(ContentStore.self) private var store
+    let imageSource: KigoImageSource
 
     var body: some View {
         switch store.screenState {
         case .today(let resolved, let positions):
-            TodayView(resolvedDay: resolved, almanacPositions: positions)
+            if case .loaded(let manifest) = store.state {
+                TodayView(resolvedDay: resolved, almanacPositions: positions, manifest: manifest, imageSource: imageSource)
+            }
         case .loadingPlaceholder:
             LoadingPlaceholderView()
         case .unavailablePlaceholder:

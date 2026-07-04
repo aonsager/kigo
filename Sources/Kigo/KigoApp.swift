@@ -51,6 +51,13 @@ import SwiftUI
 /// `.preferredColorScheme(appearanceStore.preference.colorScheme)` so the Settings sheet's
 /// System/Light/Dark picker re-themes the whole app reactively, and `DarkModeUITests`
 /// (launched with `KIGO_FAKE_APPEARANCE=dark`) still forces dark.
+///
+/// Slice #228 (PRD #227, C26, ADR 0022): the `KigoImageSource` seam is resolved via
+/// `launchImageSource(environment:)`, which reads `KIGO_FAKE_IMAGE=none` to inject a fake
+/// transport that never yields bytes, or falls through to the production
+/// `URLSessionKigoImageTransport`-backed configuration. `TodayView` calls it on appear to
+/// prove the seam is real wiring, not dead code — both paths resolve `nil` today (no bundled
+/// `imageBaseURL` yet), so the gradient placeholder renders unchanged either way.
 @main
 struct KigoApp: App {
     @State private var store = ContentStore(
@@ -66,12 +73,14 @@ struct KigoApp: App {
     private let appearanceStore: any AppearanceStore
     private let reminderStore: any ReminderStore
     private let notificationScheduler: any NotificationScheduler
+    private let imageSource: KigoImageSource
 
     init() {
         let env = ProcessInfo.processInfo.environment
         offerDisplay = launchOfferDisplay(environment: env)
         languageStore = launchLanguageStore(environment: env)
         appearanceStore = launchAppearanceStore(environment: env)
+        imageSource = launchImageSource(environment: env)
         // Slice #220 (PRD #218, C23, ADR 0019): `launchReminderStore` resolves the
         // persisted, default-off `UserDefaultsReminderStore` in a real launch, or a
         // locked in-memory store seeded on/off under `KIGO_FAKE_REMINDER` (so a UI
@@ -107,7 +116,8 @@ struct KigoApp: App {
                 languageStore: languageStore,
                 appearanceStore: appearanceStore,
                 reminderStore: reminderStore,
-                notificationScheduler: notificationScheduler
+                notificationScheduler: notificationScheduler,
+                imageSource: imageSource
             )
             .environment(store)
         }
@@ -148,6 +158,7 @@ struct RootView: View {
     let appearanceStore: any AppearanceStore
     let reminderStore: any ReminderStore
     let notificationScheduler: any NotificationScheduler
+    let imageSource: KigoImageSource
 
     /// The two root-level sheets. They are deliberately distinct surfaces (PRD #189):
     /// the gear opens *settings* (language, appearance, subscription status + restore);
@@ -170,7 +181,8 @@ struct RootView: View {
         languageStore: any LanguageStore,
         appearanceStore: any AppearanceStore,
         reminderStore: any ReminderStore,
-        notificationScheduler: any NotificationScheduler
+        notificationScheduler: any NotificationScheduler,
+        imageSource: KigoImageSource
     ) {
         self.entitlementProvider = entitlementProvider
         self.offerDisplay = offerDisplay
@@ -179,6 +191,7 @@ struct RootView: View {
         self.appearanceStore = appearanceStore
         self.reminderStore = reminderStore
         self.notificationScheduler = notificationScheduler
+        self.imageSource = imageSource
         // Seed the active language from the store's resolved preference (persisted
         // value, else the OS-derived initial language) so the first frame already
         // renders in the correct language — no Japanese flash for an English-OS user.
@@ -191,7 +204,7 @@ struct RootView: View {
     }
 
     var body: some View {
-        ContentView()
+        ContentView(imageSource: imageSource)
             .preferredColorScheme(appearanceStore.preference.colorScheme)
             .environment(\.language, language)
             .environment(\.isEntitled, paywallModel.isActive)
