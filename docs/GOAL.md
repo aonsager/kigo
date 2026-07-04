@@ -418,9 +418,10 @@ Goal state met ⇔ every `C*` procedure below passes on `main`.
   entitlement *mechanism* is unchanged from the original design — only what an active entitlement
   unlocks moved from the widget image to the in-app understanding layer.)
 - **Evidence:**
-  1. Run the canonical test invocation (see Constraints) with
-     `-only-testing:KigoTests/EntitlementTests` — expect `** TEST SUCCEEDED **` and
-     exit 0. The suite drives the entitlement engine through its **injected
+  1. Run `swift test --package-path KigoCore --filter EntitlementTests` (the fast
+     lane; CLAUDE.md) — expect exit 0 and `Executed 7 test` (`EntitlementTests` moved
+     host-side to KigoCore in the migration commit c92f183 — see ADR 0023). The suite
+     drives the entitlement engine through its **injected
      transaction source** (the StoreKit seam) and **injected shared store** — no
      `SKTestSession`, no simulator purchase, so it runs headless in seconds. It
      asserts:
@@ -529,9 +530,10 @@ Goal state met ⇔ every `C*` procedure below passes on `main`.
      - **Premium case** — relaunched with `KIGO_FAKE_ENTITLEMENT=active`: tapping
        `paywall.entry` presents a sheet showing `paywall.manage` and **no**
        `paywall.buy`.
-  2. Run the canonical test invocation (Constraints) with
-     `-only-testing:KigoTests/PaywallConfigTests` — expect `** TEST SUCCEEDED **`,
-     exit 0, and `Executed [1-9][0-9]* test`. The suite asserts the Terms of Use and
+  2. Run `swift test --package-path KigoCore --filter PaywallConfigTests` (the fast
+     lane; CLAUDE.md) — expect exit 0 and `Executed 2 test` (`PaywallConfigTests`
+     moved host-side to KigoCore in the migration commit c92f183 — see ADR 0023). The
+     suite asserts the Terms of Use and
      Privacy Policy URL constants the Paywall links to are non-nil, use the `https`
      scheme, and parse as well-formed `URL`s. *(Built-config wiring check: the links
      the UI presents point at real, well-formed URLs, not empty strings. The URLs
@@ -613,9 +615,10 @@ loop catches it. Do not renumber or rewrite C9/C10.
      - all **24** Sekki have a non-empty `gloss` **and** a non-empty `description`;
      - all **366** Daily Map entries resolve to an `attribution` with non-empty `title`,
        `credit`, and `license`.
-  2. Run the canonical test invocation (Constraints) with
-     `-only-testing:KigoTests/LocalizableContentTests` — expect `** TEST SUCCEEDED **`, exit
-     0, and `Executed [1-9][0-9]* test`. The suite asserts the Manifest decodes a fixture
+  2. Run `swift test --package-path KigoCore --filter LocalizableContentTests` (the
+     fast lane; CLAUDE.md) — expect exit 0 and `Executed 10 test`
+     (`LocalizableContentTests` moved host-side to KigoCore in the migration commit
+     c92f183 — see ADR 0023). The suite asserts the Manifest decodes a fixture
      entry that **includes** the optional English field(s) and one that **omits** them (both
      succeed and round-trip), pinning the forward-compatibility ADR 0014 requires.
 
@@ -664,9 +667,10 @@ loop catches it. Do not renumber or rewrite C9/C10.
   is deferred (ADR 0014) — only the mechanism, the chrome strings, and the switcher control
   are gated.
 - **Evidence:**
-  1. Run the canonical test invocation (Constraints) with
-     `-only-testing:KigoTests/LanguagePreferenceTests` — expect `** TEST SUCCEEDED **`, exit
-     0, and `Executed [1-9][0-9]* test`. Driving the localized-strings seam over an injected
+  1. Run `swift test --package-path KigoCore --filter LanguagePreferenceTests` (the
+     fast lane; CLAUDE.md) — expect exit 0 and `Executed 21 test`
+     (`LanguagePreferenceTests` moved host-side to KigoCore in the migration commit
+     c92f183 — see ADR 0023). Driving the localized-strings seam over an injected
      store, the suite asserts: chrome strings (e.g. the Restore-purchases and loading labels)
      return their Japanese form by default; their English form when the preference is set to
      English; the selection persists across a re-read; and an absent/unrecognized value
