@@ -23,6 +23,13 @@
     "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/DayKeyTests.swiftdeps",
     "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/DayKeyTests.dia"
   },
+  "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/EntitlementTests.swift": {
+    "dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/EntitlementTests.d",
+    "object": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/EntitlementTests.swift.o",
+    "swiftmodule": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/EntitlementTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/EntitlementTests.swiftdeps",
+    "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/EntitlementTests.dia"
+  },
   "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LaunchDateProviderTests.swift": {
     "dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LaunchDateProviderTests.d",
     "object": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LaunchDateProviderTests.swift.o",
@@ -36,5 +43,12 @@
     "swiftmodule": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LocalizableContentTests~partial.swiftmodule",
     "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LocalizableContentTests.swiftdeps",
     "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LocalizableContentTests.dia"
+  },
+  "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/PaywallConfigTests.swift": {
+    "dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/PaywallConfigTests.d",
+    "object": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/PaywallConfigTests.swift.o",
+    "swiftmodule": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/PaywallConfigTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/PaywallConfigTests.swiftdeps",
+    "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/PaywallConfigTests.dia"
   }
 }

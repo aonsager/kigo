@@ -86,11 +86,8 @@ targets:
     deploymentTarget: "26.0"
     sources:
       - path: Sources/KigoWidgetExtension
-      # Shared Foundation-only types now come from the KigoCore package dependency
-      # (content domain moved there — see docs/kigocore-migration-plan.md).
-      # Slice #71: EntitlementSharedStore protocol + UserDefaultsEntitlementStore — Foundation-only
-      # (no StoreKit) so the widget extension can read the active flag from the app-group store.
-      - path: Sources/Kigo/EntitlementSharedStore.swift
+      # Shared Foundation-only types (content domain, EntitlementSharedStore) now
+      # come from the KigoCore package dependency — see docs/kigocore-migration-plan.md.
       # Slice #73: KigoPlaceholderView (SwiftUI, no StoreKit) — deterministic gradient placeholder
       # reused by KigoWidgetView for the image layer (ADR 0001 / J2).
       - path: Sources/Kigo/KigoPlaceholder.swift
@@ -209,9 +206,8 @@ targets:
       - path: Sources/KigoWidgetExtension/WidgetTimelineBuilder.swift
       # Slice #73: KigoWidgetView extracted to its own file so it can be compiled into KigoWidgetTests.
       - path: Sources/KigoWidgetExtension/KigoWidgetView.swift
-      # Shared Foundation-only types now come from the KigoCore package dependency.
-      # Slice #71: EntitlementSharedStore protocol — Foundation-only (no StoreKit).
-      - path: Sources/Kigo/EntitlementSharedStore.swift
+      # Shared Foundation-only types (content domain, EntitlementSharedStore) now
+      # come from the KigoCore package dependency.
       # Slice #73: KigoPlaceholderView (SwiftUI) for image rendering in KigoWidgetView.
       - path: Sources/Kigo/KigoPlaceholder.swift
       # Asagiri revamp: KigoFont + KigoTheme used by KigoWidgetView.

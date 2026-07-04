@@ -1,4 +1,3 @@
-import KigoCore
 import Foundation
 
 // MARK: - EntitlementSharedStore

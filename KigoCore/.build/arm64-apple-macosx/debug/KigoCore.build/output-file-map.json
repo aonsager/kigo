@@ -44,6 +44,20 @@
     "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/DayKey.swiftdeps",
     "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/DayKey.dia"
   },
+  "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/EntitlementProvider.swift": {
+    "dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/EntitlementProvider.d",
+    "object": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/EntitlementProvider.swift.o",
+    "swiftmodule": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/EntitlementProvider~partial.swiftmodule",
+    "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/EntitlementProvider.swiftdeps",
+    "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/EntitlementProvider.dia"
+  },
+  "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/EntitlementSharedStore.swift": {
+    "dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/EntitlementSharedStore.d",
+    "object": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/EntitlementSharedStore.swift.o",
+    "swiftmodule": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/EntitlementSharedStore~partial.swiftmodule",
+    "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/EntitlementSharedStore.swiftdeps",
+    "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/EntitlementSharedStore.dia"
+  },
   "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LaunchDateProvider.swift": {
     "dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchDateProvider.d",
     "object": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchDateProvider.swift.o",
@@ -57,6 +71,13 @@
     "swiftmodule": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/Manifest~partial.swiftmodule",
     "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/Manifest.swiftdeps",
     "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/Manifest.dia"
+  },
+  "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/PaywallConfig.swift": {
+    "dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/PaywallConfig.d",
+    "object": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/PaywallConfig.swift.o",
+    "swiftmodule": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/PaywallConfig~partial.swiftmodule",
+    "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/PaywallConfig.swiftdeps",
+    "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/PaywallConfig.dia"
   },
   "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/RemoteManifestSource.swift": {
     "dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/RemoteManifestSource.d",
