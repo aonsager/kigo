@@ -1,0 +1,112 @@
+client:
+  name: basic
+  file-system: device-agnostic
+tools: {}
+targets:
+  "KigoCore-arm64-apple-macosx-debug.module": ["<KigoCore-arm64-apple-macosx-debug.module>"]
+  "KigoCorePackageTests-arm64-apple-macosx-debug.module": ["<KigoCorePackageTests-arm64-apple-macosx-debug.module>"]
+  "KigoCorePackageTests-arm64-apple-macosx-debug.test": ["<KigoCorePackageTests-arm64-apple-macosx-debug.test>"]
+  "KigoCoreTests-arm64-apple-macosx-debug.module": ["<KigoCoreTests-arm64-apple-macosx-debug.module>"]
+  "PackageStructure": ["<PackageStructure>"]
+  "main": ["<KigoCore-arm64-apple-macosx-debug.module>"]
+  "test": ["<KigoCore-arm64-apple-macosx-debug.module>","<KigoCorePackageTests-arm64-apple-macosx-debug.test>","<KigoCoreTests-arm64-apple-macosx-debug.module>"]
+default: "main"
+nodes:
+  "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/":
+    is-directory-structure: true
+    content-exclusion-patterns: [".git",".build"]
+  "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/":
+    is-directory-structure: true
+    content-exclusion-patterns: [".git",".build"]
+commands:
+  "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/sources":
+    tool: write-auxiliary-file
+    inputs: ["<sources-file-list>","/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/DayKey.swift"]
+    outputs: ["/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/sources"]
+    description: "Write auxiliary file /Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/sources"
+
+  "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.build/sources":
+    tool: write-auxiliary-file
+    inputs: ["<sources-file-list>","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.derived/runner.swift"]
+    outputs: ["/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.build/sources"]
+    description: "Write auxiliary file /Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.build/sources"
+
+  "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.derived/runner.swift":
+    tool: test-entry-point-tool
+    inputs: []
+    outputs: ["/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.derived/runner.swift"]
+
+  "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.product/Objects.LinkFileList":
+    tool: write-auxiliary-file
+    inputs: ["<link-file-list>","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/DayKey.swift.o","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.build/runner.swift.o","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/DayKeyTests.swift.o"]
+    outputs: ["/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.product/Objects.LinkFileList"]
+    description: "Write auxiliary file /Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.product/Objects.LinkFileList"
+
+  "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/sources":
+    tool: write-auxiliary-file
+    inputs: ["<sources-file-list>","/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/DayKeyTests.swift"]
+    outputs: ["/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/sources"]
+    description: "Write auxiliary file /Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/sources"
+
+  "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/swift-version-69A768CDF2A0BEE1.txt":
+    tool: write-auxiliary-file
+    inputs: ["<swift-get-version>","/Applications/Xcode-26.5.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"]
+    outputs: ["/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/swift-version-69A768CDF2A0BEE1.txt"]
+    always-out-of-date: "true"
+    description: "Write auxiliary file /Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/swift-version-69A768CDF2A0BEE1.txt"
+
+  "<KigoCore-arm64-apple-macosx-debug.module>":
+    tool: phony
+    inputs: ["/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/DayKey.swift.o","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCore.swiftmodule"]
+    outputs: ["<KigoCore-arm64-apple-macosx-debug.module>"]
+
+  "<KigoCorePackageTests-arm64-apple-macosx-debug.module>":
+    tool: phony
+    inputs: ["/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.build/runner.swift.o","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCorePackageTests.swiftmodule"]
+    outputs: ["<KigoCorePackageTests-arm64-apple-macosx-debug.module>"]
+
+  "<KigoCorePackageTests-arm64-apple-macosx-debug.test>":
+    tool: phony
+    inputs: ["/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.xctest/Contents/MacOS/KigoCorePackageTests"]
+    outputs: ["<KigoCorePackageTests-arm64-apple-macosx-debug.test>"]
+
+  "<KigoCoreTests-arm64-apple-macosx-debug.module>":
+    tool: phony
+    inputs: ["/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/DayKeyTests.swift.o","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCoreTests.swiftmodule"]
+    outputs: ["<KigoCoreTests-arm64-apple-macosx-debug.module>"]
+
+  "C.KigoCore-arm64-apple-macosx-debug.module":
+    tool: shell
+    inputs: ["/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/DayKey.swift","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/swift-version-69A768CDF2A0BEE1.txt","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/sources"]
+    outputs: ["/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/DayKey.swift.o","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCore.swiftmodule"]
+    description: "Compiling Swift Module 'KigoCore' (1 sources)"
+    args: ["/Applications/Xcode-26.5.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc","-module-name","KigoCore","-emit-dependencies","-emit-module","-emit-module-path","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCore.swiftmodule","-output-file-map","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/output-file-map.json","-parse-as-library","-incremental","-c","@/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/sources","-I","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules","-target","arm64-apple-macosx15.0","-incremental","-enable-batch-mode","-serialize-diagnostics","-index-store-path","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/index/store","-Onone","-enable-testing","-j10","-DSWIFT_PACKAGE","-DDEBUG","-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE","-module-cache-path","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/ModuleCache","-parseable-output","-parse-as-library","-emit-objc-header","-emit-objc-header-path","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/include/KigoCore-Swift.h","-swift-version","6","-plugin-path","/Applications/Xcode-26.5.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing","-sdk","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk","-F","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-I","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-g","-Xcc","-isysroot","-Xcc","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk","-Xcc","-F","-Xcc","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-Xcc","-fPIC","-Xcc","-g","-package-name","kigocore"]
+
+  "C.KigoCorePackageTests-arm64-apple-macosx-debug.module":
+    tool: shell
+    inputs: ["/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.derived/runner.swift","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/swift-version-69A768CDF2A0BEE1.txt","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCoreTests.swiftmodule","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.build/sources"]
+    outputs: ["/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.build/runner.swift.o","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCorePackageTests.swiftmodule"]
+    description: "Compiling Swift Module 'KigoCorePackageTests' (1 sources)"
+    args: ["/Applications/Xcode-26.5.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc","-module-name","KigoCorePackageTests","-emit-dependencies","-emit-module","-emit-module-path","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCorePackageTests.swiftmodule","-output-file-map","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.build/output-file-map.json","-parse-as-library","-incremental","-c","@/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.build/sources","-I","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules","-target","arm64-apple-macosx15.0","-incremental","-enable-batch-mode","-serialize-diagnostics","-index-store-path","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/index/store","-Onone","-enable-testing","-Xfrontend","-enable-cross-import-overlays","-j10","-DSWIFT_PACKAGE","-DDEBUG","-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE","-module-cache-path","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/ModuleCache","-parseable-output","-parse-as-library","-emit-objc-header","-emit-objc-header-path","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.build/include/KigoCorePackageTests-Swift.h","-plugin-path","/Applications/Xcode-26.5.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing","-sdk","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk","-F","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-I","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-g","-Xcc","-isysroot","-Xcc","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk","-Xcc","-F","-Xcc","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-Xcc","-fPIC","-Xcc","-g","-package-name","kigocore"]
+
+  "C.KigoCorePackageTests-arm64-apple-macosx-debug.test":
+    tool: shell
+    inputs: ["/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/DayKey.swift.o","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.build/runner.swift.o","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/DayKeyTests.swift.o","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.product/Objects.LinkFileList"]
+    outputs: ["/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.xctest/Contents/MacOS/KigoCorePackageTests"]
+    description: "Linking ./.build/arm64-apple-macosx/debug/KigoCorePackageTests.xctest/Contents/MacOS/KigoCorePackageTests"
+    args: ["/Applications/Xcode-26.5.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc","-L","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug","-o","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.xctest/Contents/MacOS/KigoCorePackageTests","-module-name","KigoCorePackageTests","-Xlinker","-no_warn_duplicate_libraries","-Xlinker","-bundle","-Xlinker","-rpath","-Xlinker","@loader_path/../../../","@/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.product/Objects.LinkFileList","-Xlinker","-rpath","-Xlinker","/Applications/Xcode-26.5.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-6.2/macosx","-target","arm64-apple-macosx15.0","-Xlinker","-add_ast_path","-Xlinker","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCore.swiftmodule","-Xlinker","-add_ast_path","-Xlinker","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCorePackageTests.swiftmodule","-Xlinker","-add_ast_path","-Xlinker","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCoreTests.swiftmodule","-plugin-path","/Applications/Xcode-26.5.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing","-sdk","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk","-F","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-I","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-g"]
+
+  "C.KigoCoreTests-arm64-apple-macosx-debug.module":
+    tool: shell
+    inputs: ["/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/DayKeyTests.swift","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/swift-version-69A768CDF2A0BEE1.txt","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCore.swiftmodule","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/sources"]
+    outputs: ["/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/DayKeyTests.swift.o","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCoreTests.swiftmodule"]
+    description: "Compiling Swift Module 'KigoCoreTests' (1 sources)"
+    args: ["/Applications/Xcode-26.5.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc","-module-name","KigoCoreTests","-emit-dependencies","-emit-module","-emit-module-path","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCoreTests.swiftmodule","-output-file-map","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/output-file-map.json","-parse-as-library","-incremental","-c","@/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/sources","-I","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules","-target","arm64-apple-macosx15.0","-incremental","-enable-batch-mode","-serialize-diagnostics","-index-store-path","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/index/store","-Onone","-enable-testing","-Xfrontend","-enable-cross-import-overlays","-j10","-DSWIFT_PACKAGE","-DDEBUG","-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE","-module-cache-path","/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/ModuleCache","-parseable-output","-parse-as-library","-swift-version","6","-plugin-path","/Applications/Xcode-26.5.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing","-sdk","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk","-F","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-I","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-g","-Xcc","-isysroot","-Xcc","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk","-Xcc","-F","-Xcc","/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-Xcc","-fPIC","-Xcc","-g","-package-name","kigocore"]
+
+  "PackageStructure":
+    tool: package-structure-tool
+    inputs: ["/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/","/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/","/Users/aonsager/projects/kigo/KigoCore/Package.swift","/Users/aonsager/projects/kigo/KigoCore/Package.resolved"]
+    outputs: ["<PackageStructure>"]
+    description: "Planning build"
+    allow-missing-inputs: true
+

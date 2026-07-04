@@ -1,3 +1,4 @@
+import KigoCore
 import XCTest
 @testable import Kigo
 

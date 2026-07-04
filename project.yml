@@ -12,6 +12,15 @@ settings:
     SWIFT_VERSION: "6.0"
     IPHONEOS_DEPLOYMENT_TARGET: "26.0"
 
+# KigoCore: simulator-free domain logic as a local SPM package (see
+# docs/kigocore-migration-plan.md). Its tests run host-side via
+# `scripts/xctimeout 300 swift test --package-path KigoCore` — the fast lane.
+# Targets depend on the package instead of file-sharing Foundation-only files
+# out of Sources/Kigo.
+packages:
+  KigoCore:
+    path: KigoCore
+
 targets:
   Kigo:
     type: application
@@ -44,6 +53,7 @@ targets:
     dependencies:
       - target: KigoWidgetExtension
         embed: true
+      - package: KigoCore
     entitlements:
       # App Group so the main app and the widget extension share the same
       # UserDefaults suite (group.com.tomeitotameigo.kigo). Without this the
@@ -78,8 +88,8 @@ targets:
       - path: Sources/KigoWidgetExtension
       # Shared Foundation-only types reused by the widget extension (AC4: no hand-edits to xcodeproj).
       # These files are listed individually to avoid pulling in SwiftUI files from Sources/Kigo.
+      # (Migrating file-by-file into the KigoCore package dependency below — DayKey already moved.)
       - path: Sources/Kigo/Manifest.swift
-      - path: Sources/Kigo/DayKey.swift
       - path: Sources/Kigo/DateProvider.swift
       - path: Sources/Kigo/TodayResolution.swift
       - path: Sources/Kigo/ContentSource.swift
@@ -129,6 +139,8 @@ targets:
       properties:
         com.apple.security.application-groups:
           - group.com.tomeitotameigo.kigo
+    dependencies:
+      - package: KigoCore
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigo.widgets
@@ -166,6 +178,7 @@ targets:
         buildPhase: resources
     dependencies:
       - target: Kigo
+      - package: KigoCore
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigoTests
@@ -199,8 +212,8 @@ targets:
       # Slice #73: KigoWidgetView extracted to its own file so it can be compiled into KigoWidgetTests.
       - path: Sources/KigoWidgetExtension/KigoWidgetView.swift
       # Shared Foundation-only types from the Kigo app target
+      # (migrating into the KigoCore package dependency below — DayKey already moved)
       - path: Sources/Kigo/Manifest.swift
-      - path: Sources/Kigo/DayKey.swift
       - path: Sources/Kigo/DateProvider.swift
       - path: Sources/Kigo/TodayResolution.swift
       - path: Sources/Kigo/ContentSource.swift
@@ -239,6 +252,7 @@ targets:
         buildPhase: resources
     dependencies:
       - sdk: WidgetKit.framework
+      - package: KigoCore
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigoWidgetTests

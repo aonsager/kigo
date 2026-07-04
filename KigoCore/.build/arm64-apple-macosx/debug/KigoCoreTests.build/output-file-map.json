@@ -1,0 +1,12 @@
+{
+  "": {
+    "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/primary.swiftdeps"
+  },
+  "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/DayKeyTests.swift": {
+    "dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/DayKeyTests.d",
+    "object": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/DayKeyTests.swift.o",
+    "swiftmodule": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/DayKeyTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/DayKeyTests.swiftdeps",
+    "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/DayKeyTests.dia"
+  }
+}
