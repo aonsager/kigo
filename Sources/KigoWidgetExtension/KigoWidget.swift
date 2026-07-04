@@ -1,4 +1,5 @@
 @preconcurrency import WidgetKit
+import KigoCore
 import SwiftUI
 
 // MARK: - KigoWidgetProvider

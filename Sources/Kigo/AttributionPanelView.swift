@@ -1,3 +1,4 @@
+import KigoCore
 import SwiftUI
 
 /// The attribution panel sheet presented when the user taps `info.entry` on the Today screen.

@@ -1,3 +1,4 @@
+import KigoCore
 import SwiftUI
 
 /// Today screen — renders the Kigo kanji, hiragana reading, prose description,

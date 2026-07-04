@@ -1,0 +1,12 @@
+{
+  "": {
+    "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTestSupport.build/primary.swiftdeps"
+  },
+  "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCoreTestSupport/ContentSourceFakes.swift": {
+    "dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTestSupport.build/ContentSourceFakes.d",
+    "object": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTestSupport.build/ContentSourceFakes.swift.o",
+    "swiftmodule": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTestSupport.build/ContentSourceFakes~partial.swiftmodule",
+    "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTestSupport.build/ContentSourceFakes.swiftdeps",
+    "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTestSupport.build/ContentSourceFakes.dia"
+  }
+}

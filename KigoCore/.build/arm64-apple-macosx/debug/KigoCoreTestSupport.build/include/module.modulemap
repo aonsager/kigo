@@ -1,0 +1,3 @@
+module KigoCoreTestSupport {
+    header "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTestSupport.build/include/KigoCoreTestSupport-Swift.h"
+}

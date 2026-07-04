@@ -1,3 +1,4 @@
+@testable import KigoCore
 import XCTest
 import SwiftUI
 
@@ -6,8 +7,10 @@ import SwiftUI
 // Slice #81: Real end-to-end content path — BundledContentSource drives the widget entry.
 //
 // Unlike WidgetTimelineTests (which injects a hand-built minimal Manifest), this suite
-// exercises the PRODUCTION content path: it constructs BundledContentSource() with no
-// arguments, awaits load() to decode the real bundled manifest.json, picks an MM-DD key
+// exercises the PRODUCTION content path: it constructs BundledContentSource with the
+// test bundle injected (required since BundledContentSource moved into KigoCore —
+// this hostless .xctest bundle is not discoverable via Bundle.main or the module's
+// own anchor), awaits load() to decode the real bundled manifest.json, picks an MM-DD key
 // actually present in that loaded manifest, injects a FixedDateProvider pinned to that
 // date, builds the entry via WidgetTimelineBuilder, and asserts the entry's kanji and
 // reading equal the values read from the very same loaded manifest's daily-map.
@@ -26,7 +29,7 @@ final class WidgetRealContentTests: XCTestCase {
     /// BundledContentSource().load() decodes the real bundled manifest without error.
     /// The manifest must be non-trivial: it must have at least one dailyMap entry.
     func testBundledContentSourceLoadsRealManifest() async throws {
-        let source = BundledContentSource()
+        let source = BundledContentSource(bundle: Bundle(for: Self.self))
         let manifest = try await source.load()
 
         XCTAssertFalse(manifest.dailyMap.isEmpty,
@@ -49,7 +52,7 @@ final class WidgetRealContentTests: XCTestCase {
     /// - the builder is constructed with `manifest` as injected, not with a fake
     func testBuilderEntryMatchesRealManifestForPinnedDate() async throws {
         // Step 1: Load the real bundled manifest — no injection.
-        let source = BundledContentSource()
+        let source = BundledContentSource(bundle: Bundle(for: Self.self))
         let manifest = try await source.load()
 
         // Step 2: Pick the first absolute 2026-MM-DD key present in the loaded manifest.
@@ -118,7 +121,7 @@ final class WidgetRealContentTests: XCTestCase {
     /// be done before entering MainActor context, so we split them into two stages.
     func testHostRenderRealWidgetView() async throws {
         // Stage 1 (non-MainActor): Load real manifest and build the widget entry.
-        let source = BundledContentSource()
+        let source = BundledContentSource(bundle: Bundle(for: Self.self))
         let manifest = try await source.load()
 
         // Pick "2026-01-01" if present, otherwise the first sorted key — deterministic choice.
