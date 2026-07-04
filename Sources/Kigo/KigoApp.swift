@@ -74,6 +74,7 @@ struct KigoApp: App {
     private let reminderStore: any ReminderStore
     private let notificationScheduler: any NotificationScheduler
     private let imageSource: KigoImageSource
+    private let imageBaseURLOverride: String?
 
     init() {
         let env = ProcessInfo.processInfo.environment
@@ -81,6 +82,7 @@ struct KigoApp: App {
         languageStore = launchLanguageStore(environment: env)
         appearanceStore = launchAppearanceStore(environment: env)
         imageSource = launchImageSource(environment: env)
+        imageBaseURLOverride = fakeImageBaseURLOverride(environment: env)
         // Slice #220 (PRD #218, C23, ADR 0019): `launchReminderStore` resolves the
         // persisted, default-off `UserDefaultsReminderStore` in a real launch, or a
         // locked in-memory store seeded on/off under `KIGO_FAKE_REMINDER` (so a UI
@@ -117,7 +119,8 @@ struct KigoApp: App {
                 appearanceStore: appearanceStore,
                 reminderStore: reminderStore,
                 notificationScheduler: notificationScheduler,
-                imageSource: imageSource
+                imageSource: imageSource,
+                imageBaseURLOverride: imageBaseURLOverride
             )
             .environment(store)
         }
@@ -159,6 +162,7 @@ struct RootView: View {
     let reminderStore: any ReminderStore
     let notificationScheduler: any NotificationScheduler
     let imageSource: KigoImageSource
+    let imageBaseURLOverride: String?
 
     /// The two root-level sheets. They are deliberately distinct surfaces (PRD #189):
     /// the gear opens *settings* (language, appearance, subscription status + restore);
@@ -182,7 +186,8 @@ struct RootView: View {
         appearanceStore: any AppearanceStore,
         reminderStore: any ReminderStore,
         notificationScheduler: any NotificationScheduler,
-        imageSource: KigoImageSource
+        imageSource: KigoImageSource,
+        imageBaseURLOverride: String?
     ) {
         self.entitlementProvider = entitlementProvider
         self.offerDisplay = offerDisplay
@@ -192,6 +197,7 @@ struct RootView: View {
         self.reminderStore = reminderStore
         self.notificationScheduler = notificationScheduler
         self.imageSource = imageSource
+        self.imageBaseURLOverride = imageBaseURLOverride
         // Seed the active language from the store's resolved preference (persisted
         // value, else the OS-derived initial language) so the first frame already
         // renders in the correct language — no Japanese flash for an English-OS user.
@@ -204,7 +210,7 @@ struct RootView: View {
     }
 
     var body: some View {
-        ContentView(imageSource: imageSource)
+        ContentView(imageSource: imageSource, imageBaseURLOverride: imageBaseURLOverride)
             .preferredColorScheme(appearanceStore.preference.colorScheme)
             .environment(\.language, language)
             .environment(\.isEntitled, paywallModel.isActive)
