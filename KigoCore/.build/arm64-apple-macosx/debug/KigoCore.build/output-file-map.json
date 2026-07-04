@@ -58,12 +58,33 @@
     "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/EntitlementSharedStore.swiftdeps",
     "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/EntitlementSharedStore.dia"
   },
+  "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LanguagePreference.swift": {
+    "dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LanguagePreference.d",
+    "object": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LanguagePreference.swift.o",
+    "swiftmodule": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LanguagePreference~partial.swiftmodule",
+    "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LanguagePreference.swiftdeps",
+    "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LanguagePreference.dia"
+  },
   "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LaunchDateProvider.swift": {
     "dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchDateProvider.d",
     "object": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchDateProvider.swift.o",
     "swiftmodule": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchDateProvider~partial.swiftmodule",
     "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchDateProvider.swiftdeps",
     "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchDateProvider.dia"
+  },
+  "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LaunchLanguageStore.swift": {
+    "dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchLanguageStore.d",
+    "object": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchLanguageStore.swift.o",
+    "swiftmodule": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchLanguageStore~partial.swiftmodule",
+    "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchLanguageStore.swiftdeps",
+    "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchLanguageStore.dia"
+  },
+  "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LocalizedTextLanguage.swift": {
+    "dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LocalizedTextLanguage.d",
+    "object": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LocalizedTextLanguage.swift.o",
+    "swiftmodule": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LocalizedTextLanguage~partial.swiftmodule",
+    "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LocalizedTextLanguage.swiftdeps",
+    "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LocalizedTextLanguage.dia"
   },
   "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/Manifest.swift": {
     "dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/Manifest.d",
@@ -92,5 +113,12 @@
     "swiftmodule": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/TodayResolution~partial.swiftmodule",
     "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/TodayResolution.swiftdeps",
     "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/TodayResolution.dia"
+  },
+  "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/UserDefaultsLanguageStore.swift": {
+    "dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/UserDefaultsLanguageStore.d",
+    "object": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/UserDefaultsLanguageStore.swift.o",
+    "swiftmodule": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/UserDefaultsLanguageStore~partial.swiftmodule",
+    "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/UserDefaultsLanguageStore.swiftdeps",
+    "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/UserDefaultsLanguageStore.dia"
   }
 }

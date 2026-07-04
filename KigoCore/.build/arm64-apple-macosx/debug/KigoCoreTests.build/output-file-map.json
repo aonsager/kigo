@@ -30,6 +30,13 @@
     "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/EntitlementTests.swiftdeps",
     "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/EntitlementTests.dia"
   },
+  "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LanguagePreferenceTests.swift": {
+    "dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LanguagePreferenceTests.d",
+    "object": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LanguagePreferenceTests.swift.o",
+    "swiftmodule": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LanguagePreferenceTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LanguagePreferenceTests.swiftdeps",
+    "diagnostics": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LanguagePreferenceTests.dia"
+  },
   "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LaunchDateProviderTests.swift": {
     "dependencies": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LaunchDateProviderTests.d",
     "object": "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LaunchDateProviderTests.swift.o",

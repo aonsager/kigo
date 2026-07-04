@@ -60,7 +60,19 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LanguagePreference.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LaunchDateProvider.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LaunchLanguageStore.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LocalizedTextLanguage.swift"
         },
         {
           "kind" : "file",
@@ -77,6 +89,10 @@
         {
           "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/TodayResolution.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/UserDefaultsLanguageStore.swift"
         },
         {
           "kind" : "file",
@@ -99,11 +115,15 @@
         "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/DayKey.swift.o",
         "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/EntitlementProvider.swift.o",
         "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/EntitlementSharedStore.swift.o",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LanguagePreference.swift.o",
         "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchDateProvider.swift.o",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchLanguageStore.swift.o",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LocalizedTextLanguage.swift.o",
         "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/Manifest.swift.o",
         "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/PaywallConfig.swift.o",
         "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/RemoteManifestSource.swift.o",
-        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/TodayResolution.swift.o"
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/TodayResolution.swift.o",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/UserDefaultsLanguageStore.swift.o"
       ],
       "otherArguments" : [
         "-target",
@@ -190,7 +210,19 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LanguagePreference.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchDateProvider.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchLanguageStore.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LocalizedTextLanguage.swift.o"
         },
         {
           "kind" : "file",
@@ -210,6 +242,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/UserDefaultsLanguageStore.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCore.swiftmodule"
         }
       ],
@@ -223,11 +259,15 @@
         "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/DayKey.swift",
         "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/EntitlementProvider.swift",
         "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/EntitlementSharedStore.swift",
+        "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LanguagePreference.swift",
         "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LaunchDateProvider.swift",
+        "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LaunchLanguageStore.swift",
+        "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LocalizedTextLanguage.swift",
         "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/Manifest.swift",
         "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/PaywallConfig.swift",
         "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/RemoteManifestSource.swift",
-        "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/TodayResolution.swift"
+        "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/TodayResolution.swift",
+        "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/UserDefaultsLanguageStore.swift"
       ],
       "tempsPath" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build",
       "wholeModuleOptimization" : false
@@ -445,6 +485,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LanguagePreferenceTests.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LaunchDateProviderTests.swift"
         },
         {
@@ -480,6 +524,7 @@
         "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/ContentStoreTests.swift.o",
         "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/DayKeyTests.swift.o",
         "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/EntitlementTests.swift.o",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LanguagePreferenceTests.swift.o",
         "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LaunchDateProviderTests.swift.o",
         "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LocalizableContentTests.swift.o",
         "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/PaywallConfigTests.swift.o"
@@ -552,6 +597,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LanguagePreferenceTests.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LaunchDateProviderTests.swift.o"
         },
         {
@@ -573,6 +622,7 @@
         "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/ContentStoreTests.swift",
         "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/DayKeyTests.swift",
         "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/EntitlementTests.swift",
+        "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LanguagePreferenceTests.swift",
         "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LaunchDateProviderTests.swift",
         "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LocalizableContentTests.swift",
         "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/PaywallConfigTests.swift"
@@ -600,11 +650,15 @@
       "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/DayKey.swift",
       "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/EntitlementProvider.swift",
       "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/EntitlementSharedStore.swift",
+      "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LanguagePreference.swift",
       "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LaunchDateProvider.swift",
+      "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LaunchLanguageStore.swift",
+      "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LocalizedTextLanguage.swift",
       "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/Manifest.swift",
       "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/PaywallConfig.swift",
       "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/RemoteManifestSource.swift",
       "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/TodayResolution.swift",
+      "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/UserDefaultsLanguageStore.swift",
       "-I",
       "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules",
       "-target",
@@ -788,6 +842,7 @@
       "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/ContentStoreTests.swift",
       "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/DayKeyTests.swift",
       "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/EntitlementTests.swift",
+      "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LanguagePreferenceTests.swift",
       "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LaunchDateProviderTests.swift",
       "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LocalizableContentTests.swift",
       "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/PaywallConfigTests.swift",
@@ -923,7 +978,19 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LanguagePreference.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LaunchDateProvider.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LaunchLanguageStore.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LocalizedTextLanguage.swift"
         },
         {
           "kind" : "file",
@@ -940,6 +1007,10 @@
         {
           "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/TodayResolution.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/UserDefaultsLanguageStore.swift"
         }
       ],
       "outputFilePath" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/sources"
@@ -999,7 +1070,19 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LanguagePreference.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchDateProvider.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchLanguageStore.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LocalizedTextLanguage.swift.o"
         },
         {
           "kind" : "file",
@@ -1016,6 +1099,10 @@
         {
           "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/TodayResolution.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/UserDefaultsLanguageStore.swift.o"
         },
         {
           "kind" : "file",
@@ -1040,6 +1127,10 @@
         {
           "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/EntitlementTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LanguagePreferenceTests.swift.o"
         },
         {
           "kind" : "file",
@@ -1092,6 +1183,10 @@
         {
           "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/EntitlementTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LanguagePreferenceTests.swift"
         },
         {
           "kind" : "file",

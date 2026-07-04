@@ -1,6 +1,5 @@
 @testable import KigoCore
 import XCTest
-@testable import Kigo
 
 /// Tests for `LanguagePreference`, `ChromeStrings`, `InMemoryLanguageStore`,
 /// `UserDefaultsLanguageStore`, and `launchLanguageStore`.

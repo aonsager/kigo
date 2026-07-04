@@ -6,8 +6,12 @@
 /Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/DayKey.swift
 /Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/EntitlementProvider.swift
 /Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/EntitlementSharedStore.swift
+/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LanguagePreference.swift
 /Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LaunchDateProvider.swift
+/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LaunchLanguageStore.swift
+/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LocalizedTextLanguage.swift
 /Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/Manifest.swift
 /Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/PaywallConfig.swift
 /Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/RemoteManifestSource.swift
 /Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/TodayResolution.swift
+/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/UserDefaultsLanguageStore.swift
