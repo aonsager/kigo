@@ -28,20 +28,34 @@ struct SettingsView: View {
     @Binding var language: LanguagePreference
     let languageStore: any LanguageStore
     let appearanceStore: any AppearanceStore
+    let reminderStore: any ReminderStore
+    let notificationScheduler: any NotificationScheduler
+
+    /// Today's Kigo flows through this store (ADR 0006). The reminder coordinator
+    /// pulls today's kanji/reading from it when the toggle is enabled. Injected via
+    /// the SwiftUI environment (`.environment(store)` at the app root) — the bottom
+    /// sheet renders inline in the same hierarchy, so the store is inherited here.
+    @Environment(ContentStore.self) private var contentStore
 
     @State private var currentAppearance: AppearancePreference
+    @State private var isReminderEnabled: Bool
 
     init(
         model: PaywallModel,
         language: Binding<LanguagePreference>,
         languageStore: any LanguageStore,
-        appearanceStore: any AppearanceStore
+        appearanceStore: any AppearanceStore,
+        reminderStore: any ReminderStore,
+        notificationScheduler: any NotificationScheduler
     ) {
         self.model = model
         self._language = language
         self.languageStore = languageStore
         self.appearanceStore = appearanceStore
+        self.reminderStore = reminderStore
+        self.notificationScheduler = notificationScheduler
         _currentAppearance = State(initialValue: appearanceStore.preference)
+        _isReminderEnabled = State(initialValue: reminderStore.isEnabled)
     }
 
     var body: some View {
@@ -94,6 +108,26 @@ struct SettingsView: View {
                 .padding(.horizontal, 28)
                 .padding(.top, 22)
 
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(chrome.reminderSectionLabel)
+                        .font(KigoFont.zenKaku(.medium, size: 10.5, relativeTo: .caption2))
+                        .tracking(4)
+                        .foregroundStyle(KigoTheme.textTertiary)
+
+                    // Slice #220 (ADR 0019, C23): flipping this toggle persists the
+                    // preference (via `reminderStore`) and drives the
+                    // `ReminderNotificationCoordinator` — enabling schedules one repeating
+                    // 08:00 local reminder carrying today's Kigo, disabling cancels it.
+                    Toggle(chrome.dailyReminderToggleLabel, isOn: $isReminderEnabled)
+                        .font(KigoFont.zenKaku(.medium, size: 15, relativeTo: .body))
+                        .foregroundStyle(KigoTheme.inkKanji)
+                        .tint(KigoTheme.accent)
+                        .accessibilityIdentifier("settings.dailyReminder")
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 28)
+                .padding(.top, 22)
+
                 Divider()
                     .overlay(KigoTheme.hairline)
                     .padding(.horizontal, 28)
@@ -110,6 +144,18 @@ struct SettingsView: View {
         }
         .onChange(of: currentAppearance) { _, newValue in
             appearanceStore.set(newValue)
+        }
+        .onChange(of: isReminderEnabled) { _, newValue in
+            reminderStore.set(newValue)
+            // Reconcile the actual scheduled notification with the new preference.
+            // The coordinator is stateless (holds only its two dependencies), so
+            // building it per change is cheap and keeps the decision logic in one
+            // headlessly-testable place rather than inline in the view.
+            let coordinator = ReminderNotificationCoordinator(
+                scheduler: notificationScheduler,
+                contentStore: contentStore
+            )
+            Task { await coordinator.apply(isEnabled: newValue) }
         }
     }
 }

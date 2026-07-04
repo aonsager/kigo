@@ -64,6 +64,10 @@ public struct ChromeStrings: Equatable, Sendable {
     public let languageSectionLabel: String
     /// The "Appearance" section label and the appearance picker's accessibility title.
     public let appearanceSectionLabel: String
+    /// The "Reminder" section label above the daily-reminder toggle.
+    public let reminderSectionLabel: String
+    /// The "Daily reminder" toggle label (Slice #219, ADR 0019).
+    public let dailyReminderToggleLabel: String
     /// The "Subscription" section label.
     public let subscriptionSectionLabel: String
 
@@ -170,6 +174,8 @@ public struct ChromeStrings: Equatable, Sendable {
             settingsTitle             = "設定"
             languageSectionLabel      = "言語"
             appearanceSectionLabel    = "表示"
+            reminderSectionLabel      = "リマインダー"
+            dailyReminderToggleLabel  = "毎日のリマインダー"
             subscriptionSectionLabel  = "購読"
             appearanceSystem          = "システム"
             appearanceLight           = "ライト"
@@ -203,6 +209,8 @@ public struct ChromeStrings: Equatable, Sendable {
             settingsTitle             = "Settings"
             languageSectionLabel      = "Language"
             appearanceSectionLabel    = "Appearance"
+            reminderSectionLabel      = "Reminder"
+            dailyReminderToggleLabel  = "Daily reminder"
             subscriptionSectionLabel  = "Subscription"
             appearanceSystem          = "System"
             appearanceLight           = "Light"

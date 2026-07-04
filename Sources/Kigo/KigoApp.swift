@@ -64,12 +64,23 @@ struct KigoApp: App {
     private let offerDisplay: OfferDisplay
     private let languageStore: any LanguageStore
     private let appearanceStore: any AppearanceStore
+    private let reminderStore: any ReminderStore
+    private let notificationScheduler: any NotificationScheduler
 
     init() {
         let env = ProcessInfo.processInfo.environment
         offerDisplay = launchOfferDisplay(environment: env)
         languageStore = launchLanguageStore(environment: env)
         appearanceStore = launchAppearanceStore(environment: env)
+        // Slice #220 (PRD #218, C23, ADR 0019): `launchReminderStore` resolves the
+        // persisted, default-off `UserDefaultsReminderStore` in a real launch, or a
+        // locked in-memory store seeded on/off under `KIGO_FAKE_REMINDER` (so a UI
+        // test can show the toggle "on" without tapping it). `launchNotificationScheduler`
+        // selects the production `UNUserNotificationCenter` adapter by default, or an
+        // in-memory fake under the same fake-reminder path so a headless test can never
+        // trip the real permission prompt.
+        reminderStore = launchReminderStore(environment: env)
+        notificationScheduler = launchNotificationScheduler(environment: env)
 
         if let fakePurchaser = launchPurchaser(environment: env) {
             // KIGO_FAKE_PURCHASER is set: use the resolved purchaser.
@@ -94,7 +105,9 @@ struct KigoApp: App {
                 offerDisplay: offerDisplay,
                 purchaser: purchaser,
                 languageStore: languageStore,
-                appearanceStore: appearanceStore
+                appearanceStore: appearanceStore,
+                reminderStore: reminderStore,
+                notificationScheduler: notificationScheduler
             )
             .environment(store)
         }
@@ -133,6 +146,8 @@ struct RootView: View {
     let purchaser: any SubscriptionPurchaser
     let languageStore: any LanguageStore
     let appearanceStore: any AppearanceStore
+    let reminderStore: any ReminderStore
+    let notificationScheduler: any NotificationScheduler
 
     /// The two root-level sheets. They are deliberately distinct surfaces (PRD #189):
     /// the gear opens *settings* (language, appearance, subscription status + restore);
@@ -153,13 +168,17 @@ struct RootView: View {
         offerDisplay: OfferDisplay,
         purchaser: any SubscriptionPurchaser,
         languageStore: any LanguageStore,
-        appearanceStore: any AppearanceStore
+        appearanceStore: any AppearanceStore,
+        reminderStore: any ReminderStore,
+        notificationScheduler: any NotificationScheduler
     ) {
         self.entitlementProvider = entitlementProvider
         self.offerDisplay = offerDisplay
         self.purchaser = purchaser
         self.languageStore = languageStore
         self.appearanceStore = appearanceStore
+        self.reminderStore = reminderStore
+        self.notificationScheduler = notificationScheduler
         // Seed the active language from the store's resolved preference (persisted
         // value, else the OS-derived initial language) so the first frame already
         // renders in the correct language — no Japanese flash for an English-OS user.
@@ -200,7 +219,9 @@ struct RootView: View {
                         model: paywallModel,
                         language: $language,
                         languageStore: languageStore,
-                        appearanceStore: appearanceStore
+                        appearanceStore: appearanceStore,
+                        reminderStore: reminderStore,
+                        notificationScheduler: notificationScheduler
                     )
                 case .purchase:
                     PaywallView(
