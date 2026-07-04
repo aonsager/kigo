@@ -1,5 +1,0 @@
----
-triple:          'arm64-apple-darwin'
-binary-path:     '/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.xctest/Contents/MacOS/KigoCorePackageTests'
-relocations:     []
-...

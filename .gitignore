@@ -5,6 +5,8 @@ Kigo.xcodeproj/
 *.entitlements
 # Build product dir used by C8's evidence (xcodebuild -derivedDataPath build).
 build/
+# SwiftPM build dir for the KigoCore package (fast-lane `swift test` byproducts).
+KigoCore/.build/
 .claude/worktrees/
 TestResults*
 *.xcresult
