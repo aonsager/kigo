@@ -1,4 +1,3 @@
-import KigoCore
 import SwiftUI
 import WidgetKit
 

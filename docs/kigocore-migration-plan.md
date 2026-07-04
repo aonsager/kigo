@@ -1,6 +1,14 @@
 # KigoCore migration plan — host-side `swift test` for domain logic
 
-Status: draft, 2026-07-04. Motivated by the simulator-toolchain audit (see
+Status: **phase 1 executed, 2026-07-04** (branch `kigocore-migration`; slices
+1–4 done in-session, ~61 tests now host-side). Deviations from the draft below:
+`PaywallTests`/`LaunchEntitlementProviderTests` stayed sim-side (they test
+`PaywallModel` / launch wiring, which stay app-side); the appearance cluster
+stayed app-side (`AppearancePreference` maps to `SwiftUI.ColorScheme` and
+`UserDefaultsAppearanceStore` stores it); shared fakes landed as a
+`KigoCoreTestSupport` library product; `BundledContentSource` gained an
+optional injected bundle (hostless test bundles must pass
+`Bundle(for: Self.self)`). Phase 2 candidates unchanged. Motivated by the simulator-toolchain audit (see
 `docs/simulator-toolchain-handoff.md` and the 2026-07-03/04 halts): every unit
 test currently pays the iOS-simulator tax — boot time, CoreSimulatorService
 fragility (SimError 410 wedges), leaked runtime daemons, and 1.5–3 GB of
