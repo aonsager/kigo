@@ -13,10 +13,15 @@ let package = Package(
         .macOS("15.0"),
     ],
     products: [
-        .library(name: "KigoCore", targets: ["KigoCore"])
+        .library(name: "KigoCore", targets: ["KigoCore"]),
+        // Shared ContentSource fakes, importable by BOTH the package's host-side
+        // tests and the app's sim-lane test bundles (test targets can't import
+        // each other, so the fakes live in a library product).
+        .library(name: "KigoCoreTestSupport", targets: ["KigoCoreTestSupport"]),
     ],
     targets: [
         .target(name: "KigoCore"),
-        .testTarget(name: "KigoCoreTests", dependencies: ["KigoCore"]),
+        .target(name: "KigoCoreTestSupport", dependencies: ["KigoCore"]),
+        .testTarget(name: "KigoCoreTests", dependencies: ["KigoCore", "KigoCoreTestSupport"]),
     ]
 )

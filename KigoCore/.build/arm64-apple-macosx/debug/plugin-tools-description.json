@@ -28,7 +28,43 @@
       "inputs" : [
         {
           "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/AlmanacResolution.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/AppScreenState.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/ContentSource.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/ContentStore.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/DateProvider.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/DayKey.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LaunchDateProvider.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/Manifest.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/RemoteManifestSource.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/TodayResolution.swift"
         },
         {
           "kind" : "file",
@@ -43,7 +79,16 @@
       "moduleName" : "KigoCore",
       "moduleOutputPath" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCore.swiftmodule",
       "objects" : [
-        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/DayKey.swift.o"
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/AlmanacResolution.swift.o",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/AppScreenState.swift.o",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/ContentSource.swift.o",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/ContentStore.swift.o",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/DateProvider.swift.o",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/DayKey.swift.o",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchDateProvider.swift.o",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/Manifest.swift.o",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/RemoteManifestSource.swift.o",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/TodayResolution.swift.o"
       ],
       "otherArguments" : [
         "-target",
@@ -98,7 +143,43 @@
       "outputs" : [
         {
           "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/AlmanacResolution.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/AppScreenState.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/ContentSource.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/ContentStore.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/DateProvider.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/DayKey.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchDateProvider.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/Manifest.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/RemoteManifestSource.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/TodayResolution.swift.o"
         },
         {
           "kind" : "file",
@@ -107,7 +188,16 @@
       ],
       "prepareForIndexing" : false,
       "sources" : [
-        "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/DayKey.swift"
+        "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/AlmanacResolution.swift",
+        "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/AppScreenState.swift",
+        "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/ContentSource.swift",
+        "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/ContentStore.swift",
+        "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/DateProvider.swift",
+        "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/DayKey.swift",
+        "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LaunchDateProvider.swift",
+        "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/Manifest.swift",
+        "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/RemoteManifestSource.swift",
+        "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/TodayResolution.swift"
       ],
       "tempsPath" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build",
       "wholeModuleOptimization" : false
@@ -207,14 +297,14 @@
       "tempsPath" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.build",
       "wholeModuleOptimization" : false
     },
-    "C.KigoCoreTests-arm64-apple-macosx-debug.module" : {
+    "C.KigoCoreTestSupport-arm64-apple-macosx-debug.module" : {
       "executable" : "/Applications/Xcode-26.5.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
-      "fileList" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/sources",
+      "fileList" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTestSupport.build/sources",
       "importPath" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules",
       "inputs" : [
         {
           "kind" : "file",
-          "name" : "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/DayKeyTests.swift"
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCoreTestSupport/ContentSourceFakes.swift"
         },
         {
           "kind" : "file",
@@ -226,6 +316,121 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTestSupport.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "KigoCoreTestSupport",
+      "moduleOutputPath" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCoreTestSupport.swiftmodule",
+      "objects" : [
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTestSupport.build/ContentSourceFakes.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx15.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-j10",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTestSupport.build/include/KigoCoreTestSupport-Swift.h",
+        "-swift-version",
+        "6",
+        "-plugin-path",
+        "/Applications/Xcode-26.5.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "-F",
+        "/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-I",
+        "/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "kigocore"
+      ],
+      "outputFileMapPath" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTestSupport.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTestSupport.build/ContentSourceFakes.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCoreTestSupport.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCoreTestSupport/ContentSourceFakes.swift"
+      ],
+      "tempsPath" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTestSupport.build",
+      "wholeModuleOptimization" : false
+    },
+    "C.KigoCoreTests-arm64-apple-macosx-debug.module" : {
+      "executable" : "/Applications/Xcode-26.5.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/sources",
+      "importPath" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/ContentRootStateTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/ContentStoreTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/DayKeyTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LaunchDateProviderTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LocalizableContentTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/swift-version-69A768CDF2A0BEE1.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCore.swiftmodule"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCoreTestSupport.swiftmodule"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/sources"
         }
       ],
@@ -233,7 +438,11 @@
       "moduleName" : "KigoCoreTests",
       "moduleOutputPath" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules/KigoCoreTests.swiftmodule",
       "objects" : [
-        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/DayKeyTests.swift.o"
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/ContentRootStateTests.swift.o",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/ContentStoreTests.swift.o",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/DayKeyTests.swift.o",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LaunchDateProviderTests.swift.o",
+        "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LocalizableContentTests.swift.o"
       ],
       "otherArguments" : [
         "-target",
@@ -287,7 +496,23 @@
       "outputs" : [
         {
           "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/ContentRootStateTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/ContentStoreTests.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/DayKeyTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LaunchDateProviderTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LocalizableContentTests.swift.o"
         },
         {
           "kind" : "file",
@@ -296,7 +521,11 @@
       ],
       "prepareForIndexing" : false,
       "sources" : [
-        "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/DayKeyTests.swift"
+        "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/ContentRootStateTests.swift",
+        "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/ContentStoreTests.swift",
+        "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/DayKeyTests.swift",
+        "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LaunchDateProviderTests.swift",
+        "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LocalizableContentTests.swift"
       ],
       "tempsPath" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build",
       "wholeModuleOptimization" : false
@@ -313,7 +542,16 @@
       "-package-name",
       "kigocore",
       "-c",
+      "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/AlmanacResolution.swift",
+      "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/AppScreenState.swift",
+      "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/ContentSource.swift",
+      "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/ContentStore.swift",
+      "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/DateProvider.swift",
       "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/DayKey.swift",
+      "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LaunchDateProvider.swift",
+      "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/Manifest.swift",
+      "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/RemoteManifestSource.swift",
+      "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/TodayResolution.swift",
       "-I",
       "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules",
       "-target",
@@ -426,6 +664,66 @@
       "-driver-use-frontend-path",
       "/Applications/Xcode-26.5.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
     ],
+    "KigoCoreTestSupport" : [
+      "/Applications/Xcode-26.5.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "KigoCoreTestSupport",
+      "-package-name",
+      "kigocore",
+      "-c",
+      "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCoreTestSupport/ContentSourceFakes.swift",
+      "-I",
+      "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx15.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-j10",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTestSupport.build/include/KigoCoreTestSupport-Swift.h",
+      "-swift-version",
+      "6",
+      "-plugin-path",
+      "/Applications/Xcode-26.5.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+      "-F",
+      "/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-I",
+      "/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode-26.5.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "kigocore",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode-26.5.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
     "KigoCoreTests" : [
       "/Applications/Xcode-26.5.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
       "-module-name",
@@ -433,7 +731,11 @@
       "-package-name",
       "kigocore",
       "-c",
+      "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/ContentRootStateTests.swift",
+      "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/ContentStoreTests.swift",
       "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/DayKeyTests.swift",
+      "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LaunchDateProviderTests.swift",
+      "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LocalizableContentTests.swift",
       "-I",
       "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/Modules",
       "-target",
@@ -492,9 +794,14 @@
     ],
     "KigoCorePackageTests" : [
       "KigoCoreTests",
+      "KigoCoreTestSupport",
+      "KigoCore"
+    ],
+    "KigoCoreTestSupport" : [
       "KigoCore"
     ],
     "KigoCoreTests" : [
+      "KigoCoreTestSupport",
       "KigoCore"
     ]
   },
@@ -529,7 +836,43 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/AlmanacResolution.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/AppScreenState.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/ContentSource.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/ContentStore.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/DateProvider.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/DayKey.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LaunchDateProvider.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/Manifest.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/RemoteManifestSource.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/TodayResolution.swift"
         }
       ],
       "outputFilePath" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/sources"
@@ -557,7 +900,43 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/AlmanacResolution.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/AppScreenState.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/ContentSource.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/ContentStore.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/DateProvider.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/DayKey.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/LaunchDateProvider.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/Manifest.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/RemoteManifestSource.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCore.build/TodayResolution.swift.o"
         },
         {
           "kind" : "file",
@@ -565,10 +944,44 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTestSupport.build/ContentSourceFakes.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/ContentRootStateTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/ContentStoreTests.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/DayKeyTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LaunchDateProviderTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/LocalizableContentTests.swift.o"
         }
       ],
       "outputFilePath" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCorePackageTests.product/Objects.LinkFileList"
+    },
+    "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTestSupport.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCoreTestSupport/ContentSourceFakes.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTestSupport.build/sources"
     },
     "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/sources" : {
       "alwaysOutOfDate" : false,
@@ -579,7 +992,23 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/ContentRootStateTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/ContentStoreTests.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/DayKeyTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LaunchDateProviderTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/aonsager/projects/kigo/KigoCore/Tests/KigoCoreTests/LocalizableContentTests.swift"
         }
       ],
       "outputFilePath" : "/Users/aonsager/projects/kigo/KigoCore/.build/arm64-apple-macosx/debug/KigoCoreTests.build/sources"

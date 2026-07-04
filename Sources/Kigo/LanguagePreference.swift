@@ -1,3 +1,4 @@
+import KigoCore
 import Foundation
 import Observation
 import SwiftUI

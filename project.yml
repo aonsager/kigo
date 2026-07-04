@@ -86,13 +86,8 @@ targets:
     deploymentTarget: "26.0"
     sources:
       - path: Sources/KigoWidgetExtension
-      # Shared Foundation-only types reused by the widget extension (AC4: no hand-edits to xcodeproj).
-      # These files are listed individually to avoid pulling in SwiftUI files from Sources/Kigo.
-      # (Migrating file-by-file into the KigoCore package dependency below — DayKey already moved.)
-      - path: Sources/Kigo/Manifest.swift
-      - path: Sources/Kigo/DateProvider.swift
-      - path: Sources/Kigo/TodayResolution.swift
-      - path: Sources/Kigo/ContentSource.swift
+      # Shared Foundation-only types now come from the KigoCore package dependency
+      # (content domain moved there — see docs/kigocore-migration-plan.md).
       # Slice #71: EntitlementSharedStore protocol + UserDefaultsEntitlementStore — Foundation-only
       # (no StoreKit) so the widget extension can read the active flag from the app-group store.
       - path: Sources/Kigo/EntitlementSharedStore.swift
@@ -179,6 +174,9 @@ targets:
     dependencies:
       - target: Kigo
       - package: KigoCore
+      # Shared ContentSource fakes used by both lanes (see KigoCore/Package.swift).
+      - package: KigoCore
+        product: KigoCoreTestSupport
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigoTests
@@ -211,12 +209,7 @@ targets:
       - path: Sources/KigoWidgetExtension/WidgetTimelineBuilder.swift
       # Slice #73: KigoWidgetView extracted to its own file so it can be compiled into KigoWidgetTests.
       - path: Sources/KigoWidgetExtension/KigoWidgetView.swift
-      # Shared Foundation-only types from the Kigo app target
-      # (migrating into the KigoCore package dependency below — DayKey already moved)
-      - path: Sources/Kigo/Manifest.swift
-      - path: Sources/Kigo/DateProvider.swift
-      - path: Sources/Kigo/TodayResolution.swift
-      - path: Sources/Kigo/ContentSource.swift
+      # Shared Foundation-only types now come from the KigoCore package dependency.
       # Slice #71: EntitlementSharedStore protocol — Foundation-only (no StoreKit).
       - path: Sources/Kigo/EntitlementSharedStore.swift
       # Slice #73: KigoPlaceholderView (SwiftUI) for image rendering in KigoWidgetView.

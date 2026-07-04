@@ -1,3 +1,4 @@
+import KigoCore
 import SwiftUI
 
 /// A reusable, content-height bottom-sheet overlay (Slice C / issue #160).

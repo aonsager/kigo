@@ -1,1 +1,10 @@
+/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/AlmanacResolution.swift
+/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/AppScreenState.swift
+/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/ContentSource.swift
+/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/ContentStore.swift
+/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/DateProvider.swift
 /Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/DayKey.swift
+/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/LaunchDateProvider.swift
+/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/Manifest.swift
+/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/RemoteManifestSource.swift
+/Users/aonsager/projects/kigo/KigoCore/Sources/KigoCore/TodayResolution.swift
