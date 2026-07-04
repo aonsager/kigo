@@ -1,4 +1,5 @@
 import Foundation
+import KigoCore
 
 // MARK: - ReminderNotificationCoordinator
 
