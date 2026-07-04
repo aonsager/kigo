@@ -1,6 +1,6 @@
 import XCTest
 
-// MARK: - RemoteImagePlaceholderUITests
+// MARK: - RemoteImageUITests
 
 /// UI tests for slice #228/#229 (PRD #227, C26, ADR 0022) — proves `TodayView`'s
 /// `KigoImageSource` seam call is real wiring, not dead code, by asserting both the
@@ -29,14 +29,14 @@ import XCTest
 ///   Captured in `testFakeImageNoneRendersPlaceholderWithIdentifiers`, showing the
 ///   Today screen's unchanged gradient placeholder after the `KIGO_FAKE_IMAGE=none`
 ///   seam call.
-///   Full test identifier: KigoUITests/RemoteImagePlaceholderUITests/testFakeImageNoneRendersPlaceholderWithIdentifiers
+///   Full test identifier: KigoUITests/RemoteImageUITests/testFakeImageNoneRendersPlaceholderWithIdentifiers
 /// - Attachment name: `"remote-image-loaded-photo"`.
 ///   Captured in `testFakeImageLoadedRendersRemotePhotoThenNoneStillRendersPlaceholder`,
 ///   showing the Today screen rendering the fetched photo full-bleed after the
 ///   `KIGO_FAKE_IMAGE=loaded` seam call, before the same test relaunches with
 ///   `KIGO_FAKE_IMAGE=none` to prove the placeholder path still works unchanged.
-///   Full test identifier: KigoUITests/RemoteImagePlaceholderUITests/testFakeImageLoadedRendersRemotePhotoThenNoneStillRendersPlaceholder
-final class RemoteImagePlaceholderUITests: XCTestCase {
+///   Full test identifier: KigoUITests/RemoteImageUITests/testFakeImageLoadedRendersRemotePhotoThenNoneStillRendersPlaceholder
+final class RemoteImageUITests: XCTestCase {
 
     var app: XCUIApplication!
 
