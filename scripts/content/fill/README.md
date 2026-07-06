@@ -32,7 +32,7 @@ step that *must* stay human (reading the Japanese) is the only manual gate.
 | Input | For | How |
 |---|---|---|
 | **An LLM** (stage 3) | authoring `description_ja` / `description_en` | any capable chat model, or `ANTHROPIC_API_KEY` + `describe_via_claude.py` |
-| **A Pexels API key** (stage 4) | real photography + attribution | free at <https://www.pexels.com/api/>; export `PEXELS_API_KEY` |
+| **An image-provider API key** (stage 4) | real photography + attribution | free from [Pixabay](https://pixabay.com/api/docs/) or [Pexels](https://www.pexels.com/api/); put `PIXABAY_API_KEY` / `PEXELS_API_KEY` in a gitignored `scripts/content/fill/.env` |
 | **A static image host** (post-workflow) | re-hosting chosen JPEGs at a stable base URL | Cloudflare R2 / S3 / GitHub release; becomes `--image-base-url` for `assemble.py` |
 | **A Japanese-literate reviewer** | the human gate on `spine-2026.csv` + descriptions | read top-to-bottom, correct inline |
 
@@ -106,27 +106,40 @@ python3 scripts/content/fill/describe.py ingest \
 prompt text — the workflow's LLM contract — lives in `describe.py`
 (`PROMPT_PREAMBLE`); edit it there.
 
-### Images (stage 4) — needs a Pexels key (or run keyless first)
+### Images (stage 4) — needs an image-provider key (or run keyless first)
+
+Two providers are supported via `--provider`; both are free, allow commercial
+use, and return the photographer for the credit line: **pixabay** (Pixabay
+License — no attribution required; we credit anyway) and **pexels** (Pexels
+License). The key is read from `scripts/content/fill/.env` (gitignored) or the
+matching environment variable — never pass it on the command line in a shared
+shell.
 
 ```bash
+# one-time: create the gitignored key file
+cat > scripts/content/fill/.env <<'EOF'
+PIXABAY_API_KEY=...
+PEXELS_API_KEY=...
+EOF
+
 # keyless placeholders, so you can build + gate the CSV before you have a key:
 python3 scripts/content/fill/fetch_images.py \
     --spine scripts/content/fill/spine-2026.csv \
     --out scripts/content/fill/images.csv --placeholder
 
-# real: query Pexels per row, record attribution, download the JPEGs to re-host:
-export PEXELS_API_KEY=...
+# real: query the provider per row, record attribution, download JPEGs to re-host:
 python3 scripts/content/fill/fetch_images.py \
     --spine scripts/content/fill/spine-2026.csv \
     --out scripts/content/fill/images.csv \
-    --api-key "$PEXELS_API_KEY" \
+    --provider pixabay \
     --download scripts/content/fill/downloads
 ```
 
 The auto-picked top result is a *candidate* — image curation is a human step
-(ADR 0022). Rows with no Pexels match are written as placeholders and listed on
-stderr so you can refine the query and rerun. Pexels free tier is 200 req/hour;
-`--sleep` throttles and 429s back off, so a full 365-row run self-paces.
+(ADR 0022). Rows with no match are written as placeholders and listed on stderr
+so you can refine the query and rerun. Pixabay allows 100 req/min (Pexels 200
+req/hour); `--sleep` (default 0.7s) throttles and 429s back off, so a full
+365-row run self-paces.
 
 After you re-host the downloaded (and optimized) images, pass their base URL to
 `assemble.py` as `--image-base-url https://your-host/path`.

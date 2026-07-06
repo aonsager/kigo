@@ -1,3 +1,6 @@
+# Secrets — API keys must never be committed.
+.env
+
 # Regenerable workflow caches — not source of truth.
 # The reviewable spine (spine-2026.csv), the scripts, and the README ARE tracked.
 spine_pool.json
