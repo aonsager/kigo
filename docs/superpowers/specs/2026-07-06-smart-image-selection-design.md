@@ -158,8 +158,16 @@ Faithful port of the reference gist (entropy edge-trim), with a performance fix.
   flatter / less informative side), repeating until at the target ratio.
 - **Optimization vs. the gist:** the crop window only ever slides inward and
   columns are never modified, so precompute each column's unique-colour count
-  **once**, then run a two-pointer trim — O(W·H) instead of the gist's
-  O(W²·H) per-iteration rescan. Same result, no per-iteration `get_pixels`.
+  **once**, then run a two-pointer trim — instead of the gist's per-iteration
+  `get_pixels` rescan. Same "trim the flatter side" result, no rescan.
+- **Performance:** the per-column counts are computed on a **downscaled proxy**
+  (quantized, long edge ~256px) rather than the full-res image, then the
+  resulting left/right trim *split* is applied proportionally to the full-res
+  columns. A faithful per-pixel pass over ~1,100 full-res candidates would take
+  tens of minutes in pure Python; the proxy makes analysis effectively instant
+  with equivalent behavior. Processing order: **resize-to-`max-edge` first, then
+  smart-crop** (both keep the long edge ≤ `max-edge`, so the crop output is
+  already at target size — no second resize).
 
 ### 4. CLI summary
 
