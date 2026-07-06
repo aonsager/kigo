@@ -588,14 +588,21 @@ def test_smart_crop_reaches_target_ratio_trimming_columns():
     assert out.height == 900  # columns trimmed, height preserved
 
 
-def test_smart_crop_keeps_the_busy_side():
-    # busy on the right -> the flat left columns should be trimmed away, so the
-    # cropped region's mean colour differs clearly from the original left edge.
+def _grey_fraction(im):
+    px = list(im.getdata())
+    return sum(1 for p in px if p == (128, 128, 128)) / len(px)
+
+
+def test_smart_crop_prefers_the_busy_side():
+    # busy on the right -> the flat left band is trimmed preferentially, so the
+    # smart crop must retain LESS flat-grey area than a naive centre crop of the
+    # same width would. (A degenerate centre-cropping smart_crop fails this.)
     img = _split_image(600, 900, busy_side="right")
     out = fi.smart_crop(img, 9, 19.5)
-    # the far-left column of the crop should NOT be the flat grey band
-    left_col = [out.getpixel((0, y)) for y in range(0, 900, 50)]
-    assert any(p != (128, 128, 128) for p in left_col)
+    tw = out.width
+    left = (600 - tw) // 2
+    centre = img.crop((left, 0, left + tw, 900))
+    assert _grey_fraction(out) < _grey_fraction(centre)
 
 
 def test_smart_crop_trims_rows_when_taller_than_target():
