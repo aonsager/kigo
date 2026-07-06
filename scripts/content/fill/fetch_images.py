@@ -138,7 +138,11 @@ def _wiki_license_shippable(license_code, license_short, nonfree):
     if nonfree:
         return False
     code = (license_code or "").strip().lower()
-    if code.startswith(("cc0", "pd", "cc-by")):  # cc-by covers cc-by-sa
+    if code.startswith(("cc0", "pd")):
+        return True
+    # cc-by / cc-by-sa are fine; NonCommercial (-nc) and NoDerivatives (-nd)
+    # variants are not usable for a commercial, cropped app.
+    if code.startswith("cc-by") and "-nc" not in code and "-nd" not in code:
         return True
     return "public domain" in (license_short or "").strip().lower()
 

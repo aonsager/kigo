@@ -443,7 +443,10 @@ def test_wiki_license_shippable():
     for code, short, nf in [("gfdl", "GFDL", None), ("", "Fair use", None),
                             ("", "", None),
                             ("cc-by-sa-3.0", "CC BY-SA 3.0", True),   # non-free wins
-                            ("cc-by-sa-3.0", "CC BY-SA 3.0", "true")]:
+                            ("cc-by-sa-3.0", "CC BY-SA 3.0", "true"),
+                            ("cc-by-nc-4.0", "CC BY-NC 4.0", None),
+                            ("cc-by-nd-4.0", "CC BY-ND 4.0", None),
+                            ("cc-by-nc-sa-3.0", "CC BY-NC-SA 3.0", None)]:
         assert fi._wiki_license_shippable(code, short, nf) is False, (code, short, nf)
 
 
