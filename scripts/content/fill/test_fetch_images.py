@@ -82,6 +82,49 @@ def test_ladder_falls_back_to_romaji_when_gloss_empty():
     assert en_terms == ["sakura", "sakura", "sakura"]
 
 
+_PEXELS_SAMPLE = {
+    "photos": [
+        {"id": 101, "width": 4000, "height": 6000, "url": "https://pexels/p/101",
+         "photographer": "Aki",
+         "src": {"original": "https://img/101.jpg", "large2x": "https://img/101_2x.jpg"}},
+        {"id": 102, "width": 3000, "height": 4500, "url": "https://pexels/p/102",
+         "photographer": "Bo",
+         "src": {"large": "https://img/102_l.jpg"}},
+    ]
+}
+
+_PIXABAY_SAMPLE = {
+    "hits": [
+        {"id": 55, "imageWidth": 4000, "imageHeight": 6000, "pageURL": "https://pix/55",
+         "user": "Cho", "largeImageURL": "https://img/55_1280.jpg",
+         "webformatURL": "https://img/55_web.jpg"},
+    ]
+}
+
+
+def test_parse_pexels_prefers_original_then_large2x():
+    cands = fi._parse_pexels(_PEXELS_SAMPLE)
+    assert cands[0] == {"photo_id": "101", "photographer": "Aki",
+                        "download_url": "https://img/101.jpg",
+                        "source_url": "https://pexels/p/101",
+                        "width": 4000, "height": 6000}
+    # second hit has no original -> falls through to 'large'
+    assert cands[1]["download_url"] == "https://img/102_l.jpg"
+
+
+def test_parse_pixabay_uses_largeimageurl():
+    cands = fi._parse_pixabay(_PIXABAY_SAMPLE)
+    assert cands[0] == {"photo_id": "55", "photographer": "Cho",
+                        "download_url": "https://img/55_1280.jpg",
+                        "source_url": "https://pix/55",
+                        "width": 4000, "height": 6000}
+
+
+def test_parsers_return_empty_on_no_hits():
+    assert fi._parse_pexels({"photos": []}) == []
+    assert fi._parse_pixabay({}) == []
+
+
 if __name__ == "__main__":
     fns = [g for n, g in sorted(globals().items()) if n.startswith("test_")]
     for fn in fns:

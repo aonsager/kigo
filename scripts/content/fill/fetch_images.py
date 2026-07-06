@@ -171,58 +171,81 @@ def _read_spine(path):
     return list(csv.DictReader(path.open(encoding="utf-8")))
 
 
-# --- Provider search adapters. Each returns a normalized dict or None. --------
+# --- Provider JSON parsers. Return a list of normalized candidate dicts. --------
 
-def _pixabay_search(query, api_key, sleep, retries=3):
-    params = urllib.parse.urlencode({
-        "key": api_key, "q": query, "image_type": "photo",
-        "orientation": "vertical", "per_page": 3, "safesearch": "true", "lang": "en",
-    })
-    url = f"https://pixabay.com/api/?{params}"
-    for attempt in range(retries):
-        try:
-            with _get(url) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
-            time.sleep(sleep)
-            hits = data.get("hits") or []
-            if not hits:
-                return None
-            hit = hits[0]
-            return {
-                "photographer": (hit.get("user") or "Unknown").strip(),
-                "download_url": hit.get("largeImageURL") or hit.get("webformatURL"),
-            }
-        except urllib.error.HTTPError as e:
-            if e.code == 429 and attempt < retries - 1:
-                backoff = 10 * (attempt + 1)
-                print(f"  rate-limited (429); backing off {backoff}s…", file=sys.stderr)
-                time.sleep(backoff)
-                continue
-            raise
+def _parse_pexels(data):
+    out = []
+    for p in (data.get("photos") or []):
+        src = p.get("src") or {}
+        url = src.get("original") or src.get("large2x") or src.get("large")
+        if not url:
+            continue
+        out.append({
+            "photo_id": str(p.get("id")),
+            "photographer": (p.get("photographer") or "Unknown").strip(),
+            "download_url": url,
+            "source_url": p.get("url") or "",
+            "width": int(p.get("width") or 0),
+            "height": int(p.get("height") or 0),
+        })
+    return out
 
 
-def _pexels_search(query, api_key, sleep, retries=3):
-    params = urllib.parse.urlencode(
-        {"query": query, "per_page": 1, "orientation": "portrait", "size": "large"}
-    )
+def _parse_pixabay(data):
+    out = []
+    for h in (data.get("hits") or []):
+        url = h.get("largeImageURL") or h.get("webformatURL")
+        if not url:
+            continue
+        out.append({
+            "photo_id": str(h.get("id")),
+            "photographer": (h.get("user") or "Unknown").strip(),
+            "download_url": url,
+            "source_url": h.get("pageURL") or "",
+            "width": int(h.get("imageWidth") or 0),
+            "height": int(h.get("imageHeight") or 0),
+        })
+    return out
+
+
+# --- Provider search adapters. Fetch JSON and return parser's list. --------
+
+def _pexels_search(term, lang, api_key, per_page, sleep, retries=3):
+    q = {"query": term, "per_page": per_page, "orientation": "portrait",
+         "size": "large"}
+    if "-" in lang:  # Pexels locale expects e.g. "ja-JP"; skip bare "en"
+        q["locale"] = lang
+    params = urllib.parse.urlencode(q)
     for attempt in range(retries):
         try:
             with _get(f"https://api.pexels.com/v1/search?{params}",
                       headers={"Authorization": api_key}) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
             time.sleep(sleep)
-            photos = data.get("photos") or []
-            if not photos:
-                return None
-            photo = photos[0]
-            src = photo.get("src") or {}
-            return {
-                "photographer": (photo.get("photographer") or "Unknown").strip(),
-                "download_url": src.get("large2x") or src.get("large") or src.get("original"),
-            }
+            return _parse_pexels(data)
         except urllib.error.HTTPError as e:
             if e.code == 429 and attempt < retries - 1:
                 backoff = 5 * (attempt + 1)
+                print(f"  rate-limited (429); backing off {backoff}s…", file=sys.stderr)
+                time.sleep(backoff)
+                continue
+            raise
+
+
+def _pixabay_search(term, lang, api_key, per_page, sleep, retries=3):
+    params = urllib.parse.urlencode(
+        {"key": api_key, "q": term, "image_type": "photo", "orientation": "vertical",
+         "per_page": max(3, per_page), "safesearch": "true", "lang": lang})
+    url = f"https://pixabay.com/api/?{params}"
+    for attempt in range(retries):
+        try:
+            with _get(url) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+            time.sleep(sleep)
+            return _parse_pixabay(data)
+        except urllib.error.HTTPError as e:
+            if e.code == 429 and attempt < retries - 1:
+                backoff = 10 * (attempt + 1)
                 print(f"  rate-limited (429); backing off {backoff}s…", file=sys.stderr)
                 time.sleep(backoff)
                 continue
