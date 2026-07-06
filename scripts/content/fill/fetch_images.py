@@ -113,6 +113,33 @@ def image_id_for(date):
     return f"kigo-{mm}-{dd}"
 
 
+def parse_aspect(text):
+    """'9:19.5' -> (9.0, 19.5). Raises ValueError on malformed input."""
+    parts = text.split(":")
+    if len(parts) != 2:
+        raise ValueError(f"aspect must be 'W:H', got {text!r}")
+    w, h = float(parts[0]), float(parts[1])
+    if w <= 0 or h <= 0:
+        raise ValueError(f"aspect components must be positive, got {text!r}")
+    return (w, h)
+
+
+def effective_dims(provider, width, height, cap=1280):
+    """Downloadable dimensions. Pexels serves full-res `original`; Pixabay's
+    free-tier largeImageURL is capped at `cap` on the long edge."""
+    if provider != "pixabay":
+        return (width, height)
+    long_edge = max(width, height)
+    if long_edge <= cap:
+        return (width, height)
+    scale = cap / long_edge
+    return (round(width * scale), round(height * scale))
+
+
+def passes_floor(width, height, min_width, min_height):
+    return width >= min_width and height >= min_height
+
+
 def _read_spine(path):
     return list(csv.DictReader(path.open(encoding="utf-8")))
 
