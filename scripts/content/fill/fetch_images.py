@@ -80,6 +80,13 @@ IMAGE_COLUMNS = (
     "attribution_license_ja", "attribution_license_en",
 )
 
+CANDIDATE_COLUMNS = (
+    "date", "image_id", "candidate", "chosen",
+    "provider", "search_term", "search_lang", "photographer",
+    "license_ja", "license_en", "title_ja", "title_en",
+    "source_url", "src_w", "src_h", "out_file",
+)
+
 # Per-provider config: which env var holds the key, the license strings, and
 # how to build a request + normalize a hit to {photographer, download_url}.
 PROVIDERS = {
@@ -113,6 +120,66 @@ def image_id_for(date):
     """'2026-03-21' -> 'kigo-03-21'."""
     _, mm, dd = date.split("-")
     return f"kigo-{mm}-{dd}"
+
+
+def candidate_row(row, cand, index, out_file, src_w, src_h):
+    """Builds one CANDIDATE_COLUMNS dict from row, candidate, and metadata.
+    chosen is left blank; title_en falls back to reading_en if gloss_en is empty."""
+    cfg = PROVIDERS[cand["provider"]]
+    return {
+        "date": row["date"],
+        "image_id": image_id_for(row["date"]),
+        "candidate": index,
+        "chosen": "",
+        "provider": cand["provider"],
+        "search_term": cand["search_term"],
+        "search_lang": cand["search_lang"],
+        "photographer": cand["photographer"],
+        "license_ja": cfg["license_ja"],
+        "license_en": cfg["license_en"],
+        "title_ja": row["kanji"],
+        "title_en": row.get("gloss_en") or row["reading_en"],
+        "source_url": cand.get("source_url", ""),
+        "src_w": src_w,
+        "src_h": src_h,
+        "out_file": out_file,
+    }
+
+
+def image_row_from_candidate(cand_row):
+    """Builds an 8-col IMAGE_COLUMNS dict from a chosen candidates.csv row,
+    with credit strings in Japanese and English."""
+    label = cand_row["provider"].capitalize()
+    photographer = cand_row["photographer"]
+    return {
+        "date": cand_row["date"],
+        "image_id": cand_row["image_id"],
+        "attribution_title_ja": cand_row["title_ja"],
+        "attribution_title_en": cand_row["title_en"],
+        "attribution_credit_ja": f"写真: {photographer} / {label}",
+        "attribution_credit_en": f"Photo: {photographer} / {label}",
+        "attribution_license_ja": cand_row["license_ja"],
+        "attribution_license_en": cand_row["license_en"],
+    }
+
+
+def select_chosen(cand_rows):
+    """Returns the chosen candidate row per date. Raises ValueError (with
+    offending dates) if any date has zero or >1 non-empty 'chosen' cell."""
+    by_date = {}
+    for cr in cand_rows:
+        by_date.setdefault(cr["date"], []).append(cr)
+    picked, bad = [], []
+    for date in sorted(by_date):
+        marked = [cr for cr in by_date[date] if (cr.get("chosen") or "").strip()]
+        if len(marked) != 1:
+            bad.append(f"{date} (has {len(marked)} chosen)")
+            continue
+        picked.append(marked[0])
+    if bad:
+        raise ValueError("each date needs exactly one 'chosen' candidate; "
+                         "offending: " + ", ".join(bad))
+    return picked
 
 
 def parse_aspect(text):

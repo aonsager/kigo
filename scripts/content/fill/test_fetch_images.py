@@ -260,6 +260,57 @@ def test_save_jpeg_writes_file(tmp_path=None):
     assert Image.open(p).size == (100, 200)
 
 
+def _cand_row(date, idx, chosen="", provider="pexels", photographer="Aki"):
+    return {"date": date, "image_id": fi.image_id_for(date), "candidate": str(idx),
+            "chosen": chosen, "provider": provider, "search_term": "桜",
+            "search_lang": "ja-JP", "photographer": photographer,
+            "license_ja": "Pexels ライセンス", "license_en": "Pexels License",
+            "title_ja": "桜", "title_en": "cherry blossom",
+            "source_url": "s", "src_w": "1080", "src_h": "2340",
+            "out_file": f"kigo-03-25__c{idx}.jpg"}
+
+
+def test_candidate_row_shape():
+    row = {"date": "2026-03-25", "kanji": "桜", "gloss_en": "cherry blossom",
+           "reading_en": "sakura"}
+    cand = {"provider": "pexels", "search_term": "桜", "search_lang": "ja-JP",
+            "photographer": "Aki", "source_url": "s"}
+    out = fi.candidate_row(row, cand, 1, "kigo-03-25__c1.jpg", 1080, 2340)
+    assert set(out) == set(fi.CANDIDATE_COLUMNS)
+    assert out["chosen"] == "" and out["candidate"] == 1
+    assert out["title_ja"] == "桜" and out["title_en"] == "cherry blossom"
+    assert out["license_en"] == "Pexels License"
+
+
+def test_image_row_from_candidate_builds_attribution():
+    out = fi.image_row_from_candidate(_cand_row("2026-03-25", 2, chosen="x"))
+    assert out["date"] == "2026-03-25"
+    assert out["image_id"] == "kigo-03-25"
+    assert out["attribution_credit_en"] == "Photo: Aki / Pexels"
+    assert out["attribution_credit_ja"] == "写真: Aki / Pexels"
+    assert out["attribution_license_en"] == "Pexels License"
+    assert set(out) == set(fi.IMAGE_COLUMNS)
+
+
+def test_select_chosen_requires_exactly_one_per_date():
+    rows = [_cand_row("2026-03-25", 1, chosen="x"), _cand_row("2026-03-25", 2)]
+    picked = fi.select_chosen(rows)
+    assert len(picked) == 1 and picked[0]["candidate"] == "1"
+
+
+def test_select_chosen_errors_on_zero_or_multiple():
+    for rows in (
+        [_cand_row("2026-03-25", 1), _cand_row("2026-03-25", 2)],            # zero
+        [_cand_row("2026-03-25", 1, "x"), _cand_row("2026-03-25", 2, "x")],  # two
+    ):
+        try:
+            fi.select_chosen(rows)
+        except ValueError as e:
+            assert "2026-03-25" in str(e)
+            continue
+        raise AssertionError("expected ValueError")
+
+
 if __name__ == "__main__":
     fns = [g for n, g in sorted(globals().items()) if n.startswith("test_")]
     for fn in fns:
