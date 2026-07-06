@@ -45,12 +45,12 @@ _FAKE_BASE_MANIFEST = {
 }
 
 _SAMPLE_CSV_HEADER = (
-    "date,kanji,reading_ja,reading_en,description_ja,description_en,image_id,"
+    "date,kanji,reading_ja,reading_en,translation_en,description_ja,description_en,image_id,"
     "attribution_title_ja,attribution_title_en,attribution_credit_ja,attribution_credit_en,"
     "attribution_license_ja,attribution_license_en\n"
 )
 _SAMPLE_CSV_ROW = (
-    "2026-03-21,桜,さくら,sakura,"
+    "2026-03-21,桜,さくら,sakura,cherry blossom,"
     "\"川沿いの土手が薄紅色に染まり、人々が下を歩いて花を見上げる。\","
     "\"Pink washes over the riverbank path; people slow their walk to look up.\","
     "kigo-03-21,桜,Cherry Blossom,撮影者不明,Unknown photographer,"
@@ -79,6 +79,7 @@ def test_csv_parser_maps_row_to_entry_shape():
     entry = row["entry"]
     assert entry["kanji"] == "桜"
     assert entry["reading"] == {"ja": "さくら", "en": "sakura"}
+    assert entry["translationEn"] == "cherry blossom"
     assert entry["description"]["ja"].startswith("川沿い")
     assert entry["description"]["en"].startswith("Pink washes")
     assert entry["imageId"] == "kigo-03-21"
@@ -155,6 +156,7 @@ def test_cli_assembles_csv_and_manifest_into_out_file():
         assert manifest["dailyMap"] == {"2026-03-21": {
             "kanji": "桜",
             "reading": {"ja": "さくら", "en": "sakura"},
+            "translationEn": "cherry blossom",
             "description": {
                 "ja": "川沿いの土手が薄紅色に染まり、人々が下を歩いて花を見上げる。",
                 "en": "Pink washes over the riverbank path; people slow their walk to look up.",
@@ -225,6 +227,12 @@ def test_cli_rejects_missing_description_en_fixture_and_writes_nothing():
     _assert_fixture_rejected("missing_description_en.csv")
 
 
+def test_cli_rejects_missing_translation_en_fixture_and_writes_nothing():
+    # translation_en (the free-Encounter English name, ADR 0024) is a required
+    # column; a blank one must be refused before anything is written.
+    _assert_fixture_rejected("missing_translation_en.csv")
+
+
 def test_cli_rejects_missing_reading_ja_fixture_and_writes_nothing():
     _assert_fixture_rejected("missing_reading_ja.csv")
 
@@ -284,6 +292,7 @@ def test_worked_example_assembles_into_a_valid_localized_manifest():
     for date_key, entry in manifest["dailyMap"].items():
         assert re.fullmatch(r"2026-\d{2}-\d{2}", date_key), date_key
         assert entry["kanji"] and entry["imageId"]
+        assert entry["translationEn"], f"{date_key}: translationEn (free-Encounter English name) needs a value"
         blob = entry["description"]["ja"] + entry["description"]["en"]
         assert not re.search(r"\(20\d\d-\d\d-\d\d\)", blob), f"{date_key}: leftover dummy date-stamp"
         for field in ("reading", "description"):

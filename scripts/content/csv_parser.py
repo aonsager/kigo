@@ -23,6 +23,7 @@ REQUIRED_COLUMNS = (
     "kanji",
     "reading_ja",
     "reading_en",
+    "translation_en",
     "description_ja",
     "description_en",
     "image_id",
@@ -86,6 +87,7 @@ def _row_to_record(raw: dict, *, csv_path: Path, line_no: int) -> dict:
         "entry": {
             "kanji": values["kanji"],
             "reading": {"ja": values["reading_ja"], "en": values["reading_en"]},
+            "translationEn": values["translation_en"],
             "description": {"ja": values["description_ja"], "en": values["description_en"]},
             "imageId": values["image_id"],
             "attribution": {

@@ -223,4 +223,47 @@ final class LocalizableContentTests: XCTestCase {
         XCTAssertEqual(entry.attribution.license.en, "Public Domain",
                        "attribution.license.en must be decoded when present")
     }
+
+    // MARK: - DailyMapEntry translationEn: free-Encounter English name (ADR 0024)
+
+    /// translationEn is optional (ADR 0014 forward-compat): an entry with no
+    /// "translationEn" key must still decode, with the field nil.
+    func testDailyMapEntryDecodesWithoutTranslationEn() throws {
+        let json = """
+        {
+          "kanji": "菖蒲",
+          "reading": {"ja": "しょうぶ"},
+          "description": {"ja": "菖蒲の説明。"},
+          "imageId": "ayame-06-12",
+          "attribution": {
+            "title": {"ja": "菖蒲の写真"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"}
+          }
+        }
+        """
+        let entry = try JSONDecoder().decode(DailyMapEntry.self, from: Data(json.utf8))
+        XCTAssertNil(entry.translationEn, "translationEn must be nil when the key is absent")
+    }
+
+    /// When present, translationEn decodes as a plain English string (not a LocalizedText).
+    func testDailyMapEntryDecodesTranslationEnWhenPresent() throws {
+        let json = """
+        {
+          "kanji": "花見",
+          "reading": {"ja": "はなみ", "en": "hanami"},
+          "translationEn": "cherry-blossom viewing",
+          "description": {"ja": "花見の説明。", "en": "A description."},
+          "imageId": "kigo-04-01",
+          "attribution": {
+            "title": {"ja": "花見"},
+            "credit": {"ja": "撮影者不明"},
+            "license": {"ja": "パブリックドメイン"}
+          }
+        }
+        """
+        let entry = try JSONDecoder().decode(DailyMapEntry.self, from: Data(json.utf8))
+        XCTAssertEqual(entry.translationEn, "cherry-blossom viewing",
+                       "translationEn must decode as a plain English string when present")
+    }
 }

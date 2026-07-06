@@ -35,6 +35,7 @@ exit, no output written) if any is missing or blank:
 | `kanji` | The kigo's word, in kanji |
 | `reading_ja` | Hiragana reading of the kigo |
 | `reading_en` | Romaji reading (the English-side "reading") |
+| `translation_en` | Concise English translation/name of the kigo (e.g. "cherry-blossom viewing") — the free-Encounter English label shown beside the word (ADR 0024). English-only, a noun phrase, no trailing period |
 | `description_ja` | 1–2 sentence Japanese description, present tense, no leftover `(YYYY-MM-DD)` date-stamp text |
 | `description_en` | English description, written natively for an English reader (not a literal translation), same constraints |
 | `image_id` | Stable identifier for this row's image (e.g. `kigo-03-21`); combined with `imageBaseURL` to derive the image URL |

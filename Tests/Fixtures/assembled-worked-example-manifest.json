@@ -8,6 +8,7 @@
         "ja": "ななくさ",
         "en": "nanakusa"
       },
+      "translationEn": "seven herbs of spring",
       "description": {
         "ja": "正月に疲れた胃を休めるため、七種の若菜を刻んで粥に炊き込み、無病息災を願って食べる。",
         "en": "On the seventh morning of the new year, seven young greens are simmered into rice porridge — a quiet way to rest the stomach after the holiday's feasting and wish for a healthy year ahead."
@@ -34,6 +35,7 @@
         "ja": "うめ",
         "en": "ume"
       },
+      "translationEn": "plum blossom",
       "description": {
         "ja": "まだ冷たい風の中、他の花に先駆けて咲く梅の花は、かすかな香りで春の訪れを告げる。",
         "en": "Before any other blossom dares to open, plum flowers push through the last cold winds, their faint fragrance the season's first quiet announcement of spring."
@@ -60,6 +62,7 @@
         "ja": "さくら",
         "en": "sakura"
       },
+      "translationEn": "cherry blossom",
       "description": {
         "ja": "川沿いの土手が薄紅色に染まり、人々が足を止めて枝を見上げる、一年でもっとも短い盛りの季節。",
         "en": "The riverbank turns pale pink almost overnight, and for a few short days everyone slows their walk to look up at the branches."
@@ -86,6 +89,7 @@
         "ja": "はなふぶき",
         "en": "hanafubuki"
       },
+      "translationEn": "falling cherry petals",
       "description": {
         "ja": "満開を過ぎた桜が風に散り、空を薄紅色の吹雪のように舞い落ちる、花見の終わりを告げる光景。",
         "en": "Past their peak, cherry petals let go all at once, swirling through the air like a soft pink snowstorm — the quiet signal that the season of blossom-viewing is closing."
@@ -112,6 +116,7 @@
         "ja": "こいのぼり",
         "en": "koinobori"
       },
+      "translationEn": "carp streamers",
       "description": {
         "ja": "五月の空に大小の鯉のぼりが泳ぎ、子どもの健やかな成長を願う家々の屋根の上ではためく。",
         "en": "Cloth carp of every size swim through the May sky, strung above rooftops in a wish for each child's strength and long life."
@@ -138,6 +143,7 @@
         "ja": "あじさい",
         "en": "ajisai"
       },
+      "translationEn": "hydrangea",
       "description": {
         "ja": "梅雨の湿った空気の中、紫陽花は雨粒を受けながら少しずつ色を変え、灰色の景色に静かな彩りを添える。",
         "en": "Through the damp hush of the rainy season, hydrangea blossoms slowly shift color under the falling rain, a quiet patch of blue and violet against the grey."
@@ -164,6 +170,7 @@
         "ja": "たなばた",
         "en": "tanabata"
       },
+      "translationEn": "the Star Festival",
       "description": {
         "ja": "短冊に願いごとを書いて笹の葉に結び、年に一度だけ天の川で会えるという織姫と彦星の伝説を偲ぶ夜。",
         "en": "Wishes written on strips of paper hang from bamboo branches tonight, in memory of the two star-crossed lovers said to cross the Milky Way just once a year."
@@ -190,6 +197,7 @@
         "ja": "はなび",
         "en": "hanabi"
       },
+      "translationEn": "fireworks",
       "description": {
         "ja": "川辺に人々が集まり、闇を切り裂いて広がる大輪の花火に歓声をあげる、夏の夜の恒例行事。",
         "en": "Crowds gather along the riverbank as huge blooms of light tear open the night sky — the season's ritual way of sending summer off with a shout."
@@ -216,6 +224,7 @@
         "ja": "じゅうごや",
         "en": "jūgoya"
       },
+      "translationEn": "the harvest moon",
       "description": {
         "ja": "澄んだ秋の空に浮かぶ満月を愛で、すすきと月見団子を供えて実りの季節に感謝する夜。",
         "en": "Under a full moon hung clear in the autumn sky, people set out pampas grass and small round dumplings, a quiet thanks for the season's harvest."
@@ -242,6 +251,7 @@
         "ja": "もみじ",
         "en": "momiji"
       },
+      "translationEn": "autumn leaves",
       "description": {
         "ja": "山々の緑が赤や黄色に染まり、風が吹くたびに色づいた葉がひらひらと舞い落ちる。",
         "en": "The green of the mountains turns to red and gold, and every gust sends another handful of colored leaves spinning to the ground."
@@ -268,6 +278,7 @@
         "ja": "こがらし",
         "en": "kogarashi"
       },
+      "translationEn": "the first winter wind",
       "description": {
         "ja": "冷たく乾いた北風が最後の枯れ葉を吹き払い、いよいよ冬が近いことを肌で知らせる。",
         "en": "A dry, cold wind strips the last brown leaves from the branches, the first clear signal on the skin that winter is close."
@@ -294,6 +305,7 @@
         "ja": "おおみそか",
         "en": "ōmisoka"
       },
+      "translationEn": "New Year's Eve",
       "description": {
         "ja": "一年の汚れを払うように家々を掃き清め、除夜の鐘を聞きながら年越し蕎麦をすする、静かな年の瀬。",
         "en": "Homes are swept clean as if brushing off the whole year's dust, and families sip long soba noodles while temple bells count down the year, one slow toll at a time."

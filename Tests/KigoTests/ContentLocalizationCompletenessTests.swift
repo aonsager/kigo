@@ -69,6 +69,21 @@ final class ContentLocalizationCompletenessTests: XCTestCase {
         }
     }
 
+    // MARK: - translationEn (ADR 0024)
+
+    /// Every daily map entry's translationEn (the free-Encounter English name) is
+    /// present, non-empty, and contains no CJK characters.
+    func testAllEntriesHaveEnglishTranslation() throws {
+        let manifest = try loadManifest()
+        for (key, entry) in manifest.dailyMap {
+            guard let translationEn = entry.translationEn else {
+                XCTFail("Entry \(key) has nil translationEn")
+                continue
+            }
+            assertNoCJK(translationEn, "translationEn for entry \(key)")
+        }
+    }
+
     // MARK: - attribution.title.en
 
     /// Every daily map entry's attribution title.en exactly equals "Season Kigo".
