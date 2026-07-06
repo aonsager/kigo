@@ -1,0 +1,366 @@
+date,kanji,reading_ja,reading_en,season,subseason,category,gloss_en
+2026-01-01,初烏,はつがらす,hatsugarasu,new year,new year,animals,first raven [cry]
+2026-01-02,初荷,はつに,hatsuni,new year,new year,daily life,first load
+2026-01-03,春着,はるぎ,harugi,new year,new year,daily life,spring clothes
+2026-01-04,獅子舞,ししまい,shishimai,new year,new year,daily life,lion dance
+2026-01-05,雑煮,ぞうに,zooni,new year,new year,daily life,zouni
+2026-01-06,若菜摘み,わかなつみ,wakanatsumi,new year,new year,observances,picking young greens
+2026-01-07,初日,はつひ,hatsu hi,new year,new year,the heavens,first sun
+2026-01-08,枯野,かれの,kareno,winter,all winter,the earth,withered field
+2026-01-09,水涸る,みずかる,mizu karu,winter,all winter,the earth,water dried up
+2026-01-10,冬の雨,ふゆのあめ,fuyu no ame,winter,all winter,the heavens,winter rain
+2026-01-11,冬晴,ふゆばれ,fuyubare,winter,all winter,the heavens,winter clarity
+2026-01-12,初雪,はつゆき,hatsuyuki,winter,mid winter,the heavens,first snow
+2026-01-13,北風,きたかぜ,kitakaze,winter,all winter,the heavens,north wind
+2026-01-14,霜,しも,shimo,winter,all winter,the heavens,frost
+2026-01-15,ゆく年,ゆくとし,yuku toshi,winter,mid winter,the season,the passing year
+2026-01-16,冬ざれ,ふゆざれ,fuyuzare,winter,all winter,the season,winter withering
+2026-01-17,冬日,ふゆひ,fuyu hi,winter,all winter,the season,winter sun
+2026-01-18,冴ゆる,さゆる,sayuru,winter,all winter,the season,clear and cold
+2026-01-19,凍つる,いつる,itsuru,winter,all winter,the season,freeze
+2026-01-20,年の夜,としのよ,toshi no yo,winter,mid winter,the season,New Year's Eve
+2026-01-21,年の暮れ,としのくれ,toshi no kure,winter,mid winter,the season,close of the year
+2026-01-22,除夜,じょや,joya,winter,mid winter,the season,year-end
+2026-01-23,寒雀,かんすずめ,kansuzume,winter,late winter,animals,cold sparrows
+2026-01-24,寒鯉,かんごい,kangoi,winter,late winter,animals,cold [golden] carp
+2026-01-25,探梅,たんばい,tanbai,winter,late winter,daily life,searching for plum blossoms
+2026-01-26,無村忌,ぶそんき,buson-ki,winter,late winter,observances,Buson's
+2026-01-27,冬萌,ふゆもえ,fuyu-moe,winter,late winter,plants,winter sprouts
+2026-01-28,寒椿,かんつばき,kantsubaki,winter,late winter,plants,winter camellia
+2026-01-29,水仙,すいせん,suisen,winter,late winter,plants,narcissus
+2026-01-30,氷柱,つらら,tsurara,winter,late winter,the earth,icicle
+2026-01-31,氷麗,つらら,tsurara,winter,late winter,the earth,icicles
+2026-02-01,風花,かざはな,kazahana,winter,late winter,the heavens,snowflake
+2026-02-02,寒の内,かんのうち,kan no uchi,winter,late winter,the season,the cold time
+2026-02-03,春隣,はるとなり,haru tonari,winter,late winter,the season,next to spring
+2026-02-04,猫の恋,ねこのこい,neko no koi,spring,early spring,animals,cats' love
+2026-02-05,飯蛸,いいだこ,iidako,spring,early spring,animals,webfoot octopus
+2026-02-06,麦踏,むぎふみ,mugi-fumi,spring,early spring,daily life,barley-treading
+2026-02-07,雛祭り,ひなまつり,hina matsuri,spring,early/mid spring,observances,Doll Festival
+2026-02-08,下萌,したもえ,shitamoe,spring,early spring,plants,sprouts
+2026-02-09,海苔,のり,nori,spring,early spring,plants,nori
+2026-02-10,草の芽,くさのめ,kusa no me,spring,early spring,plants,sprouts
+2026-02-11,春一番,はるいちばん,haru ichiban,spring,early/mid spring,the heavens,first spring gust
+2026-02-12,余寒,よかん,yokan,spring,early spring,the season,remaining cold
+2026-02-13,寒明,かんあけ,kan'ake,spring,early spring,the season,the cold breaks
+2026-02-14,春浅し,はるあさし,haru asashi,spring,early spring,the season,"shallow spring, barely spring, thing spring"
+2026-02-15,囀,さえずり,saezuri,spring,all spring,animals,twittering
+2026-02-16,燕,つばめ,tsubame,spring,mid spring,animals,barn swallow
+2026-02-17,蛇穴を出づ,へびあなをいづ,hebi ana o izu,spring,mid spring,animals,snakes come out of
+2026-02-18,蜆,しじみ,shijimi,spring,all spring,animals,Asiatic clam
+2026-02-19,雉,きじ,kiji,spring,all spring,animals,pheasant
+2026-02-20,鳥雲に入る,とりくもにいる,tori kumo ni iru,spring,mid spring,animals,birds enter clouds
+2026-02-21,シャボン玉,しゃぼんだま,shabondama,spring,all spring,daily life,soap bubbles
+2026-02-22,凧,たこ,tako,spring,all spring,daily life,kite
+2026-02-23,北窓開く,きたまどひらく,kita mado hiraku,spring,mid spring,daily life,
+2026-02-24,春愁,しゅんしゅう,shunshū,spring,mid spring,daily life,spring melancholy
+2026-02-25,春眠,しゅんみん,shunmin,spring,all spring,daily life,spring slug-abed
+2026-02-26,木の芽和,きのめあえ,ki-no-me-ae,spring,all spring,daily life,Japanese-pepper bud salad
+2026-02-27,田返し,たがえし,tagaeshi,spring,all spring,daily life,plow
+2026-02-28,石鹸玉,しゃぼんだま,shabondama,spring,all spring,daily life,soap bubbles
+2026-03-01,草餅,くさもち,kusamochi,spring,mid spring,daily life,mugwort mochi
+2026-03-02,試験,しけん,shiken,spring,mid spring,daily life,examination
+2026-03-03,風車,かざぐるま,kazaguruma,spring,all spring,daily life,pinwheel
+2026-03-04,彼岸会,ひがんえ,higan'e,spring,mid spring,observances,Higan services
+2026-03-05,春祭,はるまつり,haru matsuri,spring,all spring,observances,spring festival
+2026-03-06,西行忌,さいぎょうき,saigyō-ki,spring,mid spring,observances,Saigyō's Memorial Day
+2026-03-07,初花,はつはな,hatsu hana,spring,mid spring,plants,first [cherry] blossoms*
+2026-03-08,春蘭,しゅんらん,shunran,spring,mid spring,plants,spring orchid
+2026-03-09,木蘭,もくれん,mokuren,spring,mid spring,plants,magnolia
+2026-03-10,水草生う,みくさおう,mikusa ou,spring,mid spring,plants,waterweeds grow
+2026-03-11,紫雲英,げんげ,genge,spring,mid spring,plants,vetch
+2026-03-12,茅花,つばな,tsubana,spring,mid spring,plants,reed ears
+2026-03-13,菫,すみれ,sumire,spring,all spring,plants,violet
+2026-03-14,蕨,わらび,warabi,spring,mid spring,plants,fiddlehead
+2026-03-15,蘆の角,あしのつの,ashi no tsuno,spring,mid spring,plants,horns of reeds
+2026-03-16,足の常,あしのつね,ashi no tsuno,spring,mid spring,plants,reed sprouts
+2026-03-17,黄水仙,きずいせん,kizuisen,spring,mid spring,plants,jonquil
+2026-03-18,春の水,はるのみず,haru no mizu,spring,all spring,the earth,waters of spring
+2026-03-19,雪崩,なだれ,nadare,spring,mid spring,the earth,avalanche
+2026-03-20,山笑ふ,やまわらう,yama warau,spring,all spring,the heavens,hills
+2026-03-21,春の月,はるのつき,haru no tsuki,spring,all spring,the heavens,moon in spring
+2026-03-22,春の雪,はるのゆき,haru no yuki,spring,all spring,the heavens,spring snow
+2026-03-23,春の雷,はるのらい,haru no rai,spring,all spring,the heavens,thunder in spring
+2026-03-24,春泥,しゅんでい,shundei,spring,all spring,the heavens,spring mud
+2026-03-25,春陰,しゅにん,shunin,spring,all spring,the heavens,cloudy spring
+2026-03-26,春風,はるかぜ,harukaze,spring,all spring,the heavens,spring breeze
+2026-03-27,朧月,おぼろづき,oborodzuki,spring,all spring,the heavens,hazy moon
+2026-03-28,水温む,みずぬるむ,mizu nurumu,spring,mid spring,the heavens,waters warm up
+2026-03-29,淡雪,あわゆき,awayuki,spring,all spring,the heavens,light snow
+2026-03-30,雪しろ,ゆきしろ】,yukishiro,spring,mid spring,the heavens,snowmelt runoff
+2026-03-31,雪解,ゆきどけ,yukidoke,spring,mid spring,the heavens,snowmelt
+2026-04-01,鳥曇,とりぐもり,torigumori,spring,mid spring,the heavens,bird haze
+2026-04-02,彼岸,ひがん,higan,spring,mid spring,the season,Higan
+2026-04-03,春の夜,はるのよ,haru no yo,spring,all spring,the season,spring night
+2026-04-04,春の暮れ,はるのくれ,haru no kure,spring,all spring,the season,spring evening
+2026-04-05,春暁,しゅんぎょう,shungyō,spring,all spring,the season,spring dawn
+2026-04-06,長閑,のどか,nodoka,spring,all spring,the season,calm
+2026-04-07,おたまじゃくし,おたまじゃくし,otamajakushi,spring,late spring,animals,tadpoles
+2026-04-08,巣立鳥,すだちどり,sudachidori,spring,late spring,animals,fledgeling
+2026-04-09,若駒,わかごま,wakagoma,spring,late spring,animals,"colt, pony"
+2026-04-10,蚕,かいこ,kaiko,spring,late spring,animals,silkworm
+2026-04-11,鰊,にしん,nishin,spring,late spring,animals,herring
+2026-04-12,潮干狩り,しおひがり,shiohigari,spring,late spring,daily life,beach combing
+2026-04-13,畦塗,あぜぬり,azenuri,spring,late spring,daily life,ridge-plastering
+2026-04-14,種蒔,たねまき,tanemaki,spring,late spring,daily life,seed-planting
+2026-04-15,花見,はなみ,hanami,spring,late spring,daily life,
+2026-04-16,踏青,とうせい,tōsei,spring,late spring,daily life,treading the turf
+2026-04-17,啄木忌,たくぼくき,takubokuki,spring,late spring,observances,Takuboku's Memorial Day
+2026-04-18,梅若忌,うめわかき,umewakaki,spring,late spring,observances,Umewaka Memorial Day
+2026-04-19,遍路,へんろ,henro,spring,late spring,observances,pilgrim
+2026-04-20,大根の花,だいこんのはな,daikon no hana,spring,late spring,plants,Japanese-radish flower
+2026-04-21,山葵,わさび,wasabi,spring,late spring,plants,wasabi
+2026-04-22,松の花,まつのはな,matsu no hana,spring,late spring,plants,pine flowers
+2026-04-23,桃の花,もものはな,momo no hana,spring,late spring,plants,peach blossoms
+2026-04-24,桜草,さくらそう,sakurasoo,spring,late spring,plants,primrose
+2026-04-25,残花,ざんか,zanka,spring,late spring,plants,remaining [cherry] blossoms*
+2026-04-26,花,はな,hana,spring,late spring,plants,
+2026-04-27,菜の花,なのはな,na-no-hana,spring,late spring,plants,rape flowers
+2026-04-28,薊,あざみ,azami,spring,late spring,plants,thistle
+2026-04-29,躑躅,つつじ,tsutsuji,spring,late spring,plants,azalea
+2026-04-30,苗代,なわしろ,nawa shiro,spring,late spring,the earth,rice seedling patch
+2026-05-01,花曇,はなぐもり,hanagumori,spring,late spring,the heavens,
+2026-05-02,鰊曇,にしんぐもり,nishingumori,spring,late spring,the heavens,herring clouds
+2026-05-03,春惜しむ,はるおしむ,haru oshimu,spring,late spring,the season,
+2026-05-04,花冷え,はなびえ,hanabie,spring,late spring,the season,
+2026-05-05,初鰹,はつがつお,hatsugatsuo,summer,early summer,animals,first bonito
+2026-05-06,筍飯,たけのこめし,takenoko meshi,summer,early summer,daily life,bamboo-shoot rice
+2026-05-07,衣替え,ころもがえ,koromogae,summer,early summer,daily life,switching clothes
+2026-05-08,神田祭,かんだまつり,kanda matsuri,summer,early summer,observances,Kanda Festival
+2026-05-09,卯の花,うのはな,u-no-hana,summer,early summer,plants,deutzia flowers
+2026-05-10,朴の花,ほおのはな,hō no hana,summer,early summer,plants,magnolia blossom
+2026-05-11,牡丹,ぼたん,botan,summer,early summer,plants,tree peony
+2026-05-12,竹落ち葉,たけおちば,take ochiba,summer,early summer,plants,fallen bamboo leaves
+2026-05-13,罌粟の花,けしのはな,keshi no hana,summer,early summer,plants,poppy
+2026-05-14,若葉,わかば,wakaba,summer,early summer,plants,young leaves
+2026-05-15,蕗,ふき,fuki,summer,early summer,plants,butterbur
+2026-05-16,蜜柑の花,みかんのはな,mikan no hana,summer,early summer,plants,mikan blossom
+2026-05-17,麦,むぎ,mugi,summer,early summer,plants,barley
+2026-05-18,夏めく,なつめく,natsumeku,summer,early summer,the season,summer-like
+2026-05-19,麦の秋,むぎのあき,mugi no aki,summer,early summer,the season,barley's autumn
+2026-05-20,天道虫,てんとうむし,tentōmushi,summer,all summer,animals,ladybug
+2026-05-21,毛虫,けむし,kemushi,summer,all summer,animals,woolybear
+2026-05-22,河鹿,かじか,kajika,summer,all summer,animals,river frog
+2026-05-23,濁り鮒,にごりぶな,nigoribuna,summer,mid summer,animals,muddy carp
+2026-05-24,老鶯,おいうぐいす,oi-uguisu,summer,all summer,animals,summer bush warbler
+2026-05-25,蚤,のみ,nomi,summer,all summer,animals,flea
+2026-05-26,蛍,ほたる,hotaru,summer,mid summer,animals,firefly
+2026-05-27,蜥蜴（石龍子／龍子）,とかげ,tokage,summer,all summer,animals,lizard
+2026-05-28,蝿,はえ,hae,summer,all summer,animals,fly
+2026-05-29,蟹,かに,kani,summer,all summer,animals,crab
+2026-05-30,通し鴨,とうしがも,tōshigamo,summer,all summer,animals,sojourner duck
+2026-05-31,閑古鳥,かんこどり,kankodori,summer,all summer,animals,cuckoo
+2026-06-01,飛魚,とびうお,tobiuo,summer,all summer,animals,flying fish
+2026-06-02,鱧,はも,hamo,summer,all summer,animals,eel
+2026-06-03,ヨット,ヨット,yotto,summer,all summer,daily life,yacht
+2026-06-04,冷麦,ひやむぎ,hiya-mugi,summer,all summer,daily life,cold wheat noodles
+2026-06-05,夏痩,なつやせ,natsuyase,summer,all summer,daily life,summer thinness
+2026-06-06,心太,ところてん,tokoroten,summer,all summer,daily life,gelidium jelly
+2026-06-07,日焼,ひやけ,hiyake,summer,all summer,daily life,sunburn
+2026-06-08,梅干,うめぼし,umeboshi,summer,all summer,daily life,pickled plums
+2026-06-09,氷水,こおりみず,kōrimizu,summer,all summer,daily life,shaved ice
+2026-06-10,泳ぎ,およぎ,oyogi,summer,all summer,daily life,swimming
+2026-06-11,田植,たうえ,taue,summer,mid summer,daily life,rice planting
+2026-06-12,端居,はしい,hashi-i,summer,all summer,daily life,cooling on the threshold
+2026-06-13,籐椅子,とういす,tōisu,summer,all summer,daily life,rattan chair
+2026-06-14,草刈り,くさかり,kusakari,summer,all summer,daily life,cutting grasses [and forbs]
+2026-06-15,菖蒲湯,しょうぶゆ,shōbuyu,summer,mid summer,daily life,iris bath
+2026-06-16,蚊遣火,かやりび,kayaribi,summer,all summer,daily life,mosquito smudge
+2026-06-17,露台,ろだい,rodai,summer,all summer,daily life,balcony
+2026-06-18,飯饐る,めしすえる,meshi sueru,summer,all summer,daily life,
+2026-06-19,鮨（寿司）,すし,sushi,summer,all summer,daily life,sushi
+2026-06-20,麦酒,ビール,biiru,summer,all summer,daily life,beer
+2026-06-21,祭,まつり,matsuri,summer,all summer,observances,festival
+2026-06-22,夏木立,なつこだち,natsu kodachi,summer,all summer,plants,summer grove
+2026-06-23,山桜桃,ゆすらうめ,yusuraume,summer,mid summer,plants,mountain cherry
+2026-06-24,木の下闇,このしたやみ,konoshita yami,summer,all summer,plants,shade of a tree
+2026-06-25,栗の花,くりのはな,kuri no hana,summer,mid summer,plants,chestnut blossoms
+2026-06-26,梔子の花,くちなしのはな,kuchinashi no hana,summer,mid summer,plants,gardenia
+2026-06-27,水芭蕉,みずばしょう,mizu-bashō,summer,mid summer,plants,
+2026-06-28,燕子花,かきつばた,kakitsubata,summer,mid summer,plants,blue flag
+2026-06-29,緑陰,りょくいん,ryokuin,summer,all summer,plants,green shade
+2026-06-30,茂り,しげり,shigeri,summer,all summer,plants,luxurance
+2026-07-01,葎,むぐら,mugura,summer,all summer,plants,"burweed, cleavers"
+2026-07-02,藻の花,ものはな,mo no hana,summer,mid summer,plants,waterweed flowers
+2026-07-03,青芒,あおすすき,aosusuki,summer,all summer,plants,green pampas grass
+2026-07-04,黴,かび,kabi,summer,mid summer,plants,mold
+2026-07-05,夏野,なつの,natsuno,summer,all summer,the earth,summer meadow
+2026-07-06,滝,たき,taki,summer,all summer,the earth,waterfall
+2026-07-07,五月雨,さみだれ,samidare,summer,mid summer,the heavens,midsummer rain
+2026-07-08,夕立,ゆうだち,yūdachi,summer,all summer,the heavens,sudden
+2026-07-09,虹,にじ,niji,summer,all summer,the heavens,rainbow
+2026-07-10,雹,ひょう,hyō,summer,all summer,the heavens,hail
+2026-07-11,夏至,げし,geshi,summer,mid summer,the season,summer solstice
+2026-07-12,皐月,さつき,satsuki,summer,mid summer,the season,Fifth
+2026-07-13,紙魚,しみ,shimi,summer,late summer,animals,clothes moth
+2026-07-14,土用鰻,どよううなぎ,doyō-unagi,summer,late summer,daily life,dog-day eel
+2026-07-15,水着,みずぎ,mizugi,summer,late summer,daily life,bathing suit
+2026-07-16,登山,とざん,tozan,summer,late summer,daily life,mountain-climbing
+2026-07-17,花氷,はなごおり,hanagōri,summer,late summer,daily life,flowers-in-ice
+2026-07-18,藻刈,もかり,mokari,summer,late summer,daily life,harvesting
+2026-07-19,行水,ぎょうずい,gyouzui,summer,late summer,daily life,sitz bath
+2026-07-20,避暑,ひしょ,hisho,summer,late summer,daily life,to summer
+2026-07-21,山開,やまびらき,yamabiraki,summer,late summer,observances,Mountain Opening
+2026-07-22,祇園会,ぎおんえ,gione,summer,late summer,observances,Gion Festival
+2026-07-23,向日葵,ひまわり,himawari,summer,late summer,plants,sunflower
+2026-07-24,月見草,つきみそう,tsukimisō,summer,late summer,plants,evening primrose
+2026-07-25,玫瑰（浜茄子）,はまなす,hama-nasu,summer,late summer,plants,rugosa rose
+2026-07-26,百合の花,ゆりのはな,yuri no hana,summer,late summer,plants,lily flower
+2026-07-27,睡蓮,すいれん,suiren,summer,late summer,plants,water lily
+2026-07-28,草いきれ,くさいきれ,kusa ikire,summer,late summer,plants,rank grass
+2026-07-29,鷺草,さぎそう,sagi-sō,summer,late summer,plants,heron plant
+2026-07-30,雪渓,せっけい,sekkei,summer,late summer,the earth,snowy valley
+2026-07-31,夕凪,ゆうなぎ,yuunagi,summer,late summer,the heavens,evening lull
+2026-08-01,日照り,ひでり,hideri,summer,late summer,the heavens,drought
+2026-08-02,朝曇,あさぐもり,asagumori,summer,late summer,the heavens,morning overcast
+2026-08-03,片かげり,かたかげり,katakageri,summer,late summer,the heavens,shady side
+2026-08-04,西日,にしび,nishibi,summer,late summer,the heavens,western sun
+2026-08-05,夜の秋,よるのあき,yoru no aki,summer,late summer,the season,autumnal night
+2026-08-06,炎昼,えんちゅう,enchū,summer,late summer,the season,blazing midday
+2026-08-07,つくつく法師,つくつくぼうし,tsukutsukubooshi,autumn,early autumn,animals,tsukutsukubooshi
+2026-08-08,蜩,ひぐらし,higurashi,autumn,early autumn,animals,clear-toned cicada
+2026-08-09,鈴虫,すずむし,suzumushi,autumn,early autumn,animals,bell cricket
+2026-08-10,灯篭,とうろう,tooroo,autumn,early autumn,daily life,lantern
+2026-08-11,七夕,たなばた,tanabata,autumn,early autumn,observances,Tanabata
+2026-08-12,子規忌,しきき,shiki-ki,autumn,early autumn,observances,Shiki's
+2026-08-13,盆,ぼん,bon,autumn,early autumn,observances,Bon Festival
+2026-08-14,踊,おどり,odori,autumn,early autumn,observances,
+2026-08-15,女郎花,おみなえし,ominaeshi,autumn,early autumn,plants,yellow valerian
+2026-08-16,桃の実,もものみ,momo no mi,autumn,early autumn,plants,peach
+2026-08-17,桔梗,ききょう,kikyō,autumn,early autumn,plants,Chinese bellflower
+2026-08-18,秋の芽,あきのめ,aki no me,autumn,early autumn,plants,autumn buds
+2026-08-19,萩,はぎ,hagi,autumn,early autumn,plants,bush clover
+2026-08-20,蕎麦の花,そばのはな,soba no hana,autumn,early autumn,plants,buckwheat flowers
+2026-08-21,赤のまんま,あかのまんま,aka no manma,autumn,early autumn,plants,red smartweed
+2026-08-22,初嵐,はつあらし,hatsu arashi,autumn,early autumn,the heavens,first
+2026-08-23,新涼,しんりょう,shinryō,autumn,early autumn,the season,new coolness
+2026-08-24,立秋,りっしゅう,risshū,autumn,early autumn,the season,beginning
+2026-08-25,渡鳥,わたりどり,wataridori,autumn,all autumn,animals,migratory birds
+2026-08-26,百舌,もず,mozu,autumn,all autumn,animals,shrike
+2026-08-27,稲雀,いねすずめ,inesuzume,autumn,all autumn,animals,rice sparrows
+2026-08-28,蓑虫,みのむし,minomushi,autumn,all autumn,animals,bagworm
+2026-08-29,蚯蚓鳴く,みみずなく,mimizu naku,autumn,all autumn,animals,worms cry
+2026-08-30,蜻蛉,とんぼ,tonbo,autumn,all autumn,animals,dragonfly
+2026-08-31,螽斯,きりぎりす,kirigirisu,autumn,all autumn,animals,long-horned grasshopper
+2026-09-01,馬肥ゆる,うまこゆる,uma koyuru,autumn,all autumn,animals,horses fatten
+2026-09-02,鯊,はぜ,haze,autumn,all autumn,animals,goby
+2026-09-03,鴫,しぎ,shigi,autumn,all autumn,animals,"sand piper, snipe"
+2026-09-04,鶉,うずら,uzura,autumn,all autumn,animals,quail
+2026-09-05,鹿,しか,shika,autumn,all autumn,animals,deer
+2026-09-06,夜食,やしょく,yashoku,autumn,all autumn,daily life,supper
+2026-09-07,案山子,かかし,kakashi,autumn,all autumn,daily life,scarecrow
+2026-09-08,砧,きぬた,kinuta,autumn,all autumn,daily life,fulling block
+2026-09-09,衣被,きぬかつぎ,kinukatsugi,autumn,mid autumn,daily life,taros boiled in their skins
+2026-09-10,障子貼る,しょうじはる,shōji haru,autumn,mid autumn,daily life,
+2026-09-11,敬老の日,けいろうのひ,keirō no hi,autumn,mid autumn,observances,Senior Citizens Day
+2026-09-12,早稲,わせ,wase,autumn,mid autumn,plants,early rice
+2026-09-13,木の実,このみ,konomi,autumn,all autumn,plants,nut
+2026-09-14,梨,なし,nashi,autumn,all autumn,plants,
+2026-09-15,白粉花,おしろいばな,oshiroibana,autumn,all autumn,plants,four o'clock flower
+2026-09-16,破芭蕉,やればしょう,yare bashoo,autumn,all autumn,plants,tattered bashou
+2026-09-17,秋海棠,しゅうかいどう,shūdō,autumn,all autumn,plants,hardy begonia
+2026-09-18,竹の春,たけのはる,take no haru,autumn,mid autumn,plants,bamboo spring
+2026-09-19,芋,いも,imo,autumn,all autumn,plants,taro
+2026-09-20,芭蕉,ばしょう,bashō,autumn,all autumn,plants,banana plant
+2026-09-21,菊,きく,giku,autumn,all autumn,plants,chrysanthemums
+2026-09-22,葡萄,ぶどう,budō,autumn,all autumn,plants,grapes
+2026-09-23,衣被ぎ,きぬかつぎ,kinukatsugi,autumn,all autumn,plants,unblemished taro
+2026-09-24,野菊,のぎく,nogiku,autumn,mid autumn,plants,wild chrysanthemum
+2026-09-25,鶏頭,けいとう,keitō,autumn,all autumn,plants,cockscomb
+2026-09-26,初塩,はつしお,hatsu shio,autumn,mid autumn,the earth,first [autumnal] tide
+2026-09-27,秋の海,あきのうみ,aki no umi,autumn,all autumn,the earth,autumn sea
+2026-09-28,花園,はなぞの,hanazono,autumn,all autumn,the earth,flower garden
+2026-09-29,十六夜,いざよい,izayoi,autumn,mid autumn,the heavens,sixteenth night
+2026-09-30,流星,りゅうせい,ryūsei,autumn,all autumn,the heavens,meteor
+2026-10-01,秋の雨,あきのあめ,aki no ame,autumn,all autumn,the heavens,autumn rain
+2026-10-02,秋色,しゅうしょく,shuushoku,autumn,all autumn,the heavens,autumn color
+2026-10-03,芋嵐,いもあらし,imo-arashi,autumn,mid autumn,the heavens,taro-storm
+2026-10-04,野分き,のわき,nowaki,autumn,mid autumn,the heavens,windstorm
+2026-10-05,露,つゆ,tsuyu,autumn,all autumn,the heavens,dew
+2026-10-06,冷ややか,ひややか,hiyayaka,autumn,mid autumn,the season,chilly
+2026-10-07,夜長,よなが,yonaga,autumn,all autumn,the season,long night
+2026-10-08,月,つき,tsuki,autumn,all autumn,the season,moon
+2026-10-09,秋の声,あきのこえ,aki no koe,autumn,all autumn,the season,voices of autumn
+2026-10-10,秋の暮,あきのくれ,aki no kure,autumn,all autumn,the season,autumn dusk
+2026-10-11,秋彼岸,あきひがん,akihigan,autumn,mid autumn,the season,Autumn Higan
+2026-10-12,秋高し,あきたかし,aki takashi,autumn,all autumn,the season,autumn
+2026-10-13,鰯雲,いわしぐも,iwashigumo,autumn,all autumn,the season,mackerel clouds
+2026-10-14,秋刀魚,さんま,sanma,autumn,late autumn,animals,mackerel pike
+2026-10-15,鶇,つぐみ,tsugumi,autumn,late autumn,animals,dusky thrush
+2026-10-16,新蕎麦,しんそば,shin soba,autumn,late autumn,daily life,new soba
+2026-10-17,新酒,しんしゅ,shinshu,autumn,late autumn,daily life,new sak&eacute;
+2026-10-18,稲刈り,いねかり,inekari,autumn,late autumn,daily life,"rice cutting, rice harvest"
+2026-10-19,菊人形,きくにんぎょう,kiku ningyō,autumn,late autumn,daily life,chrysanthemum puppet-figure
+2026-10-20,藁塚,わらづか,warazuka,autumn,late autumn,daily life,rice-straw stack
+2026-10-21,重陽,ちょうよう,chōyō,autumn,late autumn,observances,Chrysanthemum Festival
+2026-10-22,敗荷,やれはす,yarehasu,autumn,late autumn,plants,broken
+2026-10-23,木犀,もくせい,mokusei,autumn,late autumn,plants,sweet olive
+2026-10-24,林檎,りんご,ringo,autumn,late autumn,plants,apple
+2026-10-25,柚子,ゆず,yuzu,autumn,late autumn,plants,citron
+2026-10-26,栗,くり,kuri,autumn,late autumn,plants,chestnuts
+2026-10-27,楓,かえで,kaede,autumn,late autumn,plants,maple
+2026-10-28,烏瓜,からすうり,karasu-uri,autumn,late autumn,plants,snake gourd
+2026-10-29,破蓮,やれはす,yarehasu,autumn,late autumn,plants,tattered lotus
+2026-10-30,茸,きのこ,kinoko,autumn,late autumn,plants,"mushrooms, fungus"
+2026-10-31,落穂,おちぼ,ochibo,autumn,late autumn,plants,fallen rice-ears
+2026-11-01,錦木,にしきぎ,nishikigi,autumn,late autumn,plants,winged spindle-tree
+2026-11-02,露寒,つゆざむ,tsuyuzamu,autumn,late autumn,the heavens,dew chill
+2026-11-03,そぞろ寒,そぞろさむ,sozoro samu,autumn,late autumn,the season,getting chilly
+2026-11-04,九月尽,くがつじん,kugatsujin,autumn,late autumn,the season,end of the ninth
+2026-11-05,後の月,のちのつき,nochi no tsuki,autumn,late autumn,the season,after-moon
+2026-11-06,秋深し,あきふかし,aki fukashi,autumn,late autumn,the season,autumn
+2026-11-07,綿虫,わたむし,watamushi,winter,early winter,animals,bed bugs
+2026-11-08,冬構,ふゆがまえ,fuyugamae,winter,early winter,daily life,winter maintenance
+2026-11-09,大根干す,だいこんほす,daikon hosu,winter,early winter,daily life,
+2026-11-10,木の葉髪,このはがみ,ko-no-ha-gami,winter,early winter,daily life,leafy hair
+2026-11-11,七五三,しちごさん,shichigosan,winter,early winter,observances,Seven-Five-Three
+2026-11-12,芭蕉忌,ばしょうき,bashō-ki,winter,early winter,observances,Bashō's
+2026-11-13,八手のはな,やつでのはな,yatsude no hana,winter,early winter,plants,Japanese aralia blossoms
+2026-11-14,帰り花,かえりばな,kaeribana,winter,early winter,plants,returning flowers
+2026-11-15,柊の花,ひいらぎのはな,hiiragi no hana,winter,early winter,plants,holly osmanthus blossoms
+2026-11-16,紅葉散る,もみじちる,momiji chiru,winter,early winter,plants,red leaves fall
+2026-11-17,茶の花,ちゃのはな,cha no hana,winter,early winter,plants,tea blossoms
+2026-11-18,時雨,しぐれ,shigure,winter,early winter,the heavens,
+2026-11-19,小春,こはる,koharu,winter,early winter,the season,little spring
+2026-11-20,神の留守,かみのるす,kami no rusu,winter,early winter,the season,the gods' absence
+2026-11-21,立冬,りっとう,rittō,winter,early winter,the season,beginning of winter
+2026-11-22,冬の蜂,ふゆのはち,fuyu no hachi,winter,all winter,animals,winter bee
+2026-11-23,千鳥,ちどり,chidori,winter,all winter,animals,"plovers, sand pipers"
+2026-11-24,水鳥,みずとり,mizutori,winter,all winter,animals,waterfowl
+2026-11-25,河豚,ふぐ,fugu,winter,all winter,animals,puffer
+2026-11-26,牡蛎,かき,kaki,winter,all winter,animals,oyster
+2026-11-27,牡蠣,かき,kaki,winter,all winter,animals,oysters
+2026-11-28,鰤,ぶり,buri,winter,all winter,animals,yellowtail
+2026-11-29,鴛鴦,おしどり,oshidori,winter,all winter,animals,mandarin ducks
+2026-11-30,鴨,かも,kamo,winter,all winter,animals,wild duck
+2026-12-01,冬籠,ふゆごもり,fuyugomori,winter,all winter,daily life,winter seclusion
+2026-12-02,年忘,としわすれ,toshi-wasure,winter,mid winter,daily life,year-end party
+2026-12-03,息白し,いきしろし,iki shiroshi,winter,all winter,daily life,breath
+2026-12-04,沢庵漬,たくあんづけ,takuanzuke,winter,all winter,daily life,pickled daikon
+2026-12-05,火鉢,ひばち,hibachi,winter,all winter,daily life,small brazier
+2026-12-06,炭,すみ,sumi,winter,all winter,daily life,charcoal
+2026-12-07,焚き火,たきび,takibi,winter,all winter,daily life,bonfire
+2026-12-08,狩,かり,kari,winter,all winter,daily life,hunting
+2026-12-09,網代,あじろ,ajiro,winter,all winter,daily life,wicker fishnet
+2026-12-10,茎漬,くきづけ,kukizuke,winter,all winter,daily life,pickled leaves and stems
+2026-12-11,蒲団（布団）,ふとん,futon,winter,all winter,daily life,futon
+2026-12-12,雑炊,ぞうすい,sōsui,winter,all winter,daily life,mixed porridge
+2026-12-13,年の市,としのいち,toshi-no-ichi,winter,mid winter,observances,year-end market
+2026-12-14,万両,まんりょう,manryoo,winter,all winter,plants,spearflower
+2026-12-15,冬木立,ふゆこだち,fuyu kodachi,winter,all winter,plants,winter grove
+2026-12-16,冬草,ふゆくさ,fuyu kusa,winter,all winter,plants,winter grasses [and forbs]
+2026-12-17,冬菜,ふゆな,fuyuna,winter,all winter,plants,winter greens
+2026-12-18,南天の実,なんてんのみ,nanten no mi,winter,all winter,plants,nandin berries
+2026-12-19,寒菊,かんぎく,kangiku,winter,all winter,plants,cold mums
+2026-12-20,木の葉,このは,ko-no-ha,winter,all winter,plants,leaves of trees
+2026-12-21,枯尾花,かれおばな,kare-obana,winter,all winter,plants,withered pampas grass
+2026-12-22,枯木,かれき,kareki,winter,all winter,plants,withered tree
+2026-12-23,枯草,かれくさ,karekusa,winter,all winter,plants,withered plants
+2026-12-24,枯葎,かれむぐら,kare-mugura,winter,all winter,plants,withered creepers
+2026-12-25,枯葦,かれあし,kareashi,winter,all winter,plants,withered reeds
+2026-12-26,白菜,はくさい,hakusai,winter,all winter,plants,Chinese cabbage
+2026-12-27,落ち葉,おちば,ochiba,winter,all winter,plants,fallen leaves
+2026-12-28,葱,ねぎ,negi,winter,all winter,plants,stone leek
+2026-12-29,藪柑子,やぶこうじ,yabukooji,winter,all winter,plants,spearflower
+2026-12-30,蜜柑,みかん,mikan,winter,all winter,plants,mikan
+2026-12-31,冬田,ふゆた,fuyuta,winter,all winter,the earth,winter paddy

@@ -217,6 +217,21 @@ struct TodayView: View {
                 .padding(.top, 22)
                 .accessibilityIdentifier("kigo.reading")
 
+            // The English translation is part of the free Encounter (ADR 0024): it is the
+            // English reader's equivalent of being able to read the kanji, so it shows for
+            // everyone, outside the `isEntitled` gate below — but only in English mode (a
+            // Japanese reader takes the meaning from the kanji itself, so it would be
+            // redundant). English-only content, so it is a plain String, not localized.
+            if language == .english, let translation = resolvedDay.kigoEntry.translationEn {
+                Text(translation)
+                    .font(KigoFont.zenKaku(.regular, size: 15, relativeTo: .callout))
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(KigoTheme.inkReading)
+                    .frame(maxWidth: 280)
+                    .padding(.top, 10)
+                    .accessibilityIdentifier("kigo.translation")
+            }
+
             // The meaning (description) is the paid understanding layer — Premium only.
             // For Basic the encounter stays pure: kanji + reading over the photo, with
             // the upsell living down in the bottom band (see `upsellBlock`), not here.

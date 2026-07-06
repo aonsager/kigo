@@ -109,6 +109,37 @@ public struct DailyMapEntry: Codable, Sendable, Equatable {
     public let imageId: String
     /// Per-image attribution (title, credit, license). Required for every entry.
     public let attribution: Attribution
+    /// Short English translation/name of the Kigo (e.g. 花見 → "cherry-blossom
+    /// viewing"). English-only — the English reader's equivalent of being able to
+    /// read the kanji, so it belongs to the free Encounter (shown alongside
+    /// kanji + reading), not the paid Understanding (ADR 0019/0024). Optional so
+    /// manifests without it still decode unchanged and older/foreign-language
+    /// content resolves to no translation line (ADR 0014 forward-compat, same
+    /// pattern as `LocalizedText.en` / `Manifest.imageBaseURL`; no schemaVersion
+    /// bump implied). Not a `LocalizedText`: it has no Japanese side — a Japanese
+    /// reader gets meaning from the kanji itself, so the UI shows it only in
+    /// English mode.
+    public let translationEn: String?
+
+    /// Explicit memberwise init so `translationEn` can default to nil — existing
+    /// call sites (and the many test fixtures) that predate this field keep
+    /// compiling unchanged, while Codable synthesis still decodes it when the
+    /// JSON key is present (ADR 0014 forward-compat).
+    public init(
+        kanji: String,
+        reading: LocalizedText,
+        description: LocalizedText,
+        imageId: String,
+        attribution: Attribution,
+        translationEn: String? = nil
+    ) {
+        self.kanji = kanji
+        self.reading = reading
+        self.description = description
+        self.imageId = imageId
+        self.attribution = attribution
+        self.translationEn = translationEn
+    }
 }
 
 // MARK: - Ko

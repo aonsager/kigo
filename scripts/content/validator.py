@@ -54,6 +54,9 @@ def validate_entry(date: str, entry: dict, image_base_url: str) -> list[str]:
 
     require(entry.get("kanji"), "kanji")
     require(entry.get("imageId"), "imageId")
+    # translationEn is an English-only string (not a LocalizedText) — the free
+    # Encounter's English name for the Kigo (ADR 0024). Required and non-empty.
+    require(entry.get("translationEn"), "translationEn")
 
     for field in _BILINGUAL_ENTRY_FIELDS:
         localized = entry.get(field) or {}
