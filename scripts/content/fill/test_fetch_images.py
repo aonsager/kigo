@@ -16,6 +16,7 @@ import subprocess, tempfile, csv as _csv  # noqa: E401
 
 FILL_DIR = Path(__file__).resolve().parent
 SCRIPT = FILL_DIR / "fetch_images.py"
+README = FILL_DIR / "README.md"
 
 
 def test_parse_aspect_handles_decimal():
@@ -373,6 +374,15 @@ def test_cli_select_rejects_ambiguous_marking():
                         "--out-images", str(imgs)], capture_output=True, text=True)
     assert r.returncode != 0
     assert "2026-03-25" in r.stderr
+
+
+def test_readme_documents_two_phase_and_pillow():
+    text = README.read_text(encoding="utf-8")
+    assert "fetch_images.py fetch" in text
+    assert "fetch_images.py select" in text
+    assert "candidates.csv" in text
+    assert "Pillow" in text
+    assert "chosen" in text  # the review column
 
 
 if __name__ == "__main__":

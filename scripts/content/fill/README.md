@@ -17,7 +17,7 @@ step that *must* stay human (reading the Japanese) is the only manual gate.
                                  │
              ┌───────────────────┴───────────────────┐
    (3) describe.py                            (4) fetch_images.py
-   emit ▶ LLM ▶ ingest                        Pexels API (or --placeholder)
+   emit ▶ LLM ▶ ingest                        Pexels+Pixabay, Japanese-first (or --placeholder)
         │                                             │
         ▼                                             ▼
    descriptions.csv                              images.csv
@@ -32,11 +32,12 @@ step that *must* stay human (reading the Japanese) is the only manual gate.
 | Input | For | How |
 |---|---|---|
 | **An LLM** (stage 3) | authoring `description_ja` / `description_en` | any capable chat model, or `ANTHROPIC_API_KEY` + `describe_via_claude.py` |
+| **Pillow** (stage 4) | image smart-cropping + JPEG encoding | `python3 -m pip install Pillow` |
 | **An image-provider API key** (stage 4) | real photography + attribution | free from [Pixabay](https://pixabay.com/api/docs/) or [Pexels](https://www.pexels.com/api/); put `PIXABAY_API_KEY` / `PEXELS_API_KEY` in a gitignored `scripts/content/fill/.env` |
 | **A static image host** (post-workflow) | re-hosting chosen JPEGs at a stable base URL | Cloudflare R2 / S3 / GitHub release; becomes `--image-base-url` for `assemble.py` |
 | **A Japanese-literate reviewer** | the human gate on `spine-2026.csv` + descriptions | read top-to-bottom, correct inline |
 
-Everything else runs offline with the Python stdlib — no third-party packages.
+Everything else runs offline with the Python stdlib — Pillow is the only third-party dependency.
 
 ## Legal posture (why we don't ship the source's English)
 
@@ -106,43 +107,52 @@ python3 scripts/content/fill/describe.py ingest \
 prompt text — the workflow's LLM contract — lives in `describe.py`
 (`PROMPT_PREAMBLE`); edit it there.
 
-### Images (stage 4) — needs an image-provider key (or run keyless first)
+### Images (stage 4) — two-phase human-in-the-loop
 
-Two providers are supported via `--provider`; both are free, allow commercial
-use, and return the photographer for the credit line: **pixabay** (Pixabay
-License — no attribution required; we credit anyway) and **pexels** (Pexels
-License). The key is read from `scripts/content/fill/.env` (gitignored) or the
-matching environment variable — never pass it on the command line in a shared
-shell.
+Stage 4 is two-phase, human-in-the-loop (like `describe.py`'s emit/ingest).
+It needs **Pillow** (the workflow's only non-stdlib dependency, used just here):
 
 ```bash
-# one-time: create the gitignored key file
-cat > scripts/content/fill/.env <<'EOF'
-PIXABAY_API_KEY=...
-PEXELS_API_KEY=...
-EOF
+python3 -m pip install Pillow
+```
 
-# keyless placeholders, so you can build + gate the CSV before you have a key:
-python3 scripts/content/fill/fetch_images.py \
+Providers: **pexels** (primary) and **pixabay** (fallback), both free and
+commercial-use; keys in the gitignored `scripts/content/fill/.env`
+(`PEXELS_API_KEY` / `PIXABAY_API_KEY`). Each day is searched **Japanese-first**
+(the kanji, then the English `gloss_en`, then romaji) across both providers,
+keeping the top **3** distinct results that clear a min-resolution floor. Each
+candidate is smart-cropped to the phone screen ratio (9:19.5), downscaled, and
+JPEG-encoded — so you review the *actual* image that would ship.
+
+```bash
+# keyless placeholders, to build + gate the CSV before you have a key:
+python3 scripts/content/fill/fetch_images.py fetch \
     --spine scripts/content/fill/spine-2026.csv \
     --out scripts/content/fill/images.csv --placeholder
 
-# real: query the provider per row, record attribution, download JPEGs to re-host:
-python3 scripts/content/fill/fetch_images.py \
+# real: acquire + process 3 candidates per day
+python3 scripts/content/fill/fetch_images.py fetch \
     --spine scripts/content/fill/spine-2026.csv \
-    --out scripts/content/fill/images.csv \
-    --provider pixabay \
-    --download scripts/content/fill/downloads
+    --candidates-out scripts/content/fill/candidates.csv \
+    --out-images scripts/content/fill/downloads
 ```
 
-The auto-picked top result is a *candidate* — image curation is a human step
-(ADR 0022). Rows with no match are written as placeholders and listed on stderr
-so you can refine the query and rerun. Pixabay allows 100 req/min (Pexels 200
-req/hour); `--sleep` (default 0.7s) throttles and 429s back off, so a full
-365-row run self-paces.
+Then **review**: open `candidates.csv`, look at the matching
+`downloads/<image_id>__c1..c3.jpg`, and put any mark (e.g. `x`) in the `chosen`
+column of the winner — exactly one per date. Resolve the choice:
 
-After you re-host the downloaded (and optimized) images, pass their base URL to
-`assemble.py` as `--image-base-url https://your-host/path`.
+```bash
+python3 scripts/content/fill/fetch_images.py select \
+    --candidates-in scripts/content/fill/candidates.csv \
+    --out scripts/content/fill/images.csv \
+    --out-images scripts/content/fill/downloads
+```
+
+`select` validates one `chosen` per date, copies each winner to the canonical
+`<image_id>.jpg`, and writes the 8-column `images.csv` `build_csv.py` expects.
+Days with no candidate are reported on stderr — refine the query and rerun.
+Tuning flags: `--candidates`, `--per-page`, `--min-width/--min-height`,
+`--aspect`, `--max-edge`, `--jpeg-quality`, `--no-japanese`, `--no-fallback`.
 
 ### Merge + gate (stage 5)
 
