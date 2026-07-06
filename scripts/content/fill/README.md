@@ -122,9 +122,14 @@ python3 -m pip install Pillow
 Providers: **pexels** (primary) and **pixabay** (fallback), both free and
 commercial-use; keys in the gitignored `scripts/content/fill/.env`
 (`PEXELS_API_KEY` / `PIXABAY_API_KEY`). Each day is searched **Japanese-first**
-(the kanji, then the English `gloss_en`, then romaji) across both providers,
-keeping the top **3** distinct results that clear a min-resolution floor. Each
-candidate is smart-cropped to the phone screen ratio (9:19.5), downscaled, and
+(the kanji, then the English `gloss_en`, then romaji) across both providers, and
+the **3** candidates are drawn **round-robin, one per search rung** — so you
+typically get a Pexels kanji match, a Pexels English-gloss match, and a Pixabay
+match, rather than three near-duplicates from one query. (This matters because
+Pexels never returns *empty* — it substitutes popular photos for an unmatched
+Japanese term — so spreading across rungs is what surfaces the English-gloss and
+Pixabay results a human can compare.) Each candidate must clear a min-resolution
+floor, and is smart-cropped to the phone screen ratio (9:19.5), downscaled, and
 JPEG-encoded — so you review the *actual* image that would ship.
 
 ```bash

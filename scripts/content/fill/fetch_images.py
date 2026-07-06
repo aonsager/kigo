@@ -17,10 +17,13 @@ This is a two-phase, human-in-the-loop flow with two subcommands:
 
     fetch (needs provider keys, unless --placeholder)  Search each spine row
         Japanese-first (kanji, then the English gloss_en, then romaji) across
-        both providers, keep up to --candidates distinct results that clear
-        the resolution floor, smart-crop + downscale + JPEG-encode each one to
-        <out-images>/<image_id>__cN.jpg, and write `candidates.csv` for human
-        review — so you review the actual image that would ship.
+        both providers, and collect --candidates results round-robin (one per
+        search rung) so they span sources — a Pexels kanji match, a Pexels
+        gloss match, a Pixabay match — rather than duplicates from one query.
+        Each must clear the resolution floor; each is smart-cropped + downscaled
+        + JPEG-encoded to <out-images>/<image_id>__cN.jpg, and written to
+        `candidates.csv` for human review — so you review the actual image that
+        would ship.
 
         fetch --placeholder (no key, no network)  Fill gate-passing
         placeholder attribution directly into `images.csv` (via --out) so the
@@ -249,28 +252,53 @@ def build_ladder(row, primary="pexels", fallback="pixabay", use_japanese=True):
 
 
 def collect_candidates(ladder, search_fns, min_width, min_height, want):
-    """Walk the attempt ladder, keeping distinct candidates that clear the
-    resolution floor (tested on downloadable/effective dims), up to `want`."""
+    """Collect up to `want` distinct floor-passing candidates, drawn
+    round-robin — one per rung per round — so the results span different
+    search rungs (kanji / English gloss / provider) rather than coming all
+    from the first rung. Because a provider like Pexels never returns an empty
+    result (it substitutes popular photos for unmatched queries), a
+    fill-from-the-first-rung walk would make the later rungs unreachable; the
+    round-robin surfaces them so the human can compare across sources. Degrades
+    to depth (successive results from one rung) when fewer rungs are productive
+    than `want`. Each rung is searched at most once, lazily, and only if
+    reached. Candidates are tested against downloadable/effective dims."""
+    cache = {}
+
+    def rung_candidates(i):
+        if i not in cache:
+            rung = ladder[i]
+            search = search_fns.get(rung["provider"])
+            out = []
+            if search is not None:
+                for cand in search(rung["term"], rung["lang"]):
+                    ew, eh = effective_dims(rung["provider"], cand["width"], cand["height"])
+                    if not passes_floor(ew, eh, min_width, min_height):
+                        continue
+                    enriched = dict(cand)
+                    enriched.update(provider=rung["provider"], search_term=rung["term"],
+                                    search_lang=rung["lang"])
+                    out.append(enriched)
+            cache[i] = out
+        return cache[i]
+
     collected, seen = [], set()
-    for rung in ladder:
-        if len(collected) >= want:
-            break
-        search = search_fns.get(rung["provider"])
-        if search is None:
-            continue
-        for cand in search(rung["term"], rung["lang"]):
-            key = (rung["provider"], cand["photo_id"])
-            if key in seen:
-                continue
-            ew, eh = effective_dims(rung["provider"], cand["width"], cand["height"])
-            if not passes_floor(ew, eh, min_width, min_height):
-                continue
-            seen.add(key)
-            enriched = dict(cand)
-            enriched.update(provider=rung["provider"], search_term=rung["term"],
-                            search_lang=rung["lang"])
-            collected.append(enriched)
+    pos = [0] * len(ladder)
+    made_progress = True
+    while len(collected) < want and made_progress:
+        made_progress = False
+        for i in range(len(ladder)):
             if len(collected) >= want:
+                break
+            cands = rung_candidates(i)
+            while pos[i] < len(cands):
+                cand = cands[pos[i]]
+                pos[i] += 1
+                key = (cand["provider"], cand["photo_id"])
+                if key in seen:
+                    continue
+                seen.add(key)
+                collected.append(cand)
+                made_progress = True
                 break
     return collected
 

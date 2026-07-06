@@ -149,8 +149,8 @@ def test_collect_walks_rungs_and_stops_at_want():
 
     got = fi.collect_candidates(ladder, {"pexels": pexels, "pixabay": pixabay},
                                 min_width=800, min_height=1200, want=3)
-    # first pexels rung already yields 2, second pexels rung is called for the 3rd,
-    # producing dupes (same ids) -> must reach pixabay for a distinct 3rd.
+    # round-robin: rung 1 (pexels ja) gives id 1; rung 2 (pexels en) gives id 2
+    # (id 1 is a dupe); rung 3 (pixabay) gives the distinct id 3.
     ids = [c["photo_id"] for c in got]
     assert ids == ["1", "2", "3"]
     assert got[0]["provider"] == "pexels" and got[0]["search_lang"] == "ja-JP"
@@ -177,6 +177,41 @@ def test_collect_applies_pixabay_effective_floor():
     got = fi.collect_candidates(ladder, {"pixabay": pixabay},
                                 min_width=800, min_height=1200, want=3)
     assert [c["photo_id"] for c in got] == ["8"]
+
+
+def test_collect_diversifies_across_rungs():
+    # With 3 productive rungs and want=3, take ONE candidate from each rung
+    # (in rung order) rather than three from the first rung — so the human
+    # compares across sources (kanji vs English gloss vs Pixabay).
+    ladder = [{"provider": "pexels", "term": "kanji", "lang": "ja-JP"},
+              {"provider": "pexels", "term": "gloss", "lang": "en"},
+              {"provider": "pixabay", "term": "kanji", "lang": "ja"}]
+
+    def pexels(term, lang):
+        base = 100 if term == "kanji" else 200  # distinct ids per rung
+        return [_cand(base + 1, 4000, 6000), _cand(base + 2, 4000, 6000)]
+
+    def pixabay(term, lang):
+        return [_cand(300, 4000, 6000), _cand(301, 4000, 6000)]
+
+    got = fi.collect_candidates(ladder, {"pexels": pexels, "pixabay": pixabay},
+                                min_width=800, min_height=1200, want=3)
+    assert [c["search_term"] for c in got] == ["kanji", "gloss", "kanji"]
+    assert [c["search_lang"] for c in got] == ["ja-JP", "en", "ja"]
+    assert [c["provider"] for c in got] == ["pexels", "pexels", "pixabay"]
+
+
+def test_collect_falls_back_to_depth_when_few_rungs():
+    # Only one productive rung: fill `want` by taking successive candidates
+    # from it (round-robin degrades to depth-first).
+    ladder = [{"provider": "pexels", "term": "a", "lang": "en"}]
+
+    def pexels(term, lang):
+        return [_cand(1, 4000, 6000), _cand(2, 4000, 6000), _cand(3, 4000, 6000)]
+
+    got = fi.collect_candidates(ladder, {"pexels": pexels},
+                                min_width=800, min_height=1200, want=3)
+    assert [c["photo_id"] for c in got] == ["1", "2", "3"]
 
 
 def _split_image(width, height, busy_side):
