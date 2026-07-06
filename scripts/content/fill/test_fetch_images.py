@@ -12,6 +12,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import fetch_images as fi  # noqa: E402
 from PIL import Image  # noqa: E402
 
+import subprocess, tempfile, csv as _csv  # noqa: E401
+
+FILL_DIR = Path(__file__).resolve().parent
+SCRIPT = FILL_DIR / "fetch_images.py"
+
 
 def test_parse_aspect_handles_decimal():
     assert fi.parse_aspect("9:19.5") == (9.0, 19.5)
@@ -309,6 +314,65 @@ def test_select_chosen_errors_on_zero_or_multiple():
             assert "2026-03-25" in str(e)
             continue
         raise AssertionError("expected ValueError")
+
+
+def _write_spine(path):
+    with path.open("w", newline="", encoding="utf-8") as f:
+        w = _csv.DictWriter(f, fieldnames=["date", "kanji", "reading_ja",
+                                           "reading_en", "gloss_en"])
+        w.writeheader()
+        w.writerow({"date": "2026-03-25", "kanji": "桜", "reading_ja": "さくら",
+                    "reading_en": "sakura", "gloss_en": "cherry blossom"})
+
+
+def test_cli_placeholder_writes_image_columns():
+    d = Path(tempfile.mkdtemp())
+    spine, out = d / "spine.csv", d / "images.csv"
+    _write_spine(spine)
+    r = subprocess.run([sys.executable, str(SCRIPT), "fetch", "--spine", str(spine),
+                        "--out", str(out), "--placeholder"],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    rows = list(_csv.DictReader(out.open(encoding="utf-8")))
+    assert rows[0]["image_id"] == "kigo-03-25"
+    assert list(rows[0].keys()) == list(fi.IMAGE_COLUMNS)
+
+
+def test_cli_select_end_to_end():
+    d = Path(tempfile.mkdtemp())
+    imgs = d / "downloads"; imgs.mkdir()
+    # two candidate files + a candidates.csv marking c2
+    for n in (1, 2):
+        fi.save_jpeg(Image.new("RGB", (1080, 2340), (n, n, n)),
+                     imgs / f"kigo-03-25__c{n}.jpg", 82)
+    cand = d / "candidates.csv"
+    with cand.open("w", newline="", encoding="utf-8") as f:
+        w = _csv.DictWriter(f, fieldnames=fi.CANDIDATE_COLUMNS)
+        w.writeheader()
+        w.writerow(_cand_row("2026-03-25", 1))
+        w.writerow(_cand_row("2026-03-25", 2, chosen="x"))
+    out = d / "images.csv"
+    r = subprocess.run([sys.executable, str(SCRIPT), "select",
+                        "--candidates-in", str(cand), "--out", str(out),
+                        "--out-images", str(imgs)],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    assert (imgs / "kigo-03-25.jpg").exists()  # canonical copy of the chosen c2
+    rows = list(_csv.DictReader(out.open(encoding="utf-8")))
+    assert rows[0]["attribution_credit_en"] == "Photo: Aki / Pexels"
+
+
+def test_cli_select_rejects_ambiguous_marking():
+    d = Path(tempfile.mkdtemp()); imgs = d / "downloads"; imgs.mkdir()
+    cand = d / "candidates.csv"
+    with cand.open("w", newline="", encoding="utf-8") as f:
+        w = _csv.DictWriter(f, fieldnames=fi.CANDIDATE_COLUMNS); w.writeheader()
+        w.writerow(_cand_row("2026-03-25", 1))  # zero chosen
+    r = subprocess.run([sys.executable, str(SCRIPT), "select",
+                        "--candidates-in", str(cand), "--out", str(d / "o.csv"),
+                        "--out-images", str(imgs)], capture_output=True, text=True)
+    assert r.returncode != 0
+    assert "2026-03-25" in r.stderr
 
 
 if __name__ == "__main__":
