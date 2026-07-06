@@ -710,17 +710,22 @@ def cmd_fetch(args):
                 save_jpeg(img, args.out_images / fname, args.jpeg_quality)
                 row_out.append(candidate_row(row, cand, i, fname, img.width, img.height))
             if not args.no_wikipedia:
-                wiki = _wikipedia_lookup(row["kanji"],
-                                         row.get("gloss_en") or row["reading_en"],
-                                         args.min_width, args.min_height)
-                if wiki:
-                    idx = len(row_out) + 1
-                    img = process_image(_download_image(wiki["download_url"]),
-                                        aspect_w, aspect_h, args.max_edge)
-                    fname = f"{image_id_for(row['date'])}__c{idx}.jpg"
-                    save_jpeg(img, args.out_images / fname, args.jpeg_quality)
-                    row_out.append(candidate_row(row, wiki, idx, fname,
-                                                 img.width, img.height))
+                try:
+                    wiki = _wikipedia_lookup(row["kanji"],
+                                             row.get("gloss_en") or row["reading_en"],
+                                             args.min_width, args.min_height)
+                    if wiki:
+                        idx = len(row_out) + 1
+                        img = process_image(_download_image(wiki["download_url"]),
+                                            aspect_w, aspect_h, args.max_edge)
+                        fname = f"{image_id_for(row['date'])}__c{idx}.jpg"
+                        save_jpeg(img, args.out_images / fname, args.jpeg_quality)
+                        row_out.append(candidate_row(row, wiki, idx, fname,
+                                                     img.width, img.height))
+                except Exception as e:  # a bonus wiki candidate must not drop the stock ones
+                    errors.append((row["date"], f"wikipedia: {e!r}"))
+                    print(f"  {row['date']} {row['kanji']}: wikipedia ERROR {e}",
+                          file=sys.stderr)
             if not row_out:
                 missing.append((row["date"], row.get("gloss_en") or row["reading_en"]))
                 continue
