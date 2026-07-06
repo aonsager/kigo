@@ -231,6 +231,35 @@ def test_smart_crop_trims_rows_when_taller_than_target():
     assert out.width == 900  # rows trimmed, width preserved
 
 
+def test_resize_within_downscales_long_edge():
+    img = Image.new("RGB", (2000, 4000))
+    out = fi.resize_within(img, 2340)
+    assert max(out.size) == 2340
+    assert out.size == (1170, 2340)
+
+
+def test_resize_within_never_upscales():
+    img = Image.new("RGB", (600, 1280))
+    out = fi.resize_within(img, 2340)
+    assert out.size == (600, 1280)
+
+
+def test_process_image_hits_target_ratio_and_max_edge():
+    img = _split_image(3000, 4500, busy_side="right")
+    out = fi.process_image(img, 9, 19.5, max_edge=2340)
+    assert max(out.size) <= 2340
+    assert abs(out.width / out.height - 9 / 19.5) < 0.02
+
+
+def test_save_jpeg_writes_file(tmp_path=None):
+    import tempfile
+    d = Path(tempfile.mkdtemp())
+    p = d / "x.jpg"
+    fi.save_jpeg(Image.new("RGB", (100, 200), (10, 20, 30)), p, quality=82)
+    assert p.exists() and p.stat().st_size > 0
+    assert Image.open(p).size == (100, 200)
+
+
 if __name__ == "__main__":
     fns = [g for n, g in sorted(globals().items()) if n.startswith("test_")]
     for fn in fns:

@@ -388,6 +388,27 @@ def smart_crop(img, aspect_w, aspect_h, analysis_edge=256):
     return img.crop((0, top, w, top + target_h))
 
 
+def resize_within(img, max_edge):
+    """Downscale so the long edge ≤ max_edge; returns img unchanged if already within (never upscales)."""
+    w, h = img.size
+    long_edge = max(w, h)
+    if long_edge <= max_edge:
+        return img
+    scale = max_edge / long_edge
+    return img.resize((max(1, round(w * scale)), max(1, round(h * scale))))
+
+
+def process_image(img, aspect_w, aspect_h, max_edge):
+    """resize_within then smart_crop (order matters: resize first so crop output is already at target size)."""
+    return smart_crop(resize_within(img, max_edge), aspect_w, aspect_h)
+
+
+def save_jpeg(img, path, quality):
+    """Save as JPEG (RGB), quality=quality, optimize=True, no EXIF."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    img.convert("RGB").save(path, format="JPEG", quality=quality, optimize=True)
+
+
 def main(argv=None):
     load_dotenv()
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[1])
