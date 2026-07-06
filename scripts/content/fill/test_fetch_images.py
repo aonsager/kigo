@@ -497,6 +497,38 @@ def test_parse_imageinfo():
     assert info["description_url"].endswith("File:Patrinia_scabiosifolia2.jpg")
 
 
+def _pageimg(title="オミナエシ"):
+    return {"title": title, "image_url": "https://img/x.jpg", "filename": "x.jpg"}
+
+
+def _info(w=1712, h=2304, code="cc-by-sa-3.0", short="CC BY-SA 3.0", nonfree=None,
+          artist="KENPEI", url="http://creativecommons.org/licenses/by-sa/3.0/",
+          desc="https://commons.wikimedia.org/wiki/File:x"):
+    return {"width": w, "height": h, "license_short": short, "license_code": code,
+            "nonfree": nonfree, "artist": artist, "license_url": url,
+            "description_url": desc}
+
+
+def test_wiki_candidate_shippable():
+    c = fi._wiki_candidate(_pageimg(), "ja", _info(), 800, 1200)
+    assert c["provider"] == "wikipedia" and c["usable"] == "yes"
+    assert c["photo_id"] == "x.jpg" and c["photographer"] == "KENPEI"
+    assert c["download_url"] == "https://img/x.jpg"
+    assert c["search_term"] == "オミナエシ" and c["search_lang"] == "ja"
+    assert c["license_en"] == "CC BY-SA 3.0" and c["license_ja"] == "CC BY-SA 3.0"
+    assert "article: オミナエシ" in c["note"] and "by-sa" in c["note"].lower()
+
+
+def test_wiki_candidate_nonfree_is_reference_only():
+    c = fi._wiki_candidate(_pageimg(), "ja", _info(nonfree="true"), 800, 1200)
+    assert c["usable"] == "no" and c["note"].startswith("reference-only: non-free")
+
+
+def test_wiki_candidate_below_floor_is_reference_only():
+    c = fi._wiki_candidate(_pageimg(), "ja", _info(w=400, h=600), 800, 1200)
+    assert c["usable"] == "no" and "below min resolution" in c["note"]
+
+
 if __name__ == "__main__":
     fns = [g for n, g in sorted(globals().items()) if n.startswith("test_")]
     for fn in fns:

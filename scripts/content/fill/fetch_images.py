@@ -412,6 +412,39 @@ def _parse_imageinfo(data):
     }
 
 
+def _wiki_candidate(pageimg, lang, info, min_width, min_height):
+    """Assemble a normalized Wikipedia candidate from a parsed pageimages result,
+    the wiki `lang`, and a parsed imageinfo result. Sets `usable` and `note`."""
+    shippable = _wiki_license_shippable(info["license_code"], info["license_short"],
+                                        info["nonfree"])
+    big_enough = passes_floor(info["width"], info["height"], min_width, min_height)
+    reasons = []
+    if not shippable:
+        reasons.append("reference-only: non-free license")
+    if not big_enough:
+        reasons.append("reference-only: below min resolution")
+    record = f"article: {pageimg['title']}"
+    if info["license_url"]:
+        record += f" · license: {info['license_url']}"
+    note = record if not reasons else "; ".join(reasons) + " · " + record
+    return {
+        "provider": "wikipedia",
+        "photo_id": pageimg["filename"],
+        "photographer": _strip_html(info["artist"]) or "Unknown",
+        "download_url": pageimg["image_url"],
+        "source_url": info["description_url"],
+        "width": info["width"],
+        "height": info["height"],
+        "search_term": pageimg["title"],
+        "search_lang": lang,
+        "license_ja": info["license_short"],
+        "license_en": info["license_short"],
+        "license_url": info["license_url"],
+        "usable": "yes" if (shippable and big_enough) else "no",
+        "note": note,
+    }
+
+
 # --- Provider search adapters. Fetch JSON and return parser's list. --------
 
 def _pexels_search(term, lang, api_key, per_page, sleep, retries=3):
