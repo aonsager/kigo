@@ -10,6 +10,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import fetch_images as fi  # noqa: E402
+from PIL import Image  # noqa: E402
 
 
 def test_parse_aspect_handles_decimal():
@@ -173,6 +174,61 @@ def test_collect_applies_pixabay_effective_floor():
     got = fi.collect_candidates(ladder, {"pixabay": pixabay},
                                 min_width=800, min_height=1200, want=3)
     assert [c["photo_id"] for c in got] == ["8"]
+
+
+def _split_image(width, height, busy_side):
+    """A W×H image: one side richly multi-coloured, the other flat grey.
+    busy_side in {'left','right','top','bottom'}."""
+    img = Image.new("RGB", (width, height), (128, 128, 128))
+    px = img.load()
+    def busy(x, y):
+        return ((x * 37 + y * 91) % 256, (x * 13) % 256, (y * 29) % 256)
+    for y in range(height):
+        for x in range(width):
+            if busy_side == "left" and x < width // 2: px[x, y] = busy(x, y)
+            if busy_side == "right" and x >= width // 2: px[x, y] = busy(x, y)
+            if busy_side == "top" and y < height // 2: px[x, y] = busy(x, y)
+            if busy_side == "bottom" and y >= height // 2: px[x, y] = busy(x, y)
+    return img
+
+
+def test_trim_split_drops_flatter_end():
+    # counts: left end flat (1), right end busy (9) -> trim comes off the left.
+    left, right = fi._trim_split([1, 1, 5, 9, 9], total_trim=2)
+    assert (left, right) == (2, 0)
+
+
+def test_smart_crop_reaches_target_ratio_trimming_columns():
+    img = _split_image(600, 900, busy_side="right")  # wider than 9:19.5
+    out = fi.smart_crop(img, 9, 19.5)
+    ratio = out.width / out.height
+    assert abs(ratio - (9 / 19.5)) < 0.02
+    assert out.height == 900  # columns trimmed, height preserved
+
+
+def _grey_fraction(im):
+    px = list(im.getdata())
+    return sum(1 for p in px if p == (128, 128, 128)) / len(px)
+
+
+def test_smart_crop_prefers_the_busy_side():
+    # busy on the right -> the flat left band is trimmed preferentially, so the
+    # smart crop must retain LESS flat-grey area than a naive centre crop of the
+    # same width would. (A degenerate centre-cropping smart_crop fails this.)
+    img = _split_image(600, 900, busy_side="right")
+    out = fi.smart_crop(img, 9, 19.5)
+    tw = out.width
+    left = (600 - tw) // 2
+    centre = img.crop((left, 0, left + tw, 900))
+    assert _grey_fraction(out) < _grey_fraction(centre)
+
+
+def test_smart_crop_trims_rows_when_taller_than_target():
+    img = _split_image(900, 3000, busy_side="top")  # taller than 9:19.5? 900/3000=0.3 < 0.46
+    out = fi.smart_crop(img, 9, 19.5)
+    ratio = out.width / out.height
+    assert abs(ratio - (9 / 19.5)) < 0.02
+    assert out.width == 900  # rows trimmed, width preserved
 
 
 if __name__ == "__main__":

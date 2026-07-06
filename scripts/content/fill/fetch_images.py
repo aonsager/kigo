@@ -59,6 +59,8 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
+from PIL import Image
+
 HERE = Path(__file__).resolve().parent
 ENV_FILE = HERE / ".env"
 
@@ -323,6 +325,60 @@ def _download(hit, dest):
     with _get(url, timeout=120) as resp:
         dest.write_bytes(resp.read())
     return True
+
+
+def _trim_split(counts, total_trim):
+    """Greedily remove `total_trim` items from the ends of `counts`, always
+    dropping the end with the fewer unique colours. Returns (left, right)."""
+    lo, hi = 0, len(counts) - 1
+    left = right = 0
+    for _ in range(total_trim):
+        if lo >= hi:
+            break
+        if counts[lo] <= counts[hi]:
+            lo += 1; left += 1
+        else:
+            hi -= 1; right += 1
+    return (left, right)
+
+
+def _proxy_counts(img, analysis_edge, axis):
+    """Per-column (axis='x') or per-row (axis='y') unique-colour counts on a
+    quantized, downscaled proxy of `img`."""
+    w, h = img.size
+    scale = analysis_edge / max(w, h)
+    pw, ph = max(1, round(w * scale)), max(1, round(h * scale))
+    proxy = img.convert("RGB").resize((pw, ph)).quantize(colors=16)
+    data = list(proxy.getdata())  # palette indices, row-major (ph rows of pw)
+    if axis == "x":
+        return [len({data[y * pw + x] for y in range(ph)}) for x in range(pw)], pw
+    return [len({data[y * pw + x] for x in range(pw)}) for y in range(ph)], ph
+
+
+def smart_crop(img, aspect_w, aspect_h, analysis_edge=256):
+    """Crop `img` to aspect_w:aspect_h, trimming the flatter side more."""
+    w, h = img.size
+    target = aspect_w / aspect_h  # width / height
+    current = w / h
+    if abs(current - target) < 1e-6:
+        return img
+    if current > target:
+        # too wide -> trim columns
+        target_w = max(1, round(h * target))
+        total = w - target_w
+        counts, pw = _proxy_counts(img, analysis_edge, "x")
+        pleft, _ = _trim_split(counts, round(total * pw / w))
+        left = round(pleft / pw * w) if pw else 0
+        left = min(left, total)
+        return img.crop((left, 0, left + target_w, h))
+    # too tall -> trim rows
+    target_h = max(1, round(w / target))
+    total = h - target_h
+    counts, ph = _proxy_counts(img, analysis_edge, "y")
+    ptop, _ = _trim_split(counts, round(total * ph / h))
+    top = round(ptop / ph * h) if ph else 0
+    top = min(top, total)
+    return img.crop((0, top, w, top + target_h))
 
 
 def main(argv=None):
