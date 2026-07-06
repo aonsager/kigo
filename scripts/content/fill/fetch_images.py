@@ -284,6 +284,13 @@ def _pixabay_search(term, lang, api_key, per_page, sleep, retries=3):
 _SEARCH = {"pixabay": _pixabay_search, "pexels": _pexels_search}
 
 
+def _flat_data(img):
+	"""Flat pixel/palette sequence. get_flattened_data() (Pillow 12+) supersedes
+	the deprecated getdata(); fall back to getdata() on older Pillow."""
+	getter = getattr(img, "get_flattened_data", None) or img.getdata
+	return list(getter())
+
+
 def _placeholder_row(row):
     kanji = row["kanji"]
     name_en = row.get("gloss_en") or row["reading_en"]
@@ -349,7 +356,7 @@ def _proxy_counts(img, analysis_edge, axis):
     scale = analysis_edge / max(w, h)
     pw, ph = max(1, round(w * scale)), max(1, round(h * scale))
     proxy = img.convert("RGB").resize((pw, ph)).quantize(colors=16)
-    data = list(proxy.getdata())  # palette indices, row-major (ph rows of pw)
+    data = _flat_data(proxy)  # palette indices, row-major (ph rows of pw)
     if axis == "x":
         return [len({data[y * pw + x] for y in range(ph)}) for x in range(pw)], pw
     return [len({data[y * pw + x] for x in range(pw)}) for y in range(ph)], ph

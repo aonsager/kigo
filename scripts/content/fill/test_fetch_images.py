@@ -207,7 +207,7 @@ def test_smart_crop_reaches_target_ratio_trimming_columns():
 
 
 def _grey_fraction(im):
-    px = list(im.getdata())
+    px = fi._flat_data(im)
     return sum(1 for p in px if p == (128, 128, 128)) / len(px)
 
 
