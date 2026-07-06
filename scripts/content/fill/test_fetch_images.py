@@ -562,6 +562,20 @@ def test_wiki_candidate_below_floor_is_reference_only():
     assert c["usable"] == "no" and "below min resolution" in c["note"]
 
 
+def test_cli_fetch_has_no_wikipedia_flag():
+    r = subprocess.run([sys.executable, str(SCRIPT), "fetch", "-h"],
+                       capture_output=True, text=True)
+    assert r.returncode == 0
+    assert "--no-wikipedia" in r.stdout
+
+
+def test_readme_documents_wikipedia_reference():
+    text = README.read_text(encoding="utf-8")
+    assert "Wikipedia" in text
+    assert "reference" in text.lower()
+    assert "usable" in text
+
+
 if __name__ == "__main__":
     fns = [g for n, g in sorted(globals().items()) if n.startswith("test_")]
     for fn in fns:

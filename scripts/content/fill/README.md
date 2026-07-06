@@ -132,6 +132,15 @@ Pixabay results a human can compare.) Each candidate must clear a min-resolution
 floor, and is smart-cropped to the phone screen ratio (9:19.5), downscaled, and
 JPEG-encoded — so you review the *actual* image that would ship.
 
+Alongside the stock candidates, each day also gets the **Japanese Wikipedia lead
+image** (looked up by kanji, then by the English `gloss_en` on English
+Wikipedia) as a licensed **4th candidate and accuracy reference**. Its real
+license is read from Wikimedia; it is marked **`usable`** in `candidates.csv`
+only when that license permits shipping (public-domain / CC0 / CC-BY / CC-BY-SA)
+and it clears the resolution floor — otherwise it is kept **reference-only** so
+you can still check whether the stock picks show the right subject, but `select`
+will refuse to ship it. Disable with `--no-wikipedia`.
+
 ```bash
 # keyless placeholders, to build + gate the CSV before you have a key:
 python3 scripts/content/fill/fetch_images.py fetch \

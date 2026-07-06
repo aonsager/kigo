@@ -23,7 +23,10 @@ This is a two-phase, human-in-the-loop flow with two subcommands:
         Each must clear the resolution floor; each is smart-cropped + downscaled
         + JPEG-encoded to <out-images>/<image_id>__cN.jpg, and written to
         `candidates.csv` for human review — so you review the actual image that
-        would ship.
+        would ship. Also append the Japanese Wikipedia lead image (ja by kanji,
+        then en by gloss_en) as a licensed 4th candidate and accuracy
+        reference — shippable only when its license is PD/CC0/CC-BY/CC-BY-SA,
+        else marked reference-only; disable with --no-wikipedia.
 
         fetch --placeholder (no key, no network)  Fill gate-passing
         placeholder attribution directly into `images.csv` (via --out) so the
@@ -84,6 +87,9 @@ ENV_FILE = HERE / ".env"
 # Pixabay's image CDN (and some Pexels edges) 403 the default Python-urllib
 # User-Agent; send a browser-like one on every request.
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) kigo-content-pipeline/1.0"
+
+# Wikimedia asks API clients to send a descriptive User-Agent with a URL/contact.
+WIKI_UA = "kigo-content-pipeline/1.0 (+https://github.com/aonsager/kigo)"
 
 
 def _get(url, headers=None, timeout=60):
@@ -513,6 +519,34 @@ def _pixabay_search(term, lang, api_key, per_page, sleep, retries=3):
             raise
 
 
+def _wiki_api(host, params):
+    q = urllib.parse.urlencode({**params, "action": "query", "format": "json",
+                                "formatversion": "2"})
+    with _get(f"https://{host}/w/api.php?{q}", headers={"User-Agent": WIKI_UA}) as resp:
+        return json.loads(resp.read().decode("utf-8"))
+
+
+def _wikipedia_lookup(kanji, gloss_en, min_width, min_height):
+    """Return a Wikipedia lead-image candidate for a kigo, or None. Tries the
+    kanji on ja.wikipedia (following redirects), then gloss_en on en.wikipedia."""
+    attempts = [("ja.wikipedia.org", kanji, "ja")]
+    if gloss_en:
+        attempts.append(("en.wikipedia.org", gloss_en, "en"))
+    for host, term, lang in attempts:
+        if not term:
+            continue
+        pageimg = _parse_pageimages(_wiki_api(host, {
+            "titles": term, "redirects": "1",
+            "prop": "pageimages", "piprop": "original|name"}))
+        if not pageimg:
+            continue
+        info = _parse_imageinfo(_wiki_api(host, {
+            "titles": f"File:{pageimg['filename']}",
+            "prop": "imageinfo", "iiprop": "extmetadata|url|size"}))
+        return _wiki_candidate(pageimg, lang, info, min_width, min_height)
+    return None
+
+
 _SEARCH = {"pixabay": _pixabay_search, "pexels": _pexels_search}
 
 
@@ -668,9 +702,6 @@ def cmd_fetch(args):
                                   use_japanese=not args.no_japanese)
             cands = collect_candidates(ladder, search_fns, args.min_width,
                                        args.min_height, args.candidates)
-            if not cands:
-                missing.append((row["date"], row.get("gloss_en") or row["reading_en"]))
-                continue
             row_out = []
             for i, cand in enumerate(cands, start=1):
                 img = process_image(_download_image(cand["download_url"]),
@@ -678,8 +709,23 @@ def cmd_fetch(args):
                 fname = f"{image_id_for(row['date'])}__c{i}.jpg"
                 save_jpeg(img, args.out_images / fname, args.jpeg_quality)
                 row_out.append(candidate_row(row, cand, i, fname, img.width, img.height))
+            if not args.no_wikipedia:
+                wiki = _wikipedia_lookup(row["kanji"],
+                                         row.get("gloss_en") or row["reading_en"],
+                                         args.min_width, args.min_height)
+                if wiki:
+                    idx = len(row_out) + 1
+                    img = process_image(_download_image(wiki["download_url"]),
+                                        aspect_w, aspect_h, args.max_edge)
+                    fname = f"{image_id_for(row['date'])}__c{idx}.jpg"
+                    save_jpeg(img, args.out_images / fname, args.jpeg_quality)
+                    row_out.append(candidate_row(row, wiki, idx, fname,
+                                                 img.width, img.height))
+            if not row_out:
+                missing.append((row["date"], row.get("gloss_en") or row["reading_en"]))
+                continue
             out_rows.extend(row_out)
-            print(f"  {row['date']} {row['kanji']}: {len(cands)} candidate(s)")
+            print(f"  {row['date']} {row['kanji']}: {len(row_out)} candidate(s)")
         except Exception as e:  # one bad row must not discard the whole run
             errors.append((row["date"], repr(e)))
             print(f"  {row['date']} {row['kanji']}: ERROR {e}", file=sys.stderr)
@@ -734,6 +780,7 @@ def main(argv=None):
     pf.add_argument("--fallback", choices=sorted(PROVIDERS), default="pixabay")
     pf.add_argument("--no-fallback", action="store_true")
     pf.add_argument("--no-japanese", action="store_true")
+    pf.add_argument("--no-wikipedia", action="store_true")
     pf.add_argument("--candidates", type=int, default=3)
     pf.add_argument("--per-page", type=int, default=10)
     pf.add_argument("--min-width", type=int, default=800)
