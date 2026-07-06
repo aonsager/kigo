@@ -65,8 +65,10 @@ Needs Pillow (`python3 -m pip install Pillow`). Usage (from repo root):
 import argparse
 import csv
 import functools
+import html
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -116,6 +118,29 @@ PROVIDERS = {
         "license_en": "Pexels License",
     },
 }
+
+_TAG_RE = re.compile(r"<[^>]+>")
+
+
+def _strip_html(s):
+    """Plain text from an extmetadata HTML value (e.g. Artist)."""
+    if not s:
+        return ""
+    return html.unescape(_TAG_RE.sub("", s)).strip()
+
+
+def _wiki_license_shippable(license_code, license_short, nonfree):
+    """True iff a Wikimedia image may be shipped: not marked non-free and under a
+    public-domain / CC0 / CC-BY / CC-BY-SA license. Everything else is
+    reference-only. `nonfree` may be a bool or an extmetadata string."""
+    if isinstance(nonfree, str):
+        nonfree = nonfree.strip().lower() in ("true", "1", "yes")
+    if nonfree:
+        return False
+    code = (license_code or "").strip().lower()
+    if code.startswith(("cc0", "pd", "cc-by")):  # cc-by covers cc-by-sa
+        return True
+    return "public domain" in (license_short or "").strip().lower()
 
 
 def load_dotenv(path=ENV_FILE):

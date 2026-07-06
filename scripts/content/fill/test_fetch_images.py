@@ -428,6 +428,25 @@ def test_collect_does_not_mutate_input_candidates():
     assert "provider" not in original and "search_term" not in original
 
 
+def test_strip_html():
+    assert fi._strip_html('<bdi><a href="x">KENPEI</a></bdi>') == "KENPEI"
+    assert fi._strip_html("Tom &amp; Jerry") == "Tom & Jerry"
+    assert fi._strip_html("") == "" and fi._strip_html(None) == ""
+
+
+def test_wiki_license_shippable():
+    for code, short, nf in [("pd", "Public domain", None), ("cc0", "CC0", None),
+                            ("cc-by-4.0", "CC BY 4.0", None),
+                            ("cc-by-sa-3.0", "CC BY-SA 3.0", None),
+                            ("", "Public domain", None)]:
+        assert fi._wiki_license_shippable(code, short, nf) is True, (code, short)
+    for code, short, nf in [("gfdl", "GFDL", None), ("", "Fair use", None),
+                            ("", "", None),
+                            ("cc-by-sa-3.0", "CC BY-SA 3.0", True),   # non-free wins
+                            ("cc-by-sa-3.0", "CC BY-SA 3.0", "true")]:
+        assert fi._wiki_license_shippable(code, short, nf) is False, (code, short, nf)
+
+
 def test_readme_documents_two_phase_and_pillow():
     text = README.read_text(encoding="utf-8")
     assert "fetch_images.py fetch" in text
