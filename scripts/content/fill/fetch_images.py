@@ -140,6 +140,33 @@ def passes_floor(width, height, min_width, min_height):
     return width >= min_width and height >= min_height
 
 
+# Japanese language code per provider (English is always "en").
+_JP_LANG = {"pexels": "ja-JP", "pixabay": "ja"}
+
+
+def build_ladder(row, primary="pexels", fallback="pixabay", use_japanese=True):
+    """Ordered (provider, term, lang) attempts. Empty-term rungs are dropped."""
+    kanji = (row.get("kanji") or "").strip()
+    english = (row.get("gloss_en") or row.get("reading_en") or "").strip()
+    romaji = (row.get("reading_en") or "").strip()
+
+    plan = []
+    if primary:
+        if use_japanese and kanji:
+            plan.append((primary, kanji, _JP_LANG[primary]))
+        if english:
+            plan.append((primary, english, "en"))
+    if fallback:
+        if use_japanese and kanji:
+            plan.append((fallback, kanji, _JP_LANG[fallback]))
+        if english:
+            plan.append((fallback, english, "en"))
+    if primary and romaji:
+        plan.append((primary, romaji, "en"))
+
+    return [{"provider": p, "term": t, "lang": l} for (p, t, l) in plan]
+
+
 def _read_spine(path):
     return list(csv.DictReader(path.open(encoding="utf-8")))
 

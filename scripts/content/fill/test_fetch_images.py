@@ -47,6 +47,41 @@ def test_passes_floor():
     assert fi.passes_floor(1080, 1100, 800, 1200) is False
 
 
+def _row(kanji="桜", gloss_en="cherry blossom", reading_en="sakura"):
+    return {"date": "2026-03-25", "kanji": kanji,
+            "gloss_en": gloss_en, "reading_en": reading_en}
+
+
+def test_ladder_default_order():
+    rungs = fi.build_ladder(_row())
+    assert rungs == [
+        {"provider": "pexels", "term": "桜", "lang": "ja-JP"},
+        {"provider": "pexels", "term": "cherry blossom", "lang": "en"},
+        {"provider": "pixabay", "term": "桜", "lang": "ja"},
+        {"provider": "pixabay", "term": "cherry blossom", "lang": "en"},
+        {"provider": "pexels", "term": "sakura", "lang": "en"},
+    ]
+
+
+def test_ladder_no_japanese_drops_kanji_rungs():
+    rungs = fi.build_ladder(_row(), use_japanese=False)
+    assert all(r["lang"] == "en" for r in rungs)
+    assert all(r["term"] != "桜" for r in rungs)
+    assert {r["provider"] for r in rungs} == {"pexels", "pixabay"}
+
+
+def test_ladder_no_fallback_drops_fallback_rungs():
+    rungs = fi.build_ladder(_row(), fallback=None)
+    assert all(r["provider"] == "pexels" for r in rungs)
+
+
+def test_ladder_falls_back_to_romaji_when_gloss_empty():
+    rungs = fi.build_ladder(_row(gloss_en=""))
+    # rung 2 / 4 use reading_en ("sakura") in place of the empty gloss
+    en_terms = [r["term"] for r in rungs if r["lang"] == "en"]
+    assert en_terms == ["sakura", "sakura", "sakura"]
+
+
 if __name__ == "__main__":
     fns = [g for n, g in sorted(globals().items()) if n.startswith("test_")]
     for fn in fns:
