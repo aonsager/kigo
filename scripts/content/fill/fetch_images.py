@@ -167,6 +167,33 @@ def build_ladder(row, primary="pexels", fallback="pixabay", use_japanese=True):
     return [{"provider": p, "term": t, "lang": l} for (p, t, l) in plan]
 
 
+def collect_candidates(ladder, search_fns, min_width, min_height, want):
+    """Walk the attempt ladder, keeping distinct candidates that clear the
+    resolution floor (tested on downloadable/effective dims), up to `want`."""
+    collected, seen = [], set()
+    for rung in ladder:
+        if len(collected) >= want:
+            break
+        search = search_fns.get(rung["provider"])
+        if search is None:
+            continue
+        for cand in search(rung["term"], rung["lang"]):
+            key = (rung["provider"], cand["photo_id"])
+            if key in seen:
+                continue
+            ew, eh = effective_dims(rung["provider"], cand["width"], cand["height"])
+            if not passes_floor(ew, eh, min_width, min_height):
+                continue
+            seen.add(key)
+            enriched = dict(cand)
+            enriched.update(provider=rung["provider"], search_term=rung["term"],
+                            search_lang=rung["lang"])
+            collected.append(enriched)
+            if len(collected) >= want:
+                break
+    return collected
+
+
 def _read_spine(path):
     return list(csv.DictReader(path.open(encoding="utf-8")))
 

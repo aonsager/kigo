@@ -125,6 +125,56 @@ def test_parsers_return_empty_on_no_hits():
     assert fi._parse_pixabay({}) == []
 
 
+def _cand(pid, w, h):
+    return {"photo_id": str(pid), "photographer": "X",
+            "download_url": f"u{pid}", "source_url": f"s{pid}",
+            "width": w, "height": h}
+
+
+def test_collect_walks_rungs_and_stops_at_want():
+    ladder = fi.build_ladder(_row())  # pexels(ja), pexels(en), pixabay(ja), ...
+    calls = []
+
+    def pexels(term, lang):
+        calls.append(("pexels", term, lang))
+        return [_cand(1, 4000, 6000), _cand(2, 4000, 6000)]
+
+    def pixabay(term, lang):
+        calls.append(("pixabay", term, lang))
+        return [_cand(3, 4000, 6000)]
+
+    got = fi.collect_candidates(ladder, {"pexels": pexels, "pixabay": pixabay},
+                                min_width=800, min_height=1200, want=3)
+    # first pexels rung already yields 2, second pexels rung is called for the 3rd,
+    # producing dupes (same ids) -> must reach pixabay for a distinct 3rd.
+    ids = [c["photo_id"] for c in got]
+    assert ids == ["1", "2", "3"]
+    assert got[0]["provider"] == "pexels" and got[0]["search_lang"] == "ja-JP"
+    assert got[2]["provider"] == "pixabay"
+
+
+def test_collect_dedupes_by_provider_and_id():
+    ladder = [{"provider": "pexels", "term": "a", "lang": "en"},
+              {"provider": "pexels", "term": "b", "lang": "en"}]
+    def pexels(term, lang):
+        return [_cand(1, 4000, 6000)]  # same id both rungs
+    got = fi.collect_candidates(ladder, {"pexels": pexels},
+                                min_width=800, min_height=1200, want=3)
+    assert len(got) == 1
+
+
+def test_collect_applies_pixabay_effective_floor():
+    # 4000x6000 pixabay -> effective ~853x1280, passes a 800x1200 floor.
+    # 1200x1600 pixabay -> effective 960x1280, width 960 >= 800 passes;
+    # 900x1000 pixabay -> effective unchanged (small), height 1000 < 1200 FAILS.
+    ladder = [{"provider": "pixabay", "term": "a", "lang": "ja"}]
+    def pixabay(term, lang):
+        return [_cand(9, 900, 1000), _cand(8, 4000, 6000)]
+    got = fi.collect_candidates(ladder, {"pixabay": pixabay},
+                                min_width=800, min_height=1200, want=3)
+    assert [c["photo_id"] for c in got] == ["8"]
+
+
 if __name__ == "__main__":
     fns = [g for n, g in sorted(globals().items()) if n.startswith("test_")]
     for fn in fns:
