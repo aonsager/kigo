@@ -228,7 +228,7 @@ _JP_LANG = {"pexels": "ja-JP", "pixabay": "ja"}
 def build_ladder(row, primary="pexels", fallback="pixabay", use_japanese=True):
     """Ordered (provider, term, lang) attempts. Empty-term rungs are dropped."""
     kanji = (row.get("kanji") or "").strip()
-    english = (row.get("gloss_en") or row.get("reading_en") or "").strip()
+    english = (row.get("gloss_en") or "").strip() or (row.get("reading_en") or "").strip()
     romaji = (row.get("reading_en") or "").strip()
 
     plan = []
@@ -364,10 +364,10 @@ _SEARCH = {"pixabay": _pixabay_search, "pexels": _pexels_search}
 
 
 def _flat_data(img):
-	"""Flat pixel/palette sequence. get_flattened_data() (Pillow 12+) supersedes
-	the deprecated getdata(); fall back to getdata() on older Pillow."""
-	getter = getattr(img, "get_flattened_data", None) or img.getdata
-	return list(getter())
+    """Flat pixel/palette sequence. get_flattened_data() (Pillow 12+) supersedes
+    the deprecated getdata(); fall back to getdata() on older Pillow."""
+    getter = getattr(img, "get_flattened_data", None) or img.getdata
+    return list(getter())
 
 
 def _placeholder_row(row):
@@ -507,26 +507,30 @@ def cmd_fetch(args):
                                 per_page=args.per_page, sleep=args.sleep)
         for prov in keys
     }
-    # adapt partial(term, lang, ...) to the (term, lang) signature collect expects
-    search_fns = {p: (lambda f: (lambda term, lang: f(term, lang)))(fn)
-                  for p, fn in search_fns.items()}
 
-    out_rows, missing = [], []
+    out_rows, missing, errors = [], [], []
     for row in rows:
-        ladder = build_ladder(row, primary=args.primary, fallback=fallback,
-                              use_japanese=not args.no_japanese)
-        cands = collect_candidates(ladder, search_fns, args.min_width,
-                                   args.min_height, args.candidates)
-        if not cands:
-            missing.append((row["date"], row.get("gloss_en") or row["reading_en"]))
+        try:
+            ladder = build_ladder(row, primary=args.primary, fallback=fallback,
+                                  use_japanese=not args.no_japanese)
+            cands = collect_candidates(ladder, search_fns, args.min_width,
+                                       args.min_height, args.candidates)
+            if not cands:
+                missing.append((row["date"], row.get("gloss_en") or row["reading_en"]))
+                continue
+            row_out = []
+            for i, cand in enumerate(cands, start=1):
+                img = process_image(_download_image(cand["download_url"]),
+                                    aspect_w, aspect_h, args.max_edge)
+                fname = f"{image_id_for(row['date'])}__c{i}.jpg"
+                save_jpeg(img, args.out_images / fname, args.jpeg_quality)
+                row_out.append(candidate_row(row, cand, i, fname, img.width, img.height))
+            out_rows.extend(row_out)
+            print(f"  {row['date']} {row['kanji']}: {len(cands)} candidate(s)")
+        except Exception as e:  # one bad row must not discard the whole run
+            errors.append((row["date"], repr(e)))
+            print(f"  {row['date']} {row['kanji']}: ERROR {e}", file=sys.stderr)
             continue
-        for i, cand in enumerate(cands, start=1):
-            img = process_image(_download_image(cand["download_url"]),
-                                aspect_w, aspect_h, args.max_edge)
-            fname = f"{image_id_for(row['date'])}__c{i}.jpg"
-            save_jpeg(img, args.out_images / fname, args.jpeg_quality)
-            out_rows.append(candidate_row(row, cand, i, fname, img.width, img.height))
-        print(f"  {row['date']} {row['kanji']}: {len(cands)} candidate(s)")
 
     _write_csv(args.candidates_out, CANDIDATE_COLUMNS, out_rows)
     print(f"wrote {len(out_rows)} candidate rows to {args.candidates_out}")
@@ -535,6 +539,10 @@ def cmd_fetch(args):
               file=sys.stderr)
         for date, q in missing[:10]:
             print(f"    {date}: no result for {q!r}", file=sys.stderr)
+    if errors:
+        print(f"  NOTE: {len(errors)} row(s) errored and were skipped:", file=sys.stderr)
+        for date, err in errors[:10]:
+            print(f"    {date}: {err}", file=sys.stderr)
     return 0
 
 

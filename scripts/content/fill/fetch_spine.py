@@ -59,11 +59,12 @@ def distill(raw):
     wins) so a word never appears on two days.
 
     `gloss_en` is the source's short English name (e.g. "plum blossom"),
-    normalized. It is a SEARCH-ONLY HELPER — used purely as a Pexels query term
-    in stage 4 and NEVER written to the shipped manifest (build_csv.py emits
-    only the contract columns). A two-or-three-word English name of a seasonal
-    thing is a factual label, not the copyrighted descriptive prose we
-    deliberately do not reuse.
+    normalized. It is a short factual English name used in stage 4 as a search
+    helper (Pexels/Pixabay query term) and as the shipped image's attribution
+    title — never as shipped descriptive prose (build_csv.py's contract columns
+    carry our own stage-3 authored prose). A two-or-three-word English name of
+    a seasonal thing is a factual label, not the copyrighted descriptive prose
+    we deliberately do not reuse.
     """
     seen_kanji = set()
     pool = []

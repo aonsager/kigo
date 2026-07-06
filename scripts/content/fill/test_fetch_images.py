@@ -140,14 +140,11 @@ def _cand(pid, w, h):
 
 def test_collect_walks_rungs_and_stops_at_want():
     ladder = fi.build_ladder(_row())  # pexels(ja), pexels(en), pixabay(ja), ...
-    calls = []
 
     def pexels(term, lang):
-        calls.append(("pexels", term, lang))
         return [_cand(1, 4000, 6000), _cand(2, 4000, 6000)]
 
     def pixabay(term, lang):
-        calls.append(("pixabay", term, lang))
         return [_cand(3, 4000, 6000)]
 
     got = fi.collect_candidates(ladder, {"pexels": pexels, "pixabay": pixabay},
@@ -374,6 +371,26 @@ def test_cli_select_rejects_ambiguous_marking():
                         "--out-images", str(imgs)], capture_output=True, text=True)
     assert r.returncode != 0
     assert "2026-03-25" in r.stderr
+
+
+def test_collect_skips_provider_missing_from_search_fns():
+    ladder = [{"provider": "pexels", "term": "a", "lang": "en"},
+              {"provider": "pixabay", "term": "b", "lang": "ja"}]
+    def pixabay(term, lang):
+        return [_cand(7, 4000, 6000)]
+    # only pixabay is wired; the pexels rung must be skipped, not crash
+    got = fi.collect_candidates(ladder, {"pixabay": pixabay},
+                                min_width=800, min_height=1200, want=3)
+    assert [c["photo_id"] for c in got] == ["7"]
+
+
+def test_collect_does_not_mutate_input_candidates():
+    original = _cand(1, 4000, 6000)
+    def pexels(term, lang):
+        return [original]
+    fi.collect_candidates([{"provider": "pexels", "term": "a", "lang": "en"}],
+                          {"pexels": pexels}, min_width=800, min_height=1200, want=3)
+    assert "provider" not in original and "search_term" not in original
 
 
 def test_readme_documents_two_phase_and_pillow():

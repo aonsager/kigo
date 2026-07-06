@@ -47,9 +47,12 @@ translations (Higginson/Kondo's *500 Essential Season Words* and UVA's *Nyūmon
 Saijiki*) re-declared under The Unlicense — a declaration that cannot validly
 clear the upstream translators' rights. So `fetch_spine.py` harvests **only the
 uncopyrightable traditional facts** — kanji, kana + romaji readings, season,
-sub-season, category — plus a short English *name* (`gloss_en`) used **solely**
-as a Pexels search term and **never written to the manifest**. All shipped prose
-is our own (stage 3). Images are Pexels-licensed with photographer credit.
+sub-season, category — plus a short English *name* (`gloss_en`), a factual
+label rather than descriptive prose. It is used as a search helper (kanji-first,
+falling back to `gloss_en`, across both Pexels and Pixabay) and is also written
+to the manifest as the image's short attribution title (`attribution_title_en`)
+— it is never shipped as descriptive prose. All shipped prose is our own
+(stage 3). Images are Pexels- or Pixabay-licensed with photographer credit.
 
 ## Run it
 
