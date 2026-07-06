@@ -459,6 +459,44 @@ def test_readme_documents_two_phase_and_pillow():
     assert "chosen" in text  # the review column
 
 
+_PAGEIMAGES_SAMPLE = {"query": {"pages": [{
+    "title": "オミナエシ", "pageimage": "Patrinia_scabiosifolia2.jpg",
+    "original": {"source": "https://upload.wikimedia.org/x.jpg",
+                 "width": 1712, "height": 2304}}]}}
+
+_PAGEIMAGES_MISSING = {"query": {"pages": [{"title": "藁塚", "missing": True}]}}
+
+_IMAGEINFO_SAMPLE = {"query": {"pages": [{"title": "File:Patrinia_scabiosifolia2.jpg",
+    "imageinfo": [{
+        "url": "https://upload.wikimedia.org/x.jpg", "width": 1712, "height": 2304,
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Patrinia_scabiosifolia2.jpg",
+        "extmetadata": {
+            "LicenseShortName": {"value": "CC BY-SA 3.0"},
+            "License": {"value": "cc-by-sa-3.0"},
+            "Artist": {"value": "KENPEI"},
+            "LicenseUrl": {"value": "http://creativecommons.org/licenses/by-sa/3.0/"}}}]}]}}
+
+
+def test_parse_pageimages():
+    got = fi._parse_pageimages(_PAGEIMAGES_SAMPLE)
+    assert got == {"title": "オミナエシ", "image_url": "https://upload.wikimedia.org/x.jpg",
+                   "filename": "Patrinia_scabiosifolia2.jpg"}
+
+
+def test_parse_pageimages_missing_returns_none():
+    assert fi._parse_pageimages(_PAGEIMAGES_MISSING) is None
+    assert fi._parse_pageimages({"query": {"pages": []}}) is None
+
+
+def test_parse_imageinfo():
+    info = fi._parse_imageinfo(_IMAGEINFO_SAMPLE)
+    assert info["width"] == 1712 and info["height"] == 2304
+    assert info["license_short"] == "CC BY-SA 3.0" and info["license_code"] == "cc-by-sa-3.0"
+    assert info["artist"] == "KENPEI" and info["nonfree"] is None
+    assert info["license_url"] == "http://creativecommons.org/licenses/by-sa/3.0/"
+    assert info["description_url"].endswith("File:Patrinia_scabiosifolia2.jpg")
+
+
 if __name__ == "__main__":
     fns = [g for n, g in sorted(globals().items()) if n.startswith("test_")]
     for fn in fns:

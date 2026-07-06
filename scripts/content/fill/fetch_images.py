@@ -373,6 +373,45 @@ def _parse_pixabay(data):
     return out
 
 
+def _parse_pageimages(data):
+    """From an action=query&prop=pageimages (formatversion=2) response, return
+    {'title','image_url','filename'} for the lead image, or None if the page is
+    missing or has no original image."""
+    pages = (data.get("query") or {}).get("pages") or []
+    if not pages:
+        return None
+    page = pages[0]
+    if page.get("missing"):
+        return None
+    url = (page.get("original") or {}).get("source")
+    fname = page.get("pageimage")
+    if not url or not fname:
+        return None
+    return {"title": page.get("title") or "", "image_url": url, "filename": fname}
+
+
+def _parse_imageinfo(data):
+    """From an action=query&prop=imageinfo (iiprop=extmetadata|url|size,
+    formatversion=2) response, return the fields we need (missing -> ''/0/None)."""
+    pages = (data.get("query") or {}).get("pages") or []
+    ii = ((pages[0].get("imageinfo") if pages else None) or [{}])[0]
+    em = ii.get("extmetadata") or {}
+
+    def val(k):
+        return (em.get(k) or {}).get("value")
+
+    return {
+        "width": int(ii.get("width") or 0),
+        "height": int(ii.get("height") or 0),
+        "license_short": val("LicenseShortName") or "",
+        "license_code": val("License") or "",
+        "nonfree": val("NonFree"),
+        "artist": val("Artist") or "",
+        "license_url": val("LicenseUrl") or "",
+        "description_url": ii.get("descriptionurl") or "",
+    }
+
+
 # --- Provider search adapters. Fetch JSON and return parser's list. --------
 
 def _pexels_search(term, lang, api_key, per_page, sleep, retries=3):
