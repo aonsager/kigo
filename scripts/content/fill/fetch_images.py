@@ -101,7 +101,7 @@ CANDIDATE_COLUMNS = (
     "date", "image_id", "candidate", "chosen",
     "provider", "search_term", "search_lang", "photographer",
     "license_ja", "license_en", "title_ja", "title_en",
-    "source_url", "src_w", "src_h", "out_file",
+    "source_url", "src_w", "src_h", "out_file", "usable", "note",
 )
 
 # Per-provider config: which env var holds the key, the license strings, and
@@ -168,48 +168,69 @@ def image_id_for(date):
 
 def candidate_row(row, cand, index, out_file, src_w, src_h):
     """Builds one CANDIDATE_COLUMNS dict from row, candidate, and metadata.
-    chosen is left blank; title_en falls back to reading_en if gloss_en is empty."""
-    cfg = PROVIDERS[cand["provider"]]
+    chosen is blank; title_en falls back to reading_en if gloss_en is empty.
+    Stock providers take their static license from PROVIDERS and are always
+    usable; other sources (e.g. wikipedia) carry per-image license/usable/note
+    on the candidate."""
+    prov = cand["provider"]
+    if prov in PROVIDERS:
+        license_ja = PROVIDERS[prov]["license_ja"]
+        license_en = PROVIDERS[prov]["license_en"]
+    else:
+        license_ja = cand.get("license_ja", "")
+        license_en = cand.get("license_en", "")
     return {
         "date": row["date"],
         "image_id": image_id_for(row["date"]),
         "candidate": index,
         "chosen": "",
-        "provider": cand["provider"],
+        "provider": prov,
         "search_term": cand["search_term"],
         "search_lang": cand["search_lang"],
         "photographer": cand["photographer"],
-        "license_ja": cfg["license_ja"],
-        "license_en": cfg["license_en"],
+        "license_ja": license_ja,
+        "license_en": license_en,
         "title_ja": row["kanji"],
         "title_en": row.get("gloss_en") or row["reading_en"],
         "source_url": cand.get("source_url", ""),
         "src_w": src_w,
         "src_h": src_h,
         "out_file": out_file,
+        "usable": cand.get("usable", "yes"),
+        "note": cand.get("note", ""),
     }
 
 
 def image_row_from_candidate(cand_row):
-    """Builds an 8-col IMAGE_COLUMNS dict from a chosen candidates.csv row,
-    with credit strings in Japanese and English."""
-    label = cand_row["provider"].capitalize()
+    """Builds an 8-col IMAGE_COLUMNS dict from a chosen candidates.csv row.
+    Wikipedia credit reads '画像 … / Wikimedia Commons' (the source may be a
+    painting or diagram, not a photo); stock providers read '写真 … / <Provider>'."""
+    provider = cand_row["provider"]
     photographer = cand_row["photographer"]
+    if provider == "wikipedia":
+        credit_ja = f"画像: {photographer} / Wikimedia Commons"
+        credit_en = f"Image: {photographer} / Wikimedia Commons"
+    else:
+        label = provider.capitalize()
+        credit_ja = f"写真: {photographer} / {label}"
+        credit_en = f"Photo: {photographer} / {label}"
     return {
         "date": cand_row["date"],
         "image_id": cand_row["image_id"],
         "attribution_title_ja": cand_row["title_ja"],
         "attribution_title_en": cand_row["title_en"],
-        "attribution_credit_ja": f"写真: {photographer} / {label}",
-        "attribution_credit_en": f"Photo: {photographer} / {label}",
+        "attribution_credit_ja": credit_ja,
+        "attribution_credit_en": credit_en,
         "attribution_license_ja": cand_row["license_ja"],
         "attribution_license_en": cand_row["license_en"],
     }
 
 
 def select_chosen(cand_rows):
-    """Returns the chosen candidate row per date. Raises ValueError (with
-    offending dates) if any date has zero or >1 non-empty 'chosen' cell."""
+    """Returns the chosen candidate row per date. Raises ValueError (naming the
+    offending dates) if any date has zero or >1 non-empty 'chosen' cell, or if a
+    chosen row is reference-only (usable == 'no') — a non-shippable image can
+    never be selected."""
     by_date = {}
     for cr in cand_rows:
         by_date.setdefault(cr["date"], []).append(cr)
@@ -219,10 +240,13 @@ def select_chosen(cand_rows):
         if len(marked) != 1:
             bad.append(f"{date} (has {len(marked)} chosen)")
             continue
+        if (marked[0].get("usable") or "").strip().lower() == "no":
+            bad.append(f"{date} (chosen is reference-only, not shippable)")
+            continue
         picked.append(marked[0])
     if bad:
-        raise ValueError("each date needs exactly one 'chosen' candidate; "
-                         "offending: " + ", ".join(bad))
+        raise ValueError("each date needs exactly one shippable 'chosen' "
+                         "candidate; offending: " + ", ".join(bad))
     return picked
 
 

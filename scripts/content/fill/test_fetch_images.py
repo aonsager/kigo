@@ -298,14 +298,14 @@ def test_save_jpeg_writes_file(tmp_path=None):
     assert Image.open(p).size == (100, 200)
 
 
-def _cand_row(date, idx, chosen="", provider="pexels", photographer="Aki"):
+def _cand_row(date, idx, chosen="", provider="pexels", photographer="Aki", usable="yes"):
     return {"date": date, "image_id": fi.image_id_for(date), "candidate": str(idx),
             "chosen": chosen, "provider": provider, "search_term": "桜",
             "search_lang": "ja-JP", "photographer": photographer,
             "license_ja": "Pexels ライセンス", "license_en": "Pexels License",
             "title_ja": "桜", "title_en": "cherry blossom",
             "source_url": "s", "src_w": "1080", "src_h": "2340",
-            "out_file": f"kigo-03-25__c{idx}.jpg"}
+            "out_file": f"kigo-03-25__c{idx}.jpg", "usable": usable, "note": ""}
 
 
 def test_candidate_row_shape():
@@ -448,6 +448,39 @@ def test_wiki_license_shippable():
                             ("cc-by-nd-4.0", "CC BY-ND 4.0", None),
                             ("cc-by-nc-sa-3.0", "CC BY-NC-SA 3.0", None)]:
         assert fi._wiki_license_shippable(code, short, nf) is False, (code, short, nf)
+
+
+def test_candidate_row_wikipedia_uses_dynamic_license():
+    row = {"date": "2026-04-15", "kanji": "女郎花", "gloss_en": "", "reading_en": "ominaeshi"}
+    cand = {"provider": "wikipedia", "search_term": "オミナエシ", "search_lang": "ja",
+            "photographer": "KENPEI", "source_url": "https://commons/File:x",
+            "license_ja": "CC BY-SA 3.0", "license_en": "CC BY-SA 3.0",
+            "usable": "yes", "note": "article: オミナエシ"}
+    out = fi.candidate_row(row, cand, 4, "kigo-04-15__c4.jpg", 1080, 2340)
+    assert set(out) == set(fi.CANDIDATE_COLUMNS)
+    assert out["provider"] == "wikipedia" and out["license_en"] == "CC BY-SA 3.0"
+    assert out["usable"] == "yes" and out["note"] == "article: オミナエシ"
+    assert out["title_en"] == "ominaeshi"  # gloss_en empty -> reading_en
+
+
+def test_image_row_from_wikipedia_credit():
+    cr = _cand_row("2026-04-15", 4, chosen="x", provider="wikipedia", photographer="KENPEI")
+    cr["license_ja"] = cr["license_en"] = "CC BY-SA 3.0"
+    out = fi.image_row_from_candidate(cr)
+    assert out["attribution_credit_en"] == "Image: KENPEI / Wikimedia Commons"
+    assert out["attribution_credit_ja"] == "画像: KENPEI / Wikimedia Commons"
+    assert out["attribution_license_en"] == "CC BY-SA 3.0"
+
+
+def test_select_chosen_rejects_reference_only():
+    rows = [_cand_row("2026-03-25", 1, chosen="x", usable="no"),
+            _cand_row("2026-03-25", 2)]
+    try:
+        fi.select_chosen(rows)
+    except ValueError as e:
+        assert "reference-only" in str(e) and "2026-03-25" in str(e)
+    else:
+        raise AssertionError("expected ValueError")
 
 
 def test_readme_documents_two_phase_and_pillow():
