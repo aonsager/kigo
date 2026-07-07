@@ -10,3 +10,8 @@ batches/
 responses/
 downloads/
 __pycache__/
+
+# SQLite editorial review store (ADR 0025) — working state, not source of truth.
+review.db
+review.db-wal
+review.db-shm

@@ -27,6 +27,30 @@ step that *must* stay human (reading the Japanese) is the only manual gate.
                      scripts/content/assemble.py  ── the real gate ──▶ manifest.json
 ```
 
+## The wrapper (recommended) — `fill.py` + web review
+
+`fill.py` orchestrates the stages below over a SQLite review store
+(`review.db`, gitignored) and a local web review UI. See ADR 0025.
+
+```bash
+# 1. seed the 365 day facts (deterministic; consumes spine_pool.json)
+python3 scripts/content/fill/fill.py spine
+
+# 2. generate prose + image candidates for a date range (unapproved days only;
+#    needs ANTHROPIC_API_KEY + a provider key, or --no-images / --no-descriptions)
+python3 scripts/content/fill/fill.py generate --from 2026-03-01 --to 2026-03-31
+
+# 3. review in the browser: edit readings/prose, pick an image, approve each day
+python3 scripts/content/fill/fill.py review        # http://127.0.0.1:8000
+
+# 4. compile approved days → content/kigo-2026.csv → manifest (the assemble gate)
+python3 scripts/content/fill/fill.py compile --image-base-url https://cdn.example/kigo
+```
+
+"Approved freezes": `spine`/`generate` never touch an approved day (use `--force`
+to override). `compile` exports only approved days (partial manifest), reporting
+skipped ones. The per-stage scripts below remain for ad-hoc use.
+
 ## What you must supply
 
 | Input | For | How |
