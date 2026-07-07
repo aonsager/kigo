@@ -68,7 +68,13 @@ def _now():
 
 
 def connect(path):
-    conn = sqlite3.connect(str(path))
+    # check_same_thread=False: the review webapp's http.server handles requests
+    # synchronously (one at a time, never concurrently) but its serve_forever()
+    # loop runs on a thread distinct from the one that called connect() — the
+    # CLI path (fill.py review) calls both from the main thread, but tests spin
+    # the server up on a background thread. No concurrent access ever occurs,
+    # so relaxing sqlite3's same-thread guard here is safe.
+    conn = sqlite3.connect(str(path), check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     conn.execute("PRAGMA journal_mode = WAL")

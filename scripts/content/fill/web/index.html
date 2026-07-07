@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>kigo review</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <h1>kigo-2026 review</h1>
+    <div class="filters">
+      <input id="from" placeholder="from YYYY-MM-DD">
+      <input id="to" placeholder="to YYYY-MM-DD">
+      <select id="status">
+        <option value="">all</option>
+        <option value="unapproved">unapproved</option>
+        <option value="approved">approved</option>
+      </select>
+      <button id="reload">reload</button>
+    </div>
+  </header>
+  <main>
+    <ul id="days"></ul>
+    <section id="editor" hidden></section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>

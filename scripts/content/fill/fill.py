@@ -30,6 +30,7 @@ import csv  # noqa: E402
 import shutil  # noqa: E402
 import subprocess  # noqa: E402
 import build_csv  # noqa: E402
+import webapp  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parents[2]
@@ -200,6 +201,18 @@ def cmd_compile(args):
     return result.returncode
 
 
+def cmd_review(args):
+    conn = store.connect(args.db)
+    srv = webapp.make_server(conn, HERE / "web", args.images, port=args.port)
+    host, port = srv.server_address
+    print(f"review UI on http://{host}:{port}  (Ctrl-C to stop)")
+    try:
+        srv.serve_forever()
+    except KeyboardInterrupt:
+        print("\nstopped")
+    return 0
+
+
 def cmd_spine(args):
     conn = store.connect(args.db)
     pool = json.loads(args.pool.read_text(encoding="utf-8"))
@@ -253,6 +266,12 @@ def main(argv=None):
                    default=REPO_ROOT / "Resources" / "manifest.json")
     c.add_argument("--image-base-url", dest="image_base_url", default=None)
     c.set_defaults(func=cmd_compile)
+
+    r = sub.add_parser("review", help="serve the local web review UI")
+    r.add_argument("--db", type=Path, default=DEFAULT_DB)
+    r.add_argument("--port", type=int, default=8000)
+    r.add_argument("--images", type=Path, default=HERE / "downloads")
+    r.set_defaults(func=cmd_review)
 
     args = parser.parse_args(argv)
     return args.func(args)

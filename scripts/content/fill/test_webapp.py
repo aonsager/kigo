@@ -78,6 +78,38 @@ def test_patch_day_bad_candidate_does_not_persist_prose():
     assert store.get_day(conn, "2026-03-25")["description_ja"] == ""  # nothing persisted
 
 
+import json as _json  # noqa: E402
+import threading  # noqa: E402
+import urllib.request  # noqa: E402
+import urllib.error  # noqa: E402
+
+
+def test_make_server_serves_api_over_http():
+    conn = _mem()
+    store.add_candidate(conn, "2026-03-25", _cand())
+    web_dir = Path(__file__).resolve().parent / "web"
+    srv = webapp.make_server(conn, web_dir, Path("/tmp"), port=0)
+    port = srv.server_address[1]
+    t = threading.Thread(target=srv.serve_forever, daemon=True)
+    t.start()
+    try:
+        base = f"http://127.0.0.1:{port}"
+        days = _json.loads(urllib.request.urlopen(base + "/api/days").read())
+        assert days[0]["date"] == "2026-03-25"
+        one = _json.loads(urllib.request.urlopen(base + "/api/days/2026-03-25").read())
+        assert len(one["candidates"]) == 1
+        try:
+            urllib.request.urlopen(base + "/api/days/2026-01-01")
+        except urllib.error.HTTPError as e:
+            assert e.code == 404
+        else:
+            raise AssertionError("expected 404 for unknown date")
+        # index.html is served at /
+        assert b"<" in urllib.request.urlopen(base + "/").read()
+    finally:
+        srv.shutdown()
+
+
 if __name__ == "__main__":
     fns = [g for n, g in sorted(globals().items()) if n.startswith("test_")]
     for fn in fns:

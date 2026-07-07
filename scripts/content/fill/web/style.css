@@ -1,0 +1,20 @@
+* { box-sizing: border-box; }
+body { font-family: system-ui, sans-serif; margin: 0; color: #222; }
+header { padding: 1rem; border-bottom: 1px solid #ddd; }
+.filters { display: flex; gap: .5rem; margin-top: .5rem; flex-wrap: wrap; }
+main { display: flex; gap: 1rem; padding: 1rem; align-items: flex-start; }
+#days { list-style: none; margin: 0; padding: 0; width: 22rem; max-height: 80vh; overflow: auto; }
+#days li { padding: .5rem; border: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; }
+#days li.approved { background: #eaf7ea; }
+#days li .marks { color: #999; font-size: .8rem; }
+#editor { flex: 1; }
+#editor label { display: block; margin: .6rem 0 .2rem; font-weight: 600; }
+#editor input[type=text], #editor textarea { width: 100%; padding: .4rem; }
+#editor textarea { min-height: 4rem; }
+.candidates { display: flex; gap: .5rem; flex-wrap: wrap; }
+.candidates figure { margin: 0; width: 8rem; }
+.candidates img { width: 100%; border: 3px solid transparent; }
+.candidates input:checked + img { border-color: #2a7; }
+.candidates figcaption { font-size: .75rem; color: #666; }
+.candidates .refonly { opacity: .5; }
+.bar { margin-top: 1rem; display: flex; gap: 1rem; align-items: center; }
