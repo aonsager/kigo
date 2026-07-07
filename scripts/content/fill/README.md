@@ -37,7 +37,10 @@ step that *must* stay human (reading the Japanese) is the only manual gate.
 python3 scripts/content/fill/fill.py spine
 
 # 2. generate prose + image candidates for a date range (unapproved days only;
-#    needs ANTHROPIC_API_KEY + a provider key, or --no-images / --no-descriptions)
+#    reads all keys from the gitignored scripts/content/fill/.env —
+#    ANTHROPIC_API_KEY (prose) + PEXELS_API_KEY / PIXABAY_API_KEY (images);
+#    a real exported env var overrides the file. Or run with
+#    --no-images / --no-descriptions to skip a half.)
 python3 scripts/content/fill/fill.py generate --from 2026-03-01 --to 2026-03-31
 
 # 3. review in the browser: edit readings/prose, pick an image, approve each day
@@ -60,7 +63,7 @@ day first to freeze it against regeneration.
 
 | Input | For | How |
 |---|---|---|
-| **An LLM** (stage 3) | authoring `description_ja` / `description_en` | any capable chat model, or `ANTHROPIC_API_KEY` + `describe_via_claude.py` |
+| **An LLM** (stage 3) | authoring `description_ja` / `description_en` | any capable chat model, or `ANTHROPIC_API_KEY` (put it in the gitignored `scripts/content/fill/.env` alongside the image keys, or export it) + `describe_via_claude.py` |
 | **Pillow** (stage 4) | image smart-cropping + JPEG encoding | `python3 -m pip install Pillow` |
 | **An image-provider API key** (stage 4) | real photography + attribution | free from [Pixabay](https://pixabay.com/api/docs/) or [Pexels](https://www.pexels.com/api/); put `PIXABAY_API_KEY` / `PEXELS_API_KEY` in a gitignored `scripts/content/fill/.env` |
 | **A static image host** (post-workflow) | re-hosting chosen JPEGs at a stable base URL | Cloudflare R2 / S3 / GitHub release; becomes `--image-base-url` for `assemble.py` |

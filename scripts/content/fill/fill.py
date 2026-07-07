@@ -120,6 +120,10 @@ def _select_days(conn, date_from, date_to, force):
 
 
 def cmd_generate(args):
+    # Load the gitignored .env up front so ALL keys — ANTHROPIC_API_KEY as well
+    # as the provider keys — can live there; setdefault means a real exported
+    # env var still wins over the file.
+    fetch_images.load_dotenv()
     conn = store.connect(args.db)
     days = _select_days(conn, args.date_from, args.date_to, args.force)
     if not days:
@@ -140,7 +144,6 @@ def cmd_generate(args):
             print("  " + e, file=sys.stderr)
 
     if not args.no_images:
-        fetch_images.load_dotenv()
         fallback = None if args.no_fallback else args.fallback
         providers = dict.fromkeys([args.primary] + ([fallback] if fallback else []))
         keys = fetch_images._resolve_keys(providers, None)
