@@ -51,6 +51,11 @@ python3 scripts/content/fill/fill.py compile --image-base-url https://cdn.exampl
 to override). `compile` exports only approved days (partial manifest), reporting
 skipped ones. The per-stage scripts below remain for ad-hoc use.
 
+Until a day is approved, though, `generate` treats it as a draft and fully
+regenerates it on every re-run — re-authoring prose and clearing the chosen
+image — so any manual edits made before approval are discarded; approve the
+day first to freeze it against regeneration.
+
 ## What you must supply
 
 | Input | For | How |
@@ -210,7 +215,7 @@ python3 scripts/content/assemble.py --csv content/kigo-2026.csv --out Resources/
 
 `build_csv.py` only emits dates present in **all three** inputs, so a partial
 run yields a smaller but fully valid CSV — no blank cells. It drops every helper
-column, writing exactly the 13-column contract `csv_parser.py` expects.
+column, writing exactly the 14-column contract `csv_parser.py` expects.
 
 ## Worked sample in this repo
 

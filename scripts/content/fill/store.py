@@ -7,7 +7,7 @@ Separates regenerable/derived data from durable human decisions (edits, the
 chosen image, approval). One reconciliation rule — "approved freezes": an
 approved day is never mutated by spine/generate; unapproved days are drafts.
 
-Stdlib only. See docs/adr/0025-sqlite-editorial-review-store.md.
+Stdlib + Pillow (via fetch_images). See docs/adr/0025-sqlite-editorial-review-store.md.
 """
 import datetime as dt
 import sqlite3
