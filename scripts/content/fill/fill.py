@@ -54,6 +54,7 @@ def generate_descriptions(conn, dates, call_llm, batch_size=20):
             continue
         by_date = {obj.get("date"): obj for obj in arr}
         validated = []
+        batch_errors = []
         for row in batch:
             date = row["date"]
             obj = by_date.get(date, {})
@@ -61,15 +62,16 @@ def generate_descriptions(conn, dates, call_llm, batch_size=20):
             ja = (obj.get("description_ja") or "").strip()
             en = (obj.get("description_en") or "").strip()
             if not tr:
-                errors.append(f"{date}: translation_en empty")
+                batch_errors.append(f"{date}: translation_en empty")
             if not ja:
-                errors.append(f"{date}: description_ja empty")
+                batch_errors.append(f"{date}: description_ja empty")
             if not en:
-                errors.append(f"{date}: description_en empty")
+                batch_errors.append(f"{date}: description_en empty")
             if describe.DATE_STAMP_RE.search(ja + en):
-                errors.append(f"{date}: description contains a forbidden date stamp")
+                batch_errors.append(f"{date}: description contains a forbidden date stamp")
             validated.append((date, tr, ja, en))
-        if errors:
+        errors.extend(batch_errors)
+        if batch_errors:
             continue
         for date, tr, ja, en in validated:
             store.set_day_fields(conn, date, translation_en=tr,

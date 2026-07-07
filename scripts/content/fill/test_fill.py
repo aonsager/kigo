@@ -97,6 +97,29 @@ def test_generate_descriptions_rejects_empty_and_datestamp():
     assert any("date stamp" in e for e in errors)
 
 
+def test_generate_descriptions_bad_batch_does_not_poison_later_batch():
+    conn = store.connect(":memory:")
+    _seed_two(conn)  # 2026-03-25, 2026-03-26
+
+    def mixed_llm(prompt):
+        # each single-date batch echoes just its own row; 03-25 is invalid (empty
+        # translation_en), 03-26 is valid — proves a bad earlier batch must not
+        # suppress a valid later one.
+        if "2026-03-25" in prompt:
+            return json.dumps([{"date": "2026-03-25", "translation_en": "",
+                                "description_ja": "x", "description_en": "y"}], ensure_ascii=False)
+        return json.dumps([{"date": "2026-03-26", "translation_en": "violet",
+                            "description_ja": "菫の説明。", "description_en": "Violets bloom."}],
+                          ensure_ascii=False)
+
+    days = store.list_days(conn, status="unapproved")
+    written, errors = fill.generate_descriptions(conn, days, mixed_llm, batch_size=1)
+    assert written == 1
+    assert store.get_day(conn, "2026-03-26")["translation_en"] == "violet"
+    assert store.get_day(conn, "2026-03-25")["translation_en"] == ""  # bad batch wrote nothing
+    assert any("2026-03-25" in e for e in errors)
+
+
 if __name__ == "__main__":
     fns = [g for n, g in sorted(globals().items()) if n.startswith("test_")]
     for fn in fns:
