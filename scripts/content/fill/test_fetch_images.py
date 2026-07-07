@@ -576,6 +576,32 @@ def test_readme_documents_wikipedia_reference():
     assert "usable" in text
 
 
+def test_fetch_candidates_for_row_uses_injected_search_and_download():
+    import tempfile
+    row = {"date": "2026-03-25", "kanji": "桜",
+           "gloss_en": "cherry blossom", "reading_en": "sakura"}
+
+    def fake_search(term, lang):
+        return [{"photo_id": f"{term}-{lang}", "photographer": "Ansel",
+                 "download_url": f"http://x/{term}", "source_url": "http://s",
+                 "width": 1000, "height": 1500}]
+
+    search_fns = {"pexels": fake_search, "pixabay": fake_search}
+    made = fi.Image.new("RGB", (1000, 1500), (120, 120, 120))
+
+    with tempfile.TemporaryDirectory() as tmp:
+        rows, errors = fi.fetch_candidates_for_row(
+            row, search_fns, Path(tmp), candidates=2, include_wikipedia=False,
+            download=lambda url: made)
+        assert errors == []
+        assert len(rows) == 2
+        assert rows[0]["provider"] == "pexels" and rows[0]["date"] == "2026-03-25"
+        assert rows[0]["image_id"] == "kigo-03-25"
+        for i, r in enumerate(rows, start=1):
+            assert (Path(tmp) / f"kigo-03-25__c{i}.jpg").exists()
+            assert r["out_file"] == f"kigo-03-25__c{i}.jpg"
+
+
 if __name__ == "__main__":
     fns = [g for n, g in sorted(globals().items()) if n.startswith("test_")]
     for fn in fns:

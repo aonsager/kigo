@@ -674,6 +674,41 @@ def _resolve_keys(providers, cli_key):
     return keys
 
 
+def fetch_candidates_for_row(row, search_fns, out_images, *, aspect=(9.0, 19.5),
+                             max_edge=2340, jpeg_quality=82, min_width=800,
+                             min_height=1200, candidates=3, primary="pexels",
+                             fallback="pixabay", use_japanese=True,
+                             include_wikipedia=True, download=_download_image,
+                             wiki_lookup=_wikipedia_lookup):
+    """Acquire + process candidate images for one spine row. Returns
+    (candidate_row dicts, error strings). Injecting `download`/`wiki_lookup`
+    lets callers run offline; production wires the real network functions."""
+    aspect_w, aspect_h = aspect
+    errors = []
+    ladder = build_ladder(row, primary=primary, fallback=fallback,
+                          use_japanese=use_japanese)
+    cands = collect_candidates(ladder, search_fns, min_width, min_height, candidates)
+    row_out = []
+    for i, cand in enumerate(cands, start=1):
+        img = process_image(download(cand["download_url"]), aspect_w, aspect_h, max_edge)
+        fname = f"{image_id_for(row['date'])}__c{i}.jpg"
+        save_jpeg(img, out_images / fname, jpeg_quality)
+        row_out.append(candidate_row(row, cand, i, fname, img.width, img.height))
+    if include_wikipedia:
+        try:
+            wiki = wiki_lookup(row["kanji"], row.get("gloss_en") or row["reading_en"],
+                               min_width, min_height)
+            if wiki:
+                idx = len(row_out) + 1
+                img = process_image(download(wiki["download_url"]), aspect_w, aspect_h, max_edge)
+                fname = f"{image_id_for(row['date'])}__c{idx}.jpg"
+                save_jpeg(img, out_images / fname, jpeg_quality)
+                row_out.append(candidate_row(row, wiki, idx, fname, img.width, img.height))
+        except Exception as e:  # a bonus wiki candidate must not drop the stock ones
+            errors.append(f"wikipedia: {e!r}")
+    return row_out, errors
+
+
 def cmd_fetch(args):
     rows = _read_spine(args.spine)
     if args.placeholder:
@@ -698,34 +733,17 @@ def cmd_fetch(args):
     out_rows, missing, errors = [], [], []
     for row in rows:
         try:
-            ladder = build_ladder(row, primary=args.primary, fallback=fallback,
-                                  use_japanese=not args.no_japanese)
-            cands = collect_candidates(ladder, search_fns, args.min_width,
-                                       args.min_height, args.candidates)
-            row_out = []
-            for i, cand in enumerate(cands, start=1):
-                img = process_image(_download_image(cand["download_url"]),
-                                    aspect_w, aspect_h, args.max_edge)
-                fname = f"{image_id_for(row['date'])}__c{i}.jpg"
-                save_jpeg(img, args.out_images / fname, args.jpeg_quality)
-                row_out.append(candidate_row(row, cand, i, fname, img.width, img.height))
-            if not args.no_wikipedia:
-                try:
-                    wiki = _wikipedia_lookup(row["kanji"],
-                                             row.get("gloss_en") or row["reading_en"],
-                                             args.min_width, args.min_height)
-                    if wiki:
-                        idx = len(row_out) + 1
-                        img = process_image(_download_image(wiki["download_url"]),
-                                            aspect_w, aspect_h, args.max_edge)
-                        fname = f"{image_id_for(row['date'])}__c{idx}.jpg"
-                        save_jpeg(img, args.out_images / fname, args.jpeg_quality)
-                        row_out.append(candidate_row(row, wiki, idx, fname,
-                                                     img.width, img.height))
-                except Exception as e:  # a bonus wiki candidate must not drop the stock ones
-                    errors.append((row["date"], f"wikipedia: {e!r}"))
-                    print(f"  {row['date']} {row['kanji']}: wikipedia ERROR {e}",
-                          file=sys.stderr)
+            row_out, row_errors = fetch_candidates_for_row(
+                row, search_fns, args.out_images,
+                aspect=(aspect_w, aspect_h), max_edge=args.max_edge,
+                jpeg_quality=args.jpeg_quality, min_width=args.min_width,
+                min_height=args.min_height, candidates=args.candidates,
+                primary=args.primary, fallback=fallback,
+                use_japanese=not args.no_japanese,
+                include_wikipedia=not args.no_wikipedia)
+            for msg in row_errors:
+                errors.append((row["date"], msg))
+                print(f"  {row['date']} {row['kanji']}: {msg}", file=sys.stderr)
             if not row_out:
                 missing.append((row["date"], row.get("gloss_en") or row["reading_en"]))
                 continue
