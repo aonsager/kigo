@@ -149,8 +149,8 @@ def test_collect_walks_rungs_and_stops_at_want():
 
     got = fi.collect_candidates(ladder, {"pexels": pexels, "pixabay": pixabay},
                                 min_width=800, min_height=1200, want=3)
-    # first pexels rung already yields 2, second pexels rung is called for the 3rd,
-    # producing dupes (same ids) -> must reach pixabay for a distinct 3rd.
+    # round-robin: rung 1 (pexels ja) gives id 1; rung 2 (pexels en) gives id 2
+    # (id 1 is a dupe); rung 3 (pixabay) gives the distinct id 3.
     ids = [c["photo_id"] for c in got]
     assert ids == ["1", "2", "3"]
     assert got[0]["provider"] == "pexels" and got[0]["search_lang"] == "ja-JP"
@@ -177,6 +177,41 @@ def test_collect_applies_pixabay_effective_floor():
     got = fi.collect_candidates(ladder, {"pixabay": pixabay},
                                 min_width=800, min_height=1200, want=3)
     assert [c["photo_id"] for c in got] == ["8"]
+
+
+def test_collect_diversifies_across_rungs():
+    # With 3 productive rungs and want=3, take ONE candidate from each rung
+    # (in rung order) rather than three from the first rung — so the human
+    # compares across sources (kanji vs English gloss vs Pixabay).
+    ladder = [{"provider": "pexels", "term": "kanji", "lang": "ja-JP"},
+              {"provider": "pexels", "term": "gloss", "lang": "en"},
+              {"provider": "pixabay", "term": "kanji", "lang": "ja"}]
+
+    def pexels(term, lang):
+        base = 100 if term == "kanji" else 200  # distinct ids per rung
+        return [_cand(base + 1, 4000, 6000), _cand(base + 2, 4000, 6000)]
+
+    def pixabay(term, lang):
+        return [_cand(300, 4000, 6000), _cand(301, 4000, 6000)]
+
+    got = fi.collect_candidates(ladder, {"pexels": pexels, "pixabay": pixabay},
+                                min_width=800, min_height=1200, want=3)
+    assert [c["search_term"] for c in got] == ["kanji", "gloss", "kanji"]
+    assert [c["search_lang"] for c in got] == ["ja-JP", "en", "ja"]
+    assert [c["provider"] for c in got] == ["pexels", "pexels", "pixabay"]
+
+
+def test_collect_falls_back_to_depth_when_few_rungs():
+    # Only one productive rung: fill `want` by taking successive candidates
+    # from it (round-robin degrades to depth-first).
+    ladder = [{"provider": "pexels", "term": "a", "lang": "en"}]
+
+    def pexels(term, lang):
+        return [_cand(1, 4000, 6000), _cand(2, 4000, 6000), _cand(3, 4000, 6000)]
+
+    got = fi.collect_candidates(ladder, {"pexels": pexels},
+                                min_width=800, min_height=1200, want=3)
+    assert [c["photo_id"] for c in got] == ["1", "2", "3"]
 
 
 def _split_image(width, height, busy_side):
@@ -263,14 +298,14 @@ def test_save_jpeg_writes_file(tmp_path=None):
     assert Image.open(p).size == (100, 200)
 
 
-def _cand_row(date, idx, chosen="", provider="pexels", photographer="Aki"):
+def _cand_row(date, idx, chosen="", provider="pexels", photographer="Aki", usable="yes"):
     return {"date": date, "image_id": fi.image_id_for(date), "candidate": str(idx),
             "chosen": chosen, "provider": provider, "search_term": "桜",
             "search_lang": "ja-JP", "photographer": photographer,
             "license_ja": "Pexels ライセンス", "license_en": "Pexels License",
             "title_ja": "桜", "title_en": "cherry blossom",
             "source_url": "s", "src_w": "1080", "src_h": "2340",
-            "out_file": f"kigo-03-25__c{idx}.jpg"}
+            "out_file": f"kigo-03-25__c{idx}.jpg", "usable": usable, "note": ""}
 
 
 def test_candidate_row_shape():
@@ -393,6 +428,61 @@ def test_collect_does_not_mutate_input_candidates():
     assert "provider" not in original and "search_term" not in original
 
 
+def test_strip_html():
+    assert fi._strip_html('<bdi><a href="x">KENPEI</a></bdi>') == "KENPEI"
+    assert fi._strip_html("Tom &amp; Jerry") == "Tom & Jerry"
+    assert fi._strip_html("") == "" and fi._strip_html(None) == ""
+
+
+def test_wiki_license_shippable():
+    for code, short, nf in [("pd", "Public domain", None), ("cc0", "CC0", None),
+                            ("cc-by-4.0", "CC BY 4.0", None),
+                            ("cc-by-sa-3.0", "CC BY-SA 3.0", None),
+                            ("", "Public domain", None)]:
+        assert fi._wiki_license_shippable(code, short, nf) is True, (code, short)
+    for code, short, nf in [("gfdl", "GFDL", None), ("", "Fair use", None),
+                            ("", "", None),
+                            ("cc-by-sa-3.0", "CC BY-SA 3.0", True),   # non-free wins
+                            ("cc-by-sa-3.0", "CC BY-SA 3.0", "true"),
+                            ("cc-by-nc-4.0", "CC BY-NC 4.0", None),
+                            ("cc-by-nd-4.0", "CC BY-ND 4.0", None),
+                            ("cc-by-nc-sa-3.0", "CC BY-NC-SA 3.0", None)]:
+        assert fi._wiki_license_shippable(code, short, nf) is False, (code, short, nf)
+
+
+def test_candidate_row_wikipedia_uses_dynamic_license():
+    row = {"date": "2026-04-15", "kanji": "女郎花", "gloss_en": "", "reading_en": "ominaeshi"}
+    cand = {"provider": "wikipedia", "search_term": "オミナエシ", "search_lang": "ja",
+            "photographer": "KENPEI", "source_url": "https://commons/File:x",
+            "license_ja": "CC BY-SA 3.0", "license_en": "CC BY-SA 3.0",
+            "usable": "yes", "note": "article: オミナエシ"}
+    out = fi.candidate_row(row, cand, 4, "kigo-04-15__c4.jpg", 1080, 2340)
+    assert set(out) == set(fi.CANDIDATE_COLUMNS)
+    assert out["provider"] == "wikipedia" and out["license_en"] == "CC BY-SA 3.0"
+    assert out["usable"] == "yes" and out["note"] == "article: オミナエシ"
+    assert out["title_en"] == "ominaeshi"  # gloss_en empty -> reading_en
+
+
+def test_image_row_from_wikipedia_credit():
+    cr = _cand_row("2026-04-15", 4, chosen="x", provider="wikipedia", photographer="KENPEI")
+    cr["license_ja"] = cr["license_en"] = "CC BY-SA 3.0"
+    out = fi.image_row_from_candidate(cr)
+    assert out["attribution_credit_en"] == "Image: KENPEI / Wikimedia Commons"
+    assert out["attribution_credit_ja"] == "画像: KENPEI / Wikimedia Commons"
+    assert out["attribution_license_en"] == "CC BY-SA 3.0"
+
+
+def test_select_chosen_rejects_reference_only():
+    rows = [_cand_row("2026-03-25", 1, chosen="x", usable="no"),
+            _cand_row("2026-03-25", 2)]
+    try:
+        fi.select_chosen(rows)
+    except ValueError as e:
+        assert "reference-only" in str(e) and "2026-03-25" in str(e)
+    else:
+        raise AssertionError("expected ValueError")
+
+
 def test_readme_documents_two_phase_and_pillow():
     text = README.read_text(encoding="utf-8")
     assert "fetch_images.py fetch" in text
@@ -400,6 +490,90 @@ def test_readme_documents_two_phase_and_pillow():
     assert "candidates.csv" in text
     assert "Pillow" in text
     assert "chosen" in text  # the review column
+
+
+_PAGEIMAGES_SAMPLE = {"query": {"pages": [{
+    "title": "オミナエシ", "pageimage": "Patrinia_scabiosifolia2.jpg",
+    "original": {"source": "https://upload.wikimedia.org/x.jpg",
+                 "width": 1712, "height": 2304}}]}}
+
+_PAGEIMAGES_MISSING = {"query": {"pages": [{"title": "藁塚", "missing": True}]}}
+
+_IMAGEINFO_SAMPLE = {"query": {"pages": [{"title": "File:Patrinia_scabiosifolia2.jpg",
+    "imageinfo": [{
+        "url": "https://upload.wikimedia.org/x.jpg", "width": 1712, "height": 2304,
+        "descriptionurl": "https://commons.wikimedia.org/wiki/File:Patrinia_scabiosifolia2.jpg",
+        "extmetadata": {
+            "LicenseShortName": {"value": "CC BY-SA 3.0"},
+            "License": {"value": "cc-by-sa-3.0"},
+            "Artist": {"value": "KENPEI"},
+            "LicenseUrl": {"value": "http://creativecommons.org/licenses/by-sa/3.0/"}}}]}]}}
+
+
+def test_parse_pageimages():
+    got = fi._parse_pageimages(_PAGEIMAGES_SAMPLE)
+    assert got == {"title": "オミナエシ", "image_url": "https://upload.wikimedia.org/x.jpg",
+                   "filename": "Patrinia_scabiosifolia2.jpg"}
+
+
+def test_parse_pageimages_missing_returns_none():
+    assert fi._parse_pageimages(_PAGEIMAGES_MISSING) is None
+    assert fi._parse_pageimages({"query": {"pages": []}}) is None
+
+
+def test_parse_imageinfo():
+    info = fi._parse_imageinfo(_IMAGEINFO_SAMPLE)
+    assert info["width"] == 1712 and info["height"] == 2304
+    assert info["license_short"] == "CC BY-SA 3.0" and info["license_code"] == "cc-by-sa-3.0"
+    assert info["artist"] == "KENPEI" and info["nonfree"] is None
+    assert info["license_url"] == "http://creativecommons.org/licenses/by-sa/3.0/"
+    assert info["description_url"].endswith("File:Patrinia_scabiosifolia2.jpg")
+
+
+def _pageimg(title="オミナエシ"):
+    return {"title": title, "image_url": "https://img/x.jpg", "filename": "x.jpg"}
+
+
+def _info(w=1712, h=2304, code="cc-by-sa-3.0", short="CC BY-SA 3.0", nonfree=None,
+          artist="KENPEI", url="http://creativecommons.org/licenses/by-sa/3.0/",
+          desc="https://commons.wikimedia.org/wiki/File:x"):
+    return {"width": w, "height": h, "license_short": short, "license_code": code,
+            "nonfree": nonfree, "artist": artist, "license_url": url,
+            "description_url": desc}
+
+
+def test_wiki_candidate_shippable():
+    c = fi._wiki_candidate(_pageimg(), "ja", _info(), 800, 1200)
+    assert c["provider"] == "wikipedia" and c["usable"] == "yes"
+    assert c["photo_id"] == "x.jpg" and c["photographer"] == "KENPEI"
+    assert c["download_url"] == "https://img/x.jpg"
+    assert c["search_term"] == "オミナエシ" and c["search_lang"] == "ja"
+    assert c["license_en"] == "CC BY-SA 3.0" and c["license_ja"] == "CC BY-SA 3.0"
+    assert "article: オミナエシ" in c["note"] and "by-sa" in c["note"].lower()
+
+
+def test_wiki_candidate_nonfree_is_reference_only():
+    c = fi._wiki_candidate(_pageimg(), "ja", _info(nonfree="true"), 800, 1200)
+    assert c["usable"] == "no" and c["note"].startswith("reference-only: non-free")
+
+
+def test_wiki_candidate_below_floor_is_reference_only():
+    c = fi._wiki_candidate(_pageimg(), "ja", _info(w=400, h=600), 800, 1200)
+    assert c["usable"] == "no" and "below min resolution" in c["note"]
+
+
+def test_cli_fetch_has_no_wikipedia_flag():
+    r = subprocess.run([sys.executable, str(SCRIPT), "fetch", "-h"],
+                       capture_output=True, text=True)
+    assert r.returncode == 0
+    assert "--no-wikipedia" in r.stdout
+
+
+def test_readme_documents_wikipedia_reference():
+    text = README.read_text(encoding="utf-8")
+    assert "Wikipedia" in text
+    assert "reference" in text.lower()
+    assert "usable" in text
 
 
 if __name__ == "__main__":

@@ -17,10 +17,16 @@ This is a two-phase, human-in-the-loop flow with two subcommands:
 
     fetch (needs provider keys, unless --placeholder)  Search each spine row
         Japanese-first (kanji, then the English gloss_en, then romaji) across
-        both providers, keep up to --candidates distinct results that clear
-        the resolution floor, smart-crop + downscale + JPEG-encode each one to
-        <out-images>/<image_id>__cN.jpg, and write `candidates.csv` for human
-        review — so you review the actual image that would ship.
+        both providers, and collect --candidates results round-robin (one per
+        search rung) so they span sources — a Pexels kanji match, a Pexels
+        gloss match, a Pixabay match — rather than duplicates from one query.
+        Each must clear the resolution floor; each is smart-cropped + downscaled
+        + JPEG-encoded to <out-images>/<image_id>__cN.jpg, and written to
+        `candidates.csv` for human review — so you review the actual image that
+        would ship. Also append the Japanese Wikipedia lead image (ja by kanji,
+        then en by gloss_en) as a licensed 4th candidate and accuracy
+        reference — shippable only when its license is PD/CC0/CC-BY/CC-BY-SA,
+        else marked reference-only; disable with --no-wikipedia.
 
         fetch --placeholder (no key, no network)  Fill gate-passing
         placeholder attribution directly into `images.csv` (via --out) so the
@@ -62,8 +68,10 @@ Needs Pillow (`python3 -m pip install Pillow`). Usage (from repo root):
 import argparse
 import csv
 import functools
+import html
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -79,6 +87,9 @@ ENV_FILE = HERE / ".env"
 # Pixabay's image CDN (and some Pexels edges) 403 the default Python-urllib
 # User-Agent; send a browser-like one on every request.
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) kigo-content-pipeline/1.0"
+
+# Wikimedia asks API clients to send a descriptive User-Agent with a URL/contact.
+WIKI_UA = "kigo-content-pipeline/1.0 (+https://github.com/aonsager/kigo)"
 
 
 def _get(url, headers=None, timeout=60):
@@ -96,7 +107,7 @@ CANDIDATE_COLUMNS = (
     "date", "image_id", "candidate", "chosen",
     "provider", "search_term", "search_lang", "photographer",
     "license_ja", "license_en", "title_ja", "title_en",
-    "source_url", "src_w", "src_h", "out_file",
+    "source_url", "src_w", "src_h", "out_file", "usable", "note",
 )
 
 # Per-provider config: which env var holds the key, the license strings, and
@@ -113,6 +124,33 @@ PROVIDERS = {
         "license_en": "Pexels License",
     },
 }
+
+_TAG_RE = re.compile(r"<[^>]+>")
+
+
+def _strip_html(s):
+    """Plain text from an extmetadata HTML value (e.g. Artist)."""
+    if not s:
+        return ""
+    return html.unescape(_TAG_RE.sub("", s)).strip()
+
+
+def _wiki_license_shippable(license_code, license_short, nonfree):
+    """True iff a Wikimedia image may be shipped: not marked non-free and under a
+    public-domain / CC0 / CC-BY / CC-BY-SA license. Everything else is
+    reference-only. `nonfree` may be a bool or an extmetadata string."""
+    if isinstance(nonfree, str):
+        nonfree = nonfree.strip().lower() in ("true", "1", "yes")
+    if nonfree:
+        return False
+    code = (license_code or "").strip().lower()
+    if code.startswith(("cc0", "pd")):
+        return True
+    # cc-by / cc-by-sa are fine; NonCommercial (-nc) and NoDerivatives (-nd)
+    # variants are not usable for a commercial, cropped app.
+    if code.startswith("cc-by") and "-nc" not in code and "-nd" not in code:
+        return True
+    return "public domain" in (license_short or "").strip().lower()
 
 
 def load_dotenv(path=ENV_FILE):
@@ -136,48 +174,69 @@ def image_id_for(date):
 
 def candidate_row(row, cand, index, out_file, src_w, src_h):
     """Builds one CANDIDATE_COLUMNS dict from row, candidate, and metadata.
-    chosen is left blank; title_en falls back to reading_en if gloss_en is empty."""
-    cfg = PROVIDERS[cand["provider"]]
+    chosen is blank; title_en falls back to reading_en if gloss_en is empty.
+    Stock providers take their static license from PROVIDERS and are always
+    usable; other sources (e.g. wikipedia) carry per-image license/usable/note
+    on the candidate."""
+    prov = cand["provider"]
+    if prov in PROVIDERS:
+        license_ja = PROVIDERS[prov]["license_ja"]
+        license_en = PROVIDERS[prov]["license_en"]
+    else:
+        license_ja = cand.get("license_ja", "")
+        license_en = cand.get("license_en", "")
     return {
         "date": row["date"],
         "image_id": image_id_for(row["date"]),
         "candidate": index,
         "chosen": "",
-        "provider": cand["provider"],
+        "provider": prov,
         "search_term": cand["search_term"],
         "search_lang": cand["search_lang"],
         "photographer": cand["photographer"],
-        "license_ja": cfg["license_ja"],
-        "license_en": cfg["license_en"],
+        "license_ja": license_ja,
+        "license_en": license_en,
         "title_ja": row["kanji"],
         "title_en": row.get("gloss_en") or row["reading_en"],
         "source_url": cand.get("source_url", ""),
         "src_w": src_w,
         "src_h": src_h,
         "out_file": out_file,
+        "usable": cand.get("usable", "yes"),
+        "note": cand.get("note", ""),
     }
 
 
 def image_row_from_candidate(cand_row):
-    """Builds an 8-col IMAGE_COLUMNS dict from a chosen candidates.csv row,
-    with credit strings in Japanese and English."""
-    label = cand_row["provider"].capitalize()
+    """Builds an 8-col IMAGE_COLUMNS dict from a chosen candidates.csv row.
+    Wikipedia credit reads '画像 … / Wikimedia Commons' (the source may be a
+    painting or diagram, not a photo); stock providers read '写真 … / <Provider>'."""
+    provider = cand_row["provider"]
     photographer = cand_row["photographer"]
+    if provider == "wikipedia":
+        credit_ja = f"画像: {photographer} / Wikimedia Commons"
+        credit_en = f"Image: {photographer} / Wikimedia Commons"
+    else:
+        label = provider.capitalize()
+        credit_ja = f"写真: {photographer} / {label}"
+        credit_en = f"Photo: {photographer} / {label}"
     return {
         "date": cand_row["date"],
         "image_id": cand_row["image_id"],
         "attribution_title_ja": cand_row["title_ja"],
         "attribution_title_en": cand_row["title_en"],
-        "attribution_credit_ja": f"写真: {photographer} / {label}",
-        "attribution_credit_en": f"Photo: {photographer} / {label}",
+        "attribution_credit_ja": credit_ja,
+        "attribution_credit_en": credit_en,
         "attribution_license_ja": cand_row["license_ja"],
         "attribution_license_en": cand_row["license_en"],
     }
 
 
 def select_chosen(cand_rows):
-    """Returns the chosen candidate row per date. Raises ValueError (with
-    offending dates) if any date has zero or >1 non-empty 'chosen' cell."""
+    """Returns the chosen candidate row per date. Raises ValueError (naming the
+    offending dates) if any date has zero or >1 non-empty 'chosen' cell, or if a
+    chosen row is reference-only (usable == 'no') — a non-shippable image can
+    never be selected."""
     by_date = {}
     for cr in cand_rows:
         by_date.setdefault(cr["date"], []).append(cr)
@@ -187,10 +246,13 @@ def select_chosen(cand_rows):
         if len(marked) != 1:
             bad.append(f"{date} (has {len(marked)} chosen)")
             continue
+        if (marked[0].get("usable") or "").strip().lower() == "no":
+            bad.append(f"{date} (chosen is reference-only, not shippable)")
+            continue
         picked.append(marked[0])
     if bad:
-        raise ValueError("each date needs exactly one 'chosen' candidate; "
-                         "offending: " + ", ".join(bad))
+        raise ValueError("each date needs exactly one shippable 'chosen' "
+                         "candidate; offending: " + ", ".join(bad))
     return picked
 
 
@@ -249,28 +311,53 @@ def build_ladder(row, primary="pexels", fallback="pixabay", use_japanese=True):
 
 
 def collect_candidates(ladder, search_fns, min_width, min_height, want):
-    """Walk the attempt ladder, keeping distinct candidates that clear the
-    resolution floor (tested on downloadable/effective dims), up to `want`."""
+    """Collect up to `want` distinct floor-passing candidates, drawn
+    round-robin — one per rung per round — so the results span different
+    search rungs (kanji / English gloss / provider) rather than coming all
+    from the first rung. Because a provider like Pexels never returns an empty
+    result (it substitutes popular photos for unmatched queries), a
+    fill-from-the-first-rung walk would make the later rungs unreachable; the
+    round-robin surfaces them so the human can compare across sources. Degrades
+    to depth (successive results from one rung) when fewer rungs are productive
+    than `want`. Each rung is searched at most once, lazily, and only if
+    reached. Candidates are tested against downloadable/effective dims."""
+    cache = {}
+
+    def rung_candidates(i):
+        if i not in cache:
+            rung = ladder[i]
+            search = search_fns.get(rung["provider"])
+            out = []
+            if search is not None:
+                for cand in search(rung["term"], rung["lang"]):
+                    ew, eh = effective_dims(rung["provider"], cand["width"], cand["height"])
+                    if not passes_floor(ew, eh, min_width, min_height):
+                        continue
+                    enriched = dict(cand)
+                    enriched.update(provider=rung["provider"], search_term=rung["term"],
+                                    search_lang=rung["lang"])
+                    out.append(enriched)
+            cache[i] = out
+        return cache[i]
+
     collected, seen = [], set()
-    for rung in ladder:
-        if len(collected) >= want:
-            break
-        search = search_fns.get(rung["provider"])
-        if search is None:
-            continue
-        for cand in search(rung["term"], rung["lang"]):
-            key = (rung["provider"], cand["photo_id"])
-            if key in seen:
-                continue
-            ew, eh = effective_dims(rung["provider"], cand["width"], cand["height"])
-            if not passes_floor(ew, eh, min_width, min_height):
-                continue
-            seen.add(key)
-            enriched = dict(cand)
-            enriched.update(provider=rung["provider"], search_term=rung["term"],
-                            search_lang=rung["lang"])
-            collected.append(enriched)
+    pos = [0] * len(ladder)
+    made_progress = True
+    while len(collected) < want and made_progress:
+        made_progress = False
+        for i in range(len(ladder)):
             if len(collected) >= want:
+                break
+            cands = rung_candidates(i)
+            while pos[i] < len(cands):
+                cand = cands[pos[i]]
+                pos[i] += 1
+                key = (cand["provider"], cand["photo_id"])
+                if key in seen:
+                    continue
+                seen.add(key)
+                collected.append(cand)
+                made_progress = True
                 break
     return collected
 
@@ -316,6 +403,78 @@ def _parse_pixabay(data):
     return out
 
 
+def _parse_pageimages(data):
+    """From an action=query&prop=pageimages (formatversion=2) response, return
+    {'title','image_url','filename'} for the lead image, or None if the page is
+    missing or has no original image."""
+    pages = (data.get("query") or {}).get("pages") or []
+    if not pages:
+        return None
+    page = pages[0]
+    if page.get("missing"):
+        return None
+    url = (page.get("original") or {}).get("source")
+    fname = page.get("pageimage")
+    if not url or not fname:
+        return None
+    return {"title": page.get("title") or "", "image_url": url, "filename": fname}
+
+
+def _parse_imageinfo(data):
+    """From an action=query&prop=imageinfo (iiprop=extmetadata|url|size,
+    formatversion=2) response, return the fields we need (missing -> ''/0/None)."""
+    pages = (data.get("query") or {}).get("pages") or []
+    ii = ((pages[0].get("imageinfo") if pages else None) or [{}])[0]
+    em = ii.get("extmetadata") or {}
+
+    def val(k):
+        return (em.get(k) or {}).get("value")
+
+    return {
+        "width": int(ii.get("width") or 0),
+        "height": int(ii.get("height") or 0),
+        "license_short": val("LicenseShortName") or "",
+        "license_code": val("License") or "",
+        "nonfree": val("NonFree"),
+        "artist": val("Artist") or "",
+        "license_url": val("LicenseUrl") or "",
+        "description_url": ii.get("descriptionurl") or "",
+    }
+
+
+def _wiki_candidate(pageimg, lang, info, min_width, min_height):
+    """Assemble a normalized Wikipedia candidate from a parsed pageimages result,
+    the wiki `lang`, and a parsed imageinfo result. Sets `usable` and `note`."""
+    shippable = _wiki_license_shippable(info["license_code"], info["license_short"],
+                                        info["nonfree"])
+    big_enough = passes_floor(info["width"], info["height"], min_width, min_height)
+    reasons = []
+    if not shippable:
+        reasons.append("reference-only: non-free license")
+    if not big_enough:
+        reasons.append("reference-only: below min resolution")
+    record = f"article: {pageimg['title']}"
+    if info["license_url"]:
+        record += f" · license: {info['license_url']}"
+    note = record if not reasons else "; ".join(reasons) + " · " + record
+    return {
+        "provider": "wikipedia",
+        "photo_id": pageimg["filename"],
+        "photographer": _strip_html(info["artist"]) or "Unknown",
+        "download_url": pageimg["image_url"],
+        "source_url": info["description_url"],
+        "width": info["width"],
+        "height": info["height"],
+        "search_term": pageimg["title"],
+        "search_lang": lang,
+        "license_ja": info["license_short"],
+        "license_en": info["license_short"],
+        "license_url": info["license_url"],
+        "usable": "yes" if (shippable and big_enough) else "no",
+        "note": note,
+    }
+
+
 # --- Provider search adapters. Fetch JSON and return parser's list. --------
 
 def _pexels_search(term, lang, api_key, per_page, sleep, retries=3):
@@ -358,6 +517,34 @@ def _pixabay_search(term, lang, api_key, per_page, sleep, retries=3):
                 time.sleep(backoff)
                 continue
             raise
+
+
+def _wiki_api(host, params):
+    q = urllib.parse.urlencode({**params, "action": "query", "format": "json",
+                                "formatversion": "2"})
+    with _get(f"https://{host}/w/api.php?{q}", headers={"User-Agent": WIKI_UA}) as resp:
+        return json.loads(resp.read().decode("utf-8"))
+
+
+def _wikipedia_lookup(kanji, gloss_en, min_width, min_height):
+    """Return a Wikipedia lead-image candidate for a kigo, or None. Tries the
+    kanji on ja.wikipedia (following redirects), then gloss_en on en.wikipedia."""
+    attempts = [("ja.wikipedia.org", kanji, "ja")]
+    if gloss_en:
+        attempts.append(("en.wikipedia.org", gloss_en, "en"))
+    for host, term, lang in attempts:
+        if not term:
+            continue
+        pageimg = _parse_pageimages(_wiki_api(host, {
+            "titles": term, "redirects": "1",
+            "prop": "pageimages", "piprop": "original|name"}))
+        if not pageimg:
+            continue
+        info = _parse_imageinfo(_wiki_api(host, {
+            "titles": f"File:{pageimg['filename']}",
+            "prop": "imageinfo", "iiprop": "extmetadata|url|size"}))
+        return _wiki_candidate(pageimg, lang, info, min_width, min_height)
+    return None
 
 
 _SEARCH = {"pixabay": _pixabay_search, "pexels": _pexels_search}
@@ -515,9 +702,6 @@ def cmd_fetch(args):
                                   use_japanese=not args.no_japanese)
             cands = collect_candidates(ladder, search_fns, args.min_width,
                                        args.min_height, args.candidates)
-            if not cands:
-                missing.append((row["date"], row.get("gloss_en") or row["reading_en"]))
-                continue
             row_out = []
             for i, cand in enumerate(cands, start=1):
                 img = process_image(_download_image(cand["download_url"]),
@@ -525,8 +709,28 @@ def cmd_fetch(args):
                 fname = f"{image_id_for(row['date'])}__c{i}.jpg"
                 save_jpeg(img, args.out_images / fname, args.jpeg_quality)
                 row_out.append(candidate_row(row, cand, i, fname, img.width, img.height))
+            if not args.no_wikipedia:
+                try:
+                    wiki = _wikipedia_lookup(row["kanji"],
+                                             row.get("gloss_en") or row["reading_en"],
+                                             args.min_width, args.min_height)
+                    if wiki:
+                        idx = len(row_out) + 1
+                        img = process_image(_download_image(wiki["download_url"]),
+                                            aspect_w, aspect_h, args.max_edge)
+                        fname = f"{image_id_for(row['date'])}__c{idx}.jpg"
+                        save_jpeg(img, args.out_images / fname, args.jpeg_quality)
+                        row_out.append(candidate_row(row, wiki, idx, fname,
+                                                     img.width, img.height))
+                except Exception as e:  # a bonus wiki candidate must not drop the stock ones
+                    errors.append((row["date"], f"wikipedia: {e!r}"))
+                    print(f"  {row['date']} {row['kanji']}: wikipedia ERROR {e}",
+                          file=sys.stderr)
+            if not row_out:
+                missing.append((row["date"], row.get("gloss_en") or row["reading_en"]))
+                continue
             out_rows.extend(row_out)
-            print(f"  {row['date']} {row['kanji']}: {len(cands)} candidate(s)")
+            print(f"  {row['date']} {row['kanji']}: {len(row_out)} candidate(s)")
         except Exception as e:  # one bad row must not discard the whole run
             errors.append((row["date"], repr(e)))
             print(f"  {row['date']} {row['kanji']}: ERROR {e}", file=sys.stderr)
@@ -581,6 +785,7 @@ def main(argv=None):
     pf.add_argument("--fallback", choices=sorted(PROVIDERS), default="pixabay")
     pf.add_argument("--no-fallback", action="store_true")
     pf.add_argument("--no-japanese", action="store_true")
+    pf.add_argument("--no-wikipedia", action="store_true")
     pf.add_argument("--candidates", type=int, default=3)
     pf.add_argument("--per-page", type=int, default=10)
     pf.add_argument("--min-width", type=int, default=800)

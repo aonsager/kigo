@@ -71,9 +71,17 @@ build_csv.py  (unchanged)
 ### 1. `fetch` — candidate acquisition
 
 **Attempt ladder.** Per spine row, build an ordered list of `(provider, term,
-lang)` attempts and walk it, **accumulating up to `--candidates` (default 3)**
-distinct candidates that clear the resolution floor. Keep walking rungs until
-the quota is filled or the ladder is exhausted. Default ladder:
+lang)` attempts and draw **up to `--candidates` (default 3)** distinct
+floor-passing candidates from it **round-robin — one per rung per round** —
+degrading to depth (successive results from one rung) only when fewer rungs are
+productive than the quota. This spreads the candidates across sources (a Pexels
+kanji match, a Pexels gloss match, a Pixabay match) instead of filling from the
+first rung. **Why round-robin, not fill-from-first:** empirical testing
+(2026-07-06) showed Pexels *never* returns an empty result — it substitutes
+popular photos for an unmatched Japanese query — so a fill-from-first walk makes
+every later rung unreachable and hides the English-gloss / Pixabay results that
+often match better for kigo Pexels can't tokenize (e.g. 藁塚, 女郎花). Default
+ladder (rung order = round-robin order):
 
 | # | Provider | Term (spine column) | Lang |
 |---|----------|---------------------|------|
