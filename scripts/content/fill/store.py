@@ -11,6 +11,12 @@ Stdlib only. See docs/adr/0025-sqlite-editorial-review-store.md.
 """
 import datetime as dt
 import sqlite3
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import build_csv  # noqa: E402  (CONTRACT_COLUMNS)
+import fetch_images as _fi  # noqa: E402  (image_id_for, image_row_from_candidate)
 
 DAY_FACT_COLUMNS = ("kanji", "reading_ja", "reading_en", "season",
                     "subseason", "category", "gloss_en")
@@ -173,3 +179,46 @@ def set_chosen(conn, date, candidate_id):
     conn.execute("UPDATE days SET chosen_candidate_id = ?, updated_at = ? WHERE date = ?",
                  (candidate_id, _now(), date))
     conn.commit()
+
+
+def _contract_row(day, cand):
+    image_id = _fi.image_id_for(day["date"])
+    cand_row = {"date": day["date"], "image_id": image_id,
+                "title_ja": cand["title_ja"], "title_en": cand["title_en"],
+                "photographer": cand["photographer"], "provider": cand["provider"],
+                "license_ja": cand["license_ja"], "license_en": cand["license_en"]}
+    attribution = _fi.image_row_from_candidate(cand_row)  # 8 IMAGE_COLUMNS fields
+    row = {
+        "date": day["date"], "kanji": day["kanji"],
+        "reading_ja": day["reading_ja"], "reading_en": day["reading_en"],
+        "translation_en": day["translation_en"],
+        "description_ja": day["description_ja"], "description_en": day["description_en"],
+        "image_id": image_id,
+        "attribution_title_ja": attribution["attribution_title_ja"],
+        "attribution_title_en": attribution["attribution_title_en"],
+        "attribution_credit_ja": attribution["attribution_credit_ja"],
+        "attribution_credit_en": attribution["attribution_credit_en"],
+        "attribution_license_ja": attribution["attribution_license_ja"],
+        "attribution_license_en": attribution["attribution_license_en"],
+    }
+    row["_out_file"] = cand["out_file"]
+    return row
+
+
+def export_rows(conn, date_from=None, date_to=None):
+    out = []
+    for day in list_days(conn, date_from, date_to, status="approved"):
+        cid = day["chosen_candidate_id"]
+        if cid is None:
+            continue
+        cand = conn.execute("SELECT * FROM candidates WHERE id = ?", (cid,)).fetchone()
+        if cand is None:
+            continue
+        out.append(_contract_row(day, dict(cand)))
+    return out
+
+
+def pending_dates(conn, date_from=None, date_to=None):
+    exportable = {r["date"] for r in export_rows(conn, date_from, date_to)}
+    return [d["date"] for d in list_days(conn, date_from, date_to)
+            if d["date"] not in exportable]

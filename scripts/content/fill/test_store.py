@@ -125,6 +125,36 @@ def test_clear_candidates_resets_chosen():
     assert store.get_day(conn, "2026-03-25")["chosen_candidate_id"] is None
 
 
+def test_export_rows_only_approved_with_chosen():
+    conn = _mem()
+    store.seed_days(conn, [_fact_row("2026-03-25"), _fact_row("2026-04-01"),
+                           _fact_row("2026-05-01")])
+    # 03-25: fully ready + approved
+    store.set_day_fields(conn, "2026-03-25", translation_en="cherry-blossom viewing",
+                         description_ja="説明", description_en="desc")
+    cid = store.add_candidate(conn, "2026-03-25", _cand())
+    store.set_chosen(conn, "2026-03-25", cid)
+    store.set_approved(conn, "2026-03-25", True)
+    # 04-01: approved but no chosen image
+    store.set_approved(conn, "2026-04-01", True)
+    # 05-01: has everything but not approved
+    c2 = store.add_candidate(conn, "2026-05-01", _cand(out_file="kigo-05-01__c1.jpg"))
+    store.set_chosen(conn, "2026-05-01", c2)
+
+    rows = store.export_rows(conn)
+    assert [r["date"] for r in rows] == ["2026-03-25"]
+    r = rows[0]
+    import build_csv
+    assert set(build_csv.CONTRACT_COLUMNS).issubset(r.keys())
+    assert r["image_id"] == "kigo-03-25"
+    assert r["translation_en"] == "cherry-blossom viewing"
+    assert r["attribution_title_ja"] == "桜"
+    assert r["attribution_credit_en"] == "Photo: Ansel / Pexels"
+    assert r["attribution_license_en"] == "Pexels License"
+    assert r["_out_file"] == "kigo-03-25__c1.jpg"
+    assert set(store.pending_dates(conn)) == {"2026-04-01", "2026-05-01"}
+
+
 if __name__ == "__main__":
     fns = [g for n, g in sorted(globals().items()) if n.startswith("test_")]
     for fn in fns:
