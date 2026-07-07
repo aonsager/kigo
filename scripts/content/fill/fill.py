@@ -206,9 +206,11 @@ def cmd_compile(args):
 
 def cmd_review(args):
     conn = store.connect(args.db)
-    srv = webapp.make_server(conn, HERE / "web", args.images, port=args.port)
+    srv = webapp.make_server(conn, HERE / "web", args.images, host=args.host, port=args.port)
     host, port = srv.server_address
     print(f"review UI on http://{host}:{port}  (Ctrl-C to stop)")
+    if host == "0.0.0.0":
+        print(f"  bound to all interfaces — reachable on your LAN at http://<this-machine-ip>:{port}")
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
@@ -272,6 +274,8 @@ def main(argv=None):
 
     r = sub.add_parser("review", help="serve the local web review UI")
     r.add_argument("--db", type=Path, default=DEFAULT_DB)
+    r.add_argument("--host", default="0.0.0.0",
+                   help="bind address (default 0.0.0.0 — all interfaces; use 127.0.0.1 for local-only)")
     r.add_argument("--port", type=int, default=8000)
     r.add_argument("--images", type=Path, default=HERE / "downloads")
     r.set_defaults(func=cmd_review)
