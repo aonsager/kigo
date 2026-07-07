@@ -1,7 +1,9 @@
-# 0025 — SQLite editorial review store for the content-fill workflow
+# ADR 0025 — SQLite editorial review store for the content-fill workflow
 
-## Status
-Accepted (2026-07-07)
+**Status:** Accepted
+**Date:** 2026-07-07
+**Relates to:** ADR 0022 (content-assembly pipeline — the 14-column contract CSV
+`compile` exports into).
 
 ## Context
 The `scripts/content/fill/` pipeline filled `content/kigo-2026.csv` through a
