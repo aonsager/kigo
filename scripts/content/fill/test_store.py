@@ -79,6 +79,52 @@ def test_list_days_filters_by_range_and_status():
     assert [d["date"] for d in unapproved] == ["2026-01-01", "2026-12-31"]
 
 
+def _cand(out_file="kigo-03-25__c1.jpg", usable="yes", provider="pexels"):
+    return {"provider": provider, "search_term": "桜", "search_lang": "ja-JP",
+            "photographer": "Ansel", "license_ja": "Pexels ライセンス",
+            "license_en": "Pexels License", "title_ja": "桜", "title_en": "cherry blossom",
+            "source_url": "https://ex/1", "src_w": 1000, "src_h": 1500,
+            "out_file": out_file, "usable": usable, "note": "",
+            # extras that candidate_row also emits and add_candidate must ignore:
+            "candidate": 1, "chosen": "", "image_id": "kigo-03-25"}
+
+
+def test_add_and_get_candidates():
+    conn = _mem()
+    store.seed_days(conn, [_fact_row()])
+    cid = store.add_candidate(conn, "2026-03-25", _cand())
+    assert isinstance(cid, int)
+    cands = store.get_candidates(conn, "2026-03-25")
+    assert len(cands) == 1 and cands[0]["id"] == cid
+    assert cands[0]["photographer"] == "Ansel" and cands[0]["src_w"] == 1000
+
+
+def test_set_chosen_validates_ownership_and_usable():
+    conn = _mem()
+    store.seed_days(conn, [_fact_row(), _fact_row("2026-04-01")])
+    good = store.add_candidate(conn, "2026-03-25", _cand())
+    ref_only = store.add_candidate(conn, "2026-03-25", _cand(out_file="c2.jpg", usable="no"))
+    other = store.add_candidate(conn, "2026-04-01", _cand(out_file="c3.jpg"))
+    store.set_chosen(conn, "2026-03-25", good)
+    assert store.get_day(conn, "2026-03-25")["chosen_candidate_id"] == good
+    for bad in (ref_only, other, 9999):
+        try:
+            store.set_chosen(conn, "2026-03-25", bad)
+        except ValueError:
+            continue
+        raise AssertionError(f"set_chosen should reject candidate {bad}")
+
+
+def test_clear_candidates_resets_chosen():
+    conn = _mem()
+    store.seed_days(conn, [_fact_row()])
+    cid = store.add_candidate(conn, "2026-03-25", _cand())
+    store.set_chosen(conn, "2026-03-25", cid)
+    store.clear_candidates(conn, "2026-03-25")
+    assert store.get_candidates(conn, "2026-03-25") == []
+    assert store.get_day(conn, "2026-03-25")["chosen_candidate_id"] is None
+
+
 if __name__ == "__main__":
     fns = [g for n, g in sorted(globals().items()) if n.startswith("test_")]
     for fn in fns:

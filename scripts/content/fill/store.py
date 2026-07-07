@@ -132,3 +132,44 @@ def set_approved(conn, date, approved):
     conn.execute("UPDATE days SET approved = ?, updated_at = ? WHERE date = ?",
                  (1 if approved else 0, _now(), date))
     conn.commit()
+
+
+CANDIDATE_STORE_COLUMNS = ("provider", "search_term", "search_lang", "photographer",
+                           "license_ja", "license_en", "title_ja", "title_en",
+                           "source_url", "src_w", "src_h", "out_file", "usable", "note")
+
+
+def add_candidate(conn, date, cand):
+    cols = list(CANDIDATE_STORE_COLUMNS)
+    vals = [cand.get(c, "") for c in cols]
+    placeholders = ", ".join(["?"] * (len(cols) + 1))
+    cur = conn.execute(
+        f"INSERT INTO candidates (date, {', '.join(cols)}) VALUES ({placeholders})",
+        (date, *vals))
+    conn.commit()
+    return cur.lastrowid
+
+
+def get_candidates(conn, date):
+    rows = conn.execute("SELECT * FROM candidates WHERE date = ? ORDER BY id",
+                        (date,)).fetchall()
+    return [dict(r) for r in rows]
+
+
+def clear_candidates(conn, date):
+    conn.execute("UPDATE days SET chosen_candidate_id = NULL, updated_at = ? WHERE date = ?",
+                 (_now(), date))
+    conn.execute("DELETE FROM candidates WHERE date = ?", (date,))
+    conn.commit()
+
+
+def set_chosen(conn, date, candidate_id):
+    row = conn.execute("SELECT date, usable FROM candidates WHERE id = ?",
+                       (candidate_id,)).fetchone()
+    if row is None or row["date"] != date:
+        raise ValueError(f"candidate {candidate_id} does not belong to {date}")
+    if (row["usable"] or "").strip().lower() == "no":
+        raise ValueError(f"candidate {candidate_id} is reference-only, not shippable")
+    conn.execute("UPDATE days SET chosen_candidate_id = ?, updated_at = ? WHERE date = ?",
+                 (candidate_id, _now(), date))
+    conn.commit()
