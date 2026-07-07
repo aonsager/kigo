@@ -23,6 +23,9 @@ import assign_dates  # noqa: E402
 import describe  # noqa: E402
 import describe_via_claude  # noqa: E402
 import store  # noqa: E402
+import functools  # noqa: E402
+import os  # noqa: E402
+import fetch_images  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parents[2]
@@ -80,6 +83,81 @@ def generate_descriptions(conn, dates, call_llm, batch_size=20):
     return written, errors
 
 
+def generate_images(conn, dates, search_fns, out_images, *, download,
+                    wiki_lookup=None, include_wikipedia=True, **fetch_opts):
+    """For each day: clear existing candidates, fetch fresh ones, store them.
+    Returns (candidate rows written, errors). download/wiki_lookup injectable."""
+    out_images.mkdir(parents=True, exist_ok=True)
+    written, errors = 0, []
+    wl = wiki_lookup or fetch_images._wikipedia_lookup
+    for day in dates:
+        row = {"date": day["date"], "kanji": day["kanji"],
+               "gloss_en": day["gloss_en"], "reading_en": day["reading_en"]}
+        store.clear_candidates(conn, day["date"])
+        try:
+            cand_rows, row_errors = fetch_images.fetch_candidates_for_row(
+                row, search_fns, out_images, include_wikipedia=include_wikipedia,
+                download=download, wiki_lookup=wl, **fetch_opts)
+        except Exception as e:
+            errors.append(f"{day['date']}: {e!r}")
+            continue
+        for msg in row_errors:
+            errors.append(f"{day['date']}: {msg}")
+        for cand in cand_rows:
+            store.add_candidate(conn, day["date"], cand)
+            written += 1
+    return written, errors
+
+
+def _select_days(conn, date_from, date_to, force):
+    status = None if force else "unapproved"
+    return store.list_days(conn, date_from, date_to, status=status)
+
+
+def cmd_generate(args):
+    conn = store.connect(args.db)
+    days = _select_days(conn, args.date_from, args.date_to, args.force)
+    if not days:
+        print("no days to generate in range (all approved? run with --force)",
+              file=sys.stderr)
+        return 1
+
+    if not args.no_descriptions:
+        api_key = os.environ.get("ANTHROPIC_API_KEY")
+        if not api_key:
+            print("error: set ANTHROPIC_API_KEY (or pass --no-descriptions)", file=sys.stderr)
+            return 2
+        call_llm = functools.partial(describe_via_claude.call_claude, api_key=api_key,
+                                     model=args.model, max_tokens=8000)
+        written, errors = generate_descriptions(conn, days, call_llm)
+        print(f"descriptions: wrote {written} day(s)")
+        for e in errors:
+            print("  " + e, file=sys.stderr)
+
+    if not args.no_images:
+        fetch_images.load_dotenv()
+        fallback = None if args.no_fallback else args.fallback
+        providers = dict.fromkeys([args.primary] + ([fallback] if fallback else []))
+        keys = fetch_images._resolve_keys(providers, None)
+        if args.primary not in keys:
+            print(f"error: primary provider {args.primary} has no key", file=sys.stderr)
+            return 2
+        search_fns = {prov: functools.partial(fetch_images._SEARCH[prov],
+                                              api_key=keys[prov], per_page=args.per_page,
+                                              sleep=args.sleep) for prov in keys}
+        written, errors = generate_images(
+            conn, days, search_fns, args.out_images,
+            download=fetch_images._download_image,
+            include_wikipedia=not args.no_wikipedia,
+            candidates=args.candidates, min_width=args.min_width,
+            min_height=args.min_height, primary=args.primary, fallback=fallback,
+            use_japanese=not args.no_japanese)
+        print(f"images: wrote {written} candidate row(s)")
+        for e in errors[:10]:
+            print("  " + e, file=sys.stderr)
+    return 0
+
+
 def cmd_spine(args):
     conn = store.connect(args.db)
     pool = json.loads(args.pool.read_text(encoding="utf-8"))
@@ -100,6 +178,27 @@ def main(argv=None):
     p.add_argument("--new-year-days", type=int, default=7, dest="new_year_days")
     p.add_argument("--force", action="store_true", help="overwrite approved days too")
     p.set_defaults(func=cmd_spine)
+
+    g = sub.add_parser("generate", help="author prose + fetch image candidates for a range")
+    g.add_argument("--db", type=Path, default=DEFAULT_DB)
+    g.add_argument("--from", dest="date_from", required=True)
+    g.add_argument("--to", dest="date_to", required=True)
+    g.add_argument("--no-descriptions", action="store_true")
+    g.add_argument("--no-images", action="store_true")
+    g.add_argument("--force", action="store_true", help="include approved days too")
+    g.add_argument("--out-images", type=Path, dest="out_images", default=HERE / "downloads")
+    g.add_argument("--model", default=describe_via_claude.DEFAULT_MODEL)
+    g.add_argument("--primary", choices=sorted(fetch_images.PROVIDERS), default="pexels")
+    g.add_argument("--fallback", choices=sorted(fetch_images.PROVIDERS), default="pixabay")
+    g.add_argument("--no-fallback", action="store_true")
+    g.add_argument("--no-japanese", action="store_true")
+    g.add_argument("--no-wikipedia", action="store_true")
+    g.add_argument("--candidates", type=int, default=3)
+    g.add_argument("--per-page", type=int, default=10, dest="per_page")
+    g.add_argument("--min-width", type=int, default=800, dest="min_width")
+    g.add_argument("--min-height", type=int, default=1200, dest="min_height")
+    g.add_argument("--sleep", type=float, default=0.7)
+    g.set_defaults(func=cmd_generate)
 
     args = parser.parse_args(argv)
     return args.func(args)
