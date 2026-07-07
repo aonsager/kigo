@@ -48,11 +48,14 @@ def handle_patch_day(conn, date, body):
     bad = set(body) - known
     if bad:
         raise ValueError(f"unknown fields: {sorted(bad)}")
+    # Do the only fallible write (set_chosen validates ownership + usable) first,
+    # so a rejected PATCH writes nothing: set_day_fields/set_approved cannot raise
+    # here because the field whitelist is already checked above.
+    if "chosen_candidate_id" in body:
+        store.set_chosen(conn, date, body["chosen_candidate_id"])
     prose = {k: body[k] for k in _PROSE_FIELDS if k in body}
     if prose:
         store.set_day_fields(conn, date, **prose)
-    if "chosen_candidate_id" in body:
-        store.set_chosen(conn, date, body["chosen_candidate_id"])
     if "approved" in body:
         store.set_approved(conn, date, bool(body["approved"]))
     return handle_get_day(conn, date)

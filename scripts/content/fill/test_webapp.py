@@ -64,6 +64,20 @@ def test_patch_day_rejects_bad_input():
         raise AssertionError(f"handle_patch_day should reject {body}")
 
 
+def test_patch_day_bad_candidate_does_not_persist_prose():
+    conn = _mem()
+    # a combined edit with valid prose but an invalid chosen candidate must be
+    # fully rejected — the prose edit must NOT land (400 means nothing changed).
+    try:
+        webapp.handle_patch_day(conn, "2026-03-25",
+                                {"description_ja": "手直し", "chosen_candidate_id": 9999})
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("expected ValueError for bad candidate")
+    assert store.get_day(conn, "2026-03-25")["description_ja"] == ""  # nothing persisted
+
+
 if __name__ == "__main__":
     fns = [g for n, g in sorted(globals().items()) if n.startswith("test_")]
     for fn in fns:
