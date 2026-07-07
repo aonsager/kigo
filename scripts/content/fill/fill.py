@@ -26,6 +26,10 @@ import store  # noqa: E402
 import functools  # noqa: E402
 import os  # noqa: E402
 import fetch_images  # noqa: E402
+import csv  # noqa: E402
+import shutil  # noqa: E402
+import subprocess  # noqa: E402
+import build_csv  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parents[2]
@@ -158,6 +162,44 @@ def cmd_generate(args):
     return 0
 
 
+def write_contract_csv(rows, out_csv, out_images):
+    """Copy each chosen JPEG to its canonical <image_id>.jpg and write the exact
+    14-column contract CSV build_csv/csv_parser expect. Returns row count."""
+    out_csv.parent.mkdir(parents=True, exist_ok=True)
+    for r in rows:
+        src = out_images / r["_out_file"]
+        dest = out_images / f"{r['image_id']}.jpg"
+        if src.resolve() != dest.resolve():
+            shutil.copyfile(src, dest)
+    with out_csv.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=build_csv.CONTRACT_COLUMNS)
+        writer.writeheader()
+        for r in rows:
+            writer.writerow({c: r[c] for c in build_csv.CONTRACT_COLUMNS})
+    return len(rows)
+
+
+def cmd_compile(args):
+    conn = store.connect(args.db)
+    rows = store.export_rows(conn, args.date_from, args.date_to)
+    if not rows:
+        print("error: no approved days with a chosen image in range", file=sys.stderr)
+        return 1
+    n = write_contract_csv(rows, args.out_csv, args.out_images)
+    print(f"wrote {n} approved row(s) to {args.out_csv}")
+    pending = store.pending_dates(conn, args.date_from, args.date_to)
+    if pending:
+        print(f"  skipped {len(pending)} unapproved/incomplete day(s) in range", file=sys.stderr)
+
+    assemble = REPO_ROOT / "scripts" / "content" / "assemble.py"
+    cmd = [sys.executable, str(assemble), "--csv", str(args.out_csv),
+           "--out", str(args.manifest_out)]
+    if args.image_base_url:
+        cmd += ["--image-base-url", args.image_base_url]
+    result = subprocess.run(cmd)
+    return result.returncode
+
+
 def cmd_spine(args):
     conn = store.connect(args.db)
     pool = json.loads(args.pool.read_text(encoding="utf-8"))
@@ -199,6 +241,18 @@ def main(argv=None):
     g.add_argument("--min-height", type=int, default=1200, dest="min_height")
     g.add_argument("--sleep", type=float, default=0.7)
     g.set_defaults(func=cmd_generate)
+
+    c = sub.add_parser("compile", help="export approved days + run assemble.py")
+    c.add_argument("--db", type=Path, default=DEFAULT_DB)
+    c.add_argument("--from", dest="date_from", default=None)
+    c.add_argument("--to", dest="date_to", default=None)
+    c.add_argument("--out-csv", type=Path, dest="out_csv",
+                   default=REPO_ROOT / "content" / "kigo-2026.csv")
+    c.add_argument("--out-images", type=Path, dest="out_images", default=HERE / "downloads")
+    c.add_argument("--manifest-out", type=Path, dest="manifest_out",
+                   default=REPO_ROOT / "Resources" / "manifest.json")
+    c.add_argument("--image-base-url", dest="image_base_url", default=None)
+    c.set_defaults(func=cmd_compile)
 
     args = parser.parse_args(argv)
     return args.func(args)

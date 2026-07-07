@@ -146,6 +146,38 @@ def test_generate_images_stores_candidates_and_clears_first():
         assert (Path(tmp) / "kigo-03-25__c1.jpg").exists()
 
 
+import csv as _csv  # noqa: E402
+
+
+def test_compile_writes_contract_csv_and_copies_image():
+    import build_csv
+    conn = store.connect(":memory:")
+    _seed_two(conn)
+    store.set_day_fields(conn, "2026-03-25", translation_en="cherry-blossom viewing",
+                         description_ja="桜の説明。", description_en="Cherry blossoms.")
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+        (tmp / "kigo-03-25__c1.jpg").write_bytes(b"jpegdata")
+        cid = store.add_candidate(conn, "2026-03-25", {
+            "provider": "pexels", "photographer": "Ansel", "title_ja": "桜",
+            "title_en": "cherry blossom", "license_ja": "Pexels ライセンス",
+            "license_en": "Pexels License", "out_file": "kigo-03-25__c1.jpg", "usable": "yes"})
+        store.set_chosen(conn, "2026-03-25", cid)
+        store.set_approved(conn, "2026-03-25", True)
+
+        out_csv = tmp / "kigo-2026.csv"
+        rows = store.export_rows(conn)
+        n = fill.write_contract_csv(rows, out_csv, tmp)
+        assert n == 1
+        assert (tmp / "kigo-03-25.jpg").read_bytes() == b"jpegdata"
+        with out_csv.open(encoding="utf-8") as f:
+            reader = _csv.DictReader(f)
+            assert list(reader.fieldnames) == list(build_csv.CONTRACT_COLUMNS)
+            row = next(reader)
+            assert row["image_id"] == "kigo-03-25"
+            assert row["attribution_credit_en"] == "Photo: Ansel / Pexels"
+
+
 if __name__ == "__main__":
     fns = [g for n, g in sorted(globals().items()) if n.startswith("test_")]
     for fn in fns:
