@@ -20,6 +20,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import assign_dates  # noqa: E402
+import describe  # noqa: E402
+import describe_via_claude  # noqa: E402
 import store  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
@@ -33,6 +35,47 @@ def seed_from_pool(conn, pool, manifest, new_year_days=7, force=False):
     starts = assign_dates.season_starts(manifest)
     records = assign_dates.assign(pool, starts, new_year_days)
     return store.seed_days(conn, records, force=force)
+
+
+def generate_descriptions(conn, dates, call_llm, batch_size=20):
+    """Author prose for `dates` (day dicts) via call_llm(prompt)->text, validate,
+    and store. Returns (written, errors). Nothing is written for a batch until
+    its whole reply validates, mirroring describe.py's ingest gate."""
+    written, errors = 0, []
+    rows = [dict(d) for d in dates]
+    for i in range(0, len(rows), batch_size):
+        batch = rows[i:i + batch_size]
+        payload = describe._batch_payload(batch)
+        prompt = describe.PROMPT_PREAMBLE + json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
+        try:
+            arr = describe_via_claude.extract_json_array(call_llm(prompt))
+        except (ValueError, json.JSONDecodeError) as e:
+            errors.append(f"batch {i // batch_size}: reply did not parse: {e}")
+            continue
+        by_date = {obj.get("date"): obj for obj in arr}
+        validated = []
+        for row in batch:
+            date = row["date"]
+            obj = by_date.get(date, {})
+            tr = (obj.get("translation_en") or "").strip()
+            ja = (obj.get("description_ja") or "").strip()
+            en = (obj.get("description_en") or "").strip()
+            if not tr:
+                errors.append(f"{date}: translation_en empty")
+            if not ja:
+                errors.append(f"{date}: description_ja empty")
+            if not en:
+                errors.append(f"{date}: description_en empty")
+            if describe.DATE_STAMP_RE.search(ja + en):
+                errors.append(f"{date}: description contains a forbidden date stamp")
+            validated.append((date, tr, ja, en))
+        if errors:
+            continue
+        for date, tr, ja, en in validated:
+            store.set_day_fields(conn, date, translation_en=tr,
+                                 description_ja=ja, description_en=en)
+            written += 1
+    return written, errors
 
 
 def cmd_spine(args):
