@@ -32,13 +32,27 @@ The audit's #1 risk is loss, not bugs.
 
 ## Phase 1 — Ship-blockers · gates App Store submission
 
-- [ ] **[M] H1 — compile-gate the fake resolvers behind `#if DEBUG`.** 15 files,
-  zero guards; `KIGO_FAKE_ENTITLEMENT=active` + `KIGO_FAKE_PURCHASER=succeed`
-  are a premium bypass in the shipping binary. UI tests run debug builds, so
-  gating is free. *(audit Part 3 #1; P1 amendment)*
-- [ ] **[M] H2 — replace placeholder content.** Confirm the assemble pipeline
-  output has replaced the dummy date-stamped manifest; replace the app icon
-  (currently a square crop of `tsuyu.jpg`). *(audit Part 3 #2)*
+- [x] **[M] H1 — compile-gate the fake resolvers behind `#if DEBUG`.** DONE
+  (2026-07-08). Gated the `KIGO_FAKE_*` reads + fake types/helpers across 11
+  files (2 KigoCore resolvers, 9 app-side); resolvers keep their signatures and
+  fall through to production in Release. **Verified:** KigoCore fast lane 63
+  tests green; Debug + Release app builds succeed; the Release `Kigo.app/Kigo`
+  binary contains **0** `KIGO_FAKE` strings (Debug dylib keeps all 8). The
+  `KIGO_FAKE_ENTITLEMENT`/`KIGO_FAKE_PURCHASER` premium bypass no longer ships.
+  *(audit Part 3 #1; P1 amendment)*
+- [ ] **⛔ BLOCKED — H2 — replace placeholder content.** Not a code fix; both
+  halves depend on assets that don't exist yet (verified 2026-07-08):
+  - **Manifest** (`Resources/manifest.json`) is still dummy instrumented data —
+    `ja` descriptions carry English text + `(YYYY-MM-DD)` stamps, `dailyMap` is
+    keyed by full dates instead of MM-DD, and `ko`/`sekki` are empty. The
+    assemble gate has nothing to ship: the editorial store (`review.db`) has
+    **0 of 365 days approved** and only 10 with an English description. Unblocks
+    only when the content review (the `review-ui-redesign` branch's own work)
+    completes; then run the assemble pipeline and swap the bundled manifest.
+  - **App icon** (`AppIcon-1024.png`) is a correctly-sized 1024² PNG placeholder
+    derived from `tsuyu.jpg`; replacing it needs a real designed icon (a design
+    deliverable, deliberately not auto-generated for a shipping binary).
+  *(audit Part 3 #2)*
 
 ## Phase 2 — Repo cleanup · precedes harvest so patterns are captured *corrected*
 
