@@ -29,7 +29,7 @@ import SwiftUI
 /// through to the production `StoreKitSubscriptionPurchaser`. When `KIGO_FAKE_PURCHASER=succeed`
 /// the resolver also returns a `MutableEntitlementTransactionSource` that the purchaser flips
 /// on success; this override source is used to build the `EntitlementProvider` so the flip
-/// is visible to `PaywallModel.buy()` → `provider.refreshEntitlement()` (ADR 0009).
+/// is visible to `PaywallModel.buy()` → `provider.isEntitlementActive()` (ADR 0009).
 ///
 /// Slice #136: An `InMemoryLanguageStore` is created at app startup and injected into
 /// `RootView` → `PaywallView` so the Paywall's chrome strings react to the user's

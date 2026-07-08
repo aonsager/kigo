@@ -18,14 +18,17 @@ public protocol EntitlementTransactionSource: Sendable {
 
 // MARK: - EntitlementProvider
 
-/// Derives subscription entitlement state from a `EntitlementTransactionSource`
-/// and persists the result into an `EntitlementSharedStore`.
+/// Derives subscription entitlement state from a `EntitlementTransactionSource`.
 ///
 /// The caller does not need to understand StoreKit transaction types, verification,
-/// or subscription groups: it asks `isEntitlementActive()` for the current state, or
-/// calls `refreshEntitlement()` to re-derive and persist it. Both seams are injected
-/// so the logic is testable headlessly with no `SKTestSession`/`storekitd` (ADR 0009).
+/// or subscription groups: it asks `isEntitlementActive()` for the current state,
+/// re-derived from the injected source on each call. The seam is injected so the
+/// logic is testable headlessly with no `SKTestSession`/`storekitd` (ADR 0009).
 /// `Sendable` — it holds only immutable, Sendable references.
+///
+/// Since ADR 0019 inverted monetization off the widget, entitlement is no longer
+/// shared to the widget extension: there is no persisted flag and no app-group
+/// store — callers re-derive the current state directly from the source.
 ///
 /// The zero-argument production form (`EntitlementProvider()`, live StoreKit
 /// source) is an app-target extension next to `StoreKitTransactionSource`.
@@ -38,16 +41,11 @@ public struct EntitlementProvider: Sendable {
     public static let widgetMonthlyProductID = "com.tomeitotameigo.kigo.widgets.monthly"
 
     private let source: EntitlementTransactionSource
-    private let store: EntitlementSharedStore
 
-    /// Tests inject fakes for both seams; production callers use the app-side
-    /// zero-argument convenience (live StoreKit source, app-group store).
-    public init(
-        source: EntitlementTransactionSource,
-        store: EntitlementSharedStore = UserDefaultsEntitlementStore()
-    ) {
+    /// Tests inject a fake source; production callers use the app-side
+    /// zero-argument convenience (live StoreKit source).
+    public init(source: EntitlementTransactionSource) {
         self.source = source
-        self.store = store
     }
 
     // MARK: - Entitlement check
@@ -56,30 +54,5 @@ public struct EntitlementProvider: Sendable {
     /// widget-access subscription. Derived from the source — never a hardcoded flag.
     public func isEntitlementActive() async -> Bool {
         await source.activeProductIDs().contains(Self.widgetMonthlyProductID)
-    }
-
-    // MARK: - Activation / refresh
-
-    /// Re-derives the active flag from the source and persists it into the shared store.
-    /// Call this on app launch and after purchase/restore to keep the Widget Gate (C7)
-    /// in sync. The shared store is app-group `UserDefaults` in production.
-    public func refreshEntitlement() async {
-        let active = await isEntitlementActive()
-        await store.setActive(active)
-    }
-
-    // MARK: - Restore
-
-    /// Re-derives the active flag from the source and re-writes the shared store.
-    /// Models the "Restore Purchases" path: call this after the user taps Restore
-    /// (in production, run `AppStore.sync()` first to refresh the transaction
-    /// journal, then call this). The implementation is intentionally identical to
-    /// `refreshEntitlement()` — both re-derive from the injected source and persist
-    /// into the injected store — so the restore path is exercised purely through the
-    /// injected fakes in tests, with no `SKTestSession`, no `buyProduct`, and no
-    /// real StoreKit call (which hangs under `xcodebuild` from the CLI; ADR 0009).
-    public func restoreEntitlement() async {
-        let active = await isEntitlementActive()
-        await store.setActive(active)
     }
 }

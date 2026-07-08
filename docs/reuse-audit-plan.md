@@ -54,23 +54,39 @@ The audit's #1 risk is loss, not bugs.
     deliverable, deliberately not auto-generated for a shipping binary).
   *(audit Part 3 #2)*
 
-## Phase 2 — Repo cleanup · precedes harvest so patterns are captured *corrected*
+## Phase 2 — Repo cleanup · ✅ DONE (2026-07-08) · precedes harvest so patterns are captured *corrected*
 
-- [ ] **[S] Resolve the public-vs-private contradiction first.**
-  `.afk/INIT-NOTES.md` says private, `CLAUDE.md` says public. Screenshot embeds
-  + branch-protection strategy both depend on it. *(audit Part 3 #4)*
-- [ ] **[M] Finish the half-removed entitlement→widget path** (post-ADR-0019
-  debris): delete unread `UserDefaultsEntitlementStore`, the no-op
-  `WidgetCenter.reloadAllTimelines()` in `PaywallModel`, the stale
-  `KigoWidget.swift` doc comment, the vestigial app-group entitlement in
-  `project.yml`. *(audit Part 3 #3)*
-- [ ] **[M] Doc drift.** Fix GOAL.md (retired Xcode 26.4 + `perl -e alarm` /
-  `name=…,OS=` command), testflight.md (pre-0019 monetization); collapse the
-  canonical test command to exactly one place. *(audit Part 3 #4)*
-- [ ] **[S] Hygiene.** `.gitignore` `KigoCore/.swiftpm/`, `.DS_Store`,
-  `candidates.csv`; decide `spine-sample.csv` (sample vs scratch); grep-then-
-  delete the 6 superseded one-shot scripts; delete the C2/C24 screenshot
-  slice-evidence tests. *(audit Part 3 #5)*
+- [x] **[S] Resolve the public-vs-private contradiction.** Repo is **PUBLIC**
+  (verified `gh repo view`); CLAUDE.md was correct. `.afk/INIT-NOTES.md` corrected
+  (it claimed PRIVATE). Branch protection is available but not enabled
+  (`GET /branches/main/protection` → 404) — note updated to say so. *(audit Part 3 #4)*
+- [x] **[M] Finish the half-removed entitlement→widget path** (post-ADR-0019
+  debris; ADR 0019 itself flagged this as optional YAGNI cleanup). Deleted
+  `EntitlementSharedStore.swift` (protocol + `UserDefaultsEntitlementStore`),
+  dropped the `store` seam + `refreshEntitlement()`/`restoreEntitlement()` from
+  `EntitlementProvider`, removed the two no-op `WidgetCenter.reloadAllTimelines()`
+  calls in `PaywallModel`, removed the vestigial app-group from both `project.yml`
+  targets (+ orphaned `.entitlements`), fixed stale doc comments across widget +
+  app, and updated all affected tests. **Verified:** KigoCore fast lane 59 green;
+  sim lane PaywallTests 8/8 + PaywallPurchaseFlowTests 4/4; full scheme compiles;
+  built `Kigo.app` carries no entitlements plist. *(audit Part 3 #3)*
+- [x] **[M] Doc drift.** GOAL.md: Xcode 26.4 → 26.5 (runtime pin still 26.4),
+  retired `perl -e alarm` / `name=…,OS=` command replaced by a reference to
+  CLAUDE.md's canonical invocation (the single source) + de-retired the 2 build
+  blocks; testflight.md: rewrote the pre-0019 widget-gated monetization to the
+  ADR-0019 in-app-understanding model + dropped the App Groups capability note.
+  `simulator-toolchain-handoff.md`'s `perl` command left as-is (dated forensic
+  quote, not a living command). *(audit Part 3 #4)*
+- [x] **[S] Hygiene.** `.gitignore`: added `.DS_Store` + `KigoCore/.swiftpm/`;
+  `candidates.csv` added to `scripts/content/fill/.gitignore` (regenerable
+  `fetch` output — audit's "pre-ADR-0025 legacy" call was wrong; it's current
+  pipeline). `spine-sample.csv` decided = committed worked-sample (curated
+  smoke-test spine, staged). Deleted the 6 superseded one-shot scripts
+  (`add_ko_en`/`add_sekki_en`/`add_translation_en`/`localize_manifest`/
+  `generate_daily_map`/`check_localization_completeness` — only peer + historical
+  ADR/spec refs). Deleted the C2/C24 screenshot slice-evidence tests
+  (`C2MigrationScreenshotTests` was coupled to the H2 dummy date-stamp;
+  `C24AssembledManifestScreenshotTests` + its orphaned fixture). *(audit Part 3 #5)*
 
 ## Phase 3 — Playbook docs (P1–P10) · harvest, don't author
 

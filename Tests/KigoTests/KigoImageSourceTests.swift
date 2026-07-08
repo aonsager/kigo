@@ -119,8 +119,7 @@ final class KigoImageSourceTests: XCTestCase {
     // MARK: - Fixture loading
 
     /// Loads a committed Manifest fixture bundled into KigoTests (Tests/Fixtures,
-    /// see project.yml) via `Bundle(for: Self.self)` — same pattern as
-    /// `C24AssembledManifestScreenshotTests`.
+    /// see project.yml) via `Bundle(for: Self.self)`.
     private func loadFixture(named name: String) throws -> Manifest {
         let bundle = Bundle(for: Self.self)
         let url = try XCTUnwrap(

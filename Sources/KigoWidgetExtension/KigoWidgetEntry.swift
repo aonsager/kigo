@@ -9,10 +9,10 @@ import WidgetKit
 // Content fields are optional so that a placeholder / unresolved entry can be
 // created without content (e.g. during first launch before the manifest loads).
 //
-// Slice #71: Added `showsImage: Bool` — derived by `WidgetTimelineBuilder` from
-// the injected `EntitlementSharedStore`. `true` only when the active entitlement
-// flag is set; `false` otherwise. The view layer uses this to decide whether to
-// render the Kigo image.
+// Slice #71: Added `showsImage: Bool` — the view layer uses it to decide whether
+// to render the Kigo image. Since ADR 0019 inverted monetization off the widget
+// (Slice C7), `WidgetTimelineBuilder` sets it unconditionally `true` on every
+// resolved entry — there is no longer an entitlement gate.
 //
 // Separated from KigoWidget.swift so that the entry model can be compiled into
 // the KigoWidgetTests target without dragging in the @main entry point or SwiftUI.
@@ -24,9 +24,10 @@ public struct KigoWidgetEntry: TimelineEntry {
     public let reading: String?
     /// Identifier for the paired image asset, or nil if unresolved.
     public let imageId: String?
-    /// Whether the widget should reveal the Kigo image. `true` iff the user's
-    /// subscription entitlement is active (derived from the injected
-    /// `EntitlementSharedStore` by `WidgetTimelineBuilder` — never a hardcoded constant).
+    /// Whether the widget should reveal the Kigo image. Since ADR 0019 the widget
+    /// no longer gates on entitlement, so `WidgetTimelineBuilder` sets this
+    /// unconditionally `true` on resolved entries (`false` only for the unresolved
+    /// placeholder).
     public let showsImage: Bool
 
     /// Convenience initialiser for the resolved case (all fields present).

@@ -30,10 +30,10 @@ App Store Connect → **Apps → + → New App**:
 - Primary language: **Japanese** (or English — your call)
 - Bundle ID: **`com.tomeitotameigo.kigo`** — pick it from the dropdown. If it's not
   listed, register it first at
-  [developer.apple.com → Certificates, IDs & Profiles → Identifiers](https://developer.apple.com/account/resources/identifiers/list)
-  with the **App Groups** capability enabled (group `group.com.tomeitotameigo.kigo`).
-  Automatic signing in Xcode will also create these on first archive, so you can
-  usually skip the manual registration.
+  [developer.apple.com → Certificates, IDs & Profiles → Identifiers](https://developer.apple.com/account/resources/identifiers/list).
+  Automatic signing in Xcode will also create it on first archive, so you can
+  usually skip the manual registration. (No **App Groups** capability is needed —
+  the app-group entitlement was retired with the widget gate; ADR 0019.)
 - SKU: anything (e.g. `kigo`).
 
 ## 2. Accept the Paid Applications Agreement  ⚠️ required for IAP
@@ -57,9 +57,11 @@ App Store Connect → your app → **Monetization → Subscriptions**:
    - **Reference Name**: `Widget Access Monthly`
    - **Duration**: 1 month
    - **Price**: ¥300 (JPY) — set the JP price; add others as desired
-   - **Localizations**: display name `Widget Access`, description e.g.
-     "Reveal today's Kigo image on your home-screen widget. Renews monthly."
-     (mirror the JP/EN strings in `Products.storekit`).
+   - **Localizations**: display name e.g. `Kigo Understanding`, description e.g.
+     "Unlock the meaning of each day's Kigo — the full description, the microseason
+     line, and the almanac depth. Renews monthly." (mirror the JP/EN strings in
+     `Products.storekit`). Since ADR 0019 the subscription unlocks the *in-app
+     understanding layer*, not the widget image (the widget is free for everyone).
    - A subscription needs a localization, a price, and a review screenshot before it
      leaves "Missing Metadata", but it reaches **"Ready to Submit"** — which is all
      that's needed for it to load in **sandbox/TestFlight**. Full App Review of the
@@ -116,8 +118,10 @@ normal Apple ID; a separate sandbox tester account is *not* required for TestFli
 What to verify:
 - The subscription **loads** with the ¥300 price (if it shows nothing → agreement not
   accepted, product not "Ready to Submit", or product ID mismatch).
-- **Buy** → entitlement flips → the home-screen **widget reveals today's image**
-  (the app-group flag path, `EntitlementSharedStore`).
+- **Buy** → entitlement flips → in the app, the **understanding layer unlocks**: the
+  Today screen's `meaning.upsell` line is replaced by the Kigo's description + the
+  microseason line, and the almanac becomes tappable (ADR 0019). The widget is free
+  for everyone and does not change on purchase.
 - **Restore Purchases** works on a fresh install.
 - **Renewal / expiry**: sandbox auto-renewable subs run on an accelerated clock
   (1 month ≈ 5 minutes, ~6 renewals then auto-cancels), so you can watch a full

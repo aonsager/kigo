@@ -2,7 +2,6 @@ import KigoCore
 import Foundation
 import Observation
 import StoreKit
-import WidgetKit
 
 // MARK: - PaywallModel
 
@@ -10,11 +9,10 @@ import WidgetKit
 ///
 /// Wraps an injected `EntitlementProvider` and exposes the reflected `isActive`
 /// state to the SwiftUI view. The injection point is what keeps the Paywall's
-/// logic headlessly testable: tests inject a fake `EntitlementTransactionSource`
-/// and a fake `EntitlementSharedStore`; there is no `SKTestSession`, no
-/// `buyProduct`, and no real StoreKit call on the gating test path (ADR 0009 /
-/// CLAUDE.md). The production app passes a `EntitlementProvider` built with the
-/// live StoreKit source and the app-group shared store.
+/// logic headlessly testable: tests inject a fake `EntitlementTransactionSource`;
+/// there is no `SKTestSession`, no `buyProduct`, and no real StoreKit call on the
+/// gating test path (ADR 0009 / CLAUDE.md). The production app passes a
+/// `EntitlementProvider` built with the live StoreKit source.
 ///
 /// - `productID`: the widget-access product ID, exposed so the view can display
 ///   the product surface without hard-coding the constant in the UI layer.
@@ -95,29 +93,24 @@ public final class PaywallModel {
         isActive = await provider.isEntitlementActive()
     }
 
-    /// Invokes the entitlement engine's restore path (which re-derives the active
-    /// flag from the transaction source and persists it into the shared store),
-    /// then re-reads the reflected state so the view updates immediately.
+    /// Re-derives the current entitlement from the transaction source and updates
+    /// the reflected state so the view updates immediately. Models the "Restore
+    /// Purchases" path.
     ///
     /// In production, `AppStore.sync()` should be called *before* this to refresh
     /// the transaction journal. That live-sync step is deliberately outside the
     /// model: it is un-testable headlessly and is left to the production call site
     /// or a manual integration lane. The restore *logic* verified here is the
-    /// derive-and-persist path through the injected seam.
+    /// re-derive-from-source path through the injected seam.
     public func restore() async {
-        await provider.restoreEntitlement()
         isActive = await provider.isEntitlementActive()
-        // The entitlement flag now lives in the shared app-group store, but WidgetKit
-        // serves its cached timeline until told to rebuild. Signal a reload so the
-        // widget re-reads the flag and switches to the full (photo) rendering.
-        WidgetCenter.shared.reloadAllTimelines()
     }
 
     /// Initiates a subscription purchase for the widget-access product via the
     /// injected `SubscriptionPurchaser` seam.
     ///
-    /// On success, calls `provider.refreshEntitlement()` (which re-derives and
-    /// persists the active flag) then re-reads `isActive` so the view updates.
+    /// On success, re-reads `isActive` from the entitlement source so the view
+    /// updates.
     ///
     /// On cancellation (`SubscriptionPurchaserCancellation`) or any other error,
     /// the error is swallowed and `isActive` is left unchanged — no crash on any
@@ -131,12 +124,7 @@ public final class PaywallModel {
     public func buy() async {
         do {
             try await purchaser.purchase(productID)
-            await provider.refreshEntitlement()
             isActive = await provider.isEntitlementActive()
-            // The entitlement flag now lives in the shared app-group store, but WidgetKit
-            // serves its cached timeline until told to rebuild. Signal a reload so the
-            // widget re-reads the flag and switches to the full (photo) rendering.
-            WidgetCenter.shared.reloadAllTimelines()
         } catch {
             // Swallow both cancellation and unexpected errors — no crash on any path.
             // isActive is intentionally left unchanged.

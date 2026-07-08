@@ -54,15 +54,6 @@ targets:
       - target: KigoWidgetExtension
         embed: true
       - package: KigoCore
-    entitlements:
-      # App Group so the main app and the widget extension share the same
-      # UserDefaults suite (group.com.tomeitotameigo.kigo). Without this the
-      # entitlement flag the app writes and the flag the widget reads land in
-      # separate `.standard` containers, so the subscriber image never shows.
-      path: Sources/Kigo/Kigo.entitlements
-      properties:
-        com.apple.security.application-groups:
-          - group.com.tomeitotameigo.kigo
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tomeitotameigo.kigo
@@ -86,8 +77,8 @@ targets:
     deploymentTarget: "26.0"
     sources:
       - path: Sources/KigoWidgetExtension
-      # Shared Foundation-only types (content domain, EntitlementSharedStore) now
-      # come from the KigoCore package dependency — see docs/kigocore-migration-plan.md.
+      # Shared Foundation-only types (content domain) now come from the KigoCore
+      # package dependency — see docs/kigocore-migration-plan.md.
       # Slice #73: KigoPlaceholderView (SwiftUI, no StoreKit) — deterministic gradient placeholder
       # reused by KigoWidgetView for the image layer (ADR 0001 / J2).
       - path: Sources/Kigo/KigoPlaceholder.swift
@@ -124,13 +115,6 @@ targets:
       # KigoWidgetView's image layer via UIImage(named: "tsuyu").
       - path: Resources/Images/tsuyu.jpg
         buildPhase: resources
-    entitlements:
-      # Same App Group as the host app so the widget reads the entitlement flag
-      # from the shared UserDefaults suite (see EntitlementSharedStore).
-      path: Sources/KigoWidgetExtension/KigoWidgetExtension.entitlements
-      properties:
-        com.apple.security.application-groups:
-          - group.com.tomeitotameigo.kigo
     dependencies:
       - package: KigoCore
     settings:
@@ -151,19 +135,11 @@ targets:
     deploymentTarget: "26.0"
     sources:
       - path: Tests/KigoTests
-      # C24 slice 1 (#199): the real output of `scripts/content/assemble.py` run
-      # against content/kigo-2026.example.csv + the bundled Resources/manifest.json,
-      # committed as a fixture so C24AssembledManifestScreenshotTests can decode it
-      # via the KigoTests bundle (Bundle(for:)) without shelling out to Python from
-      # inside XCTest. Kept outside Tests/KigoTests (a `sources:` folder entry) to
-      # avoid a duplicate file reference; must be a `sources` entry with
-      # `buildPhase: resources` — XcodeGen has no top-level `resources:` target key
-      # (same pattern as Resources/manifest.json elsewhere in this file).
-      - path: Tests/Fixtures/assembled-worked-example-manifest.json
-        buildPhase: resources
       # Slice #205 (C25 slice 1, ADR 0022): committed Manifest fixtures proving
       # imageBaseURL decodes both present and absent, for KigoImageSourceTests.
-      # Same pattern as assembled-worked-example-manifest.json above.
+      # Must be a `sources` entry with `buildPhase: resources` — XcodeGen has no
+      # top-level `resources:` target key (same pattern as Resources/manifest.json
+      # elsewhere in this file).
       - path: Tests/Fixtures/image-source-with-base-url.json
         buildPhase: resources
       - path: Tests/Fixtures/image-source-without-base-url.json
