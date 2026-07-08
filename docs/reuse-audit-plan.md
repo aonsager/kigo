@@ -102,18 +102,31 @@ The audit's #1 risk is loss, not bugs.
   outlived-evidence→P6, ChromeStrings-god-struct + god-views→P10. Each doc
   follows a shared `AUTHORING.md` contract. *(audit Part 1)*
 
-## Phase 4 — `ios-starter` template + scripts · heaviest lift; depends on 1–3
+## Phase 4 — `ios-starter` template + scripts · ✅ DONE (2026-07-08) · depends on 1–3
 
-- [ ] **[S] Consolidate `scripts/resolve-sim`.** Three divergent copies exist
-  today (CLAUDE.md, `verify-widget.sh` with the *retired* `name=…,OS=` form,
-  `afk-ci.yml`). Write once. *(audit T2)*
-- [ ] **[S] Copy generic scripts verbatim:** `xctimeout`, `afk-tail.py`/`.sh`/
-  `afk-watch.sh`, `afk-retro.py` (**fix hardcoded path line 23** first). *(T2)*
-- [ ] **[L] Assemble the template repo:** `project.yml` skeleton, `AppCore/`
-  package, entitlement/paywall module (**finish the `"—"` offer-display
-  adapter**), notification module, settings-store family, **shared UI-test base
-  class** (fix M5 in the template even though Kigo didn't), CLAUDE.md skeleton
-  (per P5), CI. *(audit T1)*
+Assembled into **`~/projects/ios-starter/template/`** (pushed to private GitHub
+`aonsager/ios-starter`, commit `5d04e0f`), harvested per a shared
+`docs/template-authoring.md` conventions contract.
+
+- [x] **[S] Consolidate `scripts/resolve-sim`.** DONE. One canonical
+  `template/scripts/resolve-sim` reconciled from the 3 divergent copies; emits
+  `platform=iOS Simulator,id=<UDID>` only (retired `name=…,OS=` form dropped),
+  defaults to newest-available-iPhone with `SIM_NAME`/`SIM_RUNTIME` overrides,
+  boots tolerantly. *(audit T2)*
+- [x] **[S] Copy generic scripts.** DONE. `xctimeout`, `afk-tail.py`/`.sh`/
+  `afk-watch.sh` copied verbatim; `afk-retro.py` line-23 hardcoded slug replaced
+  with repo-derived slug (matching afk-tail.py). All executable, parse-clean. *(T2)*
+- [x] **[L] Assemble the template.** DONE. `project.yml` skeleton (parameterized,
+  teaching trap-comments kept, vestigial app-group + fonts/`.storekit` dropped);
+  `AppCore/` Foundation-only package (**verified: 53 tests green, release build
+  compiles the `#if DEBUG` seams out**); entitlement/paywall module with the
+  **offer-display adapter finished** (production path now `Product`-backed via
+  `displayPrice`/`subscriptionPeriod`; `"—"` reduced to a labeled nil-Product
+  fallback); notification module; settings-store family (generic `Foo` template +
+  applied appearance store); **shared `UITestCase` base** (fixes M5 — one
+  launch/env-seed/date factory + dotted-a11y-id lookup); CLAUDE.md per P5; CI with
+  the P3 silence-watchdog. App-side modules are inspected skeletons (won't compile
+  standalone by design — only `AppCore` is on the fast lane). *(audit T1)*
 
 ## Phase 5 — afk engine hardening · last / ongoing
 
