@@ -1,7 +1,9 @@
 import KigoCore
 import Foundation
 
-// MARK: - fakeEntitlementSource
+#if DEBUG
+
+// MARK: - fakeEntitlementSource (DEBUG-only test seam)
 
 /// Reads the `KIGO_FAKE_ENTITLEMENT` launch-environment variable and returns an
 /// in-memory fake `EntitlementTransactionSource`, or `nil` when the variable is
@@ -38,6 +40,8 @@ public func fakeEntitlementSource(environment: [String: String]) -> (any Entitle
     }
 }
 
+#endif
+
 // MARK: - launchEntitlementProvider
 
 /// Resolves the `EntitlementProvider` to use at app launch, reading
@@ -53,13 +57,18 @@ public func fakeEntitlementSource(environment: [String: String]) -> (any Entitle
 ///   `ProcessInfo.processInfo.environment` at the app root.
 /// - Returns: The resolved `EntitlementProvider`.
 public func launchEntitlementProvider(environment: [String: String]) -> EntitlementProvider {
+    #if DEBUG
+    // Test-only seam: KIGO_FAKE_ENTITLEMENT is honoured in DEBUG builds only (H1).
     if let source = fakeEntitlementSource(environment: environment) {
         return EntitlementProvider(source: source)
     }
+    #endif
     return EntitlementProvider()
 }
 
-// MARK: - FixedEntitlementTransactionSource
+#if DEBUG
+
+// MARK: - FixedEntitlementTransactionSource (DEBUG-only test seam)
 
 /// In-memory fake `EntitlementTransactionSource` that reports a fixed set of product IDs.
 /// Used by the launch resolver for the `KIGO_FAKE_ENTITLEMENT` injection seam.
@@ -74,3 +83,5 @@ public struct FixedEntitlementTransactionSource: EntitlementTransactionSource {
         productIDs
     }
 }
+
+#endif

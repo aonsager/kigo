@@ -22,12 +22,16 @@ import SwiftUI
 ///   `ProcessInfo.processInfo.environment` at the app root.
 /// - Returns: `.dark`, `.light`, or `nil` when the key is absent or unrecognised.
 public func launchColorScheme(environment: [String: String]) -> ColorScheme? {
+    #if DEBUG
+    // Test-only seam: KIGO_FAKE_APPEARANCE is honoured in DEBUG builds only (H1).
     switch environment["KIGO_FAKE_APPEARANCE"] {
     case "dark":
         return .dark
     case "light":
         return .light
     default:
-        return nil
+        break
     }
+    #endif
+    return nil
 }

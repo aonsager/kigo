@@ -82,7 +82,6 @@ struct KigoApp: App {
         languageStore = launchLanguageStore(environment: env)
         appearanceStore = launchAppearanceStore(environment: env)
         imageSource = launchImageSource(environment: env)
-        imageBaseURLOverride = fakeImageBaseURLOverride(environment: env)
         // Slice #220 (PRD #218, C23, ADR 0019): `launchReminderStore` resolves the
         // persisted, default-off `UserDefaultsReminderStore` in a real launch, or a
         // locked in-memory store seeded on/off under `KIGO_FAKE_REMINDER` (so a UI
@@ -93,6 +92,9 @@ struct KigoApp: App {
         reminderStore = launchReminderStore(environment: env)
         notificationScheduler = launchNotificationScheduler(environment: env)
 
+        #if DEBUG
+        // Test-only fake wiring (KIGO_FAKE_IMAGE / KIGO_FAKE_PURCHASER), DEBUG builds only (H1).
+        imageBaseURLOverride = fakeImageBaseURLOverride(environment: env)
         if let fakePurchaser = launchPurchaser(environment: env) {
             // KIGO_FAKE_PURCHASER is set: use the resolved purchaser.
             // If it comes with an override source (succeed path), build the entitlement
@@ -107,6 +109,12 @@ struct KigoApp: App {
             purchaser = StoreKitSubscriptionPurchaser()
             entitlementProvider = launchEntitlementProvider(environment: env)
         }
+        #else
+        // Release: no fake seams. Production purchaser + entitlement provider; no image override.
+        imageBaseURLOverride = nil
+        purchaser = StoreKitSubscriptionPurchaser()
+        entitlementProvider = launchEntitlementProvider(environment: env)
+        #endif
     }
 
     var body: some Scene {

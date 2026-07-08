@@ -25,15 +25,19 @@ import Foundation
 ///   `UserDefaultsLanguageStore`).
 @MainActor
 public func launchLanguageStore(environment: [String: String]) -> any LanguageStore {
+    #if DEBUG
+    // Test-only seam: KIGO_FAKE_LANGUAGE is honoured in DEBUG builds only (H1).
     switch environment["KIGO_FAKE_LANGUAGE"] {
     case "en":
         return LockedInMemoryLanguageStore(preference: .english)
     case "ja":
         return LockedInMemoryLanguageStore(preference: .japanese)
     default:
-        let osDefault = initialLanguagePreference(preferredLanguages: Locale.preferredLanguages)
-        return UserDefaultsLanguageStore(suiteName: "com.tomeitotameigo.kigo", systemDefault: osDefault)
+        break
     }
+    #endif
+    let osDefault = initialLanguagePreference(preferredLanguages: Locale.preferredLanguages)
+    return UserDefaultsLanguageStore(suiteName: "com.tomeitotameigo.kigo", systemDefault: osDefault)
 }
 
 // MARK: - initialLanguagePreference
@@ -68,7 +72,9 @@ public func initialLanguagePreference(preferredLanguages: [String]) -> LanguageP
     return .english
 }
 
-// MARK: - LockedInMemoryLanguageStore
+#if DEBUG
+
+// MARK: - LockedInMemoryLanguageStore (DEBUG-only test seam)
 
 /// An `@Observable` `LanguageStore` whose preference is pinned at construction time
 /// and silently ignores `set(_:)` calls.
@@ -92,3 +98,5 @@ public final class LockedInMemoryLanguageStore: LanguageStore {
         // Intentionally ignored.
     }
 }
+
+#endif

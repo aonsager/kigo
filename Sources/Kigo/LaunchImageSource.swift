@@ -1,8 +1,12 @@
 import KigoCore
 import Foundation
-import UIKit
+#if DEBUG
+import UIKit  // used only by the DEBUG-only fixedLoadedImageData() fake (H1)
+#endif
 
-// MARK: - fakeImageTransport
+#if DEBUG
+
+// MARK: - fakeImageTransport (DEBUG-only test seam)
 
 /// Reads the `KIGO_FAKE_IMAGE` launch-environment variable and returns an in-memory
 /// fake `KigoImageTransport`, or `nil` when the variable is absent or unrecognised
@@ -71,6 +75,8 @@ public func fakeImageBaseURLOverride(environment: [String: String]) -> String? {
     environment["KIGO_FAKE_IMAGE"] == "loaded" ? "https://fake.kigo.local/loaded-images" : nil
 }
 
+#endif
+
 // MARK: - manifestApplyingImageBaseURLOverride
 
 /// Returns `manifest` unchanged when `override` is `nil`; otherwise returns a copy with
@@ -117,7 +123,13 @@ public func manifestApplyingImageBaseURLOverride(_ override: String?, to manifes
 ///   `ProcessInfo.processInfo.environment` at the app root.
 /// - Returns: The resolved `KigoImageSource`.
 public func launchImageSource(environment: [String: String]) -> KigoImageSource {
-    let transport = fakeImageTransport(environment: environment) ?? URLSessionKigoImageTransport()
+    let transport: any KigoImageTransport
+    #if DEBUG
+    // Test-only seam: KIGO_FAKE_IMAGE swaps in a fake transport in DEBUG builds only (H1).
+    transport = fakeImageTransport(environment: environment) ?? URLSessionKigoImageTransport()
+    #else
+    transport = URLSessionKigoImageTransport()
+    #endif
     return KigoImageSource(transport: transport, cacheDirectory: defaultImageCacheDirectory())
 }
 
@@ -131,7 +143,9 @@ private func defaultImageCacheDirectory() -> URL {
     return base.appendingPathComponent("KigoImages", isDirectory: true)
 }
 
-// MARK: - NoBytesKigoImageTransport
+#if DEBUG
+
+// MARK: - NoBytesKigoImageTransport (DEBUG-only test seam)
 
 /// In-memory fake `KigoImageTransport` that always throws, so any caller composing it
 /// through `KigoImageSource.image(manifest:imageId:)` observes a `nil` resolution.
@@ -187,3 +201,5 @@ public func fixedLoadedImageData() -> Data {
     // realistic failure path.
     return image.jpegData(compressionQuality: 0.9) ?? Data()
 }
+
+#endif

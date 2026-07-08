@@ -1,6 +1,11 @@
 import KigoCore
 import Foundation
 
+// This whole file is a DEBUG-only test seam: it reads KIGO_FAKE_PURCHASER and
+// vends fake purchasers. Production wiring uses StoreKitSubscriptionPurchaser
+// directly (see KigoApp). Compiled out of Release so no purchase bypass ships (H1).
+#if DEBUG
+
 // MARK: - launchPurchaser
 
 /// Reads the `KIGO_FAKE_PURCHASER` launch-environment variable and returns a tuple
@@ -92,3 +97,5 @@ struct CancellingFakePurchaser: SubscriptionPurchaser {
         throw SubscriptionPurchaserCancellation()
     }
 }
+
+#endif

@@ -21,14 +21,20 @@ import Foundation
 /// - Returns: A `FixedDateProvider` for a valid `KIGO_FAKE_DATE`, or
 ///   `SystemDateProvider` otherwise.
 public func launchDateProvider(environment: [String: String]) -> any DateProvider {
-    guard let rawValue = environment["KIGO_FAKE_DATE"],
-          let date = parseYYYYMMDD(rawValue) else {
-        return SystemDateProvider()
+    #if DEBUG
+    // Test-only seam: honour KIGO_FAKE_DATE in DEBUG builds only, so the fake
+    // date-injection path is never compiled into a Release binary (H1).
+    if let rawValue = environment["KIGO_FAKE_DATE"],
+       let date = parseYYYYMMDD(rawValue) {
+        return FixedDateProvider(date: date)
     }
-    return FixedDateProvider(date: date)
+    #endif
+    return SystemDateProvider()
 }
 
-// MARK: - Private
+#if DEBUG
+
+// MARK: - Private (DEBUG-only test seam)
 
 /// Parses a `YYYY-MM-DD` string using `DayKey.utcCalendar`.
 ///
@@ -76,3 +82,5 @@ private func parseYYYYMMDD(_ string: String) -> Date? {
     }
     return date
 }
+
+#endif

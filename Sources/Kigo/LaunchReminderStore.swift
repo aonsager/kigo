@@ -21,17 +21,23 @@ import Observation
 ///   `ProcessInfo.processInfo.environment` at the app root.
 @MainActor
 public func launchReminderStore(environment: [String: String]) -> any ReminderStore {
+    #if DEBUG
+    // Test-only seam: KIGO_FAKE_REMINDER is honoured in DEBUG builds only (H1).
     switch environment["KIGO_FAKE_REMINDER"] {
     case "on":
         return LockedInMemoryReminderStore(isEnabled: true)
     case "off":
         return LockedInMemoryReminderStore(isEnabled: false)
     default:
-        return UserDefaultsReminderStore(suiteName: "com.tomeitotameigo.kigo")
+        break
     }
+    #endif
+    return UserDefaultsReminderStore(suiteName: "com.tomeitotameigo.kigo")
 }
 
-// MARK: - LockedInMemoryReminderStore
+#if DEBUG
+
+// MARK: - LockedInMemoryReminderStore (DEBUG-only test seam)
 
 /// An `@Observable` `ReminderStore` whose preference is pinned at construction time
 /// and silently ignores `set(_:)`.
@@ -55,3 +61,5 @@ public final class LockedInMemoryReminderStore: ReminderStore {
         // Intentionally ignored.
     }
 }
+
+#endif
