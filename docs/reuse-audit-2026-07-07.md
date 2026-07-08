@@ -31,6 +31,38 @@ project proves the boundary. Keep them as source inside the template.
 
 ---
 
+## Status (updated 2026-07-08) — all workstreams complete except one blocked ship-item
+
+Execution was sequenced in [reuse-audit-plan.md](./reuse-audit-plan.md) (Phases
+0–5); this section records where each finding landed. Per-phase detail and
+verification evidence live in that plan.
+
+- **Part 1 — playbook (P1–P10): ✅ done.** All 10 pattern docs harvested to
+  `aonsager/ios-starter` under `docs/playbook/`, Kigo constants stripped, "habits
+  to break" folded in as `## Guardrails`. *(Phase 3)*
+- **Part 2 — template + scripts (T1–T3): ✅ done.**
+  - T1 template + T2 scripts assembled in `aonsager/ios-starter` under
+    `template/` (incl. consolidated `resolve-sim`, `afk-retro.py` slug fix,
+    shared `UITestCase` base for M5, finished offer-display adapter). *(Phase 4)*
+  - T3 afk engine: skills versioned in `aonsager/agent-skills` (edit-in-place git
+    tree; the `~/.claude/skills` → `~/.agents/skills` symlink + no-nested-discovery
+    constraint noted) *(Phase 0)*; wrapper drift reconciled — `AFK_MAX_ITER`,
+    stack-neutral driver split from iOS babysitting behind a `.afk/hooks.sh` hook,
+    retro cost knowledge + `AFK_MODEL=sonnet` default preserved in the engine.
+    *(Phase 5)*
+- **Part 3 — bad elements: ✅ done except H2.**
+  - H1 (fake resolvers in Release): ✅ compile-gated behind `#if DEBUG`;
+    Release binary carries 0 `KIGO_FAKE` strings. *(Phase 1)*
+  - #3 half-removed entitlement→widget path, #4 doc drift + public/private
+    contradiction, #5 hygiene (gitignore, stale worktree, one-shot scripts,
+    screenshot slice-tests): ✅ all resolved. *(Phase 2)*
+  - "Habits to break": ✅ captured as the template `## Guardrails`. *(Phase 3)*
+  - **⛔ H2 (placeholder content — dummy manifest + crop app icon): BLOCKED.**
+    Not a code fix; unblocks only when the content review completes and a real
+    icon is designed. Tracked in the plan's Phase 1. This is the sole open item.
+
+---
+
 ## Part 1 — Keep as pattern docs (the playbook)
 
 These are ideas/doctrines where the writing already exists in this repo and
