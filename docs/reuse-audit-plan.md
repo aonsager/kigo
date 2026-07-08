@@ -132,12 +132,30 @@ Assembled into **`~/projects/ios-starter/template/`** (pushed to private GitHub
   the P3 silence-watchdog. App-side modules are inspected skeletons (won't compile
   standalone by design — only `AppCore` is on the fast lane). *(audit T1)*
 
-## Phase 5 — afk engine hardening · last / ongoing
+## Phase 5 — afk engine hardening · ✅ DONE (2026-07-08)
 
-- [ ] **[M] Reconcile wrapper drift.** `afk-run.sh` is missing the documented
-  `AFK_MAX_ITER` knob; split its generic driver from the iOS-simulator
-  babysitting behind a stack hook; preserve the retro cost knowledge currently
-  living only in comments. *(audit T3 remainder)*
+- [x] **[M] Reconcile wrapper drift.** DONE. The three fixes from audit T3:
+  - **`AFK_MAX_ITER` reconciled.** The knob lived only in the skill's bundled
+    `afk-run.sh` (default 50); Kigo's tracked copy was missing it. Kigo's copy is
+    now the hardened generic driver, so it carries the ceiling backstop too.
+  - **Generic driver split from iOS babysitting behind a stack hook.** The driver
+    (lock, timeout, cost parse, `FAILING`/`WEDGED` taxonomy, `AFK_MAX_ITER`) is
+    now stack-neutral: it defines no-op `afk_pre_iteration` / `afk_reap_orphans`
+    and sources an optional `.afk/hooks.sh` that a repo may override. All the iOS
+    simulator logic (`reap_sim_debris`, `ensure_sim_ready` + recovery ladder,
+    pinned-device boot, swap warning, orphaned-`xcodebuild` reaping) moved out of
+    the driver into `.afk/hooks.sh`. Kigo carries the faithful iOS hook (untracked,
+    since `.afk/` is gitignored per-project state); the **versioned** parameterized
+    reference lives in `ios-starter/template/.afk/hooks.sh` (reuses `resolve-sim`).
+  - **Retro cost knowledge preserved in the engine.** The "~73% of the token bill
+    on Opus → cheap orchestrator is safe because every judgment-critical fork pins
+    its own model" rationale is now in the generic `afk-run.sh` header + `afk-init`
+    SKILL.md, and `AFK_MODEL` defaults to `sonnet` in the generic engine (not just
+    Kigo's copy). The WEDGED forensics also gained the two-cause taxonomy (hung
+    command *vs* healthy-but-slow session) that had only lived in Kigo's copy.
+  - Homes: engine → `agent-skills` (`afk-init/scripts/afk-run.sh` + `SKILL.md`);
+    iOS reference → `ios-starter` template; Kigo reconciled as the local consumer.
+  *(audit T3 remainder)*
 
 ---
 
