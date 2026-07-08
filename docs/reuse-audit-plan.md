@@ -18,14 +18,18 @@ Effort tags: **S** ≈ <1h · **M** ≈ a few hours · **L** ≈ a day or more.
 
 The audit's #1 risk is loss, not bugs.
 
-- [x] **Version the afk skills.** 7 `afk-*` skills + `GOAL-FORMAT.md`,
-  `LOOP-STATE.md`, `references/`, and the bundled `afk-init/scripts/afk-run.sh`
-  moved into a dedicated git repo at `~/projects/afk-skills`, pushed to private
-  GitHub `aonsager/afk-skills`. *(audit T3)*
+- [x] **Version the afk skills.** The 7 `afk-*` skills (+ `GOAL-FORMAT.md`,
+  `LOOP-STATE.md`, `references/`, bundled `afk-init/scripts/afk-run.sh`) are
+  version-tracked in private GitHub `aonsager/agent-skills`. *(audit T3)*
   - Constraint found: `~/.claude/skills` → `~/.agents/skills`, and the skill
-    loader **does not follow directory symlinks**. The repo is therefore a
-    versioned snapshot; the live dirs stay real and must be **re-synced +
-    committed after any skill edit**.
+    loader **does not follow directory symlinks** (nor discovers skills nested in
+    a subfolder). So skills must stay flat + real in the live dir.
+  - **Superseded 2026-07-08:** rather than a separate snapshot clone at
+    `~/projects/afk-skills` (which needed manual re-sync after every edit), the
+    **live dir `~/.agents/skills` is now itself the git working tree** — all 25
+    personal skills tracked in place, repo renamed `afk-skills` → `agent-skills`.
+    Workflow is edit-in-place → commit → push; **no sync step, no drift**. The
+    old `~/projects/afk-skills` clone was deleted.
 - [x] **Prune the stale worktree.** `.claude/worktrees/audit-189/` removed;
   `audit/189-review` branch ref preserved (its 5 unmerged C22 commits remain
   recoverable). *(audit Part 3 #5)*
