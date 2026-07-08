@@ -88,14 +88,19 @@ The audit's #1 risk is loss, not bugs.
   (`C2MigrationScreenshotTests` was coupled to the H2 dummy date-stamp;
   `C24AssembledManifestScreenshotTests` + its orphaned fixture). *(audit Part 3 #5)*
 
-## Phase 3 — Playbook docs (P1–P10) · harvest, don't author
+## Phase 3 — Playbook docs (P1–P10) · ✅ DONE (2026-07-08) · harvest, don't author
 
-- [ ] **[L] Write the ~10 stack-neutral pattern docs** into the new playbook
-  repo. Strip Kigo constants + the "Explicitly NOT worth saving" list; fold the
-  "Habits to break" (Part 3) in as guardrails inside the relevant docs. Now that
-  fixes are done, the docs capture corrected patterns (P1 includes the
-  `#if DEBUG` amendment, P10 warns off the ChromeStrings god-struct). *(audit
-  Part 1)*
+- [x] **[L] Write the ~10 stack-neutral pattern docs** into the new playbook
+  repo. DONE. All 10 (P1–P10) harvested into
+  **`~/projects/ios-starter/docs/playbook/`** (private GitHub
+  `aonsager/ios-starter`) — the playbook shares the repo the Phase 4
+  `ios-starter` template will use. Kigo constants stripped (domain, `KIGO_`
+  prefix, product IDs, file lists, dated 26.4/26.5/simdiskimaged forensics —
+  named only in each doc's Provenance line). "Habits to break" (Part 3) folded
+  in as `## Guardrails`: compile-gate + speculative-seam→P1, halfway-extraction +
+  copy-pasted-setup→P2, broad-permissions→P5, slice-number-narration→P7,
+  outlived-evidence→P6, ChromeStrings-god-struct + god-views→P10. Each doc
+  follows a shared `AUTHORING.md` contract. *(audit Part 1)*
 
 ## Phase 4 — `ios-starter` template + scripts · heaviest lift; depends on 1–3
 
