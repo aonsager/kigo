@@ -128,7 +128,6 @@ public struct ChromeStrings: Equatable, Sendable {
     public let a11yLoading: String
     public let a11yContentUnavailable: String
     public let a11yUnlockMeaning: String
-    public let a11yImageAttribution: String
     public let a11yDismiss: String
     public let a11yBackgroundImage: String
 
@@ -201,7 +200,6 @@ public struct ChromeStrings: Equatable, Sendable {
             a11yLoading               = "読み込み中"
             a11yContentUnavailable    = "コンテンツは利用できません"
             a11yUnlockMeaning         = "意味をひらく"
-            a11yImageAttribution      = "画像のクレジット"
             a11yDismiss               = "閉じる"
             a11yBackgroundImage       = "季語の背景画像"
         case .english:
@@ -236,7 +234,6 @@ public struct ChromeStrings: Equatable, Sendable {
             a11yLoading               = "Loading content"
             a11yContentUnavailable    = "Content unavailable"
             a11yUnlockMeaning         = "Unlock the meaning"
-            a11yImageAttribution      = "Image attribution"
             a11yDismiss               = "Dismiss"
             a11yBackgroundImage       = "Kigo background image"
         }

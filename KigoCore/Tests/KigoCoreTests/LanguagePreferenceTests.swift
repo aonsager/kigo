@@ -300,7 +300,6 @@ final class LanguagePreferenceTests: XCTestCase {
             ("a11yLoading", ja.a11yLoading, en.a11yLoading),
             ("a11yContentUnavailable", ja.a11yContentUnavailable, en.a11yContentUnavailable),
             ("a11yUnlockMeaning", ja.a11yUnlockMeaning, en.a11yUnlockMeaning),
-            ("a11yImageAttribution", ja.a11yImageAttribution, en.a11yImageAttribution),
             ("a11yDismiss", ja.a11yDismiss, en.a11yDismiss),
             ("a11yBackgroundImage", ja.a11yBackgroundImage, en.a11yBackgroundImage),
         ]

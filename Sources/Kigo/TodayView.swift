@@ -38,7 +38,8 @@ import UIKit
 /// deterministic per-Sekki gradient wash (`SekkiBackdrop.fallbackHue(forSekkiId:)`)
 /// when the art is not yet bundled. There is no remote fetch, no cache, and no
 /// "which path resolved" sentinel — `kigo.image` is always present and is the only
-/// state.
+/// state. The shared, original/CC0 backdrops carry no per-day attribution, so the
+/// slice #128 `info.entry` panel (and its `.attribution` sheet) is removed entirely.
 struct TodayView: View {
     let resolvedDay: ResolvedDay
     let almanacPositions: AlmanacPositions
@@ -47,7 +48,6 @@ struct TodayView: View {
     /// it can drive the single `.sheet(item:)` modifier.
     private enum ActiveSheet: Identifiable {
         case almanac
-        case attribution
 
         var id: Self { self }
     }
@@ -120,10 +120,7 @@ struct TodayView: View {
                 .opacity(hasAppeared ? 1 : 0)
                 .offset(y: hasAppeared ? 0 : 16)
 
-            // 5 · (i) attribution entry — top-left.
-            infoEntry
-
-            // 6 · Bottom band, over the scrim. Premium sees the microseason block
+            // 5 · Bottom band, over the scrim. Premium sees the microseason block
             // (readings + tappable year timeline → almanac). Basic sees the upsell
             // block (→ purchase sheet) in the same place — so the free scrim always
             // has content over it and the interaction is symmetric: tap the band,
@@ -150,8 +147,6 @@ struct TodayView: View {
                     ko: resolvedDay.ko,
                     sekki: resolvedDay.sekki
                 )
-            case .attribution:
-                AttributionPanelView(attribution: resolvedDay.kigoEntry.attribution)
             }
         }
     }
@@ -243,33 +238,6 @@ struct TodayView: View {
         .accessibilityLabel(chrome.a11yUnlockMeaning)
     }
 
-    // MARK: - Info entry (top-left)
-
-    private var infoEntry: some View {
-        VStack {
-            HStack {
-                Button {
-                    activeSheet = .attribution
-                } label: {
-                    Image(systemName: "info.circle")
-                        .font(.system(size: 15, weight: .regular))
-                        .foregroundStyle(KigoTheme.inkReading)
-                        .frame(width: KigoTheme.Radius.entryCircle, height: KigoTheme.Radius.entryCircle)
-                        .background(.ultraThinMaterial, in: Circle())
-                        .overlay(Circle().strokeBorder(KigoTheme.hairline, lineWidth: 1))
-                }
-                .buttonStyle(.plain)
-                .accessibilityIdentifier("info.entry")
-                .accessibilityLabel(chrome.a11yImageAttribution)
-                .padding(.leading, 22)
-                .padding(.top, 16)
-
-                Spacer()
-            }
-            Spacer()
-        }
-    }
-
     // MARK: - Bottom microseason block
 
     private var microseasonBlock: some View {
@@ -283,8 +251,8 @@ struct TodayView: View {
         // The visual content drives the band's height; the full-band tap target is a
         // `Color.clear` Button laid *behind* it (as a background) so the tappable area
         // hugs the band instead of expanding to fill the whole screen — which would
-        // overlap the top-corner `info.entry` / `paywall.entry` controls and steal
-        // their taps (Slice C: it did, opening the almanac on an info.entry tap).
+        // overlap the top-corner `paywall.entry` control and steal its taps (Slice C:
+        // it did, opening the almanac on a top-corner-control tap).
         timelineVisual
             .background {
                 Button {

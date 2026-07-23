@@ -3,8 +3,8 @@ import SwiftUI
 
 /// A reusable, content-height bottom-sheet overlay (Slice C / issue #160).
 ///
-/// Replaces the native `.sheet` for the three Kigo modals (almanac, attribution,
-/// settings/paywall). Native `.sheet` always fills most of the screen and does
+/// Replaces the native `.sheet` for the Kigo modals (almanac, settings/paywall).
+/// Native `.sheet` always fills most of the screen and does
 /// **not** dismiss on a backdrop tap; this overlay instead:
 ///
 /// 1. **Hugs its content** — the bottom-anchored card is only as tall as its
@@ -23,7 +23,7 @@ import SwiftUI
 ///
 /// ## Identifier contract (ADR 0013)
 /// The inner views keep their `Color.clear` sentinel layer carrying the root
-/// identifier (`microseason.almanac`, `info.panel`, `paywall.sheet`). Because the
+/// identifier (`microseason.almanac`, `paywall.sheet`). Because the
 /// card hosts that inner content directly inside the live view hierarchy, the
 /// sentinel and all its children stay queryable via
 /// `app.otherElements[...]` / `app.descendants(...).matching(identifier:)` once
