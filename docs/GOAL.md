@@ -7,8 +7,9 @@
 
 Kigo is a calm iOS app that gives a person one quiet moment a day. On opening it,
 they see a single traditional Japanese seasonal word — the **Kigo** for today —
-presented over a large, evocative full-bleed image, with a brief note on the word's
-meaning and significance, and a small reading of the current Japanese **Microseason**
+presented over the current Sekki's seasonal wash, with the word (kanji + reading) as
+the visual hero, plus a brief note on the word's meaning and significance, and a
+small reading of the current Japanese **Microseason**
 (the Kō, with its parent Sekki beneath). That is the whole of the main experience:
 no calendar, no feed, no streaks. It should feel like a tasteful object on the
 nightstand, closer to a wellness app than a productivity tool.

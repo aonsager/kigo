@@ -46,7 +46,7 @@ enum KigoTheme {
     /// Quiet-state frame (loading / unavailable) — slightly lighter than canvas.
     static let quietSurface = adaptive(light: hex(0xF4F0E8), dark: hex(0x16130F))
 
-    /// Bottom-sheet / panel surface (paywall, almanac, attribution).
+    /// Bottom-sheet / panel surface (paywall, almanac).
     static let sheetSurface = adaptive(light: hex(0xF6F2EA), dark: hex(0x1B1813))
 
     // MARK: Ink (foreground text)

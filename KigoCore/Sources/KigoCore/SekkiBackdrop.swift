@@ -1,6 +1,6 @@
 import Foundation
 
-/// Maps a Sekki to its bundled backdrop (image pivot, ADR 00XX — supersedes 0022).
+/// Maps a Sekki to its bundled backdrop (image pivot, ADR 0026 — supersedes 0022).
 ///
 /// The app pivoted from per-day photography to 24 uniform, bundled, per-Sekki
 /// blurred backdrops. This resolver is pure and Foundation-only (returns a `Double`

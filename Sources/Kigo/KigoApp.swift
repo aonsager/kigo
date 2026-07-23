@@ -132,8 +132,9 @@ struct KigoApp: App {
 ///
 /// The Upgrade button (`paywall.entry`) is always present, overlaid as a small, unobtrusive
 /// control at the top-trailing corner of the screen via `.overlay(alignment: .topTrailing)`.
-/// Moved from `.bottomTrailing` to `.topTrailing` in slice #154 so it sits symmetrically
-/// opposite `info.entry` (top-leading) — both in the top third of the screen.
+/// Moved from `.bottomTrailing` to `.topTrailing` in slice #154 so it sits in the
+/// top third of the screen, clear of the central content (originally placed to be
+/// symmetric with a top-leading `info.entry` panel, since removed by the image pivot).
 ///
 /// Slice #136: `languageStore` carries the user's language preference; `ChromeStrings` is
 /// derived at sheet-construction time and passed into `PaywallView` so the restore label
