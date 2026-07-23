@@ -6,10 +6,12 @@ Run directly:
     python3 scripts/content/fill/test_store.py
 """
 import sys
+import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import store  # noqa: E402
+import build_csv  # noqa: E402
 
 
 def _mem():
@@ -28,7 +30,7 @@ def test_seed_inserts_facts():
     assert (seeded, skipped) == (1, 0)
     day = store.get_day(conn, "2026-03-25")
     assert day["kanji"] == "桜" and day["gloss_en"] == "cherry blossom"
-    assert day["approved"] == 0 and day["chosen_candidate_id"] is None
+    assert day["approved"] == 0
 
 
 def test_seed_upserts_facts_on_unapproved():
@@ -79,80 +81,57 @@ def test_list_days_filters_by_range_and_status():
     assert [d["date"] for d in unapproved] == ["2026-01-01", "2026-12-31"]
 
 
-def _cand(out_file="kigo-03-25__c1.jpg", usable="yes", provider="pexels"):
-    return {"provider": provider, "search_term": "桜", "search_lang": "ja-JP",
-            "photographer": "Ansel", "license_ja": "Pexels ライセンス",
-            "license_en": "Pexels License", "title_ja": "桜", "title_en": "cherry blossom",
-            "source_url": "https://ex/1", "src_w": 1000, "src_h": 1500,
-            "out_file": out_file, "usable": usable, "note": "",
-            # extras that candidate_row also emits and add_candidate must ignore:
-            "candidate": 1, "chosen": "", "image_id": "kigo-03-25"}
+def test_migration_drops_candidates_and_preserves_days():
+    # Build a pre-migration (v0) DB by hand: old days schema with
+    # chosen_candidate_id + a candidates table + real editorial data.
+    import sqlite3
+    tmp_dir = Path(tempfile.mkdtemp())
+    p = tmp_dir / "old.db"
+    c = sqlite3.connect(p)
+    c.executescript("""
+        CREATE TABLE days (date TEXT PRIMARY KEY, kanji TEXT DEFAULT '',
+            reading_ja TEXT DEFAULT '', reading_en TEXT DEFAULT '',
+            season TEXT DEFAULT '', subseason TEXT DEFAULT '', category TEXT DEFAULT '',
+            gloss_en TEXT DEFAULT '', translation_en TEXT DEFAULT '',
+            description_ja TEXT DEFAULT '', description_en TEXT DEFAULT '',
+            chosen_candidate_id INTEGER, approved INTEGER DEFAULT 0,
+            created_at TEXT DEFAULT '', updated_at TEXT DEFAULT '');
+        CREATE TABLE candidates (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, out_file TEXT);
+        INSERT INTO days (date, kanji, description_ja, approved, chosen_candidate_id)
+            VALUES ('2026-03-03', '雛祭', '和文の説明', 1, 7);
+    """)
+    c.execute("PRAGMA user_version = 0")
+    c.commit(); c.close()
+
+    conn = store.connect(p)  # triggers migration
+    cols = {r[1] for r in conn.execute("PRAGMA table_info(days)")}
+    assert "chosen_candidate_id" not in cols
+    tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    assert "candidates" not in tables
+    assert conn.execute("PRAGMA user_version").fetchone()[0] == store._SCHEMA_VERSION
+    day = store.get_day(conn, "2026-03-03")
+    assert day["kanji"] == "雛祭" and day["description_ja"] == "和文の説明" and day["approved"] == 1
+    # Idempotent: re-opening does not error or change data.
+    conn2 = store.connect(p)
+    assert store.get_day(conn2, "2026-03-03")["kanji"] == "雛祭"
 
 
-def test_add_and_get_candidates():
+def test_export_rows_gates_on_prose_completeness():
     conn = _mem()
-    store.seed_days(conn, [_fact_row()])
-    cid = store.add_candidate(conn, "2026-03-25", _cand())
-    assert isinstance(cid, int)
-    cands = store.get_candidates(conn, "2026-03-25")
-    assert len(cands) == 1 and cands[0]["id"] == cid
-    assert cands[0]["photographer"] == "Ansel" and cands[0]["src_w"] == 1000
-
-
-def test_set_chosen_validates_ownership_and_usable():
-    conn = _mem()
-    store.seed_days(conn, [_fact_row(), _fact_row("2026-04-01")])
-    good = store.add_candidate(conn, "2026-03-25", _cand())
-    ref_only = store.add_candidate(conn, "2026-03-25", _cand(out_file="c2.jpg", usable="no"))
-    other = store.add_candidate(conn, "2026-04-01", _cand(out_file="c3.jpg"))
-    store.set_chosen(conn, "2026-03-25", good)
-    assert store.get_day(conn, "2026-03-25")["chosen_candidate_id"] == good
-    for bad in (ref_only, other, 9999):
-        try:
-            store.set_chosen(conn, "2026-03-25", bad)
-        except ValueError:
-            continue
-        raise AssertionError(f"set_chosen should reject candidate {bad}")
-
-
-def test_clear_candidates_resets_chosen():
-    conn = _mem()
-    store.seed_days(conn, [_fact_row()])
-    cid = store.add_candidate(conn, "2026-03-25", _cand())
-    store.set_chosen(conn, "2026-03-25", cid)
-    store.clear_candidates(conn, "2026-03-25")
-    assert store.get_candidates(conn, "2026-03-25") == []
-    assert store.get_day(conn, "2026-03-25")["chosen_candidate_id"] is None
-
-
-def test_export_rows_only_approved_with_chosen():
-    conn = _mem()
-    store.seed_days(conn, [_fact_row("2026-03-25"), _fact_row("2026-04-01"),
-                           _fact_row("2026-05-01")])
-    # 03-25: fully ready + approved
-    store.set_day_fields(conn, "2026-03-25", translation_en="cherry-blossom viewing",
-                         description_ja="説明", description_en="desc")
-    cid = store.add_candidate(conn, "2026-03-25", _cand())
-    store.set_chosen(conn, "2026-03-25", cid)
-    store.set_approved(conn, "2026-03-25", True)
-    # 04-01: approved but no chosen image
-    store.set_approved(conn, "2026-04-01", True)
-    # 05-01: has everything but not approved
-    c2 = store.add_candidate(conn, "2026-05-01", _cand(out_file="kigo-05-01__c1.jpg"))
-    store.set_chosen(conn, "2026-05-01", c2)
-
+    store.seed_days(conn, [{"date": "2026-05-05", "kanji": "菖蒲", "reading_ja": "しょうぶ",
+                            "reading_en": "shoubu"}])
+    # Not approved → not exported.
+    assert store.export_rows(conn) == []
+    store.set_day_fields(conn, "2026-05-05", translation_en="iris",
+                         description_ja="和文", description_en="English")
+    store.set_approved(conn, "2026-05-05", True)
     rows = store.export_rows(conn)
-    assert [r["date"] for r in rows] == ["2026-03-25"]
-    r = rows[0]
-    import build_csv
-    assert set(build_csv.CONTRACT_COLUMNS).issubset(r.keys())
-    assert r["image_id"] == "kigo-03-25"
-    assert r["translation_en"] == "cherry-blossom viewing"
-    assert r["attribution_title_ja"] == "桜"
-    assert r["attribution_credit_en"] == "Photo: Ansel / Pexels"
-    assert r["attribution_license_en"] == "Pexels License"
-    assert r["_out_file"] == "kigo-03-25__c1.jpg"
-    assert set(store.pending_dates(conn)) == {"2026-04-01", "2026-05-01"}
+    assert len(rows) == 1
+    assert list(rows[0].keys()) == list(build_csv.CONTRACT_COLUMNS)
+    assert rows[0]["kanji"] == "菖蒲"
+    # Approved but incomplete (blank description_en) → skipped.
+    store.set_day_fields(conn, "2026-05-05", description_en="")
+    assert store.export_rows(conn) == []
 
 
 if __name__ == "__main__":
