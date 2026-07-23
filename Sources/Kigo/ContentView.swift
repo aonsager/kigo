@@ -9,23 +9,16 @@ import SwiftUI
 /// - `.today(ResolvedDay, AlmanacPositions)` — renders `TodayView` (warm bundled path, AC3).
 /// - `.loadingPlaceholder` — renders `LoadingPlaceholderView` (AC1).
 /// - `.unavailablePlaceholder` — renders `UnavailablePlaceholderView` (AC2).
-///
-/// Also threads the resolved `manifest` (extracted from `store.state`, which
-/// `ContentStore.screenState` guarantees is `.loaded` whenever it returns `.today`) into
-/// `TodayView`.
 struct ContentView: View {
     @Environment(ContentStore.self) private var store
 
     var body: some View {
         switch store.screenState {
         case .today(let resolved, let positions):
-            if case .loaded(let manifest) = store.state {
-                TodayView(
-                    resolvedDay: resolved,
-                    almanacPositions: positions,
-                    manifest: manifest
-                )
-            }
+            TodayView(
+                resolvedDay: resolved,
+                almanacPositions: positions
+            )
         case .loadingPlaceholder:
             LoadingPlaceholderView()
         case .unavailablePlaceholder:

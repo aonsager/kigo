@@ -42,7 +42,6 @@ import UIKit
 struct TodayView: View {
     let resolvedDay: ResolvedDay
     let almanacPositions: AlmanacPositions
-    let manifest: Manifest
 
     /// Identifies which sheet is currently active. Conforms to `Identifiable` so
     /// it can drive the single `.sheet(item:)` modifier.
