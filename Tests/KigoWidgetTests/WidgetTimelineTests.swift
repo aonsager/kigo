@@ -14,8 +14,10 @@ import XCTest
 //   - an injected `DateProvider` (fixed date for determinism)
 //   - a loaded `Manifest`
 //   - a widget family
-// produces a `KigoWidgetEntry` whose kanji/reading/imageId match the
-// manifest's daily-map entry for that date's day-key.
+// produces a `KigoWidgetEntry` whose kanji/reading match the manifest's
+// daily-map entry for that date's day-key, and whose backdropAssetName is
+// keyed on the resolved day's Sekki id (Task 4 image pivot — NOT the per-day
+// imageId, which the manifest still carries but the widget no longer reads).
 //
 // Resolution is delegated to `TodayResolver` — no re-implementation of
 // the day-key or Ko/Sekki lookup logic here.
@@ -128,8 +130,9 @@ final class WidgetTimelineTests: XCTestCase {
 
     // MARK: - AC1 + AC2: entry fields match manifest daily-map for the injected date
 
-    /// Injecting a fixed date and a minimal manifest: the built entry's kanji,
-    /// reading, and imageId must equal the manifest's daily-map entry for that date.
+    /// Injecting a fixed date and a minimal manifest: the built entry's kanji and
+    /// reading must equal the manifest's daily-map entry for that date, and the
+    /// backdropAssetName must be keyed on the resolved day's Sekki id (not imageId).
     func testBuilderEntryMatchesManifestForFixedDate() {
         let dayKey = "06-14"
         let manifest = makeMinimalManifest(dayKey: dayKey,
@@ -145,11 +148,14 @@ final class WidgetTimelineTests: XCTestCase {
         XCTAssertNotNil(entry, "Builder must return a non-nil entry for a known date")
         XCTAssertEqual(entry?.kanji, "蛍",     "Entry kanji must match manifest daily-map")
         XCTAssertEqual(entry?.reading, "ほたる", "Entry reading must match manifest daily-map")
-        XCTAssertEqual(entry?.imageId, "img-firefly", "Entry imageId must match manifest daily-map")
+        XCTAssertEqual(entry?.backdropAssetName, "backdrop-shousho",
+                       "Entry backdropAssetName must be keyed on the resolved day's Sekki id, not imageId")
         XCTAssertEqual(entry?.date, date,       "Entry date must equal the injected date")
     }
 
-    /// Verify that different injected dates each produce the correct manifest entry.
+    /// Verify that different injected dates each produce the correct manifest entry,
+    /// and that the backdrop is keyed on the (shared) Sekki id — not the per-day imageId,
+    /// which varies per case but must have no bearing on the backdrop.
     func testBuilderEntryMatchesManifestForMultipleDates() {
         let cases: [(month: Int, day: Int, kanji: String, reading: String, imageId: String)] = [
             (1,  1,  "寒椿",   "かんつばき",   "img-001"),
@@ -172,7 +178,8 @@ final class WidgetTimelineTests: XCTestCase {
             XCTAssertNotNil(entry, "Builder must return non-nil for \(dayKey)")
             XCTAssertEqual(entry?.kanji, c.kanji,   "kanji mismatch for \(dayKey)")
             XCTAssertEqual(entry?.reading, c.reading, "reading mismatch for \(dayKey)")
-            XCTAssertEqual(entry?.imageId, c.imageId, "imageId mismatch for \(dayKey)")
+            XCTAssertEqual(entry?.backdropAssetName, "backdrop-shousho",
+                           "backdropAssetName must be keyed on the Sekki id for \(dayKey), regardless of imageId \(c.imageId)")
         }
     }
 
@@ -221,8 +228,8 @@ final class WidgetTimelineTests: XCTestCase {
                        "Second entry date must be the next UTC midnight (2024-06-15 00:00:00 UTC)")
     }
 
-    /// AC2: The second timeline entry resolves to the next day's Kigo (kanji/reading/imageId
-    /// matching the manifest entry for the next-day key).
+    /// AC2: The second timeline entry resolves to the next day's Kigo (kanji/reading
+    /// matching the manifest entry for the next-day key, backdrop keyed on Sekki id).
     func testTimelineSecondEntryResolvesToNextDayKigo() {
         let todayDayKey = "06-14"
         let tomorrowDayKey = "06-15"
@@ -241,12 +248,14 @@ final class WidgetTimelineTests: XCTestCase {
         // First entry = today's Kigo
         XCTAssertEqual(timeline[0].kanji, "蛍", "First entry kanji must match today's manifest entry")
         XCTAssertEqual(timeline[0].reading, "ほたる", "First entry reading must match today's manifest entry")
-        XCTAssertEqual(timeline[0].imageId, "img-today", "First entry imageId must match today's manifest entry")
+        XCTAssertEqual(timeline[0].backdropAssetName, "backdrop-shousho",
+                       "First entry backdropAssetName must be keyed on the resolved Sekki id")
 
         // Second entry = tomorrow's Kigo
         XCTAssertEqual(timeline[1].kanji, "朝露", "Second entry kanji must match next day's manifest entry")
         XCTAssertEqual(timeline[1].reading, "あさつゆ", "Second entry reading must match next day's manifest entry")
-        XCTAssertEqual(timeline[1].imageId, "img-tomorrow", "Second entry imageId must match next day's manifest entry")
+        XCTAssertEqual(timeline[1].backdropAssetName, "backdrop-shousho",
+                       "Second entry backdropAssetName must be keyed on the resolved Sekki id (same Sekki as today's)")
     }
 
     /// AC3: Timeline determinism — injecting `FixedDateProvider` and an explicit calendar
@@ -284,8 +293,8 @@ final class WidgetTimelineTests: XCTestCase {
         // Second entry content = Jan 1 Kigo
         XCTAssertEqual(timeline[1].kanji, "初日の出",
                        "Second entry kanji must match Jan 1 manifest entry")
-        XCTAssertEqual(timeline[1].imageId, "img-jan01",
-                       "Second entry imageId must match Jan 1 manifest entry")
+        XCTAssertEqual(timeline[1].backdropAssetName, "backdrop-shousho",
+                       "Second entry backdropAssetName must be keyed on the resolved Sekki id")
     }
 
     /// Timeline entries are ordered: first entry's date comes before second entry's date.

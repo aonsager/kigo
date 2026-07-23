@@ -6,8 +6,8 @@ import Foundation
 // Slice #69: Pure timeline builder for the Kigo widget extension.
 //
 // Given an injected `DateProvider`, a loaded `Manifest`, and nothing else,
-// produces a `KigoWidgetEntry` whose content fields (kanji, reading, imageId)
-// match the Manifest's daily-map entry for the injected date.
+// produces a `KigoWidgetEntry` whose content fields (kanji, reading) and
+// per-Sekki backdrop match the Manifest's daily-map entry for the injected date.
 //
 // Slice #70: Extended with `buildTimeline(calendar:)` to return a two-entry
 // ordered timeline:
@@ -20,10 +20,13 @@ import Foundation
 // the test-runner's local timezone). In production, pass `Calendar.current`.
 // See ADR 0010 for the UTC-vs-local-midnight design decision.
 //
-// Slice C7: Removed injected `EntitlementSharedStore`; `showsImage` is now
-// unconditionally `true` on every built entry — the image is always revealed.
+// Slice C7: Removed injected `EntitlementSharedStore`; the backdrop is now
+// unconditionally revealed on every built entry — no entitlement gate.
 // `buildEntry()` and `buildTimeline(calendar:)` are synchronous (no `async`
 // needed without the entitlement store await).
+//
+// Image pivot (Task 4): the backdrop is keyed on the resolved day's Sekki
+// (`resolved.sekki.id`) via `SekkiBackdrop`, not on the per-day `imageId`.
 //
 // Resolution is delegated entirely to `TodayResolver` / `DayKey` — there is
 // no reimplementation of the day-key or Ko/Sekki lookup logic here.
@@ -47,8 +50,8 @@ public struct WidgetTimelineBuilder: Sendable {
     /// Builds a single `KigoWidgetEntry` for the current date from the injected
     /// `DateProvider`, resolving against the injected `Manifest`.
     ///
-    /// `showsImage` on the returned entry is always `true` — the image is
-    /// unconditionally revealed (no entitlement gate).
+    /// The backdrop on the returned entry is always the resolved day's Sekki
+    /// backdrop — it is unconditionally revealed (no entitlement gate).
     ///
     /// Returns `nil` if the date's day-key is absent from the manifest or if
     /// the Ko/Sekki lookup fails (impossible for a well-formed bundled manifest,
@@ -62,8 +65,8 @@ public struct WidgetTimelineBuilder: Sendable {
             date: today,
             kanji: resolved.kigoEntry.kanji,
             reading: resolved.kigoEntry.reading.ja,
-            imageId: resolved.kigoEntry.imageId,
-            showsImage: true
+            backdropAssetName: SekkiBackdrop.assetName(forSekkiId: resolved.sekki.id),
+            fallbackHue: SekkiBackdrop.fallbackHue(forSekkiId: resolved.sekki.id)
         )
     }
 
@@ -74,8 +77,8 @@ public struct WidgetTimelineBuilder: Sendable {
     ///   Inject a UTC `Calendar` in tests for full determinism regardless of the
     ///   test-runner's timezone. See ADR 0010.
     ///
-    /// `showsImage` is always `true` on all entries — the image is unconditionally
-    /// revealed (no entitlement gate).
+    /// The backdrop is always revealed on all entries — unconditionally, with
+    /// no entitlement gate.
     ///
     /// Returns an array of exactly 2 `KigoWidgetEntry` values:
     ///   - Index 0: current date entry (same as `buildEntry()`).
@@ -96,8 +99,8 @@ public struct WidgetTimelineBuilder: Sendable {
                 date: today,
                 kanji: resolved.kigoEntry.kanji,
                 reading: resolved.kigoEntry.reading.ja,
-                imageId: resolved.kigoEntry.imageId,
-                showsImage: true
+                backdropAssetName: SekkiBackdrop.assetName(forSekkiId: resolved.sekki.id),
+                fallbackHue: SekkiBackdrop.fallbackHue(forSekkiId: resolved.sekki.id)
             )
         } else {
             firstEntry = KigoWidgetEntry(date: today)
@@ -115,8 +118,8 @@ public struct WidgetTimelineBuilder: Sendable {
                 date: nextMidnight,
                 kanji: resolved.kigoEntry.kanji,
                 reading: resolved.kigoEntry.reading.ja,
-                imageId: resolved.kigoEntry.imageId,
-                showsImage: true
+                backdropAssetName: SekkiBackdrop.assetName(forSekkiId: resolved.sekki.id),
+                fallbackHue: SekkiBackdrop.fallbackHue(forSekkiId: resolved.sekki.id)
             )
         } else {
             secondEntry = KigoWidgetEntry(date: nextMidnight)

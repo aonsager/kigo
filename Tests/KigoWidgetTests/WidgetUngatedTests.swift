@@ -4,11 +4,13 @@ import SwiftUI
 
 // MARK: - WidgetUngatedTests
 //
-// Slice C7: Proves the widget image reveal is unconditional — no entitlement gate.
+// Slice C7: Proves the widget backdrop reveal is unconditional — no entitlement gate.
 //
-// `WidgetTimelineBuilder` now accepts no `entitlementStore` parameter and always
-// produces entries with `showsImage == true`. These tests verify that contract
-// directly, plus the rollover-ordering tests migrated from WidgetTimelineTests.
+// `WidgetTimelineBuilder` accepts no `entitlementStore` parameter and always
+// produces entries carrying a non-empty `backdropAssetName` (Task 4 image pivot:
+// keyed on the resolved day's Sekki id, superseding the retired `showsImage`
+// flag). These tests verify that contract directly, plus the rollover-ordering
+// tests migrated from WidgetTimelineTests.
 //
 // Screenshot evidence: a host-rendered PNG of KigoWidgetView is attached as
 // `slice-C7-widget-ungated.png` with `.keepAlways` lifetime so it survives the
@@ -77,11 +79,12 @@ final class WidgetUngatedTests: XCTestCase {
         )
     }
 
-    // MARK: - AC: showsImage is unconditionally true (no entitlement parameter)
+    // MARK: - AC: backdrop is unconditionally present (no entitlement parameter)
 
     /// AC: systemSmall context — entry built by WidgetTimelineBuilder(dateProvider:manifest:)
-    /// with no entitlementStore argument has showsImage == true.
-    func testShowsImageTrue_systemSmall() {
+    /// with no entitlementStore argument carries a non-empty backdropAssetName keyed on
+    /// the resolved Sekki id.
+    func testBackdropAlwaysPresent_systemSmall() {
         let dayKey = "06-14"
         let manifest = makeMinimalManifest(dayKey: dayKey, imageId: "img-firefly")
         let date = makeUTCDate(month: 6, day: 14)
@@ -91,15 +94,14 @@ final class WidgetUngatedTests: XCTestCase {
         let entry = builder.buildEntry()
 
         XCTAssertNotNil(entry, "Builder must return a non-nil entry for a known date")
-        XCTAssertTrue(entry!.showsImage,
-                      "showsImage must be unconditionally true — no entitlement gate (systemSmall)")
-        XCTAssertEqual(entry!.imageId, "img-firefly",
-                       "imageId must be carried on the entry")
+        XCTAssertEqual(entry!.backdropAssetName, "backdrop-shousho",
+                       "backdropAssetName must be unconditionally present, keyed on the Sekki id — no entitlement gate (systemSmall)")
     }
 
     /// AC: systemMedium context — entry built by WidgetTimelineBuilder(dateProvider:manifest:)
-    /// with no entitlementStore argument has showsImage == true for a different injected date.
-    func testShowsImageTrue_systemMedium() {
+    /// with no entitlementStore argument carries a non-empty backdropAssetName for a
+    /// different injected date.
+    func testBackdropAlwaysPresent_systemMedium() {
         let dayKey = "07-07"
         let manifest = makeMinimalManifest(dayKey: dayKey,
                                            kanji: "天の川",
@@ -112,10 +114,8 @@ final class WidgetUngatedTests: XCTestCase {
         let entry = builder.buildEntry()
 
         XCTAssertNotNil(entry, "Builder must return a non-nil entry for 07-07")
-        XCTAssertTrue(entry!.showsImage,
-                      "showsImage must be unconditionally true — no entitlement gate (systemMedium)")
-        XCTAssertEqual(entry!.imageId, "img-milky",
-                       "imageId must be carried on the entry")
+        XCTAssertEqual(entry!.backdropAssetName, "backdrop-shousho",
+                       "backdropAssetName must be unconditionally present, keyed on the Sekki id — no entitlement gate (systemMedium)")
     }
 
     // MARK: - Rollover ordering (migrated from WidgetTimelineTests)
@@ -219,13 +219,13 @@ final class WidgetUngatedTests: XCTestCase {
 
     // MARK: - Screenshot evidence
 
-    /// Host-renders KigoWidgetView with showsImage == true and attaches it as
+    /// Host-renders KigoWidgetView with the backdrop always present and attaches it as
     /// `slice-C7-widget-ungated.png` with `.keepAlways` lifetime.
     ///
     /// This is the required screenshot evidence for slice C7.
     /// Test identifier: KigoWidgetTests/WidgetUngatedTests/testScreenshot
     func testScreenshot() async throws {
-        // Build a resolved entry with showsImage == true via the real builder (no arg needed).
+        // Build a resolved entry with a non-empty backdrop via the real builder (no arg needed).
         let dayKey = "06-14"
         let manifest = makeMinimalManifest(dayKey: dayKey,
                                            kanji: "蛍",
@@ -239,7 +239,7 @@ final class WidgetUngatedTests: XCTestCase {
             return
         }
 
-        XCTAssertTrue(entry.showsImage, "showsImage must be true before rendering")
+        XCTAssertFalse(entry.backdropAssetName.isEmpty, "backdropAssetName must be non-empty before rendering")
 
         // Host-render on MainActor (ImageRenderer and SwiftUI view are @MainActor-bound).
         let pngData: Data? = await MainActor.run {
