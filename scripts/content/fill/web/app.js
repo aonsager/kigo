@@ -50,7 +50,6 @@ function renderIndex() {
       </span>
       <span class="day__status">
         <span class="dot ${d.has_prose ? "on" : ""}" title="prose"></span>
-        <span class="dot ${d.has_image ? "on" : ""}" title="image chosen"></span>
         ${d.approved ? `<span class="check" title="approved">✓</span>` : ""}
       </span>`;
     li.onclick = () => selectDay(d.date);
@@ -136,9 +135,6 @@ function renderEditor(day) {
             <textarea class="control" id="f-description_en" data-key="description_en">${esc(day.description_en)}</textarea>
           </div>
         </div>
-
-        <h2 class="sec-title">image · ${day.candidates.length} candidate${day.candidates.length === 1 ? "" : "s"}</h2>
-        <div class="gallery">${renderCandidates(day)}</div>
       </div>
     </article>
 
@@ -155,31 +151,6 @@ function renderEditor(day) {
   wireEditor(day.date);
 }
 
-function renderCandidates(day) {
-  if (!day.candidates.length)
-    return `<p class="gallery__empty">No candidates yet — run <code>fill.py generate</code> for this date.</p>`;
-  return day.candidates.map((c) => {
-    const ref = (c.usable || "").toLowerCase() === "no";
-    const chosen = day.chosen_candidate_id === c.id;
-    return `
-      <label class="cand ${chosen ? "is-chosen" : ""} ${ref ? "is-ref" : ""}"
-             data-cand="${c.id}">
-        <input type="radio" name="chosen" value="${c.id}"
-               ${chosen ? "checked" : ""} ${ref ? "disabled" : ""}>
-        <img class="cand__img" src="/candidates/${esc(c.out_file)}" alt="" loading="lazy">
-        ${ref ? `<span class="cand__ref">reference only</span>`
-              : `<span class="cand__badge">✓</span>`}
-        <span class="cand__meta">
-          <b>${esc(c.photographer) || "unknown"}</b><br>
-          ${esc(c.provider)}${c.search_lang ? " · " + esc(c.search_lang) : ""}
-        </span>
-        ${c.source_url ? `<a class="cand__src" href="${esc(c.source_url)}"
-             target="_blank" rel="noopener noreferrer"
-             onclick="event.stopPropagation()">original source ↗</a>` : ""}
-      </label>`;
-  }).join("");
-}
-
 /* --------------------------------------------------------------- wiring/io */
 function autosize(el) {
   el.style.height = "auto";
@@ -194,12 +165,6 @@ function wireEditor(date) {
     autosize(ta);                                   // fit initial content
     ta.addEventListener("input", () => autosize(ta));
   }
-  for (const el of document.querySelectorAll('input[name="chosen"]'))
-    el.addEventListener("change", () => {
-      for (const c of document.querySelectorAll(".cand"))
-        c.classList.toggle("is-chosen", c.querySelector("input").checked);
-      markDirty();
-    });
   $("#approved").addEventListener("change", (e) => {
     $(".toggle__label").textContent = e.target.checked ? "approved" : "approve";
     markDirty();
@@ -219,8 +184,6 @@ async function saveEditor(date) {
   const body = {};
   for (const el of document.querySelectorAll("#editor [data-key]"))
     body[el.dataset.key] = el.value;
-  const chosen = document.querySelector('input[name="chosen"]:checked');
-  if (chosen) body.chosen_candidate_id = Number(chosen.value);
   body.approved = $("#approved").checked;
 
   const msg = $("#msg");
