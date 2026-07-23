@@ -10,21 +10,11 @@ import SwiftUI
 /// - `.loadingPlaceholder` — renders `LoadingPlaceholderView` (AC1).
 /// - `.unavailablePlaceholder` — renders `UnavailablePlaceholderView` (AC2).
 ///
-/// Slice #228: also threads the resolved `manifest` (extracted from `store.state`, which
-/// `ContentStore.screenState` guarantees is `.loaded` whenever it returns `.today`) and the
-/// app-root-resolved `imageSource` into `TodayView`, so it can call the real `KigoImageSource`
-/// seam rather than a locally-fabricated one.
-///
-/// Slice #229: `imageBaseURLOverride` (resolved from `KIGO_FAKE_IMAGE=loaded` at the app
-/// root, see `fakeImageBaseURLOverride`) is applied to the manifest via
-/// `manifestApplyingImageBaseURLOverride(_:to:)` before it reaches `TodayView`. The bundled
-/// manifest's real `imageBaseURL` stays `nil`/untouched (ADR 0022) — this only substitutes a
-/// synthetic value into the copy handed to the `KigoImageSource` seam call, so the loaded
-/// fake's paired transport is actually reached.
+/// Also threads the resolved `manifest` (extracted from `store.state`, which
+/// `ContentStore.screenState` guarantees is `.loaded` whenever it returns `.today`) into
+/// `TodayView`.
 struct ContentView: View {
     @Environment(ContentStore.self) private var store
-    let imageSource: KigoImageSource
-    let imageBaseURLOverride: String?
 
     var body: some View {
         switch store.screenState {
@@ -33,8 +23,7 @@ struct ContentView: View {
                 TodayView(
                     resolvedDay: resolved,
                     almanacPositions: positions,
-                    manifest: manifestApplyingImageBaseURLOverride(imageBaseURLOverride, to: manifest),
-                    imageSource: imageSource
+                    manifest: manifest
                 )
             }
         case .loadingPlaceholder:

@@ -1,3 +1,4 @@
+import KigoCore
 import SwiftUI
 import WidgetKit
 
@@ -34,7 +35,17 @@ struct KigoWidgetView: View {
     var body: some View {
         ZStack {
             if showsImage, let imageId = entry.imageId {
-                KigoPlaceholderView(imageId: imageId)
+                // Image pivot (supersedes ADR 0022): `KigoPlaceholderView` now takes a
+                // Sekki-keyed backdrop asset name + fallback hue rather than a raw
+                // `imageId`. The widget entry does not carry a Sekki id (a later task
+                // covers that properly) — feeding the existing `imageId` string through
+                // the same resolvers keeps this call site trivial and compiling; the
+                // asset lookup simply misses and falls back to its deterministic
+                // per-string gradient wash, same as before.
+                KigoPlaceholderView(
+                    backdropAssetName: SekkiBackdrop.assetName(forSekkiId: imageId),
+                    fallbackHue: SekkiBackdrop.fallbackHue(forSekkiId: imageId)
+                )
                 // Legibility scrim so the word reads over any image.
                 LinearGradient(
                     colors: [.black.opacity(0.10), .black.opacity(0.42)],
