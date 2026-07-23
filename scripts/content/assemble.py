@@ -7,8 +7,8 @@ bundled Kō/Sekki content and writes a complete, deterministic, localized
 manifest to the given --out path. Never touches the source CSV or the
 default --manifest input; only ever writes to --out — and only once every
 row has passed both gates: `csv_parser` (structural completeness) and
-`validator` (bilingual completeness, no leftover date-stamp instrumentation,
-a well-formed derived image URL). A failure at either gate exits nonzero and
+`validator` (bilingual completeness, no leftover date-stamp instrumentation).
+A failure at either gate exits nonzero and
 writes nothing, leaving anything already at --out untouched. See
 content/README.md for the full CSV column contract and workflow.
 
@@ -41,16 +41,12 @@ def main(argv=None) -> int:
         help="Path to the existing manifest to source Kō/Sekki + schemaVersion/version from "
              "(default: the bundled Resources/manifest.json)",
     )
-    parser.add_argument(
-        "--image-base-url", default=assembler.DEFAULT_IMAGE_BASE_URL, dest="image_base_url",
-        help="Top-level imageBaseURL to stamp into the assembled manifest",
-    )
     args = parser.parse_args(argv)
 
     try:
         rows = csv_parser.parse_rows(args.csv)
         base_manifest = assembler.load_base_manifest(args.manifest)
-        manifest = assembler.assemble_manifest(rows, base_manifest, image_base_url=args.image_base_url)
+        manifest = assembler.assemble_manifest(rows, base_manifest)
         validator.validate_manifest(manifest)
     except (csv_parser.CSVParseError, validator.ValidationError) as e:
         print(f"error: {e}", file=sys.stderr)
