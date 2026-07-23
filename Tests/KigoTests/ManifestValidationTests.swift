@@ -77,8 +77,8 @@ final class ManifestValidationTests: XCTestCase {
     }
 
     /// Acceptance criterion 3: every entry's description.ja is ≥20 chars, stamped with its own
-    /// absolute date (the C4 instrumentation), and imageId is non-empty.
-    func testEveryDailyMapEntryHasDescriptionAndImageId() throws {
+    /// absolute date (the C4 instrumentation).
+    func testEveryDailyMapEntryHasDescriptionStampedWithDate() throws {
         let manifest = try loadManifest()
         for (key, entry) in manifest.dailyMap {
             XCTAssertGreaterThanOrEqual(
@@ -90,10 +90,6 @@ final class ManifestValidationTests: XCTestCase {
                 entry.description.ja.contains(key),
                 "Entry for \(key) must stamp its absolute date into description.ja: '\(entry.description.ja)'"
             )
-            XCTAssertFalse(
-                entry.imageId.isEmpty,
-                "Entry for \(key) has empty imageId"
-            )
         }
     }
 
@@ -102,25 +98,6 @@ final class ManifestValidationTests: XCTestCase {
         let manifest = try loadManifest()
         XCTAssertFalse(manifest.schemaVersion.isEmpty, "schemaVersion must be present and non-empty")
         XCTAssertGreaterThanOrEqual(manifest.version, 1, "content version must be a positive integer")
-    }
-
-    /// Acceptance criterion (slice #100): every entry has non-empty attribution title, credit, and license.
-    func testEveryDailyMapEntryHasNonEmptyAttribution() throws {
-        let manifest = try loadManifest()
-        for (key, entry) in manifest.dailyMap {
-            XCTAssertFalse(
-                entry.attribution.title.ja.isEmpty,
-                "Entry for \(key) has empty attribution.title.ja"
-            )
-            XCTAssertFalse(
-                entry.attribution.credit.ja.isEmpty,
-                "Entry for \(key) has empty attribution.credit.ja"
-            )
-            XCTAssertFalse(
-                entry.attribution.license.ja.isEmpty,
-                "Entry for \(key) has empty attribution.license.ja"
-            )
-        }
     }
 
     // MARK: - Kō and Sekki counts (slice #10)

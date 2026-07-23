@@ -47,13 +47,7 @@ final class WidgetUngatedTests: XCTestCase {
         let entry = DailyMapEntry(
             kanji: kanji,
             reading: LocalizedText(ja: reading),
-            description: LocalizedText(ja: "Fireflies glow in summer dusk."),
-            imageId: imageId,
-            attribution: Attribution(
-                title: LocalizedText(ja: "季語の風景"),
-                credit: LocalizedText(ja: "撮影者不明"),
-                license: LocalizedText(ja: "パブリックドメイン")
-            )
+            description: LocalizedText(ja: "Fireflies glow in summer dusk.")
         )
         let ko = Ko(
             kanji: "腐草為螢",
@@ -125,17 +119,10 @@ final class WidgetUngatedTests: XCTestCase {
     func testTimelineHasTwoEntriesWithCorrectDates() {
         let todayKey = "06-14"
         let tomorrowKey = "06-15"
-        let placeholderAttrib = Attribution(
-            title: LocalizedText(ja: "季語の風景"),
-            credit: LocalizedText(ja: "撮影者不明"),
-            license: LocalizedText(ja: "パブリックドメイン")
-        )
         let todayEntry = DailyMapEntry(kanji: "蛍", reading: LocalizedText(ja: "ほたる"),
-                                       description: LocalizedText(ja: "Today."), imageId: "img-t",
-                                       attribution: placeholderAttrib)
+                                       description: LocalizedText(ja: "Today."))
         let tomorrowEntry = DailyMapEntry(kanji: "朝露", reading: LocalizedText(ja: "あさつゆ"),
-                                          description: LocalizedText(ja: "Tomorrow."), imageId: "img-n",
-                                          attribution: placeholderAttrib)
+                                          description: LocalizedText(ja: "Tomorrow."))
         let ko = Ko(kanji: "腐草為螢",
                     reading: LocalizedText(ja: "くされたるくさほたるとなる"),
                     gloss: "rotten grass becomes fireflies",
@@ -170,17 +157,10 @@ final class WidgetUngatedTests: XCTestCase {
 
     /// Year-boundary rollover: Dec 31 2026 → Jan 1 2027 midnight.
     func testYearBoundaryRollover() {
-        let placeholderAttrib = Attribution(
-            title: LocalizedText(ja: "季語の風景"),
-            credit: LocalizedText(ja: "撮影者不明"),
-            license: LocalizedText(ja: "パブリックドメイン")
-        )
         let dec31Entry = DailyMapEntry(kanji: "年の瀬", reading: LocalizedText(ja: "としのせ"),
-                                       description: LocalizedText(ja: "Year end."), imageId: "img-dec",
-                                       attribution: placeholderAttrib)
+                                       description: LocalizedText(ja: "Year end."))
         let jan01Entry = DailyMapEntry(kanji: "初日の出", reading: LocalizedText(ja: "はつひので"),
-                                       description: LocalizedText(ja: "New year sunrise."), imageId: "img-jan",
-                                       attribution: placeholderAttrib)
+                                       description: LocalizedText(ja: "New year sunrise."))
         let koDec = Ko(kanji: "雪", reading: LocalizedText(ja: "ゆき"),
                        gloss: "snow", sekkiId: "touji",
                        dateRange: DateRange(start: "12-31", end: "12-31"),

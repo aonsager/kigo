@@ -16,8 +16,8 @@ import XCTest
 //   - a widget family
 // produces a `KigoWidgetEntry` whose kanji/reading match the manifest's
 // daily-map entry for that date's day-key, and whose backdropAssetName is
-// keyed on the resolved day's Sekki id (Task 4 image pivot — NOT the per-day
-// imageId, which the manifest still carries but the widget no longer reads).
+// keyed on the resolved day's Sekki id (Task 4 image pivot — the model no
+// longer carries a per-day image identifier at all, per Task 5).
 //
 // Resolution is delegated to `TodayResolver` — no re-implementation of
 // the day-key or Ko/Sekki lookup logic here.
@@ -61,17 +61,10 @@ final class WidgetTimelineTests: XCTestCase {
                                     nextImageId: String,
                                     year: Int = 2026,
                                     nextYear: Int = 2026) -> Manifest {
-        let placeholderAttribution = Attribution(
-            title: LocalizedText(ja: "季語の風景"),
-            credit: LocalizedText(ja: "撮影者不明"),
-            license: LocalizedText(ja: "パブリックドメイン")
-        )
         let entry = DailyMapEntry(kanji: kanji, reading: LocalizedText(ja: reading),
-                                  description: LocalizedText(ja: "Today's Kigo."), imageId: imageId,
-                                  attribution: placeholderAttribution)
+                                  description: LocalizedText(ja: "Today's Kigo."))
         let nextEntry = DailyMapEntry(kanji: nextKanji, reading: LocalizedText(ja: nextReading),
-                                     description: LocalizedText(ja: "Tomorrow's Kigo."), imageId: nextImageId,
-                                     attribution: placeholderAttribution)
+                                     description: LocalizedText(ja: "Tomorrow's Kigo."))
         let ko = Ko(kanji: "腐草為螢",
                     reading: LocalizedText(ja: "くされたるくさほたるとなる"),
                     gloss: "rotten grass becomes fireflies",
@@ -105,13 +98,7 @@ final class WidgetTimelineTests: XCTestCase {
                                      imageId: String = "img-001") -> Manifest {
         let entry = DailyMapEntry(kanji: kanji,
                                   reading: LocalizedText(ja: reading),
-                                  description: LocalizedText(ja: "Fireflies glow in summer dusk."),
-                                  imageId: imageId,
-                                  attribution: Attribution(
-                                      title: LocalizedText(ja: "季語の風景"),
-                                      credit: LocalizedText(ja: "撮影者不明"),
-                                      license: LocalizedText(ja: "パブリックドメイン")
-                                  ))
+                                  description: LocalizedText(ja: "Fireflies glow in summer dusk."))
         let ko = Ko(kanji: "腐草為螢",
                     reading: LocalizedText(ja: "くされたるくさほたるとなる"),
                     gloss: "rotten grass becomes fireflies",
