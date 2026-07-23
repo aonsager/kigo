@@ -3,8 +3,12 @@
 `Resources/manifest.json` — the Daily Map content the app bundles — is
 **always regenerated from a reviewed source CSV, never hand-edited** (ADR
 0022). This document is the content editor's guide: the CSV format, the
-regeneration command, how to draft the remaining rows with an LLM, and the
-inputs a maintainer must supply before real images can be delivered.
+regeneration command, and how to draft the remaining rows with an LLM.
+
+The CSV contract is **text-only**: the app ships 24 bundled per-Sekki
+backdrop images (ADR 0026) instead of a sourced photograph per day, so
+neither this pipeline nor its CSV contract carries any image or attribution
+column — see "Images" below.
 
 The pipeline lives in `scripts/content/` (pure Python, stdlib only, no
 network, no third-party dependencies):
@@ -38,10 +42,9 @@ exit, no output written) if any is missing or blank:
 | `translation_en` | Concise English translation/name of the kigo (e.g. "cherry-blossom viewing") — the free-Encounter English label shown beside the word (ADR 0024). English-only, a noun phrase, no trailing period |
 | `description_ja` | 1–2 sentence Japanese description, present tense, no leftover `(YYYY-MM-DD)` date-stamp text |
 | `description_en` | English description, written natively for an English reader (not a literal translation), same constraints |
-| `image_id` | Stable identifier for this row's image (e.g. `kigo-03-21`); combined with `imageBaseURL` to derive the image URL |
-| `attribution_title_ja` / `attribution_title_en` | Image title, ja/en |
-| `attribution_credit_ja` / `attribution_credit_en` | Photographer/source credit, ja/en |
-| `attribution_license_ja` / `attribution_license_en` | License string (e.g. "Public domain" / "パブリックドメイン"), ja/en |
+
+This is the full contract — 7 columns, no image or attribution fields (see
+"Images" below).
 
 ## Regenerating the manifest
 
@@ -63,12 +66,9 @@ modifies the source CSV or the `--manifest` input, only `--out`.
 
 Before anything is written, every assembled row is checked for:
 
-- full bilingual completeness — `reading`, `description`, and all three
-  `attribution` fields (`title`, `credit`, `license`) each need both `ja` and
-  `en`;
-- a non-empty `kanji` and `imageId`;
-- a well-formed derived image URL (`imageBaseURL + "/" + imageId + ".jpg"` —
-  see "Image URL convention" below);
+- full bilingual completeness — `reading` and `description` each need both
+  `ja` and `en`;
+- a non-empty `kanji` and `translationEn`;
 - no leftover `(YYYY-MM-DD)` date-stamp instrumentation in the description
   (a holdover from the old dummy-data Daily Map that must never survive into
   real content).
@@ -114,39 +114,15 @@ gate (ADR 0022).
    the row and the missing/invalid field. A zero exit means the manifest is
    ready to review at `--out` before it replaces the bundled one.
 
-## Before the image-delivery step
+## Images
 
-Real images are delivered by remote URL + on-device cache, not bundled
-(ADR 0022) — `imageBaseURL + "/" + imageId + ".jpg"` (see `url_deriver.py`).
-This pipeline produces `image_id`s and the `imageBaseURL` field, but does
-**not** fetch, re-host, or optimize any actual image — that is a human-run,
-out-of-band step requiring two inputs a maintainer must supply before it can
-happen:
-
-- **A stock-photo API key** (e.g. Pexels — free, generous license terms) to
-  query and download royalty-free candidate images per kigo.
-- **A static image host** (e.g. Cloudflare R2, S3, or a GitHub release) to
-  re-host the chosen, optimized images at stable URLs. Whatever host is
-  chosen becomes the `--image-base-url` passed to `assemble.py` (default:
-  a placeholder `https://placeholder.kigo.example/images`, which the app
-  never actually resolves against — a manifest built with it is meant to be
-  reassembled with the real host once one exists).
-
-Neither of these runs on any automated/gating path — fetching or hosting
-real images live is explicitly out of scope for the pipeline itself; see
-ADR 0022 for why (network calls and third-party API keys don't belong on a
-deterministic, offline gate).
-
-## Image URL convention
-
-Given `imageBaseURL` and a row's `image_id`, the app (and this pipeline's
-`url_deriver.py`) derive the image URL the same way:
-
-```
-imageBaseURL + "/" + imageId + ".jpg"
-```
-
-e.g. `imageBaseURL = "https://cdn.example/img"` and `imageId = "kigo-03-21"`
-derives `https://cdn.example/img/kigo-03-21.jpg`. There is no per-row URL
-column — keeping the manifest lean and making a host migration a one-line
-`--image-base-url` change instead of a 365-row edit.
+There is no per-day image step. ADR 0022 originally delivered a sourced
+photograph per day by remote URL + on-device cache (`image_id` +
+`imageBaseURL` columns, per-image attribution); ADR 0026 superseded that
+image-delivery half and pivoted to 24 uniform, bundled, per-Sekki backdrop
+images shipped in the app binary, resolved purely from the current Sekki —
+no per-day data, no fetch, no attribution. The CSV contract, the validator
+gate, and `scripts/content/fill/` (see its README) were all updated
+accordingly to carry no image or attribution fields. See ADR 0026
+(`docs/adr/0026-uniform-per-sekki-bundled-backdrops.md`) for the full
+rationale and consequences.
