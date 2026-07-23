@@ -16,6 +16,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_csv  # noqa: E402  (CONTRACT_COLUMNS)
+import describe  # noqa: E402  (DATE_STAMP_RE)
 
 DAY_FACT_COLUMNS = ("kanji", "reading_ja", "reading_en", "season",
                     "subseason", "category", "gloss_en")
@@ -52,30 +53,57 @@ def _now():
 
 def _migrate(conn):
     """Forward-migrate an older on-disk schema, preserving every `days` row.
-    Idempotent and guarded by PRAGMA user_version."""
+    Idempotent and guarded by PRAGMA user_version.
+
+    The whole mutating body (drop-column/rebuild + drop candidates + the
+    version bump) runs inside one explicit transaction so a crash mid-migration
+    rolls back atomically instead of stranding a half-migrated `days` table.
+    Python's sqlite3 module (legacy transaction control, the default) only
+    opens an *implicit* transaction before a DML statement (INSERT/UPDATE/
+    DELETE/REPLACE) — never before DDL — so a bare `with conn:` around
+    DDL-only statements is a no-op: verified locally that an ALTER TABLE
+    inside an unadorned `with conn:` survives a simulated crash untouched.
+    Issuing `conn.execute("BEGIN")` first makes SQLite's own (fully
+    transactional) DDL support participate instead, and — verified directly
+    against the local sqlite (3.51.3) — `PRAGMA user_version` rolls back
+    cleanly inside that same explicit transaction too, so the version bump
+    stays inside the `with conn:` block rather than being split out after it.
+    """
     version = conn.execute("PRAGMA user_version").fetchone()[0]
     if version >= _SCHEMA_VERSION:
         return
-    # v0 -> v1 (ADR 0026): drop the chosen_candidate_id column and candidates
-    # table. Column drop first so the FK reference is gone before the table.
-    cols = {r[1] for r in conn.execute("PRAGMA table_info(days)")}
-    if "chosen_candidate_id" in cols:
-        if sqlite3.sqlite_version_info >= (3, 35, 0):
-            conn.execute("ALTER TABLE days DROP COLUMN chosen_candidate_id")
-        else:
-            _rebuild_days_dropping_chosen(conn)
-    conn.execute("DROP TABLE IF EXISTS candidates")
-    conn.execute(f"PRAGMA user_version = {_SCHEMA_VERSION}")
-    conn.commit()
+    conn.execute("BEGIN")
+    with conn:
+        # v0 -> v1 (ADR 0026): drop the chosen_candidate_id column and candidates
+        # table. Column drop first so the FK reference is gone before the table.
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(days)")}
+        if "chosen_candidate_id" in cols:
+            if sqlite3.sqlite_version_info >= (3, 35, 0):
+                conn.execute("ALTER TABLE days DROP COLUMN chosen_candidate_id")
+            else:
+                _rebuild_days_dropping_chosen(conn)
+        conn.execute("DROP TABLE IF EXISTS candidates")
+        conn.execute(f"PRAGMA user_version = {_SCHEMA_VERSION}")
 
 
 def _rebuild_days_dropping_chosen(conn):
     """Fallback for SQLite < 3.35 (no ALTER TABLE DROP COLUMN): rebuild `days`
-    copying every retained column."""
+    copying every retained column.
+
+    Drops any leftover `days_new` first so a re-run after a partial rebuild
+    (e.g. a crash between CREATE and RENAME) starts from a clean slate instead
+    of hitting a stale table — a PRIMARY KEY conflict on the INSERT, or (if
+    `days_new` was left fully populated) a silent finalize over a table that
+    no longer matches `days`. Uses plain `execute()` for the CREATE TABLE
+    rather than `executescript()`: executescript always issues an implicit
+    COMMIT before it runs, which would prematurely commit this step out from
+    under _migrate's enclosing transaction.
+    """
     keep = ("date", *DAY_FACT_COLUMNS, *DAY_PROSE_COLUMNS,
             "approved", "created_at", "updated_at")
     collist = ", ".join(keep)
-    conn.executescript(_SCHEMA.replace("days", "days_new"))
+    conn.execute("DROP TABLE IF EXISTS days_new")
+    conn.execute(_SCHEMA.replace("days", "days_new"))
     conn.execute(f"INSERT INTO days_new ({collist}) SELECT {collist} FROM days")
     conn.execute("DROP TABLE days")
     conn.execute("ALTER TABLE days_new RENAME TO days")
@@ -166,12 +194,22 @@ _REQUIRED_FOR_EXPORT = ("kanji", "reading_ja", "reading_en", "translation_en",
 
 
 def _is_complete(day):
-    return all((day.get(c) or "").strip() for c in _REQUIRED_FOR_EXPORT)
+    """Local mirror of the two checks assemble.py/validator.py enforce: every
+    required field is non-empty, AND the prose carries no leftover date-stamp
+    like "(2026-01-01)" (describe.DATE_STAMP_RE — the same regex fill.py/
+    describe.py already standardize on). assemble.py/validator.py remain the
+    authoritative gate; this exists so a day the tool exports also passes
+    compile, instead of failing assemble downstream."""
+    if not all((day.get(c) or "").strip() for c in _REQUIRED_FOR_EXPORT):
+        return False
+    prose = (day.get("description_ja") or "") + (day.get("description_en") or "")
+    return not describe.DATE_STAMP_RE.search(prose)
 
 
 def export_rows(conn, date_from=None, date_to=None):
-    """Approved, prose-complete days as 7-column contract rows (keyed exactly by
-    build_csv.CONTRACT_COLUMNS). Images are no longer part of the gate (ADR 0026)."""
+    """Approved, prose-complete, date-stamp-free days as 7-column contract rows
+    (keyed exactly by build_csv.CONTRACT_COLUMNS) — see _is_complete. Images
+    are no longer part of the gate (ADR 0026)."""
     out = []
     for day in list_days(conn, date_from, date_to, status="approved"):
         if not _is_complete(day):
