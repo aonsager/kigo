@@ -92,3 +92,14 @@ sentinel, now marking the backdrop instead of a per-day photo.
   silently deleted — see the RETIRED markers in `docs/GOAL.md`); C2, C5, C7, C18, C19, C22,
   and C24 are rewritten to drop `imageId`/`attribution`/remote-image language in favor of
   the Sekki backdrop; J1, J2, and J3 are reworded to the new thesis; J5 is unchanged.
+
+**2026-07-23 update.** The `scripts/content/fill/` follow-up flagged above has been
+resolved: rather than repurposing its review surface for backdrop curation, the tool is
+descoped to a text-only editorial review tool. Image sourcing (`fetch_images.py`, the
+Pexels/Pixabay/Wikipedia candidate ladder, the review UI's candidate gallery,
+`--image-base-url`) is removed entirely; `review.db` gets an automatic, version-guarded
+v0→v1 migration that drops the `candidates` table and `chosen_candidate_id` column while
+preserving every `days` row; and the tool's CSV output is repaired to the 7-column contract
+(`date, kanji, reading_ja, reading_en, translation_en, description_ja, description_en`)
+this ADR's `assemble.py` change already expects. See plan
+`docs/superpowers/plans/2026-07-23-content-fill-text-only-editorial.md`.

@@ -2,12 +2,12 @@
 """store.py — the SQLite editorial review store for the kigo-2026 fill workflow.
 
 The editorial source of truth that sits between the deterministic generators
-(spine facts, LLM prose, fetched image candidates) and the assemble.py gate.
-Separates regenerable/derived data from durable human decisions (edits, the
-chosen image, approval). One reconciliation rule — "approved freezes": an
-approved day is never mutated by spine/generate; unapproved days are drafts.
+(spine facts, LLM prose) and the assemble.py gate. Separates regenerable/derived
+data from durable human decisions (edits, approval). One reconciliation rule —
+"approved freezes": an approved day is never mutated by spine/generate;
+unapproved days are drafts.
 
-Stdlib + Pillow (via fetch_images). See docs/adr/0025-sqlite-editorial-review-store.md.
+Stdlib only. See docs/adr/0025-sqlite-editorial-review-store.md.
 """
 import datetime as dt
 import sqlite3
@@ -16,12 +16,16 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_csv  # noqa: E402  (CONTRACT_COLUMNS)
-import fetch_images as _fi  # noqa: E402  (image_id_for, image_row_from_candidate)
+import describe  # noqa: E402  (DATE_STAMP_RE)
 
 DAY_FACT_COLUMNS = ("kanji", "reading_ja", "reading_en", "season",
                     "subseason", "category", "gloss_en")
 DAY_PROSE_COLUMNS = ("translation_en", "description_ja", "description_en")
 _DAY_WRITABLE = set(DAY_FACT_COLUMNS) | set(DAY_PROSE_COLUMNS)
+
+# Bumped when the on-disk schema changes; connect() migrates older DBs forward.
+# v1: image pivot (ADR 0026) — dropped the candidates table + chosen_candidate_id.
+_SCHEMA_VERSION = 1
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS days (
@@ -36,30 +40,10 @@ CREATE TABLE IF NOT EXISTS days (
     translation_en TEXT NOT NULL DEFAULT '',
     description_ja TEXT NOT NULL DEFAULT '',
     description_en TEXT NOT NULL DEFAULT '',
-    chosen_candidate_id INTEGER REFERENCES candidates(id) ON DELETE SET NULL,
     approved INTEGER NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT '',
     updated_at TEXT NOT NULL DEFAULT ''
 );
-CREATE TABLE IF NOT EXISTS candidates (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    date TEXT NOT NULL REFERENCES days(date) ON DELETE CASCADE,
-    provider TEXT NOT NULL DEFAULT '',
-    search_term TEXT NOT NULL DEFAULT '',
-    search_lang TEXT NOT NULL DEFAULT '',
-    photographer TEXT NOT NULL DEFAULT '',
-    license_ja TEXT NOT NULL DEFAULT '',
-    license_en TEXT NOT NULL DEFAULT '',
-    title_ja TEXT NOT NULL DEFAULT '',
-    title_en TEXT NOT NULL DEFAULT '',
-    source_url TEXT NOT NULL DEFAULT '',
-    src_w INTEGER NOT NULL DEFAULT 0,
-    src_h INTEGER NOT NULL DEFAULT 0,
-    out_file TEXT NOT NULL DEFAULT '',
-    usable TEXT NOT NULL DEFAULT 'yes',
-    note TEXT NOT NULL DEFAULT ''
-);
-CREATE INDEX IF NOT EXISTS idx_candidates_date ON candidates(date);
 """
 
 
@@ -67,19 +51,76 @@ def _now():
     return dt.datetime.now().isoformat(timespec="seconds")
 
 
+def _migrate(conn):
+    """Forward-migrate an older on-disk schema, preserving every `days` row.
+    Idempotent and guarded by PRAGMA user_version.
+
+    The whole mutating body (drop-column/rebuild + drop candidates + the
+    version bump) runs inside one explicit transaction so a crash mid-migration
+    rolls back atomically instead of stranding a half-migrated `days` table.
+    Python's sqlite3 module (legacy transaction control, the default) only
+    opens an *implicit* transaction before a DML statement (INSERT/UPDATE/
+    DELETE/REPLACE) — never before DDL — so a bare `with conn:` around
+    DDL-only statements is a no-op: verified locally that an ALTER TABLE
+    inside an unadorned `with conn:` survives a simulated crash untouched.
+    Issuing `conn.execute("BEGIN")` first makes SQLite's own (fully
+    transactional) DDL support participate instead, and — verified directly
+    against the local sqlite (3.51.3) — `PRAGMA user_version` rolls back
+    cleanly inside that same explicit transaction too, so the version bump
+    stays inside the `with conn:` block rather than being split out after it.
+    """
+    version = conn.execute("PRAGMA user_version").fetchone()[0]
+    if version >= _SCHEMA_VERSION:
+        return
+    conn.execute("BEGIN")
+    with conn:
+        # v0 -> v1 (ADR 0026): drop the chosen_candidate_id column and candidates
+        # table. Column drop first so the FK reference is gone before the table.
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(days)")}
+        if "chosen_candidate_id" in cols:
+            if sqlite3.sqlite_version_info >= (3, 35, 0):
+                conn.execute("ALTER TABLE days DROP COLUMN chosen_candidate_id")
+            else:
+                _rebuild_days_dropping_chosen(conn)
+        conn.execute("DROP TABLE IF EXISTS candidates")
+        conn.execute(f"PRAGMA user_version = {_SCHEMA_VERSION}")
+
+
+def _rebuild_days_dropping_chosen(conn):
+    """Fallback for SQLite < 3.35 (no ALTER TABLE DROP COLUMN): rebuild `days`
+    copying every retained column.
+
+    Drops any leftover `days_new` first so a re-run after a partial rebuild
+    (e.g. a crash between CREATE and RENAME) starts from a clean slate instead
+    of hitting a stale table — a PRIMARY KEY conflict on the INSERT, or (if
+    `days_new` was left fully populated) a silent finalize over a table that
+    no longer matches `days`. Uses plain `execute()` for the CREATE TABLE
+    rather than `executescript()`: executescript always issues an implicit
+    COMMIT before it runs, which would prematurely commit this step out from
+    under _migrate's enclosing transaction.
+    """
+    keep = ("date", *DAY_FACT_COLUMNS, *DAY_PROSE_COLUMNS,
+            "approved", "created_at", "updated_at")
+    collist = ", ".join(keep)
+    conn.execute("DROP TABLE IF EXISTS days_new")
+    conn.execute(_SCHEMA.replace("days", "days_new"))
+    conn.execute(f"INSERT INTO days_new ({collist}) SELECT {collist} FROM days")
+    conn.execute("DROP TABLE days")
+    conn.execute("ALTER TABLE days_new RENAME TO days")
+
+
 def connect(path):
-    # check_same_thread=False: the review webapp's http.server handles requests
-    # synchronously (one at a time, never concurrently) but its serve_forever()
-    # loop runs on a thread distinct from the one that called connect() — the
-    # CLI path (fill.py review) calls both from the main thread, but tests spin
-    # the server up on a background thread. No concurrent access ever occurs,
-    # so relaxing sqlite3's same-thread guard here is safe.
+    # check_same_thread=False: the review webapp serves requests synchronously
+    # (never concurrently) but serve_forever() runs on a thread distinct from the
+    # one that called connect(); tests spin the server on a background thread. No
+    # concurrent access occurs, so relaxing the same-thread guard is safe.
     conn = sqlite3.connect(str(path), check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     conn.execute("PRAGMA journal_mode = WAL")
     conn.executescript(_SCHEMA)
     conn.commit()
+    _migrate(conn)
     return conn
 
 
@@ -146,81 +187,34 @@ def set_approved(conn, date, approved):
     conn.commit()
 
 
-CANDIDATE_STORE_COLUMNS = ("provider", "search_term", "search_lang", "photographer",
-                           "license_ja", "license_en", "title_ja", "title_en",
-                           "source_url", "src_w", "src_h", "out_file", "usable", "note")
+# The fields the contract/validator require non-empty for a shippable row
+# (mirrors scripts/content/validator.py — a day that passes here passes assemble).
+_REQUIRED_FOR_EXPORT = ("kanji", "reading_ja", "reading_en", "translation_en",
+                        "description_ja", "description_en")
 
 
-def add_candidate(conn, date, cand):
-    cols = list(CANDIDATE_STORE_COLUMNS)
-    vals = [cand.get(c, "") for c in cols]
-    placeholders = ", ".join(["?"] * (len(cols) + 1))
-    cur = conn.execute(
-        f"INSERT INTO candidates (date, {', '.join(cols)}) VALUES ({placeholders})",
-        (date, *vals))
-    conn.commit()
-    return cur.lastrowid
-
-
-def get_candidates(conn, date):
-    rows = conn.execute("SELECT * FROM candidates WHERE date = ? ORDER BY id",
-                        (date,)).fetchall()
-    return [dict(r) for r in rows]
-
-
-def clear_candidates(conn, date):
-    conn.execute("UPDATE days SET chosen_candidate_id = NULL, updated_at = ? WHERE date = ?",
-                 (_now(), date))
-    conn.execute("DELETE FROM candidates WHERE date = ?", (date,))
-    conn.commit()
-
-
-def set_chosen(conn, date, candidate_id):
-    row = conn.execute("SELECT date, usable FROM candidates WHERE id = ?",
-                       (candidate_id,)).fetchone()
-    if row is None or row["date"] != date:
-        raise ValueError(f"candidate {candidate_id} does not belong to {date}")
-    if (row["usable"] or "").strip().lower() == "no":
-        raise ValueError(f"candidate {candidate_id} is reference-only, not shippable")
-    conn.execute("UPDATE days SET chosen_candidate_id = ?, updated_at = ? WHERE date = ?",
-                 (candidate_id, _now(), date))
-    conn.commit()
-
-
-def _contract_row(day, cand):
-    image_id = _fi.image_id_for(day["date"])
-    cand_row = {"date": day["date"], "image_id": image_id,
-                "title_ja": cand["title_ja"], "title_en": cand["title_en"],
-                "photographer": cand["photographer"], "provider": cand["provider"],
-                "license_ja": cand["license_ja"], "license_en": cand["license_en"]}
-    attribution = _fi.image_row_from_candidate(cand_row)  # 8 IMAGE_COLUMNS fields
-    row = {
-        "date": day["date"], "kanji": day["kanji"],
-        "reading_ja": day["reading_ja"], "reading_en": day["reading_en"],
-        "translation_en": day["translation_en"],
-        "description_ja": day["description_ja"], "description_en": day["description_en"],
-        "image_id": image_id,
-        "attribution_title_ja": attribution["attribution_title_ja"],
-        "attribution_title_en": attribution["attribution_title_en"],
-        "attribution_credit_ja": attribution["attribution_credit_ja"],
-        "attribution_credit_en": attribution["attribution_credit_en"],
-        "attribution_license_ja": attribution["attribution_license_ja"],
-        "attribution_license_en": attribution["attribution_license_en"],
-    }
-    row["_out_file"] = cand["out_file"]
-    return row
+def _is_complete(day):
+    """Local mirror of the two checks assemble.py/validator.py enforce: every
+    required field is non-empty, AND the prose carries no leftover date-stamp
+    like "(2026-01-01)" (describe.DATE_STAMP_RE — the same regex fill.py/
+    describe.py already standardize on). assemble.py/validator.py remain the
+    authoritative gate; this exists so a day the tool exports also passes
+    compile, instead of failing assemble downstream."""
+    if not all((day.get(c) or "").strip() for c in _REQUIRED_FOR_EXPORT):
+        return False
+    prose = (day.get("description_ja") or "") + (day.get("description_en") or "")
+    return not describe.DATE_STAMP_RE.search(prose)
 
 
 def export_rows(conn, date_from=None, date_to=None):
+    """Approved, prose-complete, date-stamp-free days as 7-column contract rows
+    (keyed exactly by build_csv.CONTRACT_COLUMNS) — see _is_complete. Images
+    are no longer part of the gate (ADR 0026)."""
     out = []
     for day in list_days(conn, date_from, date_to, status="approved"):
-        cid = day["chosen_candidate_id"]
-        if cid is None:
+        if not _is_complete(day):
             continue
-        cand = conn.execute("SELECT * FROM candidates WHERE id = ?", (cid,)).fetchone()
-        if cand is None:
-            continue
-        out.append(_contract_row(day, dict(cand)))
+        out.append({c: day[c] for c in build_csv.CONTRACT_COLUMNS})
     return out
 
 

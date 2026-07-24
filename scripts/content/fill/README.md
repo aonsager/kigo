@@ -8,6 +8,14 @@ This is the concrete implementation of the "LLM-fill workflow" sketched in
 `content/README.md`. It splits the job into small, reviewable stages so the one
 step that *must* stay human (reading the Japanese) is the only manual gate.
 
+**Text-only.** Earlier revisions of this tool also sourced and reviewed a
+per-day photograph (Pexels/Pixabay/Wikipedia candidates, an image-candidate
+picker in the review UI, `--image-base-url`). ADR 0026 retired per-day
+photography in favor of 24 bundled per-Sekki backdrop images shipped in the
+app binary, which made that whole half of the tool obsolete; it has been
+removed. This tool now only authors and reviews the **text** columns —
+readings, translation, and bilingual descriptions.
+
 ```
                  brokyo/saijikijs kigo.json @ pinned SHA
                                  │
@@ -15,76 +23,76 @@ step that *must* stay human (reading the Japanese) is the only manual gate.
                                  │
         (2) assign_dates.py ── 365-day placement ────▶ spine-2026.csv  ◀── human review
                                  │
-             ┌───────────────────┴───────────────────┐
-   (3) describe.py                            (4) fetch_images.py
-   emit ▶ LLM ▶ ingest                        Pexels+Pixabay, Japanese-first (or --placeholder)
-        │                                             │
-        ▼                                             ▼
-   descriptions.csv                              images.csv
-             └───────────────────┬───────────────────┘
-                     (5) build_csv.py  ── join on date ──▶ content/kigo-2026.csv
+        (3) describe.py     ── emit ▶ LLM ▶ ingest ──▶ descriptions.csv
+                                 │
+        (5) build_csv.py    ── join on date ──────────▶ content/kigo-2026.csv
                                  │
                      scripts/content/assemble.py  ── the real gate ──▶ manifest.json
 ```
 
+(Stage 4 — image sourcing — no longer exists; the numbering gap is left as-is
+because `build_csv.py`'s own docstring still calls itself "stage 5".)
+
 ## The wrapper (recommended) — `fill.py` + web review
 
-`fill.py` orchestrates the stages below over a SQLite review store
-(`review.db`, gitignored) and a local web review UI. See ADR 0025.
+`fill.py` orchestrates the stages above over a SQLite review store
+(`review.db`, gitignored) and a local web review UI. See ADR 0025. Four
+subcommands:
 
 ```bash
 # 1. seed the 365 day facts (deterministic; consumes spine_pool.json)
 python3 scripts/content/fill/fill.py spine
 
-# 2. generate prose + image candidates for a date range (unapproved days only;
-#    reads all keys from the gitignored scripts/content/fill/.env —
-#    ANTHROPIC_API_KEY (prose) + PEXELS_API_KEY / PIXABAY_API_KEY (images);
-#    a real exported env var overrides the file. Or run with
-#    --no-images / --no-descriptions to skip a half.)
+# 2. generate prose for a date range (unapproved days only; reads
+#    ANTHROPIC_API_KEY from the gitignored scripts/content/fill/.env — a real
+#    exported env var overrides the file)
 python3 scripts/content/fill/fill.py generate --from 2026-03-01 --to 2026-03-31
 
-# 3. review in the browser: edit readings/prose, pick an image, approve each day
+# 3. review in the browser: edit readings/translation/descriptions, approve each day
 python3 scripts/content/fill/fill.py review        # http://127.0.0.1:8000
 
-# 4. compile approved days → content/kigo-2026.csv → manifest (the assemble gate)
-python3 scripts/content/fill/fill.py compile --image-base-url https://cdn.example/kigo
+# 4. compile approved + prose-complete days → content/kigo-2026.csv → manifest
+#    (the assemble gate)
+python3 scripts/content/fill/fill.py compile
 ```
 
-"Approved freezes": `spine`/`generate` never touch an approved day (use `--force`
-to override). `compile` exports only approved days (partial manifest), reporting
-skipped ones. The per-stage scripts below remain for ad-hoc use.
+Useful flags: `generate --force` includes already-approved days (normally
+skipped); `generate --model` overrides the Claude model. `compile --from/--to`
+restricts the exported date range, `--out-csv`/`--manifest-out` redirect the
+outputs (defaults: `content/kigo-2026.csv` / `Resources/manifest.json`).
+`review --host/--port` change the bind address/port (default binds
+`0.0.0.0:8000` — all interfaces, reachable on your LAN).
 
-Until a day is approved, though, `generate` treats it as a draft and fully
-regenerates it on every re-run — re-authoring prose and clearing the chosen
-image — so any manual edits made before approval are discarded; approve the
-day first to freeze it against regeneration.
+"Approved freezes": `spine`/`generate` never touch an approved day (use
+`--force` to override). `compile` exports only days that are **both approved
+and prose-complete** — every one of `kanji`, `reading_ja`, `reading_en`,
+`translation_en`, `description_ja`, `description_en` non-empty, mirroring the
+same gate `scripts/content/validator.py` re-checks at assembly — reporting any
+skipped day on stderr. The per-stage scripts below remain for ad-hoc use.
+
+Until a day is approved, `generate` treats it as a draft and fully
+regenerates its prose on every re-run, so any manual edits made before
+approval are discarded; approve the day first to freeze it against
+regeneration.
+
+### `review.db` migration
+
+`review.db` (gitignored) is versioned with `PRAGMA user_version`. Connecting
+with an older (v0, pre-ADR-0026) database automatically and idempotently
+migrates it forward — dropping the retired `candidates` table and
+`chosen_candidate_id` column while preserving every `days` row — before any
+command runs. No manual migration step is required; just keep using `fill.py`
+against your existing `review.db`.
 
 ## What you must supply
 
 | Input | For | How |
 |---|---|---|
-| **An LLM** (stage 3) | authoring `description_ja` / `description_en` | any capable chat model, or `ANTHROPIC_API_KEY` (put it in the gitignored `scripts/content/fill/.env` alongside the image keys, or export it) + `describe_via_claude.py` |
-| **Pillow** (stage 4) | image smart-cropping + JPEG encoding | `python3 -m pip install Pillow` |
-| **An image-provider API key** (stage 4) | real photography + attribution | free from [Pixabay](https://pixabay.com/api/docs/) or [Pexels](https://www.pexels.com/api/); put `PIXABAY_API_KEY` / `PEXELS_API_KEY` in a gitignored `scripts/content/fill/.env` |
-| **A static image host** (post-workflow) | re-hosting chosen JPEGs at a stable base URL | Cloudflare R2 / S3 / GitHub release; becomes `--image-base-url` for `assemble.py` |
-| **A Japanese-literate reviewer** | the human gate on `spine-2026.csv` + descriptions | read top-to-bottom, correct inline |
+| **An LLM** (stage 3 / `generate`) | authoring `translation_en` / `description_ja` / `description_en` | any capable chat model, or `ANTHROPIC_API_KEY` (put it in the gitignored `scripts/content/fill/.env`, or export it) + `describe_via_claude.py` |
+| **A Japanese-literate reviewer** | the human gate on readings + descriptions | read top-to-bottom in the `review` web UI (or `spine-2026.csv`/`descriptions.csv` for the ad-hoc scripts), correct inline, approve |
 
-Everything else runs offline with the Python stdlib — Pillow is the only third-party dependency.
-
-## Legal posture (why we don't ship the source's English)
-
-The spine comes from [`brokyo/saijikijs`](https://github.com/brokyo/saijikijs)
-(pinned commit `7ca6de5`), an aggregation of two **copyrighted** English
-translations (Higginson/Kondo's *500 Essential Season Words* and UVA's *Nyūmon
-Saijiki*) re-declared under The Unlicense — a declaration that cannot validly
-clear the upstream translators' rights. So `fetch_spine.py` harvests **only the
-uncopyrightable traditional facts** — kanji, kana + romaji readings, season,
-sub-season, category — plus a short English *name* (`gloss_en`), a factual
-label rather than descriptive prose. It is used as a search helper (kanji-first,
-falling back to `gloss_en`, across both Pexels and Pixabay) and is also written
-to the manifest as the image's short attribution title (`attribution_title_en`)
-— it is never shipped as descriptive prose. All shipped prose is our own
-(stage 3). Images are Pexels- or Pixabay-licensed with photographer credit.
+Everything else runs offline with the Python stdlib — no third-party
+dependencies.
 
 ## Run it
 
@@ -142,88 +150,37 @@ python3 scripts/content/fill/describe.py ingest \
 prompt text — the workflow's LLM contract — lives in `describe.py`
 (`PROMPT_PREAMBLE`); edit it there.
 
-### Images (stage 4) — two-phase human-in-the-loop
-
-Stage 4 is two-phase, human-in-the-loop (like `describe.py`'s emit/ingest).
-It needs **Pillow** (the workflow's only non-stdlib dependency, used just here):
-
-```bash
-python3 -m pip install Pillow
-```
-
-Providers: **pexels** (primary) and **pixabay** (fallback), both free and
-commercial-use; keys in the gitignored `scripts/content/fill/.env`
-(`PEXELS_API_KEY` / `PIXABAY_API_KEY`). Each day is searched **Japanese-first**
-(the kanji, then the English `gloss_en`, then romaji) across both providers, and
-the **3** candidates are drawn **round-robin, one per search rung** — so you
-typically get a Pexels kanji match, a Pexels English-gloss match, and a Pixabay
-match, rather than three near-duplicates from one query. (This matters because
-Pexels never returns *empty* — it substitutes popular photos for an unmatched
-Japanese term — so spreading across rungs is what surfaces the English-gloss and
-Pixabay results a human can compare.) Each candidate must clear a min-resolution
-floor, and is smart-cropped to the phone screen ratio (9:19.5), downscaled, and
-JPEG-encoded — so you review the *actual* image that would ship.
-
-Alongside the stock candidates, each day also gets the **Japanese Wikipedia lead
-image** (looked up by kanji, then by the English `gloss_en` on English
-Wikipedia) as a licensed **4th candidate and accuracy reference**. Its real
-license is read from Wikimedia; it is marked **`usable`** in `candidates.csv`
-only when that license permits shipping (public-domain / CC0 / CC-BY / CC-BY-SA)
-and it clears the resolution floor — otherwise it is kept **reference-only** so
-you can still check whether the stock picks show the right subject, but `select`
-will refuse to ship it. Disable with `--no-wikipedia`.
-
-```bash
-# keyless placeholders, to build + gate the CSV before you have a key:
-python3 scripts/content/fill/fetch_images.py fetch \
-    --spine scripts/content/fill/spine-2026.csv \
-    --out scripts/content/fill/images.csv --placeholder
-
-# real: acquire + process 3 candidates per day
-python3 scripts/content/fill/fetch_images.py fetch \
-    --spine scripts/content/fill/spine-2026.csv \
-    --candidates-out scripts/content/fill/candidates.csv \
-    --out-images scripts/content/fill/downloads
-```
-
-Then **review**: open `candidates.csv`, look at the matching
-`downloads/<image_id>__c1..c3.jpg`, and put any mark (e.g. `x`) in the `chosen`
-column of the winner — exactly one per date. Resolve the choice:
-
-```bash
-python3 scripts/content/fill/fetch_images.py select \
-    --candidates-in scripts/content/fill/candidates.csv \
-    --out scripts/content/fill/images.csv \
-    --out-images scripts/content/fill/downloads
-```
-
-`select` validates one `chosen` per date, copies each winner to the canonical
-`<image_id>.jpg`, and writes the 8-column `images.csv` `build_csv.py` expects.
-Days with no candidate are reported on stderr — refine the query and rerun.
-Tuning flags: `--candidates`, `--per-page`, `--min-width/--min-height`,
-`--aspect`, `--max-edge`, `--jpeg-quality`, `--no-japanese`, `--no-fallback`.
-
 ### Merge + gate (stage 5)
 
 ```bash
 python3 scripts/content/fill/build_csv.py \
     --spine        scripts/content/fill/spine-2026.csv \
     --descriptions scripts/content/fill/descriptions.csv \
-    --images       scripts/content/fill/images.csv \
     --out          content/kigo-2026.csv
 
 # the real validation — the same gate CI/regeneration uses:
 python3 scripts/content/assemble.py --csv content/kigo-2026.csv --out Resources/manifest.json
 ```
 
-`build_csv.py` only emits dates present in **all three** inputs, so a partial
-run yields a smaller but fully valid CSV — no blank cells. It drops every helper
-column, writing exactly the 14-column contract `csv_parser.py` expects.
+`build_csv.py` only emits dates present in **both** inputs, so a partial run
+yields a smaller but fully valid CSV — no blank cells. It drops every helper
+column, writing exactly the **7-column** contract (`date, kanji, reading_ja,
+reading_en, translation_en, description_ja, description_en`) `csv_parser.py`
+expects.
 
 ## Worked sample in this repo
 
-`content/kigo-2026.sample.csv` is a 15-date, all-seasons sample produced by this
-exact workflow (real spine + LLM-authored bilingual descriptions + *placeholder*
-images) that **passes `assemble.py`**. It proves the pipeline end-to-end; extend
-to the full year by running descriptions for all 365 dates and swapping in real
-Pexels images.
+`content/kigo-2026.sample.csv` is a real-spine, LLM-authored-prose sample
+produced by this workflow that **passes `assemble.py`**. It proves the
+pipeline end-to-end; extend to the full year by running `generate`/descriptions
+for all 365 dates.
+
+## Image sourcing was retired
+
+Per-day image sourcing (Pexels/Pixabay candidates, the Japanese Wikipedia
+lead-image lookup, the review UI's candidate gallery, `--image-base-url`) was
+removed by ADR 0026: the app now ships 24 uniform, bundled, per-Sekki
+backdrops instead of a verified photograph per day, which made per-day image
+review unnecessary. See ADR 0026
+(`docs/adr/0026-uniform-per-sekki-bundled-backdrops.md`) for the decision and
+its consequences for this tool.

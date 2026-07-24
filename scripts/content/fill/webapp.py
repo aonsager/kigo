@@ -3,7 +3,7 @@
 
 Pure request handlers over store.py (unit-testable without a socket) plus a thin
 http.server adapter (wired by `fill.py review`). The single per-day review
-surface: edit readings/prose, pick the image, approve the day. Stdlib only.
+surface: edit readings/prose, approve the day. Stdlib only.
 """
 import json
 import sys
@@ -16,45 +16,31 @@ _PROSE_FIELDS = ("reading_ja", "reading_en", "translation_en",
                  "description_ja", "description_en")
 
 
-def day_summary(day, candidate_count):
+def day_summary(day):
     return {
         "date": day["date"], "kanji": day["kanji"], "approved": day["approved"],
         "reading_ja": day["reading_ja"], "season": day["season"],
-        "subseason": day["subseason"], "candidate_count": candidate_count,
+        "subseason": day["subseason"],
         "has_prose": bool(day["translation_en"] and day["description_ja"]
                           and day["description_en"]),
-        "has_image": day["chosen_candidate_id"] is not None,
     }
 
 
 def handle_list_days(conn, date_from=None, date_to=None, status=None):
-    out = []
-    for day in store.list_days(conn, date_from, date_to, status):
-        count = len(store.get_candidates(conn, day["date"]))
-        out.append(day_summary(day, count))
-    return out
+    return [day_summary(day) for day in store.list_days(conn, date_from, date_to, status)]
 
 
 def handle_get_day(conn, date):
-    day = store.get_day(conn, date)
-    if day is None:
-        return None
-    day["candidates"] = store.get_candidates(conn, date)
-    return day
+    return store.get_day(conn, date)
 
 
 def handle_patch_day(conn, date, body):
     if store.get_day(conn, date) is None:
         raise ValueError(f"unknown date {date}")
-    known = set(_PROSE_FIELDS) | {"chosen_candidate_id", "approved"}
+    known = set(_PROSE_FIELDS) | {"approved"}
     bad = set(body) - known
     if bad:
         raise ValueError(f"unknown fields: {sorted(bad)}")
-    # Do the only fallible write (set_chosen validates ownership + usable) first,
-    # so a rejected PATCH writes nothing: set_day_fields/set_approved cannot raise
-    # here because the field whitelist is already checked above.
-    if "chosen_candidate_id" in body:
-        store.set_chosen(conn, date, body["chosen_candidate_id"])
     prose = {k: body[k] for k in _PROSE_FIELDS if k in body}
     if prose:
         store.set_day_fields(conn, date, **prose)
@@ -67,8 +53,8 @@ import http.server  # noqa: E402
 import urllib.parse  # noqa: E402
 
 
-def make_server(conn, web_dir, images_dir, host="127.0.0.1", port=8000):
-    web_dir, images_dir = Path(web_dir), Path(images_dir)
+def make_server(conn, web_dir, host="127.0.0.1", port=8000):
+    web_dir = Path(web_dir)
 
     class Handler(http.server.BaseHTTPRequestHandler):
         def _send(self, code, body, ctype="application/json"):
@@ -103,11 +89,6 @@ def make_server(conn, web_dir, images_dir, host="127.0.0.1", port=8000):
                 day = handle_get_day(conn, parts[2])
                 return self._send(404 if day is None else 200,
                                   {"error": "unknown date"} if day is None else day)
-            if parts[:1] == ["candidates"] and len(parts) == 2 and parts[1].endswith(".jpg"):
-                path = (images_dir / parts[1]).resolve()
-                if images_dir.resolve() not in path.parents or not path.is_file():
-                    return self._send(404, {"error": "not found"})
-                return self._send(200, path.read_bytes(), "image/jpeg")
             return self._send(404, {"error": "not found"})
 
         def do_PATCH(self):
