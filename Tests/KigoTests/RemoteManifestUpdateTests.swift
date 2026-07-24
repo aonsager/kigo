@@ -64,13 +64,7 @@ final class RemoteManifestUpdateTests: XCTestCase {
             "2026-01-01": DailyMapEntry(
                 kanji: kanji,
                 reading: LocalizedText(ja: "ふきのはなさく"),
-                description: LocalizedText(ja: "Butterbur blooms."),
-                imageId: "img-0101",
-                attribution: Attribution(
-                    title: LocalizedText(ja: "季語の風景"),
-                    credit: LocalizedText(ja: "撮影者不明"),
-                    license: LocalizedText(ja: "パブリックドメイン")
-                )
+                description: LocalizedText(ja: "Butterbur blooms.")
             )
         ]
         let ko = [

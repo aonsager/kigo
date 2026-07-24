@@ -3,10 +3,7 @@ records, owning the column contract between the human-editable CSV and the
 manifest's DailyMapEntry shape.
 
 Column contract (one row per date):
-    date, kanji, reading_ja, reading_en, description_ja, description_en,
-    image_id, attribution_title_ja, attribution_title_en,
-    attribution_credit_ja, attribution_credit_en, attribution_license_ja,
-    attribution_license_en
+    date, kanji, reading_ja, reading_en, description_ja, description_en
 
 Every column is required and non-empty for every row. This is deliberately
 light validation ("don't write a structurally broken manifest") — the full
@@ -26,13 +23,6 @@ REQUIRED_COLUMNS = (
     "translation_en",
     "description_ja",
     "description_en",
-    "image_id",
-    "attribution_title_ja",
-    "attribution_title_en",
-    "attribution_credit_ja",
-    "attribution_credit_en",
-    "attribution_license_ja",
-    "attribution_license_en",
 )
 
 _DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
@@ -89,11 +79,5 @@ def _row_to_record(raw: dict, *, csv_path: Path, line_no: int) -> dict:
             "reading": {"ja": values["reading_ja"], "en": values["reading_en"]},
             "translationEn": values["translation_en"],
             "description": {"ja": values["description_ja"], "en": values["description_en"]},
-            "imageId": values["image_id"],
-            "attribution": {
-                "title": {"ja": values["attribution_title_ja"], "en": values["attribution_title_en"]},
-                "credit": {"ja": values["attribution_credit_ja"], "en": values["attribution_credit_en"]},
-                "license": {"ja": values["attribution_license_ja"], "en": values["attribution_license_en"]},
-            },
         },
     }

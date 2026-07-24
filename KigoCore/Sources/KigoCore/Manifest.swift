@@ -43,24 +43,16 @@ public struct Manifest: Codable, Sendable, Equatable {
     /// remote-update logic (C21) can compare a fetched manifest against the bundled
     /// one without the production adapter needing to know the field exists.
     public let version: Int
-    /// Base URL for remote day imagery (ADR 0022). A day's image URL is derived as
-    /// `imageBaseURL + "/" + imageId + ".jpg"` (see `KigoImageSource`) — optional so
-    /// manifests without it (including today's bundled dummy manifest) still decode
-    /// unchanged and resolve to the gradient placeholder (ADR 0014 forward-compat,
-    /// same pattern as `LocalizedText.en`; no schemaVersion bump implied).
-    public let imageBaseURL: String?
 
     public init(
         schemaVersion: String,
         version: Int,
-        imageBaseURL: String? = nil,
         dailyMap: [String: DailyMapEntry],
         ko: [Ko],
         sekki: [Sekki]
     ) {
         self.schemaVersion = schemaVersion
         self.version = version
-        self.imageBaseURL = imageBaseURL
         self.dailyMap = dailyMap
         self.ko = ko
         self.sekki = sekki
@@ -75,26 +67,6 @@ public struct Manifest: Codable, Sendable, Equatable {
     public let sekki: [Sekki]
 }
 
-// MARK: - Attribution
-
-/// Per-image attribution carrying title, credit (photographer/source), and license.
-/// Each field uses the localizable free-text shape (required Japanese, optional English),
-/// so English attribution can be added as a data change without a schema bump (ADR 0014).
-public struct Attribution: Codable, Sendable, Equatable {
-    /// Title of the image or artwork.
-    public let title: LocalizedText
-    /// Credit line (photographer, source, institution).
-    public let credit: LocalizedText
-    /// License or rights statement (e.g. "パブリックドメイン", "CC BY 4.0").
-    public let license: LocalizedText
-
-    public init(title: LocalizedText, credit: LocalizedText, license: LocalizedText) {
-        self.title = title
-        self.credit = credit
-        self.license = license
-    }
-}
-
 // MARK: - DailyMapEntry
 
 /// A single entry in the Daily Map, keyed by `MM-DD`.
@@ -105,20 +77,15 @@ public struct DailyMapEntry: Codable, Sendable, Equatable {
     public let reading: LocalizedText
     /// Short prose description of the Kigo. Required Japanese, optional English (ADR 0014).
     public let description: LocalizedText
-    /// Identifier for the paired image asset.
-    public let imageId: String
-    /// Per-image attribution (title, credit, license). Required for every entry.
-    public let attribution: Attribution
     /// Short English translation/name of the Kigo (e.g. 花見 → "cherry-blossom
     /// viewing"). English-only — the English reader's equivalent of being able to
     /// read the kanji, so it belongs to the free Encounter (shown alongside
     /// kanji + reading), not the paid Understanding (ADR 0019/0024). Optional so
     /// manifests without it still decode unchanged and older/foreign-language
     /// content resolves to no translation line (ADR 0014 forward-compat, same
-    /// pattern as `LocalizedText.en` / `Manifest.imageBaseURL`; no schemaVersion
-    /// bump implied). Not a `LocalizedText`: it has no Japanese side — a Japanese
-    /// reader gets meaning from the kanji itself, so the UI shows it only in
-    /// English mode.
+    /// pattern as `LocalizedText.en`; no schemaVersion bump implied). Not a
+    /// `LocalizedText`: it has no Japanese side — a Japanese reader gets meaning
+    /// from the kanji itself, so the UI shows it only in English mode.
     public let translationEn: String?
 
     /// Explicit memberwise init so `translationEn` can default to nil — existing
@@ -129,15 +96,11 @@ public struct DailyMapEntry: Codable, Sendable, Equatable {
         kanji: String,
         reading: LocalizedText,
         description: LocalizedText,
-        imageId: String,
-        attribution: Attribution,
         translationEn: String? = nil
     ) {
         self.kanji = kanji
         self.reading = reading
         self.description = description
-        self.imageId = imageId
-        self.attribution = attribution
         self.translationEn = translationEn
     }
 }

@@ -6,7 +6,7 @@ import XCTest
 ///
 /// Launches the app with `KIGO_FAKE_DATE=2026-06-16` and `KIGO_FAKE_APPEARANCE=dark`
 /// and asserts that the Today screen renders correctly in dark mode, including:
-/// - `kigo.kanji`, `kigo.description`, `microseason.ko`, `info.entry`, and
+/// - `kigo.kanji`, `kigo.description`, `microseason.ko`, and
 ///   `paywall.entry` all exist within 10 seconds of launch.
 /// - A screenshot of the Today screen in dark mode is captured and attached as
 ///   an `XCTAttachment` with name `"dark-mode-today-screen"` and lifetime `.keepAlways`.
@@ -40,7 +40,7 @@ final class DarkModeUITests: XCTestCase {
     /// captures a screenshot, then taps `paywall.entry` and verifies the sheet.
     ///
     /// Acceptance criteria verified:
-    /// AC4: `kigo.kanji`, `kigo.description`, `microseason.ko`, `info.entry`, and
+    /// AC4: `kigo.kanji`, `kigo.description`, `microseason.ko`, and
     ///      `paywall.entry` all waitForExistence within 10 s.
     /// AC5: After tapping `paywall.entry` (gear → Settings), `paywall.sheet`
     ///      waitForExistence within 10 s and `paywall.manage` exists (active subscriber).
@@ -65,14 +65,6 @@ final class DarkModeUITests: XCTestCase {
         XCTAssertTrue(
             koElement.waitForExistence(timeout: 10),
             "microseason.ko must exist on the Today screen in dark mode within 10 s"
-        )
-
-        let infoEntry = app.descendants(matching: .any)
-            .matching(identifier: "info.entry")
-            .firstMatch
-        XCTAssertTrue(
-            infoEntry.waitForExistence(timeout: 10),
-            "info.entry must exist on the Today screen in dark mode within 10 s"
         )
 
         let paywallEntry = app.buttons["paywall.entry"]

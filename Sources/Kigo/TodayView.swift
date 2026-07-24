@@ -33,32 +33,21 @@ import UIKit
 /// carry the hiragana readings as standalone static texts (not nested inside the
 /// timeline `Button`, which would merge them), so the pinned-text UI assertions hold.
 ///
-/// Slice #228 (PRD #227, C26, ADR 0022): calls the real `KigoImageSource` seam via
-/// `.task`, resolving `manifest`/`resolvedDay.kigoEntry.imageId` through the
-/// `imageSource` injected from the app root (see `launchImageSource` /
-/// `LaunchImageSource.swift`). Whenever resolution is `nil` (both the
-/// `KIGO_FAKE_IMAGE=none` fake and, today, the production path — no bundled
-/// `imageBaseURL` yet), the existing gradient placeholder renders unchanged and
-/// `kigo.image.placeholder` becomes present alongside `kigo.image`.
-///
-/// Slice #229: when resolution is non-nil (the `KIGO_FAKE_IMAGE=loaded` fake, paired
-/// with `ContentView`'s `imageBaseURLOverride`), the resolved bytes are decoded via
-/// `UIImage(data:)` and rendered full-bleed by `KigoPlaceholderView`'s `remoteImage`
-/// parameter — the exact same frame/scaling/`kigo.image` sentinel the placeholder uses,
-/// just with the fetched photo on top. `kigo.image.remote` becomes present alongside
-/// `kigo.image`, and `kigo.image.placeholder` is absent — the two markers are mutually
-/// exclusive.
+/// Image pivot (supersedes ADR 0022): the full-bleed layer renders the bundled
+/// per-Sekki backdrop (`SekkiBackdrop.assetName(forSekkiId:)`), falling back to a
+/// deterministic per-Sekki gradient wash (`SekkiBackdrop.fallbackHue(forSekkiId:)`)
+/// when the art is not yet bundled. There is no remote fetch, no cache, and no
+/// "which path resolved" sentinel — `kigo.image` is always present and is the only
+/// state. The shared, original/CC0 backdrops carry no per-day attribution, so the
+/// slice #128 `info.entry` panel (and its `.attribution` sheet) is removed entirely.
 struct TodayView: View {
     let resolvedDay: ResolvedDay
     let almanacPositions: AlmanacPositions
-    let manifest: Manifest
-    let imageSource: KigoImageSource
 
     /// Identifies which sheet is currently active. Conforms to `Identifiable` so
     /// it can drive the single `.sheet(item:)` modifier.
     private enum ActiveSheet: Identifiable {
         case almanac
-        case attribution
 
         var id: Self { self }
     }
@@ -72,47 +61,23 @@ struct TodayView: View {
 
     @State private var activeSheet: ActiveSheet?
     @State private var hasAppeared = false
-    /// The `KigoImageSource` seam's last resolution result (slice #228). `nil` means
-    /// "show the placeholder"; non-nil (slice #229) means "render this photo full-bleed".
-    @State private var remoteImageData: Data?
-
-    /// `remoteImageData` decoded into a `UIImage` (slice #229), or `nil` when there is
-    /// no resolved data yet. `KigoImageSource.image(manifest:imageId:)` only ever
-    /// returns bytes that already passed its own `UIImage(data:) != nil` decode gate
-    /// (#213), so this decode is expected to succeed whenever `remoteImageData` is set.
-    private var resolvedRemoteImage: UIImage? {
-        remoteImageData.flatMap { UIImage(data: $0) }
-    }
 
     var body: some View {
         ZStack {
             KigoTheme.canvas
                 .ignoresSafeArea()
 
-            // 1 · Full-bleed image layer — the fetched remote photo when the
-            // `KigoImageSource` seam has resolved bytes (slice #229), else the
-            // deterministic placeholder. `kigo.image` (the full-bleed accessibility
-            // sentinel) is always present via `KigoPlaceholderView` regardless of which
-            // visual renders beneath it — see its doc comment.
-            KigoPlaceholderView(imageId: resolvedDay.kigoEntry.imageId,
-                                accessibilityLabelText: chrome.a11yBackgroundImage,
-                                remoteImage: resolvedRemoteImage)
+            // 1 · Full-bleed image layer — the bundled per-Sekki backdrop, falling back
+            // to a deterministic per-Sekki gradient wash. `kigo.image` (the full-bleed
+            // accessibility sentinel) is always present via `KigoPlaceholderView`
+            // regardless of which visual renders beneath it — see its doc comment.
+            KigoPlaceholderView(
+                backdropAssetName: SekkiBackdrop.assetName(forSekkiId: resolvedDay.sekki.id),
+                fallbackHue: SekkiBackdrop.fallbackHue(forSekkiId: resolvedDay.sekki.id),
+                accessibilityLabelText: chrome.a11yBackgroundImage
+            )
                 .opacity(hasAppeared ? 1 : 0)
                 .scaleEffect(hasAppeared ? 1 : 1.05)
-
-            // 1b · Placeholder/remote-path markers (slice #228/#229, ADR 0022): mutually
-            // exclusive, present alongside `kigo.image`, proving which path the seam
-            // resolved to — `kigo.image.remote` when real bytes rendered,
-            // `kigo.image.placeholder` when the gradient/bundled placeholder did.
-            if resolvedRemoteImage != nil {
-                Color.clear
-                    .accessibilityIdentifier("kigo.image.remote")
-                    .accessibilityHidden(true)
-            } else {
-                Color.clear
-                    .accessibilityIdentifier("kigo.image.placeholder")
-                    .accessibilityHidden(true)
-            }
 
             // 2 · Legibility veil — vertical gradient, denser at top and bottom.
             KigoTheme.legibilityVeil
@@ -155,10 +120,7 @@ struct TodayView: View {
                 .opacity(hasAppeared ? 1 : 0)
                 .offset(y: hasAppeared ? 0 : 16)
 
-            // 5 · (i) attribution entry — top-left.
-            infoEntry
-
-            // 6 · Bottom band, over the scrim. Premium sees the microseason block
+            // 5 · Bottom band, over the scrim. Premium sees the microseason block
             // (readings + tappable year timeline → almanac). Basic sees the upsell
             // block (→ purchase sheet) in the same place — so the free scrim always
             // has content over it and the interaction is symmetric: tap the band,
@@ -177,13 +139,6 @@ struct TodayView: View {
             guard !hasAppeared else { return }
             withAnimation(KigoTheme.Motion.imageReveal) { hasAppeared = true }
         }
-        .task(id: resolvedDay.kigoEntry.imageId) {
-            // Slice #228: the real seam call. Both the `KIGO_FAKE_IMAGE=none` fake and
-            // the production `URLSessionKigoImageTransport` path (no bundled
-            // `imageBaseURL` yet) resolve `nil` today — the placeholder stays exactly as
-            // before; slice #229 renders the bytes when resolution is non-nil.
-            remoteImageData = await imageSource.image(manifest: manifest, imageId: resolvedDay.kigoEntry.imageId)
-        }
         .bottomSheet(item: $activeSheet) { sheet in
             switch sheet {
             case .almanac:
@@ -192,8 +147,6 @@ struct TodayView: View {
                     ko: resolvedDay.ko,
                     sekki: resolvedDay.sekki
                 )
-            case .attribution:
-                AttributionPanelView(attribution: resolvedDay.kigoEntry.attribution)
             }
         }
     }
@@ -285,33 +238,6 @@ struct TodayView: View {
         .accessibilityLabel(chrome.a11yUnlockMeaning)
     }
 
-    // MARK: - Info entry (top-left)
-
-    private var infoEntry: some View {
-        VStack {
-            HStack {
-                Button {
-                    activeSheet = .attribution
-                } label: {
-                    Image(systemName: "info.circle")
-                        .font(.system(size: 15, weight: .regular))
-                        .foregroundStyle(KigoTheme.inkReading)
-                        .frame(width: KigoTheme.Radius.entryCircle, height: KigoTheme.Radius.entryCircle)
-                        .background(.ultraThinMaterial, in: Circle())
-                        .overlay(Circle().strokeBorder(KigoTheme.hairline, lineWidth: 1))
-                }
-                .buttonStyle(.plain)
-                .accessibilityIdentifier("info.entry")
-                .accessibilityLabel(chrome.a11yImageAttribution)
-                .padding(.leading, 22)
-                .padding(.top, 16)
-
-                Spacer()
-            }
-            Spacer()
-        }
-    }
-
     // MARK: - Bottom microseason block
 
     private var microseasonBlock: some View {
@@ -325,8 +251,8 @@ struct TodayView: View {
         // The visual content drives the band's height; the full-band tap target is a
         // `Color.clear` Button laid *behind* it (as a background) so the tappable area
         // hugs the band instead of expanding to fill the whole screen — which would
-        // overlap the top-corner `info.entry` / `paywall.entry` controls and steal
-        // their taps (Slice C: it did, opening the almanac on an info.entry tap).
+        // overlap the top-corner `paywall.entry` control and steal its taps (Slice C:
+        // it did, opening the almanac on a top-corner-control tap).
         timelineVisual
             .background {
                 Button {

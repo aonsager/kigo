@@ -7,12 +7,11 @@ import XCTest
 /// Launches the app with `KIGO_FAKE_DATE=2026-06-16` (梅子黄, 芒種) and asserts:
 /// 1. `kigo.image` fills the full screen width (within 5 pt) and at least 90% of screen height.
 /// 2. `kigo.scrim` exists in the accessibility hierarchy when the Today screen is visible.
-/// 3. `info.entry` is in the top-left quadrant (midX < width/2, midY < height/3).
-/// 4. `paywall.entry` is in the top-right quadrant (midX > width/2, midY < height/3).
+/// 3. `paywall.entry` is in the top-right quadrant (midX > width/2, midY < height/3).
 ///
 /// Screenshot evidence:
 /// Attachment name: `"today-layout-scrim-gear"`
-/// Captured in `testScrimPresent` with all four layout elements visible.
+/// Captured in `testScrimPresent` with all layout elements visible.
 /// Full test identifier: KigoUITests/TodayLayoutUITests/testScrimPresent
 final class TodayLayoutUITests: XCTestCase {
 
@@ -87,45 +86,12 @@ final class TodayLayoutUITests: XCTestCase {
             "kigo.scrim must exist in the accessibility hierarchy when the Today screen is visible"
         )
 
-        // Screenshot evidence — captures the Today screen with scrim, (i) top-left, gear top-right.
+        // Screenshot evidence — captures the Today screen with scrim, gear top-right.
         let screenshot = XCUIScreen.main.screenshot()
         let attachment = XCTAttachment(screenshot: screenshot)
         attachment.lifetime = .keepAlways
         attachment.name = "today-layout-scrim-gear"
         add(attachment)
-    }
-
-    // MARK: - AC3: testInfoEntryTopLeft
-
-    /// info.entry frame midX < windowWidth/2 and midY < windowHeight/3.
-    func testInfoEntryTopLeft() {
-        waitForTodayScreen()
-
-        let windowWidth = app.windows.firstMatch.frame.width
-        let windowHeight = app.windows.firstMatch.frame.height
-
-        let infoEntry = app.descendants(matching: .any)
-            .matching(identifier: "info.entry")
-            .firstMatch
-        XCTAssertTrue(
-            infoEntry.waitForExistence(timeout: 10),
-            "info.entry must exist on the Today screen"
-        )
-
-        let frame = infoEntry.frame
-        let midX = frame.midX
-        let midY = frame.midY
-
-        XCTAssertLessThan(
-            midX,
-            windowWidth / 2,
-            "info.entry midX (\(midX)) must be left of screen center (\(windowWidth / 2))"
-        )
-        XCTAssertLessThan(
-            midY,
-            windowHeight / 3,
-            "info.entry midY (\(midY)) must be in the top third of the screen (< \(windowHeight / 3))"
-        )
     }
 
     // MARK: - AC4: testPaywallEntryTopRight

@@ -64,3 +64,12 @@ timeline tick — overriding the mockup's literal "26/72" (CONTEXT.md flagged am
   *shape* (decodes with/without EN) — no English content, no language-aware resolution path,
   and no region/date/number localization (explicitly out of scope; see CONTEXT.md
   **Language preference**).
+
+## Amendment — 2026-07-22 (ADR 0026)
+
+The `Attribution` schema this ADR introduced (`DailyMapEntry.attribution { title, credit,
+license }`, gated by the retired C12/C14) is retired by ADR 0026 — the app's Sekki backdrops
+carry no per-image credit, so there is nothing to attribute. The rest of this ADR's
+localization-ready schema decision (Kō `description`; Sekki `gloss`+`description`; the
+optional-English forward-compat shape) is unaffected and stands. The body above is left as
+history; do not edit it further for this pivot.

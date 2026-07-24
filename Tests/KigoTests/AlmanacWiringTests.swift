@@ -94,13 +94,7 @@ final class AlmanacWiringTests: XCTestCase {
             "2026-06-16": DailyMapEntry(
                 kanji: "梅子黄",
                 reading: LocalizedText(ja: "うめのみきばむ"),
-                description: LocalizedText(ja: "Plums turn yellow."),
-                imageId: "img-0616",
-                attribution: Attribution(
-                    title: LocalizedText(ja: "季語の風景"),
-                    credit: LocalizedText(ja: "撮影者不明"),
-                    license: LocalizedText(ja: "パブリックドメイン")
-                )
+                description: LocalizedText(ja: "Plums turn yellow.")
             )
         ]
         let ko = [Ko(

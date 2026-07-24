@@ -22,12 +22,12 @@ struct KigoWidgetProvider: TimelineProvider {
 
     func placeholder(in context: Context) -> KigoWidgetEntry {
         // Placeholder shown during widget gallery / loading state.
-        // Use a static placeholder entry with known Kigo content.
+        // Use a static placeholder entry with known Kigo content and its Sekki backdrop.
         KigoWidgetEntry(date: .now,
                         kanji: "蛍",
                         reading: "ほたる",
-                        imageId: "placeholder",
-                        showsImage: false)
+                        backdropAssetName: SekkiBackdrop.assetName(forSekkiId: "shousho"),
+                        fallbackHue: SekkiBackdrop.fallbackHue(forSekkiId: "shousho"))
     }
 
     // MARK: - Snapshot

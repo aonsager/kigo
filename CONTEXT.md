@@ -31,21 +31,25 @@ The injectable seam (`fetchLatest() async throws -> Manifest`) that reads a **ve
 _Avoid_: "sync" (no two-way state; content is pull-only), "backend" (no server is built — only the client consumes a URL).
 
 **Contract**:
-The frozen shape of the served content — a `manifest.json` (Daily Map + 72 Kō + 24 Sekki) plus per-Kigo image slots. Fixed now; the network endpoint that serves it is out of scope.
+The frozen shape of the served content — a `manifest.json` (Daily Map + 72 Kō + 24 Sekki). Fixed now; the network endpoint that serves it is out of scope. Imagery is **no longer part of the served Contract** — the 24 Sekki backdrops are bundled app assets keyed by Sekki id, not content the manifest carries (ADR 0026, retiring the per-Kigo image slots this Contract used to reserve).
 
 **Manifest**:
-The single content document conforming to the Contract: the full Daily Map, the 72 Kō, and the 24 Sekki, with a `schemaVersion` (shape) and a monotonic integer **`version`** (content freshness, used by the remote-update comparison — ADR 0016/0017), plus an optional top-level **`imageBaseURL`** (ADR 0022).
+The single content document conforming to the Contract: the full Daily Map, the 72 Kō, and the 24 Sekki, with a `schemaVersion` (shape) and a monotonic integer **`version`** (content freshness, used by the remote-update comparison — ADR 0016/0017). The former optional top-level `imageBaseURL` (ADR 0022) is retired (ADR 0026) — the Manifest carries no image field at all now.
 
 **Content-assembly pipeline**:
-The deterministic, offline `scripts/content/` tooling that regenerates the bundled `Resources/manifest.json` from a reviewed **source CSV** (`content/kigo-2026.csv`) — the manifest is always regenerated, never hand-edited (ADR 0022). The loop ships the pipeline + validation + a documented LLM-fill workflow + a **worked example**; the full 365-entry corpus and the real image fetch/re-host are **human-run, out-of-band** steps.
+The deterministic, offline `scripts/content/` tooling that regenerates the bundled `Resources/manifest.json` from a reviewed **source CSV** (`content/kigo-2026.csv`) — the manifest is always regenerated, never hand-edited (ADR 0022). The loop ships the pipeline + validation + a documented LLM-fill workflow + a **worked example**; the full 365-entry text corpus is a **human-run, out-of-band** step. The pipeline carries **no image or attribution fields** — it emits only `kanji`/`reading`/`description`/`translationEn` (ADR 0026 retired the former image columns and `url_deriver.py`).
 _Avoid_: "CMS", "backend" (no dynamic server; it is offline build tooling).
 
 **Worked example**:
 The small committed slice of real, localized corpus (`content/kigo-2026.example.csv`, ≥8 rows) that is both the pipeline's gate fixture (C24) and the template a human extends when filling the full year in a later active session.
 
-**imageBaseURL / KigoImageSource**:
-Real per-day images are delivered by **remote URL + on-device cache** (ADR 0022). The Manifest's optional `imageBaseURL` + an entry's `imageId` derive the image URL (`imageBaseURL + "/" + imageId + ".jpg"`; absent ⇒ gradient placeholder). **`KigoImageSource`** is the injectable seam that loads it (production: `URLSession` + on-disk LRU cache; tests: in-memory fake) — the real network fetch is off the gating path (J10), mirroring **RemoteManifestSource** (J7). The **Widget** stays on the gradient placeholder.
-_Avoid_: bundling images; a per-entry image URL (the base-URL + imageId convention is canonical).
+**Sekki backdrop** (ADR 0026):
+The app's sole background-image concept, replacing per-day photography. Each of the **24 Sekki** carries exactly one bundled, heavily-blurred, palette-matched backdrop image, keyed off `Sekki.id` via `SekkiBackdrop.assetName(forSekkiId:) -> "backdrop-<id>"` (falling back to a deterministic per-Sekki gradient wash — `SekkiBackdrop.fallbackHue(forSekkiId:)` — until real art is supplied out-of-band). It is a property of the **season**, not the day: Today resolves it purely from the current **Sekki** (already computed for the Almanac), never from the **Daily Map**. Rendered full-bleed by the shared `KigoPlaceholderView` on **both** Today and the **Widget**; the `kigo.image` accessibility id stays the sentinel, now marking the backdrop. Bundled in the app binary — no fetch, no cache, always present, offline.
+_Avoid_: "per-day image", "photo" (uniform across the ~15 days of a Sekki, not daily); confusing it with the retired **imageBaseURL / KigoImageSource** remote seam below.
+
+**imageBaseURL / KigoImageSource** (RETIRED — ADR 0026):
+Formerly: real per-day images delivered by **remote URL + on-device cache** (ADR 0022) — the Manifest's `imageBaseURL` + an entry's `imageId` derived the image URL (`imageBaseURL + "/" + imageId + ".jpg"`; absent ⇒ gradient placeholder), loaded through the injectable `KigoImageSource` seam (production: `URLSession` + on-disk LRU cache; tests: in-memory fake). Retired entirely by the Sekki-backdrop pivot (ADR 0026): images are now the 24 bundled **Sekki backdrops** above, with no remote fetch, no cache, and no per-entry `imageId`.
+_Avoid_: referencing this seam as current — it no longer exists in code.
 
 **Entitlement**:
 A user's active subscription state, derived from StoreKit. Active ⇒ the in-app **understanding
@@ -53,12 +57,14 @@ layer** is revealed (ADR 0019). The product id retains the legacy name
 `com.tomeitotameigo.kigo.widgets.monthly` (the `.widgets.` segment predates the inversion).
 _Avoid_: "widget access" (the subscription no longer gates the widget — the widget is free).
 
-**Encounter / Understanding** (the free/paid line — ADR 0019):
-The product's monetization split. The **Encounter** (free, for everyone) is the day's beauty —
-the full-bleed image, the Kigo **kanji** + **reading** — in the app, on the ungated **Widget**,
-and via the opt-in **Daily reminder**. The **Understanding** (paid, gated by the **Entitlement**)
-is the Kigo's full **description**/significance prose, the **Microseason** (Kō/Sekki) display, and
-the **Almanac** depth. "Understanding layer" names the gated bundle collectively.
+**Encounter / Understanding** (the free/paid line — ADR 0019, Encounter redefined ADR 0026):
+The product's monetization split. The **Encounter** (free, for everyone) is the Kigo **kanji** +
+**reading**, set in Asagiri Mincho typography over the current **Sekki backdrop**'s seasonal
+wash — typography is the hero, the backdrop is mood/season, not a depiction to defend — shown in
+the app, on the ungated **Widget**, and via the opt-in **Daily reminder**. The **Understanding**
+(paid, gated by the **Entitlement**) is the Kigo's full **description**/significance prose, the
+**Microseason** (Kō/Sekki) display, and the **Almanac** depth. "Understanding layer" names the
+gated bundle collectively.
 
 **Meaning Gate** (replaces the retired **Widget Gate** — ADR 0019):
 The rule that the in-app **Understanding** layer renders only when the **Entitlement** is active.
@@ -67,10 +73,10 @@ microseason; for a **Premium** user it shows the full understanding layer.
 _Avoid_: "Widget Gate" (retired — the widget is no longer gated).
 
 **Widget** (ungated — ADR 0019):
-The home-screen widget. It always renders today's image + Kigo kanji + reading for **everyone**,
-regardless of **Entitlement** — it is part of the free **Encounter** and exists to reduce friction
-to the daily glimpse, not as a paid perk. It no longer reads the entitlement (the app group /
-shared store is no longer required by it).
+The home-screen widget. It always renders the current **Sekki backdrop** + Kigo kanji + reading
+for **everyone**, regardless of **Entitlement** — it is part of the free **Encounter** and exists
+to reduce friction to the daily glimpse, not as a paid perk. It no longer reads the entitlement
+(the app group / shared store is no longer required by it).
 
 **Meaning entry**:
 The single quiet, tappable line a **Basic** user sees on the Today screen where the description
@@ -134,11 +140,12 @@ duration (production: a StoreKit 2 `Product`; tests: a fake). Loading a real
 the seam lets the price/duration *rendering* be tested deterministically.
 
 **Asagiri** (朝霧, "morning mist"):
-The visual direction of the revamp: full-bleed per-day photography, centered sumi-ink
-**Mincho** typography (Shippori Mincho for the Kigo kanji/titles, Zen Kaku Gothic New
-for readings/UI), generous quiet space, and a feathered frosted-glass legibility plate
-behind the centered text. Rendered in both **light and dark Appearance**. The named
-target look the revamp is judged against (J6); pixel-fidelity is never a termination gate.
+The visual direction of the revamp: a full-bleed **Sekki backdrop** wash (uniform per Sekki, not
+per-day photography — ADR 0026), centered sumi-ink **Mincho** typography (Shippori Mincho for the
+Kigo kanji/titles, Zen Kaku Gothic New for readings/UI), generous quiet space, and a feathered
+frosted-glass legibility plate behind the centered text. Rendered in both **light and dark
+Appearance**. The named target look the revamp is judged against (J6); pixel-fidelity is never a
+termination gate.
 
 **Appearance**:
 Light or dark. In production the app follows the **system** appearance. Under UI test it
@@ -168,12 +175,15 @@ Manifest for today's date:
 - **Kō-within-Sekki** — k of the ~3 Kō sharing that Sekki, 1-indexed → the sekki gauge.
 _Indexing is 1-indexed everywhere_ (resolved ambiguity; the mockup's "26/72" was 0-indexed).
 
-**Image Attribution** / **Attribution panel**:
-Per-image credit metadata (title, 写真/photographer credit, license/source) carried in the
-Manifest alongside each image. Surfaced by the **(i)** control in the Today screen's
-top-left, which slides a panel down from the top edge (dismissed by its grab indicator or a
-backdrop tap — no label, no close button). Values are **placeholders** while images are
-placeholders (J2/J6); the fields' presence and well-formedness are gated (C12, C14).
+**Image Attribution** / **Attribution panel** (RETIRED — ADR 0026):
+Formerly: per-image credit metadata (title, 写真/photographer credit, license/source) carried in
+the Manifest alongside each image, surfaced by the **(i)** control in the Today screen's
+top-left, which slid a panel down from the top edge (dismissed by its grab indicator or a
+backdrop tap — no label, no close button). Retired entirely by the Sekki-backdrop pivot: the 24
+backdrops are original/CC0/palette-generated, so there is no per-image credit to show — the
+`(i)` control, the panel, and the `attribution`/`info.*` fields and identifiers are gone from the
+code (the former C12/C14 gates are retired accordingly).
+_Avoid_: referencing this control as current — it no longer exists in code.
 
 **Settings menu**:
 The sheet opened by the **Settings gear** (top-right of the Today screen) — the revamp's
@@ -188,8 +198,9 @@ _Avoid_: "settings screen" (it is a sheet, not a separate destination); "store".
 **Language preference**:
 The user's chosen language, **Japanese** (default) or **English**, selected in the **Settings
 menu** and persisted. Drives **both** the app's UI-chrome strings **and** the localized
-**content** — every Kigo/Kō/Sekki description and gloss, the attribution, and the **readings**
-(`ja`=hiragana, `en`=romaji) — now populated in both languages (ADR 0018). The Kigo/Kō/Sekki
+**content** — every Kigo/Kō/Sekki description and gloss, and the **readings**
+(`ja`=hiragana, `en`=romaji) — now populated in both languages (ADR 0018). (The per-entry
+attribution this once also covered is retired — ADR 0026.) The Kigo/Kō/Sekki
 **kanji names are content and never translate** (shown identically in both languages). The
 preference is exposed as a single **observable language store**, so changing it re-renders every
 visible string **live, without relaunch** (C20). Under UI test the *initial* value is pinnable via
@@ -201,24 +212,28 @@ _Avoid_: "locale" (no region/number/date *formatting* is in scope — only langu
 - A **Daily Map** entry references one **Kigo**; **Today** selects the entry by absolute `YYYY-MM-DD` (2026 dataset); an out-of-range date yields the content-unavailable state.
 - **Today** also resolves to exactly one **Kō**, which belongs to exactly one **Sekki**.
 - The app reads all content through a **ContentSource**; the **BundledContentSource** is fed the generated **Manifest**.
-- An active **Entitlement** reveals the in-app **Understanding** layer (description + Microseason + Almanac) via the **Meaning Gate**; an inactive one shows the **Meaning entry** in its place. The **Widget** is **ungated** — it shows today's image + Kigo for everyone, independent of the Entitlement (ADR 0019).
+- An active **Entitlement** reveals the in-app **Understanding** layer (description + Microseason + Almanac) via the **Meaning Gate**; an inactive one shows the **Meaning entry** in its place. The **Widget** is **ungated** — it shows the **Sekki backdrop** + Kigo for everyone, independent of the Entitlement (ADR 0019).
 - A user is **Premium** ⇔ their **Entitlement** is active, else **Basic**; this drives the **Meaning Gate** and what the **Paywall** shows.
 - The **Settings gear** (top-right) and, for a **Basic** user, the **Meaning entry** (`meaning.upsell`) both open the **Paywall**; the buy button drives the **SubscriptionPurchaser**, whose success refreshes the **Entitlement** (revealing the Understanding layer via the **Meaning Gate**).
 - The **Daily reminder** (opt-in Settings toggle, default off, 08:00 local, free) schedules one local notification with today's Kigo via the injectable `NotificationScheduler` seam.
 - **Today** also resolves the four **Almanac positions** (Kō N/72, Sekki M/24, Day-within-Kō, Kō-within-Sekki) rendered by the **Microseason Almanac**.
-- Each **Daily Map** image carries **Image Attribution** surfaced by the **(i)** Attribution panel.
-- The **Language preference** switches **UI-chrome** strings **and localized content** (descriptions, glosses, attribution, romanized readings) **live**; **content kanji names never translate**.
+- Each **Sekki** carries exactly one bundled **Sekki backdrop** (ADR 0026), resolved purely from Today's current Sekki — not from the Daily Map, and carrying no per-image attribution (the former **Image Attribution** / Attribution panel is retired).
+- The **Language preference** switches **UI-chrome** strings **and localized content** (descriptions, glosses, romanized readings) **live**; **content kanji names never translate**.
 - The app serves the bundled/cached **Manifest** immediately on open and updates it in the background from the **RemoteManifestSource** when a strictly newer `version` is available.
 
 ## Example dialogue
 
 > **Dev:** "On June 12, 2026, what does someone who never subscribed see?"
-> **Domain expert:** "On the **Widget** and in the app's **Encounter**: the image for `2026-06-12` plus the **Kigo** kanji + reading from the **Daily Map** — the widget is free and ungated now. What they *don't* see in the app is the **Understanding** layer — the description, the **Microseason** (Kō/Sekki), and the **Almanac** — in its place the Today screen shows the quiet **Meaning entry** that opens the **Paywall**. The image is no longer the gated part; *understanding* is (ADR 0019)."
+> **Domain expert:** "On the **Widget** and in the app's **Encounter**: the **Kigo** kanji + reading for `2026-06-12` from the **Daily Map**, set over the current **Sekki backdrop**'s seasonal wash — the widget is free and ungated now. What they *don't* see in the app is the **Understanding** layer — the description, the **Microseason** (Kō/Sekki), and the **Almanac** — in its place the Today screen shows the quiet **Meaning entry** that opens the **Paywall**. There is no per-day image or attribution left to gate; *understanding* is the only gated thing (ADR 0019/0026)."
 
 ## Flagged ambiguities
 
 - "Season" was used loosely — resolved into **Kō** (72, ~5 days, primary) vs **Sekki** (24, ~15 days, secondary). Neither means the four coarse seasons.
-- "Gate the widget" first read as hiding the whole widget, then resolved (originally) to gating only the **image** — and has since been **reversed entirely** (ADR 0019): the widget is now **free and ungated** (image + Kigo for everyone), and the paid gate moved *into the app* onto the **Understanding** layer (the **Meaning Gate**). The widget was a poor paywall feature because it is undiscoverable; free, it instead reduces friction to the daily encounter.
+- "Gate the widget" first read as hiding the whole widget, then resolved (originally) to gating only the **image** — and has since been **reversed entirely** (ADR 0019): the widget is now **free and ungated** (Sekki backdrop + Kigo for everyone), and the paid gate moved *into the app* onto the **Understanding** layer (the **Meaning Gate**). The widget was a poor paywall feature because it is undiscoverable; free, it instead reduces friction to the daily encounter.
+- "Per-day image" was the original visual anchor (Asagiri: "full-bleed per-day photography");
+  sourcing/verifying a correct image for all 365 obscure kigo does not scale, so it was replaced
+  entirely by a **uniform per-Sekki bundled backdrop** (24 assets, no per-day state, no
+  attribution) — ADR 0026, superseding ADR 0022's remote-image delivery.
 - The Microseason **Almanac positions** are **1-indexed** everywhere (梅子黄 = 27/72). The Asagiri mockup showed "26/72" (0-indexed); resolved to 1-indexed to match the lit tick and natural reading.
-- "Language switcher" scope evolved: first deferred to **UI-chrome** strings only (ADR 0014), now expanded to **full JP/EN content localization** — descriptions, glosses, attribution, and **romanized readings** — switching **live** without relaunch (ADR 0018). Content **kanji names still never translate**, and **no region/number/date locale formatting** is in scope.
+- "Language switcher" scope evolved: first deferred to **UI-chrome** strings only (ADR 0014), now expanded to **full JP/EN content localization** — descriptions, glosses, and **romanized readings** — switching **live** without relaunch (ADR 0018). Content **kanji names still never translate**, and **no region/number/date locale formatting** is in scope. (The per-entry attribution this bullet once covered is retired — ADR 0026.)
 - "Perennial Daily Map" reversed: the Daily Map is now keyed by **absolute 2026 dates** (instrumented dummy data, date-stamped per entry) per ADR 0016; only the **Kō/Sekki** stay perennial. Out-of-range dates show the content-unavailable state.

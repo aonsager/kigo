@@ -51,13 +51,6 @@ import SwiftUI
 /// `.preferredColorScheme(appearanceStore.preference.colorScheme)` so the Settings sheet's
 /// System/Light/Dark picker re-themes the whole app reactively, and `DarkModeUITests`
 /// (launched with `KIGO_FAKE_APPEARANCE=dark`) still forces dark.
-///
-/// Slice #228 (PRD #227, C26, ADR 0022): the `KigoImageSource` seam is resolved via
-/// `launchImageSource(environment:)`, which reads `KIGO_FAKE_IMAGE=none` to inject a fake
-/// transport that never yields bytes, or falls through to the production
-/// `URLSessionKigoImageTransport`-backed configuration. `TodayView` calls it on appear to
-/// prove the seam is real wiring, not dead code — both paths resolve `nil` today (no bundled
-/// `imageBaseURL` yet), so the gradient placeholder renders unchanged either way.
 @main
 struct KigoApp: App {
     @State private var store = ContentStore(
@@ -73,15 +66,12 @@ struct KigoApp: App {
     private let appearanceStore: any AppearanceStore
     private let reminderStore: any ReminderStore
     private let notificationScheduler: any NotificationScheduler
-    private let imageSource: KigoImageSource
-    private let imageBaseURLOverride: String?
 
     init() {
         let env = ProcessInfo.processInfo.environment
         offerDisplay = launchOfferDisplay(environment: env)
         languageStore = launchLanguageStore(environment: env)
         appearanceStore = launchAppearanceStore(environment: env)
-        imageSource = launchImageSource(environment: env)
         // Slice #220 (PRD #218, C23, ADR 0019): `launchReminderStore` resolves the
         // persisted, default-off `UserDefaultsReminderStore` in a real launch, or a
         // locked in-memory store seeded on/off under `KIGO_FAKE_REMINDER` (so a UI
@@ -93,8 +83,7 @@ struct KigoApp: App {
         notificationScheduler = launchNotificationScheduler(environment: env)
 
         #if DEBUG
-        // Test-only fake wiring (KIGO_FAKE_IMAGE / KIGO_FAKE_PURCHASER), DEBUG builds only (H1).
-        imageBaseURLOverride = fakeImageBaseURLOverride(environment: env)
+        // Test-only fake wiring (KIGO_FAKE_PURCHASER), DEBUG builds only (H1).
         if let fakePurchaser = launchPurchaser(environment: env) {
             // KIGO_FAKE_PURCHASER is set: use the resolved purchaser.
             // If it comes with an override source (succeed path), build the entitlement
@@ -110,8 +99,7 @@ struct KigoApp: App {
             entitlementProvider = launchEntitlementProvider(environment: env)
         }
         #else
-        // Release: no fake seams. Production purchaser + entitlement provider; no image override.
-        imageBaseURLOverride = nil
+        // Release: no fake seams. Production purchaser + entitlement provider.
         purchaser = StoreKitSubscriptionPurchaser()
         entitlementProvider = launchEntitlementProvider(environment: env)
         #endif
@@ -126,9 +114,7 @@ struct KigoApp: App {
                 languageStore: languageStore,
                 appearanceStore: appearanceStore,
                 reminderStore: reminderStore,
-                notificationScheduler: notificationScheduler,
-                imageSource: imageSource,
-                imageBaseURLOverride: imageBaseURLOverride
+                notificationScheduler: notificationScheduler
             )
             .environment(store)
         }
@@ -146,8 +132,9 @@ struct KigoApp: App {
 ///
 /// The Upgrade button (`paywall.entry`) is always present, overlaid as a small, unobtrusive
 /// control at the top-trailing corner of the screen via `.overlay(alignment: .topTrailing)`.
-/// Moved from `.bottomTrailing` to `.topTrailing` in slice #154 so it sits symmetrically
-/// opposite `info.entry` (top-leading) — both in the top third of the screen.
+/// Moved from `.bottomTrailing` to `.topTrailing` in slice #154 so it sits in the
+/// top third of the screen, clear of the central content (originally placed to be
+/// symmetric with a top-leading `info.entry` panel, since removed by the image pivot).
 ///
 /// Slice #136: `languageStore` carries the user's language preference; `ChromeStrings` is
 /// derived at sheet-construction time and passed into `PaywallView` so the restore label
@@ -169,8 +156,6 @@ struct RootView: View {
     let appearanceStore: any AppearanceStore
     let reminderStore: any ReminderStore
     let notificationScheduler: any NotificationScheduler
-    let imageSource: KigoImageSource
-    let imageBaseURLOverride: String?
 
     /// The two root-level sheets. They are deliberately distinct surfaces (PRD #189):
     /// the gear opens *settings* (language, appearance, subscription status + restore);
@@ -193,9 +178,7 @@ struct RootView: View {
         languageStore: any LanguageStore,
         appearanceStore: any AppearanceStore,
         reminderStore: any ReminderStore,
-        notificationScheduler: any NotificationScheduler,
-        imageSource: KigoImageSource,
-        imageBaseURLOverride: String?
+        notificationScheduler: any NotificationScheduler
     ) {
         self.entitlementProvider = entitlementProvider
         self.offerDisplay = offerDisplay
@@ -204,8 +187,6 @@ struct RootView: View {
         self.appearanceStore = appearanceStore
         self.reminderStore = reminderStore
         self.notificationScheduler = notificationScheduler
-        self.imageSource = imageSource
-        self.imageBaseURLOverride = imageBaseURLOverride
         // Seed the active language from the store's resolved preference (persisted
         // value, else the OS-derived initial language) so the first frame already
         // renders in the correct language — no Japanese flash for an English-OS user.
@@ -218,7 +199,7 @@ struct RootView: View {
     }
 
     var body: some View {
-        ContentView(imageSource: imageSource, imageBaseURLOverride: imageBaseURLOverride)
+        ContentView()
             .preferredColorScheme(appearanceStore.preference.colorScheme)
             .environment(\.language, language)
             .environment(\.isEntitled, paywallModel.isActive)

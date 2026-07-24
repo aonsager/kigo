@@ -46,10 +46,6 @@ targets:
         buildPhase: resources
       - path: Resources/Fonts/ZenKakuGothicNew-Medium.ttf
         buildPhase: resources
-      # Asagiri revamp (#158): bundled full-bleed background photo, looked up via
-      # UIImage(named: "tsuyu") (loose-file lookup, not an asset catalog).
-      - path: Resources/Images/tsuyu.jpg
-        buildPhase: resources
     dependencies:
       - target: KigoWidgetExtension
         embed: true
@@ -111,10 +107,6 @@ targets:
       # redacted placeholder because the timeline provider could not load content).
       - path: Resources/manifest.json
         buildPhase: resources
-      # Asagiri revamp (#158): bundled full-bleed background photo reused by
-      # KigoWidgetView's image layer via UIImage(named: "tsuyu").
-      - path: Resources/Images/tsuyu.jpg
-        buildPhase: resources
     dependencies:
       - package: KigoCore
     settings:
@@ -135,15 +127,6 @@ targets:
     deploymentTarget: "26.0"
     sources:
       - path: Tests/KigoTests
-      # Slice #205 (C25 slice 1, ADR 0022): committed Manifest fixtures proving
-      # imageBaseURL decodes both present and absent, for KigoImageSourceTests.
-      # Must be a `sources` entry with `buildPhase: resources` — XcodeGen has no
-      # top-level `resources:` target key (same pattern as Resources/manifest.json
-      # elsewhere in this file).
-      - path: Tests/Fixtures/image-source-with-base-url.json
-        buildPhase: resources
-      - path: Tests/Fixtures/image-source-without-base-url.json
-        buildPhase: resources
     dependencies:
       - target: Kigo
       - package: KigoCore
@@ -210,10 +193,6 @@ targets:
       # Must be a `sources` entry with `buildPhase: resources` — XcodeGen has no top-level
       # `resources:` target key (same pattern as the app and widget extension targets).
       - path: Resources/manifest.json
-        buildPhase: resources
-      # Asagiri revamp (#158): bundled background photo so KigoPlaceholderView's
-      # UIImage(named: "tsuyu") lookup resolves in the test bundle too.
-      - path: Resources/Images/tsuyu.jpg
         buildPhase: resources
     dependencies:
       - sdk: WidgetKit.framework
