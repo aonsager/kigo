@@ -33,6 +33,8 @@ def test_day_summary_flags():
     day = store.get_day(conn, "2026-03-25")
     s = webapp.day_summary(day, 0)
     assert s == {"date": "2026-03-25", "kanji": "桜", "approved": 0,
+                 "reading_ja": "さくら", "season": "spring",
+                 "subseason": "mid spring", "candidate_count": 0,
                  "has_prose": False, "has_image": False}
 
 

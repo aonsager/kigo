@@ -7,8 +7,9 @@
 
 Kigo is a calm iOS app that gives a person one quiet moment a day. On opening it,
 they see a single traditional Japanese seasonal word — the **Kigo** for today —
-presented over a large, evocative full-bleed image, with a brief note on the word's
-meaning and significance, and a small reading of the current Japanese **Microseason**
+presented over the current Sekki's seasonal wash, with the word (kanji + reading) as
+the visual hero, plus a brief note on the word's meaning and significance, and a
+small reading of the current Japanese **Microseason**
 (the Kō, with its parent Sekki beneath). That is the whole of the main experience:
 no calendar, no feed, no streaks. It should feel like a tasteful object on the
 nightstand, closer to a wellness app than a productivity tool.
@@ -24,18 +25,19 @@ can be **updated from a versioned remote URL** on app open (ADR 0017) — for no
 also generated into the repo and bundled as the seed/fallback.
 
 The app is free, and the line between free and paid is **encounter vs.
-understanding** (ADR 0019). Everyone *sees* the day's beauty for free — the full-bleed
-image, the Kigo **kanji** and **reading** — both in the app and on a fully free
-home-screen **Widget**, and, if they opt in, a gentle **daily reminder** at 08:00. What
-the subscription unlocks is *understanding*: the Kigo's full **description / significance
-prose**, the **Microseason** display (Kō/Sekki), and the **Almanac** depth. A single
-auto-renewable subscription gates that whole understanding layer.
+understanding** (ADR 0019, Encounter composition redefined ADR 0026). Everyone *sees* the
+day's Kigo for free — the **kanji** and **reading**, set over the current **Sekki
+backdrop**'s seasonal wash — both in the app and on a fully free home-screen **Widget**,
+and, if they opt in, a gentle **daily reminder** at 08:00. What the subscription unlocks is
+*understanding*: the Kigo's full **description / significance prose**, the **Microseason**
+display (Kō/Sekki), and the **Almanac** depth. A single auto-renewable subscription gates
+that whole understanding layer.
 
-The Today screen embodies the gate calmly. A **Basic** (free) user sees the image, kanji
-and reading and — where the description and microseason would sit — one quiet **Meaning
-entry** line (e.g. *"what does 蛍 mean? →"*) that opens the **Paywall**; nothing else
-intrudes on the calm. A **Premium** user sees the description, the microseason line, and
-the tappable timeline (Almanac) instead, with no upsell line.
+The Today screen embodies the gate calmly. A **Basic** (free) user sees the Sekki backdrop,
+kanji and reading and — where the description and microseason would sit — one quiet
+**Meaning entry** line (e.g. *"what does 蛍 mean? →"*) that opens the **Paywall**; nothing
+else intrudes on the calm. A **Premium** user sees the description, the microseason line,
+and the tappable timeline (Almanac) instead, with no upsell line.
 
 The subscription is bought **in-app**. Both the Settings gear and the Meaning entry open
 the same **Paywall** sheet. For a **Basic** user it presents the honest **Benefits** —
@@ -54,11 +56,12 @@ contemplative, aesthetic, low-friction.
 ### Visual revamp (Asagiri) — added 2026-06-16
 
 The app's deliberately-minimal first design is being replaced by a full visual revamp,
-internally **Asagiri** (朝霧): full-bleed per-day photography, centered sumi-ink **Mincho**
-typography, generous quiet space, a feathered frosted-glass plate that keeps the text
-legible over busy photos, and a gentle entrance — in **both light and dark** appearance,
-following the system. The canonical reference is the `Kigo Revamp.dc.html` handoff
-(design tokens, layout, motion, and the per-surface accessibility identifiers it preserves).
+internally **Asagiri** (朝霧): a full-bleed **Sekki backdrop** wash (uniform per Sekki, not
+per-day photography — ADR 0026), centered sumi-ink **Mincho** typography, generous quiet
+space, a feathered frosted-glass plate that keeps the text legible over the backdrop, and a
+gentle entrance — in **both light and dark** appearance, following the system. The
+canonical reference is the `Kigo Revamp.dc.html` handoff (design tokens, layout, motion, and
+the per-surface accessibility identifiers it preserves).
 
 The revamp keeps everything above and **deliberately reuses the existing accessibility
 identifiers** (`kigo.*`, `paywall.*`, `microseason.ko/sekki`, the placeholders), so the
@@ -69,8 +72,9 @@ violate the "only today" calm:
 - **Microseason Almanac** — the floating Microseason line becomes a resting **Year timeline**
   (sekki · kō above 72 ticks) that taps to expand a sheet with the kō/sekki year-positions,
   day-within-kō and kō-within-sekki **progress gauges**, glosses, and prose.
-- **Image Attribution panel** — an **(i)** control (top-left) slides a per-image credit panel
-  down from the top.
+- **Image Attribution panel** — RETIRED by ADR 0026 (image pivot): the bundled Sekki backdrops
+  carry no per-image credit, so the **(i)** control and its panel are removed entirely (see the
+  retired C14).
 - **Settings menu** — the bare **Upgrade entry** becomes a top-right **Settings gear** opening
   a sheet housing: a **Language preference** switcher (JP/EN), an Appearance switcher, the
   subscribe offer (the Paywall — now gating the **understanding layer**, ADR 0019), a default-off
@@ -119,34 +123,37 @@ serves only these, even if it seems helpful:
   deployed. The app *consumes* a versioned manifest from a placeholder remote `https` URL
   (the client side — C21/ADR 0017). **In scope now (ADR 0022):** a deterministic offline
   `scripts/content/` **assembly pipeline** that regenerates the bundled manifest from a
-  reviewed source CSV, plus a **static object host** serving the re-hosted images at stable
-  URLs (`imageBaseURL`). Still **out of scope:** any *dynamic* server / API / CMS that
+  reviewed source CSV. Still **out of scope:** any *dynamic* server / API / CMS that
   generates or serves content at request time, and standing up the versioned-manifest
   *endpoint* itself (the manifest stays generated into the repo and bundled as seed/fallback).
-- **Sourcing real photography/art — now partially in scope (ADR 0022).** Real
-  **royalty-free stock images** (one per kigo, delivered by remote URL + on-device cache)
-  are in scope, but the actual **image fetching + re-hosting is a human-run pipeline step**
-  needing a stock-API key and the static host (the loop scripts and scaffolds it, and flags
-  exactly what the human must supply — it never fetches/hosts on the gating path). Real image
-  *quality/fit* is J2; the real end-to-end network load is J10. The loop gates only the
-  machinery, the delivery seam, and a small worked example.
+  (The former static image host / `imageBaseURL` clause is **RETIRED by ADR 0026** — images
+  are no longer part of the manifest or the pipeline's output.)
+- **Sourcing/creating the 24 Sekki backdrop images (ADR 0026, superseding ADR 0022's stock-image
+  plan).** Real per-day photography (one image per kigo, fetched/re-hosted by a human pipeline
+  step) is **RETIRED**; its replacement — the 24 bundled, heavily-blurred, palette-matched
+  **Sekki backdrops** — is a **maintainer content task**, out of scope for the loop. The loop
+  ships the resolver + bundling + a deterministic per-Sekki gradient-wash placeholder so the
+  code lands green; dropping in the real 24 assets is a human step with **no per-item
+  verification burden** (unlike the abandoned per-day plan — the burden is deleted, not moved).
+  Their aesthetic fit is J2.
 - **Pre-iOS-26 support.** Deployment target is iOS 26 (see ADR 0002).
 - **Region/number/date locale formatting.** Full JP⇄EN **content** localization is now
-  **in scope** — English prose for every Kigo/Kō/Sekki description and gloss, English
-  attribution, and **romanized (romaji) readings** in English mode, switching **live** (C19/C20,
-  ADR 0018) on top of the C15 chrome strings. What stays out of scope is **locale-aware
-  number/date/currency formatting** (no region localization). **Kanji content names never
-  translate** — they show identically in both languages.
+  **in scope** — English prose for every Kigo/Kō/Sekki description and gloss, and
+  **romanized (romaji) readings** in English mode, switching **live** (C19/C20,
+  ADR 0018) on top of the C15 chrome strings. (The English-attribution clause this bullet
+  once carried is **RETIRED by ADR 0026** along with attribution itself.) What stays out of
+  scope is **locale-aware number/date/currency formatting** (no region localization). **Kanji
+  content names never translate** — they show identically in both languages.
 - **Browsing the year via the Almanac.** The Microseason Almanac shows only *today's*
   position in the year (counters + gauges + this kō/sekki's copy). It must never become a
   way to scrub to other days, kō, or sekki — that would breach the Today-only fence above.
-- **Real photography & real attribution values — now partially in scope (ADR 0022).** Real
-  images and their real **Image Attribution** (photographer/source/license, captured by the
-  pipeline from the stock provider) are in scope, produced by the human-run image pipeline
-  step above. What stays out of scope: the loop fetching/hosting them itself, and any
-  guarantee of *quality/fit* (J2). Schema presence/well-formedness remains gated (C12/C14);
-  the full **365-entry real corpus** is filled by a human in a later active session (the loop
-  ships the pipeline + scaffolding + a small worked example, gated by C24).
+- **Real per-image attribution — RETIRED (ADR 0026).** The former plan to source real images
+  with real **Image Attribution** (photographer/source/license) is retired along with the
+  whole remote-image seam: the bundled Sekki backdrops are original/CC0/palette-generated, so
+  there is no attribution to capture, gate, or display (the former C12/C14 gates are retired
+  accordingly). The full **365-entry** real **text** corpus (kanji/reading/description/
+  translation — no image fields) is still filled by a human in a later active session (the
+  loop ships the pipeline + scaffolding + a small worked example, gated by C24, now image-free).
 - **The bundled manifest being the full real corpus.** The loop's gated deliverable is the
   **machinery + a small worked example** (~8–12 real, localized rows — C24), not all 365 real
   entries. Filling the complete corpus (and running the image pipeline with a real key/host)
@@ -161,21 +168,21 @@ serves only these, even if it seems helpful:
 
 Standing rules every milestone inherits:
 
-- **Stack:** SwiftUI app + WidgetKit extension + StoreKit 2. Swift 6 / Xcode 26.4.
+- **Stack:** SwiftUI app + WidgetKit extension + StoreKit 2. Swift 6 / Xcode 26.5
+  (simulator *runtime* pin still iOS 26.4 — see CLAUDE.md's toolchain note).
 - **Project tooling:** multi-target Xcode project generated by XcodeGen from a
   committed `project.yml`. The canonical commands the whole loop uses:
   - `xcodegen generate`
-  - The canonical test invocation — used **verbatim** by every test-based procedure
-    below (substitute the suite). It pins the simulator runtime and fails fast so a
-    hung test cannot wedge the loop (rationale in CLAUDE.md "Build & test"):
-    ```
-    perl -e 'alarm shift; exec @ARGV' 720 \
-      xcodebuild test -scheme Kigo \
-        -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.4.1' \
-        -test-timeouts-enabled YES -default-test-execution-time-allowance 120 \
-        -maximum-test-execution-time-allowance 300 \
-        CODE_SIGNING_ALLOWED=NO -only-testing:<suite>
-    ```
+  - **The canonical test invocation lives in exactly one place: CLAUDE.md's
+    "Build & test — two lanes".** Every test-based procedure below runs it
+    (substituting the suite) rather than re-embedding it. In short: prefer the
+    **fast lane** (`scripts/xctimeout 300 swift test --package-path KigoCore`)
+    for anything in KigoCore; for app/widget suites use the hardened sim-lane
+    command — boot the pinned UDID, then `scripts/xctimeout 720 xcodebuild test
+    -scheme Kigo -destination "platform=iOS Simulator,id=$UDID"` with the
+    load-bearing timeout flags. It pins the simulator, fails fast so a hung test
+    cannot wedge the loop, and (per CLAUDE.md's sandbox trap) uses
+    `scripts/xctimeout`, never a raw `perl -e alarm` wrapper.
   - On success `xcodebuild` prints `** TEST SUCCEEDED **` (exit 0); that string is the
     pass observable for every test-based procedure below. **`** TEST SUCCEEDED **`
     alone is not sufficient** — `xcodebuild` prints it with `Executed 0 tests` and
@@ -194,9 +201,10 @@ Standing rules every milestone inherits:
 - **Testability seams:** the current date is injected through a `DateProvider`
   (overridable in tests and via the `KIGO_FAKE_DATE=YYYY-MM-DD` launch environment
   variable); the StoreKit entitlement, the purchase action
-  (`SubscriptionPurchaser`), the offer-display (price/duration) source, and the
-  app↔widget shared store are all injectable so logic is verifiable in-process
-  without real provisioning. The Paywall's StoreKit-dependent UI states are driven
+  (`SubscriptionPurchaser`), and the offer-display (price/duration) source are all
+  injectable so logic is verifiable in-process without real provisioning. (The
+  former app↔widget shared store seam was retired with the widget gate — ADR 0019;
+  the widget is ungated and no longer reads entitlement.) The Paywall's StoreKit-dependent UI states are driven
   in `KigoUITests` through launch-environment fakes mirroring `KIGO_FAKE_DATE` —
   `KIGO_FAKE_ENTITLEMENT=active|inactive` and `KIGO_FAKE_PRICE=<string>` (and
   optional `KIGO_FAKE_PURCHASE=…`); when absent the app uses the production
@@ -213,8 +221,9 @@ Standing rules every milestone inherits:
   path** (they hang or need a human/account from the CLI — CLAUDE.md / ADR 0009);
   any such integration test is non-blocking, runs only in the Xcode IDE or a manual
   lane, and is reported as J4 — never as a `C*` evidence step.
-- **Monetization model (ADR 0019):** the gate is **encounter (free) vs understanding (paid)**.
-  Free: the image, the Kigo kanji + reading, the **ungated Widget**, and the opt-in **daily
+- **Monetization model (ADR 0019, Encounter composition redefined ADR 0026):** the gate is
+  **encounter (free) vs understanding (paid)**. Free: the Sekki backdrop, the Kigo kanji +
+  reading, the **ungated Widget**, and the opt-in **daily
   reminder**. Paid (active **Entitlement**): the Kigo description/significance prose, the
   Microseason (Kō/Sekki) display, and the Almanac depth. The Today screen renders a quiet
   **Meaning entry** (`meaning.upsell`) for Basic users in place of the understanding layer; it and
@@ -246,10 +255,12 @@ Standing rules every milestone inherits:
   (both OFL, free to bundle). They are bundled into the app and registered in `UIAppFonts`;
   C17 gates that wiring against the built product (a missing/unregistered font silently
   falls back to the system font — exactly the kind of regression C8 was written to catch).
-- **Content schema (ADR 0014):** the Contract is extended once to be localization-ready
-  (Kō `description`; Sekki `gloss`+`description`; per-image `attribution`; optional English
-  fields decodable whether present or absent; `schemaVersion` bumped). C12 gates the
-  Japanese-side completeness and the optional-English forward-compatibility.
+- **Content schema (ADR 0014; attribution retired by ADR 0026):** the Contract was extended
+  once to be localization-ready (Kō `description`; Sekki `gloss`+`description`; optional
+  English fields decodable whether present or absent; `schemaVersion` bumped). The per-image
+  `attribution` field ADR 0014 introduced is retired along with the whole image concept (ADR
+  0026); C19 (rewritten) now gates the Japanese-side + English completeness that C12 used to
+  cover (C12 itself is retired — see the Criteria section).
 - **Almanac indexing:** all year-positions are **1-indexed** (梅子黄 = 27/72), matching the
   lit timeline tick (CONTEXT.md; overrides the mockup's literal "26/72").
 - **Daily Map keying (ADR 0016):** the Daily Map is keyed by **absolute `YYYY-MM-DD`**,
@@ -271,26 +282,24 @@ Standing rules every milestone inherits:
   to the local copy on any failure. **No live network in any evidence procedure** (ADR 0001): the
   update logic is gated through the injected fake (C21); the real fetch is off the gating path (J7).
 - **Live language store:** the persisted Language preference is exposed as a single observable
-  store the Today screen, Almanac, Attribution panel, and chrome all read; changing it re-renders
+  store the Today screen, Almanac, and chrome all read; changing it re-renders
   every visible string **without relaunch** (C20). `KIGO_FAKE_LANGUAGE=ja|en` still pins only the
-  *initial* value (ADR 0013); the live toggle is exercised through the Settings switcher.
-- **Content-assembly pipeline + real image delivery (ADR 0022):** the bundled
+  *initial* value (ADR 0013); the live toggle is exercised through the Settings switcher. (The
+  former Attribution panel this bullet also listed is retired — ADR 0026.)
+- **Content-assembly pipeline (ADR 0022; image delivery retired by ADR 0026):** the bundled
   `Resources/manifest.json` is produced only by a deterministic, offline `scripts/content/`
-  **assembly pipeline** from a reviewed source CSV (`content/kigo-2026.csv`) — never hand-edited.
-  The loop's gated deliverable is the **machinery + a small worked example** (~8–12 real,
-  localized rows); the full 365-entry real corpus and the real image fetch/re-host are
-  **human-run, out-of-band** steps (stock-API key + static host are human-supplied inputs the
-  pipeline documents and flags). Real images are delivered by **remote URL + on-device cache**:
-  the manifest gains an **optional** top-level `imageBaseURL` (ADR 0014 forward-compat — absent
-  ⇒ the app shows the gradient placeholder, no regression), and the app derives an image URL as
-  `imageBaseURL + "/" + imageId + ".jpg"`. Image loading is behind an injectable
-  **`KigoImageSource`** seam (production: `URLSession` + on-disk LRU cache; tests: in-memory
-  fake) — the real network fetch is **off the gating path** (J10, the "real network calls" row
-  of the headless-integration-traps catalog, mirroring RemoteManifestSource/J7). The revamp
-  launch-env convention gains **`KIGO_FAKE_IMAGE=loaded|none`** (extends ADR 0013) so the Today
-  screen's real-image-vs-placeholder render is driven deterministically under headless UI test.
-  The **widget stays on the gradient placeholder** (real widget photos would reintroduce the
-  app-group dependency ADR 0019 removed — deferred, out of scope here).
+  **assembly pipeline** from a reviewed source CSV (`content/kigo-2026.csv`) — never
+  hand-edited. The loop's gated deliverable is the **machinery + a small worked example**
+  (~8–12 real, localized rows); the full 365-entry real corpus is a **human-run, out-of-band**
+  step. The pipeline and manifest carry **no image or attribution fields** — `imageId`,
+  `attribution`, and the manifest's `imageBaseURL` are gone (ADR 0026); the former
+  `url_deriver.py` stage and the image/attribution CSV columns are deleted. **Imagery is now
+  the Sekki backdrop**, not per-day content: 24 bundled, heavily-blurred, palette-matched
+  backdrop assets, keyed off `Sekki.id` via `SekkiBackdrop.assetName(forSekkiId:)`, with a
+  deterministic per-Sekki gradient wash (`SekkiBackdrop.fallbackHue(forSekkiId:)`) as the
+  fallback until real art is supplied out-of-band. The shared `KigoPlaceholderView` renders it
+  full-bleed on **both** Today and the **Widget** — no fetch, no cache, and no
+  `KIGO_FAKE_IMAGE` seam (retired along with `KigoImageSource`).
 
 ## Criteria
 
@@ -309,7 +318,7 @@ Goal state met ⇔ every `C*` procedure below passes on `main`.
   3. Run the canonical test invocation (Constraints) with `-only-testing:KigoTests/SmokeTests`
      — expect `** TEST SUCCEEDED **` and exit 0, with `SmokeTests` containing ≥1 test.
 
-### C2: Content dataset is a complete, versioned 2026 dataset (amended — ADR 0016/0018)
+### C2: Content dataset is a complete, versioned 2026 dataset (amended — ADR 0016/0018/0026)
 
 - **Depends on:** C1
 - **Statement:** A committed Manifest conforms to the Contract: a full **absolute-date 2026
@@ -330,7 +339,7 @@ Goal state met ⇔ every `C*` procedure below passes on `main`.
      while d.year == 2026: want.append(d.isoformat()); d += datetime.timedelta(days=1)
      assert ks == want, 'must cover every 2026 day, no gaps'
      for k, e in dm.items():
-         assert e['kanji'] and e['imageId'], k
+         assert e['kanji'], k   # imageId assertion retired — no image field on DailyMapEntry (ADR 0026)
          for f in ('reading','description'):
              assert isinstance(e[f], dict) and e[f].get('ja'), f'{k}.{f} must be localized with ja'
          assert len(e['description']['ja']) >= 20, k
@@ -344,7 +353,8 @@ Goal state met ⇔ every `C*` procedure below passes on `main`.
      bundled Manifest **through the decoder** and asserts:
      - all 365 `2026-MM-DD` keys present and covering every day of 2026; each entry has non-empty
        `kanji`, a `reading` and a `description` (each `LocalizedText` with non-empty `ja`,
-       `description.ja` ≥ 20 chars), and an `imageId`;
+       `description.ja` ≥ 20 chars); (the former `imageId` assertion is retired — `DailyMapEntry`
+       carries no image field, ADR 0026);
      - exactly 72 Kō, each with non-empty `kanji`/`reading.ja`/`gloss` and a `sekkiId` that resolves
        to one of exactly 24 Sekki; the 72 Kō **perennial `MM-DD`** date ranges are contiguous and
        cover the whole year with no gaps or overlaps;
@@ -377,8 +387,8 @@ Goal state met ⇔ every `C*` procedure below passes on `main`.
      `DateProvider` and asserts, for a fixed set of 2026 dates spanning all four seasons (including
      a Kō boundary day):
      - the resolved Kigo **equals the Daily Map entry loaded from the manifest for that
-       `2026-MM-DD` key** — every field (`kanji`, `reading`, `description`, `imageId`) matches
-       that key's entry and differs from an adjacent day's entry, proving the correct per-day
+       `2026-MM-DD` key** — every field (`kanji`, `reading`, `description`, `translationEn`)
+       matches that key's entry and differs from an adjacent day's entry, proving the correct per-day
        record is read by content, not position. *(This replaces the earlier
        `(2026-MM-DD)`-in-description date-stamp check, which real content strips — ADR 0022;
        content-equality is the durable per-day-correctness signal and holds for dummy and real
@@ -390,11 +400,11 @@ Goal state met ⇔ every `C*` procedure below passes on `main`.
      - an **out-of-range** date (e.g. `2027-01-01`, with no Daily-Map entry) resolves to the
        defined "content unavailable" state (no entry, no thrown error to the UI).
 
-### C5: Today screen shows today's Kigo and Microseason
+### C5: Today screen shows today's Kigo and Microseason (amended — ADR 0026: image → Sekki backdrop)
 
 - **Depends on:** C1, C2, C3, C4
-- **Statement:** The main screen renders today's full-bleed image, the Kigo kanji,
-  reading and description, and the small Microseason display (Kō primary, Sekki
+- **Statement:** The main screen renders the current **Sekki backdrop** full-bleed, the Kigo
+  kanji, reading and description, and the small Microseason display (Kō primary, Sekki
   secondary), for the resolved date.
 - **Evidence:**
   1. Run the canonical test invocation (Constraints) with `-only-testing:KigoUITests/TodayScreenUITests`
@@ -402,10 +412,11 @@ Goal state met ⇔ every `C*` procedure below passes on `main`.
      environment `KIGO_FAKE_DATE=2026-06-12` **and `KIGO_FAKE_ENTITLEMENT=active`** (the
      description and microseason are now part of the Premium understanding layer — ADR 0019/C22 —
      so this suite verifies the full Today render as a Premium user sees it) and asserts, via
-     accessibility identifiers, that the today screen shows: an image element
-     (`id "kigo.image"`), the Kigo kanji static text matching the Manifest's `06-12`
-     entry (`id "kigo.kanji"`), a non-empty description (`id "kigo.description"`),
-     and the Kō name (`id "microseason.ko"`) with the Sekki (`id "microseason.sekki"`).
+     accessibility identifiers, that the today screen shows: the full-bleed backdrop element
+     (`id "kigo.image"`, now the resolved Sekki backdrop rather than a per-day photo), the Kigo
+     kanji static text matching the Manifest's `06-12` entry (`id "kigo.kanji"`), a non-empty
+     description (`id "kigo.description"`), and the Kō name (`id "microseason.ko"`) with the
+     Sekki (`id "microseason.sekki"`).
 
 ### C6: Subscription paywall grants and restores the understanding-layer entitlement (amended — ADR 0019)
 
@@ -438,32 +449,33 @@ Goal state met ⇔ every `C*` procedure below passes on `main`.
      and excluded from this suite (it hangs under `xcodebuild` CLI — CLAUDE.md / ADR
      0009), so it never gates this criterion.
 
-### C7: Widget renders today's content, ungated (amended — ADR 0019)
+### C7: Widget renders today's content, ungated (amended — ADR 0019; image → Sekki backdrop ADR 0026)
 
 - **Depends on:** C1, C2, C3
 - **Statement:** The widget (systemSmall and systemMedium) builds a timeline whose
   current entry is today's Kigo, advancing to the next day at local midnight. The widget is
-  **free and ungated**: every entry reveals the image **and** carries the Kigo kanji + reading,
-  regardless of the Entitlement state. (The gate moved off the widget and onto the in-app
-  understanding layer — the Widget Gate is retired; see C22 and ADR 0019.)
+  **free and ungated**: every entry carries a non-empty **Sekki backdrop** asset name **and**
+  the Kigo kanji + reading, regardless of the Entitlement state. (The gate moved off the widget
+  and onto the in-app understanding layer — the Widget Gate is retired; see C22 and ADR 0019.
+  The former `imageId`/`showsImage` fields are retired along with the per-day image concept —
+  ADR 0026.)
 - **Evidence:**
   1. Run the canonical test invocation (Constraints) with
      `-only-testing:KigoWidgetTests/WidgetUngatedTests` — expect `** TEST SUCCEEDED **`, exit 0,
-     **and** output matching `Executed [1-9][0-9]* test` (nonzero-count guard; this is a **new**
-     suite — until it exists the criterion reads unmet, which is correct, and it cannot false-pass
-     against the old gated `WidgetTimelineTests`). With an injected `DateProvider` and
-     `ContentSource`, the suite asserts:
+     **and** output matching `Executed [1-9][0-9]* test` (nonzero-count guard). With an injected
+     `DateProvider` and manifest, the suite asserts:
      - the timeline's first entry corresponds to the injected date's Kigo, and the
        next entry's date is the following local midnight;
-     - for both `systemSmall` and `systemMedium`, the built entry has `showsImage == true`
-       and carries the `imageId`, the Kigo kanji, and the reading;
-     - the entry reveals the image **independent of any entitlement state** — building the
-       timeline with no entitlement (or an explicitly inactive one) still yields
-       `showsImage == true` (the widget no longer reads the entitlement).
-  2. The pre-inversion `WidgetTimelineTests` asserted the now-retired gate
-     (`inactive → showsImage == false`); the loop must **update or remove** those gated assertions
-     when it ungates the widget (they otherwise fail CI once `showsImage` is always true — caught
-     as a regression at audit). The rollover-logic assertions migrate into `WidgetUngatedTests`.
+     - for both `systemSmall` and `systemMedium`, the built entry has a non-empty
+       `backdropAssetName` (`"backdrop-<sekkiId>"`, resolved via
+       `SekkiBackdrop.assetName(forSekkiId:)` from the resolved day's Sekki), the Kigo kanji,
+       and the reading;
+     - the entry reveals the backdrop **independent of any entitlement state** —
+       `WidgetTimelineBuilder` takes no `entitlementStore` parameter at all, so there is nothing
+       to gate.
+  2. `WidgetTimelineBuilder` carries no `showsImage`/`imageId` API any more; the rollover-logic
+     assertions (two-entry timeline structure, local- and year-boundary midnight rollover) live
+     in `WidgetUngatedTests` alongside the backdrop assertions above.
 
 ### C8: The widget works through the real built artifact (honest integration — amended ADR 0019)
 
@@ -480,9 +492,10 @@ Goal state met ⇔ every `C*` procedure below passes on `main`.
 - **Evidence:**
   1. Run `xcodegen generate`, then build with the product path pinned:
      ```
-     perl -e 'alarm shift; exec @ARGV' 720 \
+     # $UDID = the pinned, pre-booted simulator (see CLAUDE.md "Build & test").
+     scripts/xctimeout 720 \
        xcodebuild build -scheme Kigo \
-         -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.4.1' \
+         -destination "platform=iOS Simulator,id=$UDID" \
          -derivedDataPath build CODE_SIGNING_ALLOWED=NO
      ```
      — expect `** BUILD SUCCEEDED **` and exit 0. Then run
@@ -598,33 +611,16 @@ loop catches it. Do not renumber or rewrite C9/C10.
      - the counts are 1-indexed and the totals are exactly 72 (Kō) and 24 (Sekki);
      - `02-29` resolves to a defined position without crashing.
 
-### C12: Almanac & attribution content is complete and the schema is localization-ready
+### C12: Almanac & attribution content is complete and the schema is localization-ready — RETIRED
 
-- **Depends on:** C2
-- **Statement:** The Manifest carries the content the Almanac and Attribution panel render,
-  structurally complete and localization-ready (ADR 0014): every Kō has a non-empty
-  `description`; every Sekki has a non-empty `gloss` and `description`; every Daily Map
-  image has well-formed `attribution` (non-empty title, credit, license); and the schema
-  decodes optional English fields whether present or absent, so English content can be added
-  later without a schema break. Literary/photo quality is **not** gated here (J2/J6).
-- **Evidence:**
-  1. Run the canonical test invocation (Constraints) with
-     `-only-testing:KigoTests/AlmanacContentValidationTests` — expect `** TEST SUCCEEDED **`,
-     exit 0, and `Executed [1-9][0-9]* test`. The suite loads the bundled Manifest and asserts:
-     - all **72** Kō have a non-empty `description`;
-     - all **24** Sekki have a non-empty `gloss` **and** a non-empty `description`;
-     - all **366** Daily Map entries resolve to an `attribution` with non-empty `title`,
-       `credit`, and `license`.
-  2. Run `swift test --package-path KigoCore --filter LocalizableContentTests` (the
-     fast lane; CLAUDE.md) — expect exit 0 and `Executed 10 test`
-     (`LocalizableContentTests` moved host-side to KigoCore in the migration commit
-     c92f183 — see ADR 0023). The suite asserts the Manifest decodes a fixture
-     entry that **includes** the optional English field(s) and one that **omits** them (both
-     succeed and round-trip), pinning the forward-compatibility ADR 0014 requires.
+**RETIRED by ADR 0026 (image pivot):** the attribution schema is deleted entirely (no per-image
+credit exists to gate); the almanac-completeness half of this criterion is superseded by C19
+(rewritten), which gates Kō/Sekki bilingual completeness without attribution.
 
 ### C13: Today shows the resting timeline and expands the almanac (reachable — amended ADR 0019)
 
-- **Depends on:** C5, C6, C11, C12
+- **Depends on:** C5, C6, C11, C19 (C12's almanac-completeness role moved to C19 — ADR 0026; C12
+  itself is retired)
 - **Statement:** For a **Premium** user, the Today screen shows the resting **Year timeline**
   (Microseason line) and, tapping it, expands the **Almanac** sheet showing the derived
   positions and copy — verified through the *real, reachable* live app (not merely that a
@@ -644,19 +640,11 @@ loop catches it. Do not renumber or rewrite C9/C10.
        `microseason.dayGauge`, and a non-empty `microseason.koDescription`;
      - dismissing (grab indicator or backdrop) hides `microseason.almanac`.
 
-### C14: Image-attribution panel is reachable from Today
+### C14: Image-attribution panel is reachable from Today — RETIRED
 
-- **Depends on:** C5, C12
-- **Statement:** An **(i)** control on the Today screen opens an **Attribution panel**
-  showing the resolved image's credit — verified through the real app; dismissed by the grab
-  indicator or backdrop (no label, no close button).
-- **Evidence:**
-  1. Run the canonical test invocation (Constraints) with
-     `-only-testing:KigoUITests/AttributionPanelUITests` — expect `** TEST SUCCEEDED **`,
-     exit 0, and `Executed [1-9][0-9]* test`. Launched with `KIGO_FAKE_DATE=2026-06-16`, the
-     suite asserts: `info.entry` is present; tapping it presents `info.panel`; the panel
-     shows a non-empty `info.credit` and a non-empty `info.title`; dismissing via the
-     backdrop hides `info.panel`.
+**RETIRED by ADR 0026 (image pivot):** the `(i)` Attribution control, its panel, and the
+`info.*`/`attribution` fields are deleted entirely — the bundled Sekki backdrops carry no
+per-image credit to show.
 
 ### C15: Language preference switches the app's UI-chrome strings
 
@@ -709,9 +697,10 @@ loop catches it. Do not renumber or rewrite C9/C10.
 - **Evidence:**
   1. Run `xcodegen generate`, then build with the product path pinned:
      ```
-     perl -e 'alarm shift; exec @ARGV' 720 \
+     # $UDID = the pinned, pre-booted simulator (see CLAUDE.md "Build & test").
+     scripts/xctimeout 720 \
        xcodebuild build -scheme Kigo \
-         -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.4.1' \
+         -destination "platform=iOS Simulator,id=$UDID" \
          -derivedDataPath build CODE_SIGNING_ALLOWED=NO
      ```
      — expect `** BUILD SUCCEEDED **` and exit 0.
@@ -726,32 +715,35 @@ loop catches it. Do not renumber or rewrite C9/C10.
      bundle, not merely referenced — the XcodeGen-silently-dropped-resource failure mode C8
      guards, applied to fonts.)*
 
-### C18: Today screen composition (measurable visual facts)
+### C18: Today screen composition (measurable visual facts) (amended — ADR 0026: image → Sekki backdrop; (i) control retired)
 
 - **Depends on:** C5
 - **Statement:** The Today screen composes the Asagiri structure as objectively measurable
-  facts: a **full-bleed** image filling the screen (not a small corner box — the exact bug
-  the designer hit), a **legibility treatment** behind the centered text, and the controls in
-  their corners (the **(i)** top-left, the **Settings gear** top-right). Aesthetic fidelity is
-  J6; these geometric facts are gated.
+  facts: a **full-bleed Sekki backdrop** filling the screen (not a small corner box — the exact
+  bug the designer hit), a **legibility treatment** behind the centered text, and the
+  **Settings gear** in its top-right corner. (The former top-left **(i)** Attribution control is
+  retired along with the whole attribution concept — ADR 0026; see the retired C14.) Aesthetic
+  fidelity is J6; these geometric facts are gated.
 - **Evidence:**
   1. Run the canonical test invocation (Constraints) with
      `-only-testing:KigoUITests/TodayLayoutUITests` — expect `** TEST SUCCEEDED **`, exit 0,
      and `Executed [1-9][0-9]* test`. Launched with `KIGO_FAKE_DATE=2026-06-16`, the suite
      asserts against the app window's frame:
-     - `kigo.image` is full-bleed — its width is within a small tolerance of the window width
-       **and** its height is ≥ 90% of the window height (catches the "small box" regression);
+     - `kigo.image` (the resolved Sekki backdrop) is full-bleed — its width is within a small
+       tolerance of the window width **and** its height is ≥ 90% of the window height (catches
+       the "small box" regression);
      - a `kigo.scrim` legibility element is present in the hierarchy;
-     - `info.entry`'s center is in the top-left region (x < width/2, y < height/3) and
-       `paywall.entry`'s center is in the top-right region (x > width/2, y < height/3).
+     - `paywall.entry`'s center is in the top-right region (x > width/2, y < height/3).
 
-### C19: Manifest content is fully localized JP/EN, readings romanized (ADR 0018)
+### C19: Manifest content is fully localized JP/EN, readings romanized (ADR 0018; attribution clause retired ADR 0026)
 
-- **Depends on:** C2, C12
+- **Depends on:** C2
 - **Statement:** Every localizable field in the Manifest is populated in **both** Japanese and
-  English — Kigo/Kō/Sekki descriptions and glosses, attribution, and **readings** (`ja`=hiragana,
+  English — Kigo/Kō/Sekki descriptions and glosses, and **readings** (`ja`=hiragana,
   `en`=romaji) — while kanji names stay single, untranslated values, and the schema still decodes
   with or without `en` (ADR 0014 forward-compat preserved). Translation *quality* is J2, not gated.
+  (The per-entry `attribution` bilingual clause this criterion once carried is retired — ADR
+  0026; there is no attribution field left to localize.)
 - **Evidence:**
   1. **Data-shape precheck (external, deterministic).** Run against `Resources/manifest.json`:
      ```
@@ -762,7 +754,6 @@ loop catches it. Do not renumber or rewrite C9/C10.
          assert isinstance(x, dict) and x.get('ja') and x.get('en'), f'{path} needs ja+en'
      for k, e in m['dailyMap'].items():
          loc(e['reading'], f'{k}.reading'); loc(e['description'], f'{k}.description')
-         for f in ('title','credit','license'): loc(e['attribution'][f], f'{k}.attr.{f}')
          assert isinstance(e['kanji'], str) and e['kanji'], k          # kanji single value
      for o in m['ko']:
          loc(o['reading'], 'ko.reading'); loc(o['description'], 'ko.description')
@@ -771,23 +762,23 @@ loop catches it. Do not renumber or rewrite C9/C10.
      print('OK'); sys.exit(0)
      PY
      ```
-     — expect `OK` and exit 0. *(Fails today: readings/description are plain strings and `en` is
-     largely absent — reads unmet until the dataset is localized.)*
+     — expect `OK` and exit 0.
   2. Run the canonical test invocation (Constraints) with
      `-only-testing:KigoTests/ContentLocalizationCompletenessTests` — expect `** TEST SUCCEEDED **`,
      exit 0, and `Executed [1-9][0-9]* test`. The suite loads the bundled Manifest through the decoder
      and asserts: every Daily-Map entry, Kō, and Sekki resolves a non-empty **English** value for each
-     localizable field (description/gloss/reading/attribution); `kanji` is identical regardless of
+     localizable field (description/gloss/reading); `kanji` is identical regardless of
      language; and the language accessor falls back to `ja` for a fixture entry that omits `en`
-     (preserving the C12 / ADR 0014 forward-compat guarantee).
+     (preserving the ADR 0014 forward-compat guarantee).
 
 ### C20: Language preference switches all content + chrome live (no relaunch — ADR 0018)
 
 - **Depends on:** C13, C15, C19
 - **Statement:** Toggling the Language preference in the **Settings menu** re-renders **every**
-  visible string — Today (Kigo description, reading), the Almanac (Kō/Sekki gloss + prose), the
-  Attribution panel, and UI chrome — from Japanese to English **without relaunch**, verified
-  through the real, reachable live app. Kanji names are unchanged.
+  visible string — Today (Kigo description, reading), the Almanac (Kō/Sekki gloss + prose), and
+  UI chrome — from Japanese to English **without relaunch**, verified
+  through the real, reachable live app. Kanji names are unchanged. (The former Attribution panel
+  this statement also listed is retired — ADR 0026.)
 - **Evidence:**
   1. Run the canonical test invocation (Constraints) with
      `-only-testing:KigoUITests/LiveLanguageSwitchUITests` — expect `** TEST SUCCEEDED **`, exit 0,
@@ -833,12 +824,12 @@ loop catches it. Do not renumber or rewrite C9/C10.
      apply / fallback logic it feeds is fully gated in step 1. The real end-to-end network fetch is
      J7, off the headless gating path.
 
-### C22: The Meaning Gate splits the Today screen by entitlement (ADR 0019)
+### C22: The Meaning Gate splits the Today screen by entitlement (ADR 0019; image → Sekki backdrop ADR 0026)
 
 - **Depends on:** C5, C6, C9
 - **Statement:** The Today screen gates the **understanding layer** behind the **Entitlement**
-  (ADR 0019), verified through the *real, reachable* live app. A **Basic** user sees the image,
-  the Kigo kanji and reading, and — in place of the description and microseason — a single quiet
+  (ADR 0019), verified through the *real, reachable* live app. A **Basic** user sees the Sekki
+  backdrop, the Kigo kanji and reading, and — in place of the description and microseason — a single quiet
   **Meaning entry** (`meaning.upsell`); the description and microseason are **absent**, and
   tapping the Meaning entry presents the **Paywall** (`paywall.sheet`). A **Premium** user sees
   the full `kigo.description`, the `microseason.ko`/`microseason.sekki` line and the tappable
@@ -889,7 +880,7 @@ loop catches it. Do not renumber or rewrite C9/C10.
      suite must not tap-enable the toggle — enabling fires the real permission prompt, which hangs
      headless; the real enable→schedule→deliver path is J9, off the gating path.)*
 
-### C24: Content-assembly pipeline assembles a valid localized manifest from a source CSV (ADR 0022)
+### C24: Content-assembly pipeline assembles a valid localized manifest from a source CSV (ADR 0022; image/attribution fields retired ADR 0026)
 
 - **Depends on:** C2, C19
 - **Statement:** A deterministic, **offline** `scripts/content/` pipeline regenerates a
@@ -898,8 +889,11 @@ loop catches it. Do not renumber or rewrite C9/C10.
   source-CSV format, validation tooling, a documented **LLM-fill workflow** a human runs in a
   later active session to fill all 365 rows, and a committed **worked example**
   (`content/kigo-2026.example.csv`, ≥8 real, localized rows) as both the gate fixture and the
-  human's template. This is the loop's gated deliverable; filling the full 365-entry corpus and
-  fetching/hosting real images are human-run steps (their quality is J2, real load is J10).
+  human's template. The CSV/manifest carry **no image or attribution fields** — the pipeline
+  emits only `kanji`/`reading`/`description`/`translationEn` per row (ADR 0026 retired
+  `image_id`/`attribution_*` columns, `url_deriver.py`, and the manifest's `imageBaseURL`). This
+  is the loop's gated deliverable; filling the full 365-entry corpus is a human-run step (its
+  quality is J2).
 - **Evidence:**
   1. **Assembly round-trip + row shape (external, deterministic, offline).** Assemble the
      worked example to a temp manifest, then validate its Daily-Map rows:
@@ -908,18 +902,17 @@ loop catches it. Do not renumber or rewrite C9/C10.
      python3 - "$TMPDIR/wm.json" <<'PY'
      import json, re, sys
      m = json.load(open(sys.argv[1]))
-     assert isinstance(m.get('imageBaseURL'), str) and m['imageBaseURL'].startswith('https://'), 'imageBaseURL must be an https string'
      assert isinstance(m.get('version'), int) and 'schemaVersion' in m, 'version/schemaVersion required'
+     assert 'imageBaseURL' not in m, 'imageBaseURL is retired (ADR 0026) — must not reappear'
      dm = m['dailyMap']; assert len(dm) >= 8, 'worked example needs >=8 rows'
      for k, e in dm.items():
          assert re.fullmatch(r'2026-\d{2}-\d{2}', k), k
-         assert e['kanji'] and e['imageId'], k
+         assert e['kanji'] and e['translationEn'], k
+         assert 'imageId' not in e and 'attribution' not in e, f'{k}: imageId/attribution are retired (ADR 0026)'
          blob = e['description']['ja'] + e['description']['en']
          assert not re.search(r'\(20\d\d-\d\d-\d\d\)', blob), f'{k}: dummy date-stamp instrumentation must be stripped'
          for f in ('reading', 'description'):
              assert e[f].get('ja') and e[f].get('en'), f'{k}.{f} needs ja+en'
-         for f in ('title', 'credit', 'license'):
-             assert e['attribution'][f].get('ja') and e['attribution'][f].get('en'), f'{k}.attr.{f} needs ja+en'
      assert len(m.get('ko', [])) == 72 and len(m.get('sekki', [])) == 24, 'Ko/Sekki copied through intact'
      print('OK'); sys.exit(0)
      PY
@@ -927,8 +920,7 @@ loop catches it. Do not renumber or rewrite C9/C10.
      — expect `OK` and exit 0. Then assemble a **second** time to a different path and assert
      byte-identical output (idempotency):
      `python3 scripts/content/assemble.py --csv content/kigo-2026.example.csv --out "$TMPDIR/wm2.json" && cmp "$TMPDIR/wm.json" "$TMPDIR/wm2.json"`
-     — expect exit 0. *(Fails today: `scripts/content/` and the example CSV do not exist yet —
-     reads unmet until the pipeline ships.)*
+     — expect exit 0.
   2. Run the pipeline's own self-contained test script — `python3 scripts/content/test_pipeline.py`
      — expect exit 0 and a final `ALL PASS` line preceded by **≥1** `PASS <test_name>` line
      (nonzero-count guard; a missing script or zero tests reads unmet, which is correct until the
@@ -936,66 +928,23 @@ loop catches it. Do not renumber or rewrite C9/C10.
      `scripts/test_arbiter_fixtures.py` convention; `pytest` is not installed in the loop
      environment, so an oracle depending on it would be malformed.)* The script covers, over
      in-repo fixtures with no network: CSV→manifest field mapping, the localized-shape +
-     no-instrumentation validator, the `imageBaseURL + "/" + imageId + ".jpg"` URL derivation,
-     and rejection of a malformed row (missing reading/en, or a leftover date-stamp) with a
-     nonzero exit.
+     no-instrumentation validator, and rejection of a malformed row (missing reading/en, missing
+     `translationEn`, or a leftover date-stamp) with a nonzero exit. (The former `imageBaseURL +
+     "/" + imageId + ".jpg"` URL-derivation check is retired along with `url_deriver.py` — ADR
+     0026.)
 
-### C25: KigoImageSource remote-image seam, cache, and fallback logic (ADR 0022)
+### C25: KigoImageSource remote-image seam, cache, and fallback logic (ADR 0022) — RETIRED
 
-- **Depends on:** C2
-- **Statement:** Image loading is behind an injectable **`KigoImageSource`** seam. Given the
-  manifest's optional `imageBaseURL` and an entry's `imageId`, the seam derives the image URL,
-  serves from an on-disk cache on hit, downloads on miss, and yields **nil** (⇒ the caller shows
-  the gradient placeholder) on any failure or when `imageBaseURL` is absent — all verified
-  headlessly through an injected fake (no `URLSession`, no network). The real network fetch is
-  **off the gating path** (J10 — the "real network calls" trap row, mirroring C21/J7).
-- **Evidence:**
-  1. Run the canonical test invocation (Constraints) with
-     `-only-testing:KigoTests/KigoImageSourceTests` — expect `** TEST SUCCEEDED **`, exit 0,
-     **and** output matching `Executed [1-9][0-9]* test`. With an injected **fake transport**
-     (records requests, returns canned bytes, no network) and a temp cache directory, the suite
-     asserts:
-     - **URL derivation:** for `imageBaseURL = "https://cdn.example/img"` and
-       `imageId = "kigo-06-12"`, the seam requests `https://cdn.example/img/kigo-06-12.jpg`;
-     - **cache miss then hit:** the first `image(for:)` fetches once (the fake records exactly one
-       request) and writes bytes to the cache dir; a second call for the same id returns from
-       cache with **no** further request;
-     - **failure:** when the transport throws or returns non-image bytes, `image(for:)` returns
-       `nil` and throws nothing;
-     - **absent base URL:** with a manifest decoded **without** `imageBaseURL` (nil), the seam
-       returns `nil` without attempting a fetch (graceful degradation to placeholder), and the
-       Manifest decodes both **with** and **without** `imageBaseURL` (ADR 0014 forward-compat);
-     - **eviction:** after the cache exceeds its configured size cap, the least-recently-used
-       cached file is removed.
-  2. **Residual on-path wiring (real adapter, offline).** Run the canonical test invocation with
-     `-only-testing:KigoTests/KigoImageSourceAdapterTests` — expect `** TEST SUCCEEDED **`, exit
-     0, and `Executed [1-9][0-9]* test`. Using a **stubbed `URLProtocol`** registered on the
-     adapter's session (returns canned image bytes offline — no real network), the suite asserts
-     the **production** `URLSession`-backed adapter builds the well-formed `https` URL from
-     `imageBaseURL + imageId` and returns the decoded image **without throwing**. *(Built-wiring
-     check the fake hides; the live-CDN fetch is J10, off the gating path — ADR 0022 / ADR 0017.)*
+**RETIRED by ADR 0026 (image pivot):** the whole remote-image seam (`KigoImageSource`, its
+on-disk cache, `imageBaseURL`/`imageId` URL derivation) is deleted — images are now 24 bundled
+per-Sekki backdrops with no fetch, no cache, and no failure mode to gate.
 
-### C26: Today screen renders the remote image with graceful placeholder fallback (ADR 0022)
+### C26: Today screen renders the remote image with graceful placeholder fallback (ADR 0022) — RETIRED
 
-- **Depends on:** C5, C25
-- **Statement:** The Today screen displays the day's **real remote image** when the
-  `KigoImageSource` yields one, and falls back to the **gradient placeholder** when it yields nil
-  (loading / offline / no `imageBaseURL`) — verified through the *real, reachable* live app via
-  the `KIGO_FAKE_IMAGE` injection (ADR 0022/0013), with no blank or crashed render. The widget is
-  unchanged (gradient — out of scope here).
-- **Evidence:**
-  1. Run the canonical test invocation (Constraints) with
-     `-only-testing:KigoUITests/RemoteImageUITests` — expect `** TEST SUCCEEDED **`, exit 0,
-     **and** output matching `Executed [1-9][0-9]* test` (nonzero-count guard; new suite). Via
-     accessibility identifiers:
-     - **loaded case** — launched with `KIGO_FAKE_DATE=2026-06-12` and `KIGO_FAKE_IMAGE=loaded`
-       (injects a fake `KigoImageSource` returning a known image): the Today screen shows
-       `kigo.image` and exposes the **remote-image** layer `kigo.image.remote`;
-     - **fallback case** — relaunched with `KIGO_FAKE_IMAGE=none` (fake returns nil): the Today
-       screen still shows `kigo.image` (no blank), exposes the **placeholder** layer
-       `kigo.image.placeholder`, and does **not** expose `kigo.image.remote`;
-     - in **both** cases the app stays responsive — a known control (`paywall.entry`) is present
-       and hittable (no crash on either path).
+**RETIRED by ADR 0026 (image pivot):** there is no remote image to fall back from — the Today
+screen renders the bundled Sekki backdrop unconditionally (or its deterministic gradient wash
+until real art lands), collapsing the loaded/fallback distinction this criterion gated. See C5
+(rewritten) for the current backdrop-render assertion.
 
 ## Judgment claims
 
@@ -1007,40 +956,45 @@ these are surfaced for awareness only.)
 
 - **Applies to:** whole project
 - **Claim:** Opening the app feels contemplative and uncluttered — a single daily
-  moment, dominated by the image and the word — not a utilitarian calendar.
+  moment, dominated by the **word** over the current Sekki's seasonal backdrop wash — not a
+  utilitarian calendar (composition redefined by ADR 0026: typography is the hero, not a
+  per-day image).
 - **Lens:** Launch the app in the simulator and judge typography, spacing, motion,
   and overall restraint as a non-developer seeking a calm daily ritual would.
 
-### J2: The Kigo content and imagery are evocative and accurate
+### J2: The Kigo content and backdrops are evocative and accurate (amended — ADR 0026: image → Sekki backdrop, attribution retired)
 
-- **Applies to:** C2, C5, C12, C13, C14, C19, C24
+- **Applies to:** C2, C5, C13, C19, C24 (C12 and C14 are retired — ADR 0026)
 - **Claim:** The Kigo words, hiragana readings, and EN/JP descriptions are accurate, evocative,
   and correctly placed in season; the per-Kō and per-Sekki almanac descriptions/glosses are
   accurate, in the right quiet voice, and give real "where am I in the year" context; the
-  **English translations and romaji readings** are accurate and natural; and the **real
-  royalty-free images** and their **real attribution** (photographer/source/license) suit each
-  Kigo and season. Under ADR 0022 the corpus lands in stages: the loop ships the assembly
-  pipeline + a small **worked example** (real rows — judged here now), while the **full
-  365-entry corpus and the real images are filled/fetched by a human out-of-band** (stock-API
-  key + static host) in a later active session; until that fill lands, the bundled Daily-Map
-  stays instrumented dummy data over gradient placeholders. Quality of each batch is judged as
-  it lands — never gated.
+  **English translations and romaji readings** are accurate and natural; and the **24 Sekki
+  backdrops evoke their season's mood** — not a per-item photo to verify (ADR 0026 deliberately
+  *deletes* that verification burden, it does not move it elsewhere). The full 365-entry text
+  corpus lands in stages via the human-run content-assembly pipeline (ADR 0022): the loop ships
+  the assembly pipeline + a small **worked example** (real rows — judged here now), while the
+  **full 365-entry corpus is filled by a human out-of-band** in a later active session; until
+  that fill lands, the bundled Daily-Map stays instrumented dummy data. Quality of each batch is
+  judged as it lands — never gated.
 - **Lens:** Read a sample of Daily Map entries and almanac kō/sekki descriptions across
   seasons in **both languages** for accuracy and tone (the worked example now; the full corpus
-  when filled); view the rendered images and the attribution panel once the human image
-  pipeline has run. Note which parts are still dummy/placeholder pending the human fill.
+  when filled); view the rendered Sekki backdrops for seasonal mood once the real 24 assets
+  replace the gradient-wash placeholder. Note which parts are still dummy/placeholder pending
+  the human fill.
 
-### J3: The widget renders correctly on a real home screen (amended — ADR 0019)
+### J3: The widget renders correctly on a real home screen (amended — ADR 0019; image → Sekki backdrop ADR 0026)
 
 - **Applies to:** C7, C8
 - **Claim:** Added to a real device's home screen, both widget sizes (systemSmall and
-  systemMedium) show today's Kigo image + name for **everyone** — the widget is free and
-  ungated (ADR 0019), so there is no subscriber/non-subscriber distinction to enforce; the real
-  content path resolves today's Kigo across the app↔widget process boundary and renders visually.
+  systemMedium) show the current **Sekki backdrop** + Kigo name for **everyone** — the widget is
+  free and ungated (ADR 0019), so there is no subscriber/non-subscriber distinction to enforce;
+  the real content path resolves today's Kigo across the app↔widget process boundary and
+  renders visually. (The former `imageId`-keyed per-day image is retired — the widget resolves
+  its backdrop purely from the day's Sekki.)
 - **Lens:** On a signed device build, add both widget sizes to the home screen; confirm both
-  show today's image + Kigo name regardless of subscription state. The home-screen render needs
-  signing/provisioning and a human eye, so this is reported off the headless gating path — never
-  a termination gate.
+  show the Sekki backdrop + Kigo name regardless of subscription state. The home-screen render
+  needs signing/provisioning and a human eye, so this is reported off the headless gating path —
+  never a termination gate.
 
 ### J4: The real in-app purchase flow works end-to-end
 
@@ -1074,19 +1028,20 @@ these are surfaced for awareness only.)
 
 ### J6: The revamp faithfully realizes the Asagiri direction in light and dark
 
-- **Applies to:** C13, C14, C15, C16, C18, and the Today / Settings / Widget surfaces
+- **Applies to:** C13, C15, C16, C18, and the Today / Settings / Widget surfaces (C14 is
+  retired — ADR 0026; the former `(i)` attribution panel is no longer part of this claim)
 - **Claim:** The implemented surfaces faithfully render the `Kigo Revamp.dc.html` Asagiri
-  mockup — full-bleed photography under a feathered frosted-glass legibility plate; centered
-  **Shippori Mincho** kanji at the specified type scale; the quiet **Year timeline** that
-  taps to expand the almanac (positions, gauges, gloss, prose); the **(i)** attribution
-  panel; the **Settings menu** (language / subscribe / legal); the gentle entrance motion;
-  and the gated Widget — all in **both light and dark**, reading as the calm nightstand
-  object (reinforcing J1/J5). Dark-mode polish (saturated season bands, warm-gold gloss, the
-  scrim tuned per theme) is part of this claim.
+  mockup — the full-bleed **Sekki backdrop** wash under a feathered frosted-glass legibility
+  plate; centered **Shippori Mincho** kanji at the specified type scale; the quiet **Year
+  timeline** that taps to expand the almanac (positions, gauges, gloss, prose); the **Settings
+  menu** (language / subscribe / legal); the gentle entrance motion; and the widget — all in
+  **both light and dark**, reading as the calm nightstand object (reinforcing J1/J5).
+  Dark-mode polish (saturated season bands, warm-gold gloss, the scrim tuned per theme) is
+  part of this claim.
 - **Lens:** Launch in the simulator in **both** appearances against the design tokens in the
-  handoff README; click through Today → Almanac, the (i) panel, and Settings (language toggle,
-  subscribe/manage, legal); compare layout, color, Mincho type, scrim/plate legibility over a
-  real photo, motion, and dark polish to `Kigo Revamp.dc.html`. Pixel-fidelity is reported
+  handoff README; click through Today → Almanac and Settings (language toggle,
+  subscribe/manage, legal); compare layout, color, Mincho type, scrim/plate legibility over the
+  backdrop, motion, and dark polish to `Kigo Revamp.dc.html`. Pixel-fidelity is reported
   for async human review — **never a termination gate** (the C* above gate the structure,
   data, wiring, and that both appearances render without breaking; the *look* is judged here).
 
@@ -1131,19 +1086,9 @@ these are surfaced for awareness only.)
   headless CLI (the APNs row of the headless-integration-traps catalog), so this is reported for
   human review off the gating path — never a termination gate.
 
-### J10: Real per-day images load from the CDN end-to-end (ADR 0022)
+### J10: Real per-day images load from the CDN end-to-end (ADR 0022) — RETIRED
 
-- **Applies to:** C25, C26
-- **Claim:** Pointed at the real static image host (`imageBaseURL`), the app on the Today screen
-  downloads each day's real royalty-free image over the network, caches it, and renders it
-  full-bleed in place of the gradient placeholder; on a real network failure (offline, 404,
-  corrupt body) it silently falls back to the gradient placeholder with no user-visible error or
-  crash, and a cached image thereafter renders offline. The placeholder `imageBaseURL` has been
-  replaced with the real published host, and the human image pipeline has populated it, before
-  submission.
-- **Lens:** With real images hosted at the configured `imageBaseURL`, launch the app on a
-  device/simulator with live networking and confirm today's real photo appears and persists;
-  then disable networking (or point at a bad host) and confirm the app still shows the gradient
-  placeholder (or a previously cached image) with no error. The live network fetch is off the
-  headless gating path by construction (ADR 0022 / ADR 0001 — no live network in evidence
-  procedures), so it is reported for human review, never a termination gate.
+**RETIRED by ADR 0026 (image pivot):** there is no CDN, no per-day image, and no network fetch
+left to judge — the 24 Sekki backdrops are bundled in the app binary. The deferred, human-supplied
+step is now sourcing/creating the 24 backdrop assets, judged for seasonal fit under J2, not a
+network load.

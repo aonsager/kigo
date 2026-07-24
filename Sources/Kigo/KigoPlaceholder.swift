@@ -6,138 +6,62 @@ import UIKit
 
 // MARK: - KigoPlaceholder
 
-/// Deterministic placeholder visual derived from a Kigo entry's `imageId`.
+/// The full-bleed seasonal backdrop, keyed by the current Sekki (image pivot).
 ///
-/// Slice #59: No real image assets exist (ADR 0001 / J2). This type provides a
-/// stable hue-shifted gradient background seeded purely by the `imageId` string —
-/// same imageId always yields the same gradient, different imageIds yield
-/// visually distinct gradients. No randomness, no Date-based seeding.
-///
-/// The hue derivation is a pure function (testable without SwiftUI) exposed as
-/// `KigoPlaceholder.hue(for:)`. The SwiftUI view `KigoPlaceholderView` wraps it
-/// into a full-bleed background layer.
+/// The app shows one bundled, heavily-blurred, palette-matched backdrop per Sekki
+/// (24 total), named `backdrop-<sekkiId>`. Until the real art is sourced out-of-band,
+/// a deterministic per-Sekki gradient wash stands in, so the screen is never blank.
 public enum KigoPlaceholder {
 
-    // MARK: - Deterministic hue derivation
-
-    /// Returns a hue value in [0, 1] deterministically derived from `imageId`.
-    ///
-    /// Uses a DJB2-style hash over the UTF-8 bytes of `imageId`. The result is
-    /// normalised into [0, 1] by dividing by `UInt32.max`. This is a pure function:
-    /// given the same input, it always returns the same output.
-    ///
-    /// - Parameter imageId: The `imageId` string from a `DailyMapEntry`.
-    /// - Returns: A hue value in [0, 1].
-    public static func hue(for imageId: String) -> Double {
-        var hash: UInt32 = 5381
-        for byte in imageId.utf8 {
-            // DJB2: hash = hash * 33 XOR byte  (wrapping to avoid overflow trap)
-            hash = hash &* 33 &+ UInt32(byte)
-        }
-        return Double(hash) / Double(UInt32.max)
-    }
-
-    // MARK: - Gradient derivation
-
-    /// Returns a two-stop `LinearGradient` for the given `imageId`.
-    ///
-    /// The primary colour is derived from the hue; the secondary colour is the
-    /// primary hue shifted by +0.08 (a narrow analogous shift). Saturation and
-    /// brightness are kept tasteful (low saturation, high brightness) so text
-    /// laid on top remains legible.
-    static func gradient(for imageId: String) -> LinearGradient {
-        let primaryHue = hue(for: imageId)
+    /// A two-stop gradient wash for a given fallback hue (from `SekkiBackdrop.fallbackHue`).
+    /// Low saturation / high brightness keeps overlaid sumi-ink text legible.
+    static func gradient(forHue primaryHue: Double) -> LinearGradient {
         let secondaryHue = (primaryHue + 0.08).truncatingRemainder(dividingBy: 1.0)
-
         let primary = Color(hue: primaryHue, saturation: 0.25, brightness: 0.92)
         let secondary = Color(hue: secondaryHue, saturation: 0.30, brightness: 0.82)
-
-        return LinearGradient(
-            colors: [primary, secondary],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
+        return LinearGradient(colors: [primary, secondary],
+                              startPoint: .topLeading, endPoint: .bottomTrailing)
     }
 
-    // MARK: - Bundled background photo (Asagiri revamp #158)
-
-    /// The base name of the bundled full-bleed background photo.
-    public static let backgroundImageName = "tsuyu"
-
-    /// Loads the bundled `tsuyu.jpg` background photo, or `nil` if it is missing.
-    ///
-    /// `UIImage(named:)` does NOT reliably resolve a *loose* `.jpg` sitting at the
-    /// bundle root (it primarily searches asset catalogs), so we resolve the file
-    /// URL explicitly via `Bundle.main` — which is the app bundle when running in
-    /// the app or hosted unit tests, and the appex bundle inside the widget, both
-    /// of which carry `tsuyu.jpg`. Falls back to `UIImage(named:)` just in case.
-    public static func backgroundImage() -> UIImage? {
-        if let url = Bundle.main.url(forResource: backgroundImageName, withExtension: "jpg"),
+    /// Loads a bundled backdrop by asset name (`backdrop-<sekkiId>`), or `nil` if absent.
+    /// Resolves both a loose `.jpg` at the bundle root and an asset-catalog entry, so it
+    /// works in the app, hosted tests, and the widget appex. Returns `nil` when the art has
+    /// not yet been added — callers fall back to `gradient(forHue:)`.
+    public static func backdropImage(named name: String) -> UIImage? {
+        if let url = Bundle.main.url(forResource: name, withExtension: "jpg"),
            let image = UIImage(contentsOfFile: url.path) {
             return image
         }
-        return UIImage(named: backgroundImageName)
+        return UIImage(named: name)
     }
 }
 
 // MARK: - KigoPlaceholderView
 
-/// A full-bleed background layer for the Today screen.
+/// A full-bleed seasonal backdrop layer, shared by the Today screen and the Widget.
 ///
-/// Asagiri revamp (#158): renders the bundled photo `tsuyu.jpg` full-bleed.
-/// The image is looked up loose-file in the bundle via `UIImage(named:)`. If it
-/// fails to load (e.g. the resource is missing), the view falls back to the
-/// deterministic `KigoPlaceholder.gradient(for:)` so the screen is never blank.
-///
-/// Carries the accessibility identifier `kigo.image` so UI tests can locate it
-/// as a full-bleed image element.
-///
-/// Slice #229 (ADR 0022): `remoteImage`, when non-nil, takes priority over the bundled
-/// photo/gradient — this is how `TodayView` renders the real fetched `KigoImageSource`
-/// bytes using the exact same full-bleed frame/scaling/`kigo.image` sentinel as the
-/// placeholder. Defaults to `nil` so the widget extension's call site (which never
-/// passes it) is unaffected — the widget stays on its own gradient placeholder (ADR 0022).
+/// Renders the bundled `backdropAssetName` if present, else a deterministic per-Sekki
+/// gradient wash from `fallbackHue`. Carries the `kigo.image` accessibility identifier
+/// so UI tests locate it as the full-bleed image element (unchanged contract).
 struct KigoPlaceholderView: View {
-    let imageId: String
+    let backdropAssetName: String
+    let fallbackHue: Double
 
-    /// VoiceOver label for the decorative background image.
-    ///
-    /// This view is shared with the widget extension, which does **not** compile
-    /// `LanguagePreference.swift` (no `ChromeStrings`, no `\.language`) and always
-    /// renders Japanese — so the label is injected as a plain string rather than
-    /// resolved from the environment here. The default is the Japanese label used
-    /// by the widget; the app injects `ChromeStrings(language).a11yBackgroundImage`
-    /// so the Today screen's label follows the in-app language toggle.
+    /// VoiceOver label for the decorative backdrop. Injected as a plain string because this
+    /// view is shared with the widget extension, which does not compile `LanguagePreference`.
     var accessibilityLabelText: String = "季語の背景画像"
-
-    /// Decoded remote image bytes (slice #229), rendered full-bleed in place of the
-    /// bundled photo/gradient when non-nil. `nil` (the default) preserves today's
-    /// behavior unchanged.
-    var remoteImage: UIImage? = nil
 
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                // The decorative photo, pinned to the screen bounds and clipped.
-                // It is hidden from accessibility so its frame does not feed the
-                // `kigo.image` element below.
                 background
                     .frame(width: geo.size.width, height: geo.size.height)
                     .clipped()
                     .accessibilityHidden(true)
 
-                // ADR-0013 sentinel: a full-screen `Color.clear` carries the
-                // `kigo.image` identifier with a frame that exactly matches the
-                // screen. `.scaledToFill()` leaves the Image's own frame wider
-                // than the screen (it overflows to cover), and the accessibility
-                // system reports that *overflow* width — `.clipped()` only clips
-                // the drawing, not the reported frame. When the identifier lived
-                // on the image (or a container unioning it), that broke
-                // `TodayLayoutUITests.testImageFullBleed`, which measures the
-                // `kigo.image` frame against the window width. A dedicated clear
-                // leaf sidesteps the overflow entirely. Always present regardless
-                // of which `background` renders (bundled photo, gradient, or the
-                // slice #229 remote image) — `kigo.image` is the stable contract.
+                // ADR-0013 sentinel: a full-screen clear leaf carries `kigo.image` with a
+                // frame that exactly matches the window (scaledToFill overflow would report
+                // a too-wide frame and break TodayLayoutUITests.testImageFullBleed).
                 Color.clear
                     .accessibilityIdentifier("kigo.image")
                     .accessibilityLabel(accessibilityLabelText)
@@ -149,17 +73,10 @@ struct KigoPlaceholderView: View {
 
     @ViewBuilder
     private var background: some View {
-        if let remoteImage {
-            Image(uiImage: remoteImage)
-                .resizable()
-                .scaledToFill()
-        } else if let uiImage = KigoPlaceholder.backgroundImage() {
-            Image(uiImage: uiImage)
-                .resizable()
-                .scaledToFill()
+        if let uiImage = KigoPlaceholder.backdropImage(named: backdropAssetName) {
+            Image(uiImage: uiImage).resizable().scaledToFill()
         } else {
-            // Fallback so the screen is never blank if the photo fails to load.
-            KigoPlaceholder.gradient(for: imageId)
+            KigoPlaceholder.gradient(forHue: fallbackHue)
         }
     }
 }

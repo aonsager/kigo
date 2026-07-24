@@ -29,9 +29,8 @@ public struct StoreKitTransactionSource: EntitlementTransactionSource {
 // MARK: - Production convenience
 
 extension EntitlementProvider {
-    /// Production default: the live StoreKit source and the app-group
-    /// UserDefaults store. Kept in the app target so KigoCore stays
-    /// StoreKit-free (ADR 0009).
+    /// Production default: the live StoreKit source. Kept in the app target so
+    /// KigoCore stays StoreKit-free (ADR 0009).
     public init() {
         self.init(source: StoreKitTransactionSource())
     }

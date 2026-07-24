@@ -27,19 +27,24 @@ import SwiftUI
 ///   `UserDefaultsAppearanceStore`).
 @MainActor
 public func launchAppearanceStore(environment: [String: String]) -> any AppearanceStore {
+    #if DEBUG
+    // Test-only seam: the locked in-memory appearance store (driven by
+    // KIGO_FAKE_APPEARANCE via launchColorScheme) exists in DEBUG builds only (H1).
     switch launchColorScheme(environment: environment) {
     case .dark:
         return LockedInMemoryAppearanceStore(preference: .dark)
     case .light:
         return LockedInMemoryAppearanceStore(preference: .light)
-    case .none:
-        return UserDefaultsAppearanceStore(suiteName: "com.tomeitotameigo.kigo")
-    @unknown default:
-        return UserDefaultsAppearanceStore(suiteName: "com.tomeitotameigo.kigo")
+    default:
+        break
     }
+    #endif
+    return UserDefaultsAppearanceStore(suiteName: "com.tomeitotameigo.kigo")
 }
 
-// MARK: - LockedInMemoryAppearanceStore
+#if DEBUG
+
+// MARK: - LockedInMemoryAppearanceStore (DEBUG-only test seam)
 
 /// An `@Observable` `AppearanceStore` whose preference is pinned at construction time
 /// and silently ignores `set(_:)` calls.
@@ -63,3 +68,5 @@ public final class LockedInMemoryAppearanceStore: AppearanceStore {
         // Intentionally ignored.
     }
 }
+
+#endif

@@ -4,11 +4,13 @@ import SwiftUI
 
 // MARK: - WidgetUngatedTests
 //
-// Slice C7: Proves the widget image reveal is unconditional — no entitlement gate.
+// Slice C7: Proves the widget backdrop reveal is unconditional — no entitlement gate.
 //
-// `WidgetTimelineBuilder` now accepts no `entitlementStore` parameter and always
-// produces entries with `showsImage == true`. These tests verify that contract
-// directly, plus the rollover-ordering tests migrated from WidgetTimelineTests.
+// `WidgetTimelineBuilder` accepts no `entitlementStore` parameter and always
+// produces entries carrying a non-empty `backdropAssetName` (Task 4 image pivot:
+// keyed on the resolved day's Sekki id, superseding the retired `showsImage`
+// flag). These tests verify that contract directly, plus the rollover-ordering
+// tests migrated from WidgetTimelineTests.
 //
 // Screenshot evidence: a host-rendered PNG of KigoWidgetView is attached as
 // `slice-C7-widget-ungated.png` with `.keepAlways` lifetime so it survives the
@@ -45,13 +47,7 @@ final class WidgetUngatedTests: XCTestCase {
         let entry = DailyMapEntry(
             kanji: kanji,
             reading: LocalizedText(ja: reading),
-            description: LocalizedText(ja: "Fireflies glow in summer dusk."),
-            imageId: imageId,
-            attribution: Attribution(
-                title: LocalizedText(ja: "季語の風景"),
-                credit: LocalizedText(ja: "撮影者不明"),
-                license: LocalizedText(ja: "パブリックドメイン")
-            )
+            description: LocalizedText(ja: "Fireflies glow in summer dusk.")
         )
         let ko = Ko(
             kanji: "腐草為螢",
@@ -77,11 +73,12 @@ final class WidgetUngatedTests: XCTestCase {
         )
     }
 
-    // MARK: - AC: showsImage is unconditionally true (no entitlement parameter)
+    // MARK: - AC: backdrop is unconditionally present (no entitlement parameter)
 
     /// AC: systemSmall context — entry built by WidgetTimelineBuilder(dateProvider:manifest:)
-    /// with no entitlementStore argument has showsImage == true.
-    func testShowsImageTrue_systemSmall() {
+    /// with no entitlementStore argument carries a non-empty backdropAssetName keyed on
+    /// the resolved Sekki id.
+    func testBackdropAlwaysPresent_systemSmall() {
         let dayKey = "06-14"
         let manifest = makeMinimalManifest(dayKey: dayKey, imageId: "img-firefly")
         let date = makeUTCDate(month: 6, day: 14)
@@ -91,15 +88,14 @@ final class WidgetUngatedTests: XCTestCase {
         let entry = builder.buildEntry()
 
         XCTAssertNotNil(entry, "Builder must return a non-nil entry for a known date")
-        XCTAssertTrue(entry!.showsImage,
-                      "showsImage must be unconditionally true — no entitlement gate (systemSmall)")
-        XCTAssertEqual(entry!.imageId, "img-firefly",
-                       "imageId must be carried on the entry")
+        XCTAssertEqual(entry!.backdropAssetName, "backdrop-shousho",
+                       "backdropAssetName must be unconditionally present, keyed on the Sekki id — no entitlement gate (systemSmall)")
     }
 
     /// AC: systemMedium context — entry built by WidgetTimelineBuilder(dateProvider:manifest:)
-    /// with no entitlementStore argument has showsImage == true for a different injected date.
-    func testShowsImageTrue_systemMedium() {
+    /// with no entitlementStore argument carries a non-empty backdropAssetName for a
+    /// different injected date.
+    func testBackdropAlwaysPresent_systemMedium() {
         let dayKey = "07-07"
         let manifest = makeMinimalManifest(dayKey: dayKey,
                                            kanji: "天の川",
@@ -112,10 +108,8 @@ final class WidgetUngatedTests: XCTestCase {
         let entry = builder.buildEntry()
 
         XCTAssertNotNil(entry, "Builder must return a non-nil entry for 07-07")
-        XCTAssertTrue(entry!.showsImage,
-                      "showsImage must be unconditionally true — no entitlement gate (systemMedium)")
-        XCTAssertEqual(entry!.imageId, "img-milky",
-                       "imageId must be carried on the entry")
+        XCTAssertEqual(entry!.backdropAssetName, "backdrop-shousho",
+                       "backdropAssetName must be unconditionally present, keyed on the Sekki id — no entitlement gate (systemMedium)")
     }
 
     // MARK: - Rollover ordering (migrated from WidgetTimelineTests)
@@ -125,17 +119,10 @@ final class WidgetUngatedTests: XCTestCase {
     func testTimelineHasTwoEntriesWithCorrectDates() {
         let todayKey = "06-14"
         let tomorrowKey = "06-15"
-        let placeholderAttrib = Attribution(
-            title: LocalizedText(ja: "季語の風景"),
-            credit: LocalizedText(ja: "撮影者不明"),
-            license: LocalizedText(ja: "パブリックドメイン")
-        )
         let todayEntry = DailyMapEntry(kanji: "蛍", reading: LocalizedText(ja: "ほたる"),
-                                       description: LocalizedText(ja: "Today."), imageId: "img-t",
-                                       attribution: placeholderAttrib)
+                                       description: LocalizedText(ja: "Today."))
         let tomorrowEntry = DailyMapEntry(kanji: "朝露", reading: LocalizedText(ja: "あさつゆ"),
-                                          description: LocalizedText(ja: "Tomorrow."), imageId: "img-n",
-                                          attribution: placeholderAttrib)
+                                          description: LocalizedText(ja: "Tomorrow."))
         let ko = Ko(kanji: "腐草為螢",
                     reading: LocalizedText(ja: "くされたるくさほたるとなる"),
                     gloss: "rotten grass becomes fireflies",
@@ -170,17 +157,10 @@ final class WidgetUngatedTests: XCTestCase {
 
     /// Year-boundary rollover: Dec 31 2026 → Jan 1 2027 midnight.
     func testYearBoundaryRollover() {
-        let placeholderAttrib = Attribution(
-            title: LocalizedText(ja: "季語の風景"),
-            credit: LocalizedText(ja: "撮影者不明"),
-            license: LocalizedText(ja: "パブリックドメイン")
-        )
         let dec31Entry = DailyMapEntry(kanji: "年の瀬", reading: LocalizedText(ja: "としのせ"),
-                                       description: LocalizedText(ja: "Year end."), imageId: "img-dec",
-                                       attribution: placeholderAttrib)
+                                       description: LocalizedText(ja: "Year end."))
         let jan01Entry = DailyMapEntry(kanji: "初日の出", reading: LocalizedText(ja: "はつひので"),
-                                       description: LocalizedText(ja: "New year sunrise."), imageId: "img-jan",
-                                       attribution: placeholderAttrib)
+                                       description: LocalizedText(ja: "New year sunrise."))
         let koDec = Ko(kanji: "雪", reading: LocalizedText(ja: "ゆき"),
                        gloss: "snow", sekkiId: "touji",
                        dateRange: DateRange(start: "12-31", end: "12-31"),
@@ -219,13 +199,13 @@ final class WidgetUngatedTests: XCTestCase {
 
     // MARK: - Screenshot evidence
 
-    /// Host-renders KigoWidgetView with showsImage == true and attaches it as
+    /// Host-renders KigoWidgetView with the backdrop always present and attaches it as
     /// `slice-C7-widget-ungated.png` with `.keepAlways` lifetime.
     ///
     /// This is the required screenshot evidence for slice C7.
     /// Test identifier: KigoWidgetTests/WidgetUngatedTests/testScreenshot
     func testScreenshot() async throws {
-        // Build a resolved entry with showsImage == true via the real builder (no arg needed).
+        // Build a resolved entry with a non-empty backdrop via the real builder (no arg needed).
         let dayKey = "06-14"
         let manifest = makeMinimalManifest(dayKey: dayKey,
                                            kanji: "蛍",
@@ -239,7 +219,7 @@ final class WidgetUngatedTests: XCTestCase {
             return
         }
 
-        XCTAssertTrue(entry.showsImage, "showsImage must be true before rendering")
+        XCTAssertFalse(entry.backdropAssetName.isEmpty, "backdropAssetName must be non-empty before rendering")
 
         // Host-render on MainActor (ImageRenderer and SwiftUI view are @MainActor-bound).
         let pngData: Data? = await MainActor.run {

@@ -21,20 +21,17 @@ CONTENT_README = REPO_ROOT / "content" / "README.md"
 
 # Running this file directly (python3 scripts/content/test_pipeline.py) already
 # puts its own directory on sys.path[0]; this insert makes that explicit and
-# keeps the bare `import url_deriver` etc. below working if this file is ever
+# keeps the bare `import csv_parser` etc. below working if this file is ever
 # invoked from a different cwd.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import assembler  # noqa: E402
 import csv_parser  # noqa: E402
-import url_deriver  # noqa: E402
 
 _FAKE_BASE_MANIFEST = {
     "schemaVersion": "2.0",
     "version": 1,
-    "dailyMap": {"2026-01-01": {"kanji": "dummy", "reading": {"ja": "x"}, "description": {"ja": "y"},
-                                 "imageId": "z", "attribution": {"title": {"ja": "a"}, "credit": {"ja": "b"},
-                                                                  "license": {"ja": "c"}}}},
+    "dailyMap": {"2026-01-01": {"kanji": "dummy", "reading": {"ja": "x"}, "description": {"ja": "y"}}},
     "ko": [{"kanji": "東風解凍", "reading": {"ja": "はるかぜこおりをとく", "en": "harukazekōriotoku"},
             "gloss": "east wind thaws the ice", "sekkiId": "risshun",
             "dateRange": {"start": "02-04", "end": "02-08"},
@@ -45,16 +42,12 @@ _FAKE_BASE_MANIFEST = {
 }
 
 _SAMPLE_CSV_HEADER = (
-    "date,kanji,reading_ja,reading_en,translation_en,description_ja,description_en,image_id,"
-    "attribution_title_ja,attribution_title_en,attribution_credit_ja,attribution_credit_en,"
-    "attribution_license_ja,attribution_license_en\n"
+    "date,kanji,reading_ja,reading_en,translation_en,description_ja,description_en\n"
 )
 _SAMPLE_CSV_ROW = (
     "2026-03-21,桜,さくら,sakura,cherry blossom,"
     "\"川沿いの土手が薄紅色に染まり、人々が下を歩いて花を見上げる。\","
-    "\"Pink washes over the riverbank path; people slow their walk to look up.\","
-    "kigo-03-21,桜,Cherry Blossom,撮影者不明,Unknown photographer,"
-    "パブリックドメイン,Public domain\n"
+    "\"Pink washes over the riverbank path; people slow their walk to look up.\"\n"
 )
 
 
@@ -62,11 +55,6 @@ def _write_sample_csv(tmp_dir: str, *, rows: str = _SAMPLE_CSV_ROW) -> Path:
     path = Path(tmp_dir) / "sample.csv"
     path.write_text(_SAMPLE_CSV_HEADER + rows, encoding="utf-8")
     return path
-
-
-def test_url_deriver_builds_convention_url():
-    url = url_deriver.derive_image_url("https://cdn.example/img", "kigo-06-12")
-    assert url == "https://cdn.example/img/kigo-06-12.jpg", url
 
 
 def test_csv_parser_maps_row_to_entry_shape():
@@ -82,21 +70,15 @@ def test_csv_parser_maps_row_to_entry_shape():
     assert entry["translationEn"] == "cherry blossom"
     assert entry["description"]["ja"].startswith("川沿い")
     assert entry["description"]["en"].startswith("Pink washes")
-    assert entry["imageId"] == "kigo-03-21"
-    assert entry["attribution"]["title"] == {"ja": "桜", "en": "Cherry Blossom"}
-    assert entry["attribution"]["credit"] == {"ja": "撮影者不明", "en": "Unknown photographer"}
-    assert entry["attribution"]["license"] == {"ja": "パブリックドメイン", "en": "Public domain"}
 
 
 def test_csv_parser_rejects_row_with_empty_required_field():
     # Minimal, incidental malformed-input handling ("falls out naturally") —
     # the full validator gate with per-error-code diagnostics is slice 2 (#200).
     blank_reading_row = (
-        "2026-03-21,桜,,sakura,"
+        "2026-03-21,桜,,sakura,cherry blossom,"
         "\"川沿いの土手が薄紅色に染まり、人々が下を歩いて花を見上げる。\","
-        "\"Pink washes over the riverbank path; people slow their walk to look up.\","
-        "kigo-03-21,桜,Cherry Blossom,撮影者不明,Unknown photographer,"
-        "パブリックドメイン,Public domain\n"
+        "\"Pink washes over the riverbank path; people slow their walk to look up.\"\n"
     )
     with tempfile.TemporaryDirectory() as tmp:
         csv_path = _write_sample_csv(tmp, rows=blank_reading_row)
@@ -111,11 +93,10 @@ def test_assembler_sets_metadata_and_passes_ko_sekki_through_untouched():
     with tempfile.TemporaryDirectory() as tmp:
         rows = csv_parser.parse_rows(_write_sample_csv(tmp))
 
-    manifest = assembler.assemble_manifest(rows, _FAKE_BASE_MANIFEST, image_base_url="https://cdn.example/img")
+    manifest = assembler.assemble_manifest(rows, _FAKE_BASE_MANIFEST)
 
     assert manifest["schemaVersion"] == "2.0"
     assert manifest["version"] == 2, "version must bump past the base manifest's version"
-    assert manifest["imageBaseURL"] == "https://cdn.example/img"
     assert manifest["dailyMap"] == {rows[0]["date"]: rows[0]["entry"]}
 
     # Ko/Sekki copied through untouched: byte-identical when serialized the
@@ -161,21 +142,12 @@ def test_cli_assembles_csv_and_manifest_into_out_file():
                 "ja": "川沿いの土手が薄紅色に染まり、人々が下を歩いて花を見上げる。",
                 "en": "Pink washes over the riverbank path; people slow their walk to look up.",
             },
-            "imageId": "kigo-03-21",
-            "attribution": {
-                "title": {"ja": "桜", "en": "Cherry Blossom"},
-                "credit": {"ja": "撮影者不明", "en": "Unknown photographer"},
-                "license": {"ja": "パブリックドメイン", "en": "Public domain"},
-            },
         }}
 
 
 def test_cli_writes_nothing_and_exits_nonzero_on_malformed_csv():
     with tempfile.TemporaryDirectory() as tmp:
-        blank_reading_row = (
-            "2026-03-21,桜,,sakura,d,d,kigo-03-21,桜,Cherry Blossom,撮影者不明,Unknown photographer,"
-            "パブリックドメイン,Public domain\n"
-        )
+        blank_reading_row = "2026-03-21,桜,,sakura,cherry blossom,d,d\n"
         csv_path = _write_sample_csv(tmp, rows=blank_reading_row)
         manifest_path = Path(tmp) / "base-manifest.json"
         manifest_path.write_text(json.dumps(_FAKE_BASE_MANIFEST), encoding="utf-8")
@@ -237,35 +209,6 @@ def test_cli_rejects_missing_reading_ja_fixture_and_writes_nothing():
     _assert_fixture_rejected("missing_reading_ja.csv")
 
 
-def test_cli_rejects_missing_attribution_field_fixture_and_writes_nothing():
-    _assert_fixture_rejected("missing_attribution_field.csv")
-
-
-def test_cli_rejects_empty_image_id_fixture_and_writes_nothing():
-    _assert_fixture_rejected("empty_image_id.csv")
-
-
-def test_cli_rejects_malformed_image_base_url_and_writes_nothing():
-    # The derived-URL check protects against a mistyped --image-base-url even
-    # when every row is otherwise well-formed: a well-formed row plus a
-    # scheme-less base URL must still be refused before anything is written.
-    with tempfile.TemporaryDirectory() as tmp:
-        manifest_path = Path(tmp) / "base-manifest.json"
-        manifest_path.write_text(json.dumps(_FAKE_BASE_MANIFEST), encoding="utf-8")
-        out_path = Path(tmp) / "assembled.json"
-        csv_path = _write_sample_csv(tmp)
-
-        result = subprocess.run(
-            [sys.executable, str(ASSEMBLE_PY),
-             "--csv", str(csv_path), "--out", str(out_path), "--manifest", str(manifest_path),
-             "--image-base-url", "not-a-well-formed-url"],
-            capture_output=True, text=True,
-        )
-
-        assert result.returncode != 0, result.stdout + result.stderr
-        assert not out_path.exists(), "a malformed image base URL must never produce an output file"
-
-
 def test_cli_rejects_fixture_and_leaves_prior_output_untouched():
     # "writes nothing, leaving any prior output untouched" (#200 AC) — a
     # rejected run must not delete or overwrite whatever already sat at --out.
@@ -283,7 +226,6 @@ def test_worked_example_assembles_into_a_valid_localized_manifest():
 
     assert manifest["schemaVersion"] == base["schemaVersion"]
     assert manifest["version"] == base["version"] + 1
-    assert manifest["imageBaseURL"].startswith("https://")
     assert len(manifest["ko"]) == 72 and len(manifest["sekki"]) == 24
     assert json.dumps(manifest["ko"], ensure_ascii=False) == json.dumps(base["ko"], ensure_ascii=False)
     assert json.dumps(manifest["sekki"], ensure_ascii=False) == json.dumps(base["sekki"], ensure_ascii=False)
@@ -291,15 +233,12 @@ def test_worked_example_assembles_into_a_valid_localized_manifest():
     assert len(manifest["dailyMap"]) == len(rows)
     for date_key, entry in manifest["dailyMap"].items():
         assert re.fullmatch(r"2026-\d{2}-\d{2}", date_key), date_key
-        assert entry["kanji"] and entry["imageId"]
+        assert entry["kanji"]
         assert entry["translationEn"], f"{date_key}: translationEn (free-Encounter English name) needs a value"
         blob = entry["description"]["ja"] + entry["description"]["en"]
         assert not re.search(r"\(20\d\d-\d\d-\d\d\)", blob), f"{date_key}: leftover dummy date-stamp"
         for field in ("reading", "description"):
             assert entry[field]["ja"] and entry[field]["en"], f"{date_key}.{field} needs ja+en"
-        for sub in ("title", "credit", "license"):
-            attr = entry["attribution"][sub]
-            assert attr["ja"] and attr["en"], f"{date_key}.attribution.{sub} needs ja+en"
 
 
 def test_cli_end_to_end_over_worked_example_is_idempotent_and_leaves_bundled_manifest_untouched():

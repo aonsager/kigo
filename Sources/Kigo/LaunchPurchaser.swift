@@ -1,6 +1,11 @@
 import KigoCore
 import Foundation
 
+// This whole file is a DEBUG-only test seam: it reads KIGO_FAKE_PURCHASER and
+// vends fake purchasers. Production wiring uses StoreKitSubscriptionPurchaser
+// directly (see KigoApp). Compiled out of Release so no purchase bypass ships (H1).
+#if DEBUG
+
 // MARK: - launchPurchaser
 
 /// Reads the `KIGO_FAKE_PURCHASER` launch-environment variable and returns a tuple
@@ -45,8 +50,9 @@ public func launchPurchaser(
 ///
 /// Used by the `KIGO_FAKE_PURCHASER=succeed` injection seam: a `FlippingFakePurchaser`
 /// holds a reference to this source and calls `flip()` when `purchase(_:)` is called,
-/// causing the subsequent `provider.refreshEntitlement()` to see the widget product
-/// as active — without any real StoreKit call or `storekitd` involvement (ADR 0009).
+/// causing the subsequent `provider.isEntitlementActive()` re-derivation to see the
+/// widget product as active — without any real StoreKit call or `storekitd`
+/// involvement (ADR 0009).
 public actor MutableEntitlementTransactionSource: EntitlementTransactionSource {
     private var productIDs: Set<String> = []
 
@@ -69,7 +75,7 @@ public actor MutableEntitlementTransactionSource: EntitlementTransactionSource {
 
 /// A `SubscriptionPurchaser` that succeeds silently and flips the bundled
 /// `MutableEntitlementTransactionSource` so that the `EntitlementProvider`'s
-/// subsequent `refreshEntitlement()` call sees the widget product as active.
+/// subsequent `isEntitlementActive()` re-derivation sees the widget product as active.
 ///
 /// Only used on the `KIGO_FAKE_PURCHASER=succeed` injection path (UI tests).
 /// Never touches the real StoreKit purchase path (ADR 0009).
@@ -92,3 +98,5 @@ struct CancellingFakePurchaser: SubscriptionPurchaser {
         throw SubscriptionPurchaserCancellation()
     }
 }
+
+#endif

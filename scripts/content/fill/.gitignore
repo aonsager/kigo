@@ -6,6 +6,9 @@
 spine_pool.json
 descriptions.csv
 images.csv
+# fetch_images.py `fetch` output — one row per image candidate for human review,
+# then consumed by `select`. Regenerable working state, not source of truth.
+candidates.csv
 batches/
 responses/
 downloads/

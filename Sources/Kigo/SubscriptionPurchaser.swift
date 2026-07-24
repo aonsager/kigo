@@ -52,7 +52,7 @@ public struct StoreKitSubscriptionPurchaser: SubscriptionPurchaser {
         // `.success` and `.pending` are both treated as "not an error":
         // success means the transaction was verified; pending means it needs
         // Ask-to-Buy approval. The caller (`PaywallModel.buy()`) re-reads
-        // entitlement via `refreshEntitlement()` after this returns, so a
+        // entitlement via `isEntitlementActive()` after this returns, so a
         // pending purchase will simply leave isActive unchanged until the
         // approval lands and the app re-checks.
     }

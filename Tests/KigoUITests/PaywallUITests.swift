@@ -407,9 +407,9 @@ final class PaywallUITests: XCTestCase {
 
     /// Slice #117: With `KIGO_FAKE_PURCHASER=succeed`, tapping `paywall.buy` must cause
     /// the model to call through the injected fake purchaser (which flips the mutable
-    /// entitlement source to report the widget product as owned), triggering a
-    /// `refreshEntitlement()` that sets `isActive = true` — causing `paywall.manage` to
-    /// appear and `paywall.buy` to disappear.
+    /// entitlement source to report the widget product as owned), triggering an
+    /// `isEntitlementActive()` re-derivation that sets `isActive = true` — causing
+    /// `paywall.manage` to appear and `paywall.buy` to disappear.
     ///
     /// Acceptance criteria verified:
     ///   AC1: `paywall.manage` appears within the timeout after tapping `paywall.buy`.
@@ -460,7 +460,7 @@ final class PaywallUITests: XCTestCase {
 
         // AC1: paywall.manage must appear after the simulated purchase completes.
         // The fake purchaser flips the mutable source synchronously; the async
-        // chain (purchase → refreshEntitlement → isEntitlementActive → isActive)
+        // chain (purchase → isEntitlementActive → isActive)
         // must resolve before the timeout.
         let manageElement = app.descendants(matching: .any)
             .matching(identifier: "paywall.manage")

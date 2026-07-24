@@ -19,6 +19,8 @@ _PROSE_FIELDS = ("reading_ja", "reading_en", "translation_en",
 def day_summary(day, candidate_count):
     return {
         "date": day["date"], "kanji": day["kanji"], "approved": day["approved"],
+        "reading_ja": day["reading_ja"], "season": day["season"],
+        "subseason": day["subseason"], "candidate_count": candidate_count,
         "has_prose": bool(day["translation_en"] and day["description_ja"]
                           and day["description_en"]),
         "has_image": day["chosen_candidate_id"] is not None,

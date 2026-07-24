@@ -158,72 +158,6 @@ final class LocalizableContentTests: XCTestCase {
                        "English description must be decoded when present")
     }
 
-    // MARK: - DailyMapEntry attribution: decodes with and without English (slice #100)
-
-    /// A DailyMapEntry JSON fixture carrying Attribution (title/credit/license as LocalizedText)
-    /// must decode when only the required Japanese values are present.
-    func testDailyMapEntryAttributionDecodesWithJapaneseOnly() throws {
-        let json = """
-        {
-          "kanji": "菖蒲",
-          "reading": {"ja": "しょうぶ"},
-          "description": {"ja": "Sweet flag — the blade-like iris leaves used in summer purification rites."},
-          "imageId": "ayame-06-12",
-          "attribution": {
-            "title": {"ja": "菖蒲の写真"},
-            "credit": {"ja": "撮影者不明"},
-            "license": {"ja": "パブリックドメイン"}
-          }
-        }
-        """
-        let data = Data(json.utf8)
-        let entry = try JSONDecoder().decode(DailyMapEntry.self, from: data)
-        XCTAssertEqual(entry.attribution.title.ja, "菖蒲の写真",
-                       "attribution.title.ja must match the input")
-        XCTAssertNil(entry.attribution.title.en,
-                     "attribution.title.en must be nil when 'en' key is absent")
-        XCTAssertEqual(entry.attribution.credit.ja, "撮影者不明",
-                       "attribution.credit.ja must match the input")
-        XCTAssertNil(entry.attribution.credit.en,
-                     "attribution.credit.en must be nil when 'en' key is absent")
-        XCTAssertEqual(entry.attribution.license.ja, "パブリックドメイン",
-                       "attribution.license.ja must match the input")
-        XCTAssertNil(entry.attribution.license.en,
-                     "attribution.license.en must be nil when 'en' key is absent")
-    }
-
-    /// A DailyMapEntry JSON fixture carrying Attribution with both Japanese and English values
-    /// must decode all values successfully.
-    func testDailyMapEntryAttributionDecodesWithBothJapaneseAndEnglish() throws {
-        let json = """
-        {
-          "kanji": "菖蒲",
-          "reading": {"ja": "しょうぶ"},
-          "description": {"ja": "Sweet flag — the blade-like iris leaves used in summer purification rites."},
-          "imageId": "ayame-06-12",
-          "attribution": {
-            "title": {"ja": "菖蒲の写真", "en": "Sweet Flag Photo"},
-            "credit": {"ja": "撮影者不明", "en": "Unknown Photographer"},
-            "license": {"ja": "パブリックドメイン", "en": "Public Domain"}
-          }
-        }
-        """
-        let data = Data(json.utf8)
-        let entry = try JSONDecoder().decode(DailyMapEntry.self, from: data)
-        XCTAssertEqual(entry.attribution.title.ja, "菖蒲の写真",
-                       "attribution.title.ja must match the input")
-        XCTAssertEqual(entry.attribution.title.en, "Sweet Flag Photo",
-                       "attribution.title.en must be decoded when present")
-        XCTAssertEqual(entry.attribution.credit.ja, "撮影者不明",
-                       "attribution.credit.ja must match the input")
-        XCTAssertEqual(entry.attribution.credit.en, "Unknown Photographer",
-                       "attribution.credit.en must be decoded when present")
-        XCTAssertEqual(entry.attribution.license.ja, "パブリックドメイン",
-                       "attribution.license.ja must match the input")
-        XCTAssertEqual(entry.attribution.license.en, "Public Domain",
-                       "attribution.license.en must be decoded when present")
-    }
-
     // MARK: - DailyMapEntry translationEn: free-Encounter English name (ADR 0024)
 
     /// translationEn is optional (ADR 0014 forward-compat): an entry with no
@@ -233,13 +167,7 @@ final class LocalizableContentTests: XCTestCase {
         {
           "kanji": "菖蒲",
           "reading": {"ja": "しょうぶ"},
-          "description": {"ja": "菖蒲の説明。"},
-          "imageId": "ayame-06-12",
-          "attribution": {
-            "title": {"ja": "菖蒲の写真"},
-            "credit": {"ja": "撮影者不明"},
-            "license": {"ja": "パブリックドメイン"}
-          }
+          "description": {"ja": "菖蒲の説明。"}
         }
         """
         let entry = try JSONDecoder().decode(DailyMapEntry.self, from: Data(json.utf8))
@@ -253,13 +181,7 @@ final class LocalizableContentTests: XCTestCase {
           "kanji": "花見",
           "reading": {"ja": "はなみ", "en": "hanami"},
           "translationEn": "cherry-blossom viewing",
-          "description": {"ja": "花見の説明。", "en": "A description."},
-          "imageId": "kigo-04-01",
-          "attribution": {
-            "title": {"ja": "花見"},
-            "credit": {"ja": "撮影者不明"},
-            "license": {"ja": "パブリックドメイン"}
-          }
+          "description": {"ja": "花見の説明。", "en": "A description."}
         }
         """
         let entry = try JSONDecoder().decode(DailyMapEntry.self, from: Data(json.utf8))

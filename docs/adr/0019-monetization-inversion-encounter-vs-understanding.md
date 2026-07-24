@@ -36,9 +36,11 @@ precisely because discoverability is the hard part.
 **Invert the gate. The widget and a new daily reminder become free (the *encounter*); the in-app
 understanding layer becomes the paid unlock (the *understanding*).**
 
-- **Free — the encounter (*see* it):** the full-bleed daily image, the Kigo **kanji** and
-  **reading**; a fully **ungated Widget** (image + kanji + reading, identical for everyone); and an
-  opt-in **daily reminder** (a local notification at 08:00 carrying today's Kigo + a gentle hook).
+- **Free — the encounter (*see* it):** the Kigo **kanji** and **reading**, set in Asagiri Mincho
+  typography over the current **Sekki backdrop**'s seasonal wash (composition redefined by ADR
+  0026 — typography is the hero, not the image); a fully **ungated Widget** (backdrop + kanji +
+  reading, identical for everyone); and an opt-in **daily reminder** (a local notification at
+  08:00 carrying today's Kigo + a gentle hook).
 - **Paid — the understanding (*learn* it):** the Kigo's full **description / significance prose**,
   the **Microseason** display (Kō/Sekki line), and the **Almanac** depth (year-positions, gauges,
   Kō/Sekki prose).
@@ -69,7 +71,7 @@ understanding layer becomes the paid unlock (the *understanding*).**
   logic (enabled ⇒ one daily 08:00 request with today's content; disabled ⇒ none) is correct
   through the injected fake. The UI test asserts presence + default-off only — it must **not**
   tap-enable (that fires the real permission prompt, which hangs headless).
-- **Gated (C7, ungated widget):** the widget entry always reveals the image and carries kanji +
+- **Gated (C7, ungated widget):** the widget entry always reveals the backdrop and carries kanji +
   reading regardless of entitlement.
 - **Not gated:** that the reminder *feels* gentle and on-brand (J8); the real notification delivery
   end-to-end (J9); that the widget renders correctly on a real home screen for everyone (J3).
@@ -99,3 +101,12 @@ understanding layer becomes the paid unlock (the *understanding*).**
   curiosity that converts. Mitigated by keeping the meaning *present at the moment of viewing* (the
   `meaning.upsell` line) and by the free reminder doubling as a daily curiosity hook — without
   cluttering the calm Today screen (J5 judges this balance).
+
+## Amendment — 2026-07-22 (ADR 0026)
+
+The Encounter's **composition** changes from *image + word* to **word-over-wash**: the Kigo
+kanji + reading, typeset in Asagiri Mincho, over the current Sekki's bundled backdrop wash —
+typography, not the image, is the hero. This is a redefinition of *what the Encounter looks
+like*, not of the free/paid line itself: the Encounter stays free, the Understanding stays gated
+by the Entitlement, exactly as decided above. See ADR 0026 for the full pivot (uniform per-Sekki
+backdrops, no attribution, no remote image seam).

@@ -7,7 +7,7 @@ import SwiftUI
 /// injected `SubscriptionPurchaser` seam, then refreshes entitlement state.
 ///
 /// All tests drive the model through **injected in-memory fakes** for both the
-/// purchaser and the entitlement engine. There is no `SKTestSession`, no real
+/// purchaser and the transaction source. There is no `SKTestSession`, no real
 /// `Product.purchase()`, and no `storekitd` call on this path — following the same
 /// pattern as `PaywallTests` and ADR 0009 / CLAUDE.md. The production
 /// `StoreKitSubscriptionPurchaser` is a thin pass-through, correct by inspection.
@@ -23,12 +23,6 @@ final class PaywallPurchaseFlowTests: XCTestCase {
         var productIDs: Set<String> = []
         func activeProductIDs() async -> Set<String> { productIDs }
         func seed(_ ids: Set<String>) { productIDs = ids }
-    }
-
-    /// In-memory shared-store seam: captures the last value written by activation.
-    private actor FakeSharedStore: EntitlementSharedStore {
-        var isActive: Bool = false
-        func setActive(_ value: Bool) { isActive = value }
     }
 
     /// In-memory purchaser: configured to either succeed or throw on `purchase(_:)`.
@@ -54,13 +48,12 @@ final class PaywallPurchaseFlowTests: XCTestCase {
     func testBuySuccessSetIsActiveTrue() async {
         // Arrange
         let source = FakeTransactionSource()
-        let store = FakeSharedStore()
         let purchaser = FakeSubscriptionPurchaser()
 
         // Pre-seed the source so that after purchase the entitlement check succeeds.
         await source.seed([Self.widgetProductID])
 
-        let provider = EntitlementProvider(source: source, store: store)
+        let provider = EntitlementProvider(source: source)
         let model = PaywallModel(provider: provider, purchaser: purchaser)
 
         XCTAssertFalse(model.isActive, "precondition: isActive starts false")
@@ -71,11 +64,6 @@ final class PaywallPurchaseFlowTests: XCTestCase {
         // Assert: model reflects entitlement
         XCTAssertTrue(model.isActive,
                       "buy() with succeeding purchaser and entitled source → isActive is true")
-
-        // Assert: shared store updated
-        let storeFlag = await store.isActive
-        XCTAssertTrue(storeFlag,
-                      "buy() with succeeding purchaser → shared store isActive flag is true")
     }
 
     // MARK: - Cancelled: user cancels, isActive stays false
@@ -85,12 +73,11 @@ final class PaywallPurchaseFlowTests: XCTestCase {
     func testBuyCancelledLeavesIsActiveFalse() async {
         // Arrange
         let source = FakeTransactionSource()
-        let store = FakeSharedStore()
         let purchaser = FakeSubscriptionPurchaser()
 
         await purchaser.setBehaviour(.throwError(SubscriptionPurchaserCancellation()))
 
-        let provider = EntitlementProvider(source: source, store: store)
+        let provider = EntitlementProvider(source: source)
         let model = PaywallModel(provider: provider, purchaser: purchaser)
 
         // Act (must not throw)
@@ -99,10 +86,6 @@ final class PaywallPurchaseFlowTests: XCTestCase {
         // Assert
         XCTAssertFalse(model.isActive,
                        "buy() cancelled → isActive remains false")
-
-        let storeFlag = await store.isActive
-        XCTAssertFalse(storeFlag,
-                       "buy() cancelled → shared store isActive flag remains false")
     }
 
     // MARK: - Failed: non-cancellation error, no crash
@@ -113,12 +96,11 @@ final class PaywallPurchaseFlowTests: XCTestCase {
         // Arrange
         struct ArbitraryError: Error {}
         let source = FakeTransactionSource()
-        let store = FakeSharedStore()
         let purchaser = FakeSubscriptionPurchaser()
 
         await purchaser.setBehaviour(.throwError(ArbitraryError()))
 
-        let provider = EntitlementProvider(source: source, store: store)
+        let provider = EntitlementProvider(source: source)
         let model = PaywallModel(provider: provider, purchaser: purchaser)
 
         // Act (must not throw / crash)
@@ -138,11 +120,10 @@ final class PaywallPurchaseFlowTests: XCTestCase {
     func testScreenshotPaywallManageSurface() async throws {
         // Arrange: same setup as the success test
         let source = FakeTransactionSource()
-        let store = FakeSharedStore()
         let purchaser = FakeSubscriptionPurchaser()
         await source.seed([Self.widgetProductID])
 
-        let provider = EntitlementProvider(source: source, store: store)
+        let provider = EntitlementProvider(source: source)
         let model = PaywallModel(provider: provider, purchaser: purchaser)
 
         // Act: drive buy() to make isActive == true

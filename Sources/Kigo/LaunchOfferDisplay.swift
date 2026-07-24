@@ -41,9 +41,12 @@ public struct OfferDisplay {
 /// - Returns: A `FixedOfferDisplay` seeded from the env var, or the production
 ///   offer display when `KIGO_FAKE_PRICE` is absent.
 public func launchOfferDisplay(environment: [String: String]) -> OfferDisplay {
+    #if DEBUG
+    // Test-only seam: KIGO_FAKE_PRICE is honoured in DEBUG builds only (H1).
     if let fakePrice = environment["KIGO_FAKE_PRICE"] {
         return OfferDisplay(price: fakePrice, duration: "1 month")
     }
+    #endif
     // Production path: the thin production adapter over a real StoreKit Product
     // would be resolved here. For the current gating path we return a sensible
     // default — the real Product is never loaded on the headless test path (ADR 0009).

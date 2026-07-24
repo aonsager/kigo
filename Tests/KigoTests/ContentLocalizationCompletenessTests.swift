@@ -84,39 +84,6 @@ final class ContentLocalizationCompletenessTests: XCTestCase {
         }
     }
 
-    // MARK: - attribution.title.en
-
-    /// Every daily map entry's attribution title.en exactly equals "Season Kigo".
-    func testAllEntriesAttributionTitleEnIsSeasonKigo() throws {
-        let manifest = try loadManifest()
-        for (key, entry) in manifest.dailyMap {
-            XCTAssertEqual(entry.attribution.title.en, "Season Kigo",
-                "Entry \(key) attribution.title.en mismatch")
-        }
-    }
-
-    // MARK: - attribution.credit.en
-
-    /// Every daily map entry's attribution credit.en exactly equals "Unknown photographer".
-    func testAllEntriesAttributionCreditEnIsUnknownPhotographer() throws {
-        let manifest = try loadManifest()
-        for (key, entry) in manifest.dailyMap {
-            XCTAssertEqual(entry.attribution.credit.en, "Unknown photographer",
-                "Entry \(key) attribution.credit.en mismatch")
-        }
-    }
-
-    // MARK: - attribution.license.en
-
-    /// Every daily map entry's attribution license.en exactly equals "Public domain".
-    func testAllEntriesAttributionLicenseEnIsPublicDomain() throws {
-        let manifest = try loadManifest()
-        for (key, entry) in manifest.dailyMap {
-            XCTAssertEqual(entry.attribution.license.en, "Public domain",
-                "Entry \(key) attribution.license.en mismatch")
-        }
-    }
-
     // MARK: - kanji stability
 
     /// The kanji field is not a LocalizedText — it's a plain String. Verify it is
@@ -213,13 +180,7 @@ final class ContentLocalizationCompletenessTests: XCTestCase {
         {
           "kanji": "梅",
           "reading": { "ja": "うめ" },
-          "description": { "ja": "Plum blossom." },
-          "imageId": "test-image",
-          "attribution": {
-            "title": { "ja": "梅の花" },
-            "credit": { "ja": "撮影者不明" },
-            "license": { "ja": "パブリックドメイン" }
-          }
+          "description": { "ja": "Plum blossom." }
         }
         """
         let data = Data(jsonString.utf8)
@@ -231,13 +192,9 @@ final class ContentLocalizationCompletenessTests: XCTestCase {
         // .en is nil for all LocalizedText fields
         XCTAssertNil(entry.reading.en, "reading.en should be nil when absent in JSON")
         XCTAssertNil(entry.description.en, "description.en should be nil when absent in JSON")
-        XCTAssertNil(entry.attribution.title.en, "attribution.title.en should be nil when absent in JSON")
-        XCTAssertNil(entry.attribution.credit.en, "attribution.credit.en should be nil when absent in JSON")
-        XCTAssertNil(entry.attribution.license.en, "attribution.license.en should be nil when absent in JSON")
 
         // (field.en ?? field.ja) falls back to field.ja
         XCTAssertEqual(entry.reading.en ?? entry.reading.ja, entry.reading.ja)
         XCTAssertEqual(entry.description.en ?? entry.description.ja, entry.description.ja)
-        XCTAssertEqual(entry.attribution.title.en ?? entry.attribution.title.ja, entry.attribution.title.ja)
     }
 }

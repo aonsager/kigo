@@ -6,17 +6,15 @@ import SwiftUI
 //
 // Slice #73: Thin adapter over `WidgetTimelineBuilder`.
 //
-// Constructs the three production seams:
-//   - `SystemDateProvider`          — provides `Date()` for today
-//   - `BundledContentSource`        — loads manifest.json from the widget
-//                                     extension bundle (bundled in project.yml,
-//                                     slice #73 / ADR 0012)
-//   - `UserDefaultsEntitlementStore` — reads the shared app-group entitlement
-//                                     flag written by `EntitlementProvider`
+// Constructs the two production seams:
+//   - `SystemDateProvider`   — provides `Date()` for today
+//   - `BundledContentSource` — loads manifest.json from the widget extension
+//                              bundle (bundled in project.yml, slice #73 / ADR 0012)
 //
-// All resolution and entitlement logic lives in `WidgetTimelineBuilder`; this
-// provider is correct by inspection — no logic beyond constructing seams and
-// bridging the async builder to WidgetKit's completion-handler callbacks.
+// All resolution logic lives in `WidgetTimelineBuilder`; this provider is correct
+// by inspection — no logic beyond constructing seams and bridging the async
+// builder to WidgetKit's completion-handler callbacks. Since ADR 0019 the widget
+// no longer gates on entitlement, so no shared-store seam is constructed.
 
 struct KigoWidgetProvider: TimelineProvider {
 
@@ -24,12 +22,12 @@ struct KigoWidgetProvider: TimelineProvider {
 
     func placeholder(in context: Context) -> KigoWidgetEntry {
         // Placeholder shown during widget gallery / loading state.
-        // Use a static placeholder entry with known Kigo content.
+        // Use a static placeholder entry with known Kigo content and its Sekki backdrop.
         KigoWidgetEntry(date: .now,
                         kanji: "蛍",
                         reading: "ほたる",
-                        imageId: "placeholder",
-                        showsImage: false)
+                        backdropAssetName: SekkiBackdrop.assetName(forSekkiId: "shousho"),
+                        fallbackHue: SekkiBackdrop.fallbackHue(forSekkiId: "shousho"))
     }
 
     // MARK: - Snapshot

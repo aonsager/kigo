@@ -19,8 +19,11 @@ import Foundation
 ///   `ProcessInfo.processInfo.environment` at the app root.
 @MainActor
 public func launchNotificationScheduler(environment: [String: String]) -> any NotificationScheduler {
+    #if DEBUG
+    // Test-only seam: KIGO_FAKE_REMINDER swaps in the in-memory scheduler in DEBUG only (H1).
     if environment["KIGO_FAKE_REMINDER"] != nil {
         return InMemoryNotificationScheduler()
     }
+    #endif
     return UserNotificationScheduler()
 }

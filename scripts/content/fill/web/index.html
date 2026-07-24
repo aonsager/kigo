@@ -3,27 +3,59 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>kigo review</title>
+  <title>歳時記 · kigo-2026 review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Shippori+Mincho:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <header>
-    <h1>kigo-2026 review</h1>
-    <div class="filters">
-      <input id="from" placeholder="from YYYY-MM-DD">
-      <input id="to" placeholder="to YYYY-MM-DD">
-      <select id="status">
-        <option value="">all</option>
-        <option value="unapproved">unapproved</option>
-        <option value="approved">approved</option>
-      </select>
-      <button id="reload">reload</button>
-    </div>
-  </header>
-  <main>
-    <ul id="days"></ul>
-    <section id="editor" hidden></section>
-  </main>
+  <div class="app">
+    <aside class="rail" id="rail">
+      <div class="rail__head">
+        <div class="brand">
+          <span class="brand__mark" aria-hidden="true">歳時記</span>
+          <span class="brand__title">kigo&#8202;<span class="brand__year">2026</span></span>
+          <span class="brand__sub">editorial review</span>
+        </div>
+
+        <div class="progress" id="progress" title="approved of loaded">
+          <svg class="progress__ring" viewBox="0 0 44 44" aria-hidden="true">
+            <circle class="progress__track" cx="22" cy="22" r="19"></circle>
+            <circle class="progress__value" id="progressArc" cx="22" cy="22" r="19"></circle>
+          </svg>
+          <div class="progress__label">
+            <strong id="progressNum">0</strong>
+            <span id="progressDen">/ 0 approved</span>
+          </div>
+        </div>
+
+        <div class="filters">
+          <div class="filters__dates">
+            <input id="from" placeholder="from" aria-label="from date YYYY-MM-DD">
+            <span class="filters__arrow" aria-hidden="true">→</span>
+            <input id="to" placeholder="to" aria-label="to date YYYY-MM-DD">
+          </div>
+          <div class="segmented" id="statusSeg" role="tablist" aria-label="status filter">
+            <button class="seg is-active" data-status="" role="tab">all</button>
+            <button class="seg" data-status="unapproved" role="tab">drafts</button>
+            <button class="seg" data-status="approved" role="tab">approved</button>
+          </div>
+        </div>
+      </div>
+
+      <ol class="index" id="days"></ol>
+    </aside>
+
+    <main class="spread">
+      <section class="empty" id="empty">
+        <div class="empty__mark">季</div>
+        <p class="empty__lead">Select a day from the almanac</p>
+        <p class="empty__hint">Read the Japanese top-to-bottom, correct inline, choose one image, then approve.</p>
+      </section>
+      <section id="editor" hidden></section>
+    </main>
+  </div>
   <script src="/app.js"></script>
 </body>
 </html>
